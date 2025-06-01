@@ -1,221 +1,230 @@
 {% extends "base.html" %}
 
-{% block title %}Customer Reviews - Triton Concrete Coating Testimonials{% endblock %}
+{% block title %}Customer Reviews - Triton Concrete Coating{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="page-hero py-5 bg-primary text-white">
+<!-- Page Header -->
+<section class="page-header bg-primary text-white py-5">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto text-center">
-                <h1 class="display-4 fw-bold mb-4">Customer Reviews</h1>
-                <p class="lead">See what our satisfied customers have to say about our concrete coating services</p>
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold">Customer Reviews</h1>
+                <p class="lead">See what our satisfied customers are saying about our work</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Reviews Section -->
+<!-- Reviews Summary -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="review-stat">
+                    <h2 class="display-4 fw-bold text-primary">5.0</h2>
+                    <div class="stars mb-2">
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                    </div>
+                    <p class="text-muted">Average Rating</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="review-stat">
+                    <h2 class="display-4 fw-bold text-success">50+</h2>
+                    <p class="text-muted">Happy Customers</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="review-stat">
+                    <h2 class="display-4 fw-bold text-info">100%</h2>
+                    <p class="text-muted">Satisfaction Rate</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="review-stat">
+                    <h2 class="display-4 fw-bold text-warning">24hr</h2>
+                    <p class="text-muted">Response Time</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Customer Reviews -->
 <section class="py-5">
     <div class="container">
-        <!-- Yelp Reviews -->
-        <div class="row mb-5">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">What Our Customers Say</h2>
+            <p class="lead text-muted">Real reviews from real customers</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Review 1 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="review-card card border-0 shadow h-100">
+                    <div class="card-body">
+                        <div class="stars mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="card-text">"Amazing work on our garage floor! The team was professional, punctual, and the result exceeded our expectations. Our garage looks like a showroom now!"</p>
+                        <div class="reviewer mt-3">
+                            <strong>Sarah M.</strong>
+                            <small class="text-muted d-block">Kaneohe, HI</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Review 2 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="review-card card border-0 shadow h-100">
+                    <div class="card-body">
+                        <div class="stars mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="card-text">"Great job on our garage! Very professional and the coating looks fantastic. Easy to clean and maintain. Highly recommend Triton for anyone looking for quality work."</p>
+                        <div class="reviewer mt-3">
+                            <strong>Mike T.</strong>
+                            <small class="text-muted d-block">Honolulu, HI</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Review 3 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="review-card card border-0 shadow h-100">
+                    <div class="card-body">
+                        <div class="stars mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="card-text">"Fantastic service from start to finish. They explained the process clearly, worked efficiently, and cleaned up perfectly. Our patio looks incredible!"</p>
+                        <div class="reviewer mt-3">
+                            <strong>Jennifer L.</strong>
+                            <small class="text-muted d-block">Kailua, HI</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Review 4 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="review-card card border-0 shadow h-100">
+                    <div class="card-body">
+                        <div class="stars mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="card-text">"Outstanding quality and attention to detail. The metallic epoxy finish in our showroom is absolutely stunning. Customers comment on it daily!"</p>
+                        <div class="reviewer mt-3">
+                            <strong>David K.</strong>
+                            <small class="text-muted d-block">Pearl City, HI</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Review 5 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="review-card card border-0 shadow h-100">
+                    <div class="card-body">
+                        <div class="stars mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="card-text">"Local business with excellent service. They understand Hawaii's climate and recommended the perfect coating for our pool deck. Highly recommended!"</p>
+                        <div class="reviewer mt-3">
+                            <strong>Lisa R.</strong>
+                            <small class="text-muted d-block">Mililani, HI</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Review 6 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="review-card card border-0 shadow h-100">
+                    <div class="card-body">
+                        <div class="stars mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <p class="card-text">"Professional, reliable, and the results speak for themselves. Our warehouse floor can handle heavy equipment and still looks great after two years."</p>
+                        <div class="reviewer mt-3">
+                            <strong>Robert H.</strong>
+                            <small class="text-muted d-block">Waipahu, HI</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Yelp Integration -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4">Find Us on Yelp</h2>
+        <p class="lead mb-4">Read more reviews and leave your own feedback on our Yelp page</p>
+        <a href="https://www.yelp.com/biz/triton-concrete-coatings-honolulu" target="_blank" class="btn btn-primary btn-lg">
+            <i class="fab fa-yelp me-2"></i>View on Yelp
+        </a>
+    </div>
+</section>
+
+<!-- Testimonial Highlight -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
             <div class="col-lg-8 mx-auto text-center">
-                <h2 class="fw-bold mb-4">Yelp Reviews</h2>
-                <div class="mb-4">
-                    <div class="d-flex justify-content-center align-items-center mb-3">
-                        <div class="stars me-3">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                        </div>
-                        <span class="fs-4 fw-bold">5.0 out of 5</span>
-                    </div>
-                    <p class="text-muted">Based on customer reviews</p>
-                    <a href="https://www.yelp.com/biz/triton-concrete-coatings-honolulu" target="_blank" class="btn btn-outline-primary">
-                        <i class="fab fa-yelp me-2"></i>View on Yelp
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Individual Reviews -->
-        <div class="row g-4 mb-5">
-            <div class="col-lg-4">
-                <div class="review-card h-100 p-4 bg-light rounded shadow-sm">
-                    <div class="stars mb-3">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                    </div>
-                    <blockquote class="mb-3">
-                        "Great job on our garage! The team was professional, on time, and the quality of work exceeded our expectations. Our garage floor looks amazing and is so much easier to clean now."
-                    </blockquote>
-                    <div class="review-author">
-                        <small class="text-muted">- Verified Customer</small>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="review-card h-100 p-4 bg-light rounded shadow-sm">
-                    <div class="stars mb-3">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                    </div>
-                    <blockquote class="mb-3">
-                        "Triton did an excellent job on our patio coating. The surface preparation was thorough and the finish is beautiful. We've had it for over a year now and it still looks brand new."
-                    </blockquote>
-                    <div class="review-author">
-                        <small class="text-muted">- Verified Customer</small>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="review-card h-100 p-4 bg-light rounded shadow-sm">
-                    <div class="stars mb-3">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                    </div>
-                    <blockquote class="mb-3">
-                        "Professional service from start to finish. They showed up when they said they would, completed the work on schedule, and cleaned up everything. Highly recommend!"
-                    </blockquote>
-                    <div class="review-author">
-                        <small class="text-muted">- Verified Customer</small>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="review-card h-100 p-4 bg-light rounded shadow-sm">
-                    <div class="stars mb-3">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                    </div>
-                    <blockquote class="mb-3">
-                        "We had our warehouse floors coated by Triton and couldn't be happier. The coating has held up to heavy traffic and equipment. Great value for the money."
-                    </blockquote>
-                    <div class="review-author">
-                        <small class="text-muted">- Commercial Customer</small>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="review-card h-100 p-4 bg-light rounded shadow-sm">
-                    <div class="stars mb-3">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                    </div>
-                    <blockquote class="mb-3">
-                        "Local business that really cares about quality. They took the time to explain the process and made sure we were happy with everything. The decorative flakes look fantastic!"
-                    </blockquote>
-                    <div class="review-author">
-                        <small class="text-muted">- Verified Customer</small>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="review-card h-100 p-4 bg-light rounded shadow-sm">
-                    <div class="stars mb-3">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                    </div>
-                    <blockquote class="mb-3">
-                        "Fair pricing, quality work, and excellent customer service. They completed our project exactly as promised and the results speak for themselves. Will definitely use them again."
-                    </blockquote>
-                    <div class="review-author">
-                        <small class="text-muted">- Verified Customer</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Trust Indicators -->
-        <div class="row bg-light py-5 rounded">
-            <div class="col-lg-8 mx-auto">
-                <h3 class="fw-bold text-center mb-5">Why Customers Choose Triton</h3>
-                <div class="row g-4">
-                    <div class="col-md-4 text-center">
-                        <div class="trust-indicator">
-                            <i class="fas fa-certificate fa-3x text-primary mb-3"></i>
-                            <h5 class="fw-bold">Licensed & Insured</h5>
-                            <p class="text-muted">Fully licensed and insured for your protection and peace of mind.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4 text-center">
-                        <div class="trust-indicator">
-                            <i class="fas fa-clock fa-3x text-primary mb-3"></i>
-                            <h5 class="fw-bold">On-Time Service</h5>
-                            <p class="text-muted">We respect your time and complete projects as scheduled.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4 text-center">
-                        <div class="trust-indicator">
-                            <i class="fas fa-handshake fa-3x text-primary mb-3"></i>
-                            <h5 class="fw-bold">Quality Guarantee</h5>
-                            <p class="text-muted">We stand behind our work with quality materials and craftsmanship.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Leave a Review CTA -->
-        <div class="text-center mt-5">
-            <h3 class="fw-bold mb-4">Have You Worked With Us?</h3>
-            <p class="lead text-muted mb-4">We'd love to hear about your experience. Leave us a review!</p>
-            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                <a href="https://www.yelp.com/biz/triton-concrete-coatings-honolulu" target="_blank" class="btn btn-primary btn-lg">
-                    <i class="fab fa-yelp me-2"></i>Review us on Yelp
-                </a>
-                <a href="https://www.instagram.com/tritonconcretecoatings/" target="_blank" class="btn btn-outline-primary btn-lg">
-                    <i class="fab fa-instagram me-2"></i>Follow on Instagram
-                </a>
+                <blockquote class="blockquote">
+                    <p class="h4 fw-light fst-italic">"Triton Concrete Coating transformed our garage into a space we're proud to show off. The quality of work and professionalism was outstanding!"</p>
+                    <footer class="blockquote-footer mt-3">
+                        <cite>Maria S., Aiea, HI</cite>
+                    </footer>
+                </blockquote>
             </div>
         </div>
     </div>
 </section>
 
 <!-- CTA Section -->
-<section class="py-5 bg-primary text-white">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto text-center">
-                <h3 class="fw-bold mb-4">Ready to Join Our Happy Customers?</h3>
-                <p class="lead mb-4">Experience the Triton difference for yourself. Get your free consultation today!</p>
-                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                    <a href="{{ url_for('consultation') }}" class="btn btn-light btn-lg">
-                        <i class="fas fa-calendar-check me-2"></i>Free Consultation
-                    </a>
-                    <a href="tel:+18085551234" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-phone me-2"></i>(808) 555-1234
-                    </a>
-                </div>
-            </div>
+<section class="py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4">Ready to Join Our Happy Customers?</h2>
+        <p class="lead mb-4">Experience the Triton difference for yourself with a free consultation</p>
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+            <a href="{{ url_for('consultation') }}" class="btn btn-primary btn-lg px-5">
+                <i class="fas fa-calendar-check me-2"></i>Schedule Consultation
+            </a>
+            <a href="tel:+18085551234" class="btn btn-outline-primary btn-lg px-5">
+                <i class="fas fa-phone me-2"></i>Call Now
+            </a>
         </div>
     </div>
 </section>

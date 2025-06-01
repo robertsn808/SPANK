@@ -1,311 +1,288 @@
 {% extends "base.html" %}
 
-{% block title %}Gallery - Triton Concrete Coating Work Examples{% endblock %}
+{% block title %}Gallery - Triton Concrete Coating{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="page-hero py-5 bg-primary text-white">
+<!-- Page Header -->
+<section class="page-header bg-primary text-white py-5">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto text-center">
-                <h1 class="display-4 fw-bold mb-4">Our Work Gallery</h1>
-                <p class="lead">See examples of our professional concrete coating projects across O'ahu</p>
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold">Our Work Gallery</h1>
+                <p class="lead">Showcasing our concrete coating transformations across O'ahu</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Gallery Content -->
+<!-- Gallery Filters -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="text-center">
+            <div class="btn-group" role="group" aria-label="Gallery filters">
+                <button type="button" class="btn btn-outline-primary active" data-filter="all">All Projects</button>
+                <button type="button" class="btn btn-outline-primary" data-filter="garage">Garage Floors</button>
+                <button type="button" class="btn btn-outline-primary" data-filter="outdoor">Outdoor</button>
+                <button type="button" class="btn btn-outline-primary" data-filter="industrial">Industrial</button>
+                <button type="button" class="btn btn-outline-primary" data-filter="epoxy">Epoxy Finishes</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Grid -->
 <section class="py-5">
     <div class="container">
-        <!-- Garage Floor Coatings -->
-        <div class="mb-5">
-            <h2 class="fw-bold mb-4 text-center">Garage Floor Coatings</h2>
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/g5eef83515dd5beb58efc3b1c09a62690532a181d42cd0a1f8f9a5e76fc032cbe610d30f88cd10b817faee64afb4b868e62f1b25ac05c78a4ba69e3cac8d6554f_1280.jpg" 
-                             alt="Garage floor epoxy coating - residential project" class="img-fluid rounded shadow gallery-image" 
-                             data-bs-toggle="modal" data-bs-target="#imageModal" 
-                             data-image="https://pixabay.com/get/g5eef83515dd5beb58efc3b1c09a62690532a181d42cd0a1f8f9a5e76fc032cbe610d30f88cd10b817faee64afb4b868e62f1b25ac05c78a4ba69e3cac8d6554f_1280.jpg"
-                             data-title="Residential Garage Floor Coating">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/gce24ea5c4ea4702216549490b837cba262189adeba11ea33c86a5b9186ad7b0b55b22f2eadaff48eb762f92e8eaf32f9afe199a04c65d31f1c6258027db90286_1280.jpg" 
-                             alt="Two-car garage with decorative flake coating" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/gce24ea5c4ea4702216549490b837cba262189adeba11ea33c86a5b9186ad7b0b55b22f2eadaff48eb762f92e8eaf32f9afe199a04c65d31f1c6258027db90286_1280.jpg"
-                             data-title="Two-Car Garage with Decorative Flakes">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/gb36e3c6334047f3c7eeaf07abc5e11642b989945ab0878486c5f343eb58f8497e29548647cbe18ba7302328e197faa84fe6d4b8172437b7120a2bf2a17572c68_1280.jpg" 
-                             alt="Professional garage floor coating application" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/gb36e3c6334047f3c7eeaf07abc5e11642b989945ab0878486c5f343eb58f8497e29548647cbe18ba7302328e197faa84fe6d4b8172437b7120a2bf2a17572c68_1280.jpg"
-                             data-title="Professional Application Process">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/g5138d0580205521423a4250c9c6c83dee6ca0d832238bb51ae266919f6e02a72ab0a52234936d3839d3dc2ac2613f1eaf3540dd0abb38bd29c93f3ac1c9da123_1280.jpg" 
-                             alt="Garage with metallic epoxy finish" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/g5138d0580205521423a4250c9c6c83dee6ca0d832238bb51ae266919f6e02a72ab0a52234936d3839d3dc2ac2613f1eaf3540dd0abb38bd29c93f3ac1c9da123_1280.jpg"
-                             data-title="Metallic Epoxy Finish">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/gb8bc8d6af9fd8b713146c3fff4f30bb0b2502be70fbc8cefb7e0c0083e6cc58d185b5e926146fb070f74ed48fe2830cadf0873561bf55f8d01eb3bc3dca4dc0b_1280.jpg" 
-                             alt="Durable garage floor coating with anti-slip properties" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/gb8bc8d6af9fd8b713146c3fff4f30bb0b2502be70fbc8cefb7e0c0083e6cc58d185b5e926146fb070f74ed48fe2830cadf0873561bf55f8d01eb3bc3dc0b_1280.jpg"
-                             data-title="Anti-Slip Coating System">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/g85d2528ec3ba546fb0721ce5b24277bbda9c638a4aa4d0890117ab09c576e3cfeade57ba60ce4607ad759f47b5b324c4c18a45955559e593e676de6271eca525_1280.jpg" 
-                             alt="Clean modern garage floor finish" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/g85d2528ec3ba546fb0721ce5b24277bbda9c638a4aa4d0890117ab09c576e3cfeade57ba60ce4607ad759f47b5b324c4c18a45955559e593e676de6271eca525_1280.jpg"
-                             data-title="Clean Modern Finish">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
+        <div class="row g-4" id="gallery-grid">
+            <!-- Garage Floor Coatings -->
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="garage">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/g5eef83515dd5beb58efc3b1c09a62690532a181d42cd0a1f8f9a5e76fc032cbe610d30f88cd10b817faee64afb4b868e62f1b25ac05c78a4ba69e3cac8d6554f_1280.jpg" 
+                         alt="Garage Floor Coating - Residential" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Residential Garage Floor</h6>
+                            <p>Epoxy coating with decorative flakes</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Epoxy Floor Finishes -->
-        <div class="mb-5">
-            <h2 class="fw-bold mb-4 text-center">Epoxy Floor Finishes</h2>
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/gcee8e52d2bd290f01a21cd53a0d9a978d7fe4fdca3963206ae2f12c9aa7616a254deeea4f6b2231520e0d39a3bb337f81fe248d8c0f2937a0823b7d2973a811c_1280.jpg" 
-                             alt="High-gloss epoxy floor finish" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/gcee8e52d2bd290f01a21cd53a0d9a978d7fe4fdca3963206ae2f12c9aa7616a254deeea4f6b2231520e0d39a3bb337f81fe248d8c0f2937a0823b7d2973a811c_1280.jpg"
-                             data-title="High-Gloss Epoxy Finish">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/gac911e69111448b718e5a14a93def1776c37e0321a96ef7ce77a49da14737090d4ed0f4b0146e73c211fe0edfa29506a478d10e24f47d40617847ee06edf0fe6_1280.jpg" 
-                             alt="Decorative epoxy with color flakes" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/gac911e69111448b718e5a14a93def1776c37e0321a96ef7ce77a49da14737090d4ed0f4b0146e73c211fe0edfa29506a478d10e24f47d40617847ee06edf0fe6_1280.jpg"
-                             data-title="Decorative Color Flake System">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/g249e6f027e19a2d871a91fffa72f961d6a8bc0474f79dcefb30274686fb29c2f6213dca022c322092eec4b0e64bbec66f43a7c4fa81f47c6185104f898ee318b_1280.jpg" 
-                             alt="Industrial strength epoxy coating" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/g249e6f027e19a2d871a91fffa72f961d6a8bc0474f79dcefb30274686fb29c2f6213dca022c322092eec4b0e64bbec66f43a7c4fa81f47c6185104f898ee318b_1280.jpg"
-                             data-title="Industrial Strength Coating">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/gcfa08a2523700668274583f44da924f016f78a7eded8a17ee611a820c5586ff001de648c7793e0edb96ad1beec3d1a50c9ac4f0ed941881275bfff793a2930f7_1280.jpg" 
-                             alt="Artistic epoxy floor design" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/gcfa08a2523700668274583f44da924f016f78a7eded8a17ee611a820c5586ff001de648c7793e0edb96ad1beec3d1a50c9ac4f0ed941881275bfff793a2930f7_1280.jpg"
-                             data-title="Artistic Epoxy Design">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
+            
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="garage">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/gce24ea5c4ea4702216549490b837cba262189adeba11ea33c86a5b9186ad7b0b55b22f2eadaff48eb762f92e8eaf32f9afe199a04c65d31f1c6258027db90286_1280.jpg" 
+                         alt="Modern Garage Floor" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Modern Garage Makeover</h6>
+                            <p>Solid color epoxy with gloss finish</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Outdoor Concrete Patios -->
-        <div class="mb-5">
-            <h2 class="fw-bold mb-4 text-center">Outdoor Concrete Patios</h2>
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/g27cac312b14f5ede39de76fc9e4f26e118fc9e0629fae94cee7c7bf025062d594226627b983f6511e679cb8ce46425d1be6c2f5a454e12f87d8590edbdeafa3f_1280.jpg" 
-                             alt="Outdoor patio with decorative concrete coating" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/g27cac312b14f5ede39de76fc9e4f26e118fc9e0629fae94cee7c7bf025062d594226627b983f6511e679cb8ce46425d1be6c2f5a454e12f87d8590edbdeafa3f_1280.jpg"
-                             data-title="Decorative Patio Coating">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/gcd2937fb4284e8db2538aa9f00adfe266f54858bd51b9848eff0ad7a2441efc3a4ef025f54069b479bdac33fffb18ff10df7a4cb59bf7476e0f8c4db49b66a25_1280.jpg" 
-                             alt="Poolside concrete coating with slip resistance" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/gcd2937fb4284e8db2538aa9f00adfe266f54858bd51b9848eff0ad7a2441efc3a4ef025f54069b479bdac33fffb18ff10df7a4cb49b66a25_1280.jpg"
-                             data-title="Poolside Slip-Resistant Coating">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/g8e44b572c1a84d15c34edad892cc9b55c177573eb28e0cdd89e6b6ecabb81bc441dde2a1239d0915ae265213325d2c39b897618c67c328a81fbed07fc27ee454_1280.jpg" 
-                             alt="Stamped concrete patio with protective coating" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/g8e44b572c1a84d15c34edad892cc9b55c177573eb28e0cdd89e6b6ecabb81bc441dde2a1239d0915ae265213325d2c39b897618c67c328a81fbed07fc27ee454_1280.jpg"
-                             data-title="Stamped Concrete Protection">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/gae6fee2664ad52d9834c44feb63383cc3c9c59312cd50fc082bc1d900c911d412ddbedc587865529bbe83c499d9f0bef895081ed66d479358b398815b6cd2f15_1280.jpg" 
-                             alt="Modern outdoor concrete finish" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/gae6fee2664ad52d9834c44feb63383cc3c9c59312cd50fc082bc1d900c911d412ddbedc587865529bbe83c499d9f0bef895081ed66d479358b398815b6cd2f15_1280.jpg"
-                             data-title="Modern Outdoor Finish">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
+            
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="garage">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/gb36e3c6334047f3c7eeaf07abc5e11642b989945ab0878486c5f343eb58f8497e29548647cbe18ba7302328e197faa84fe6d4b8172437b7120a2bf2a17572c68_1280.jpg" 
+                         alt="Two-car Garage Floor" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Two-Car Garage</h6>
+                            <p>Premium epoxy with anti-slip additives</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Industrial Coatings -->
-        <div class="mb-5">
-            <h2 class="fw-bold mb-4 text-center">Industrial Concrete Coatings</h2>
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/g6a37c4eeb2a7a2989e4be47976d2b455ec98ceaabda6a11d3ba6ae01d1ca9f1daabff2ad23d6be220129c8cf0d6fdc11a6726270f3582b6dd90928b866dbc9dd_1280.jpg" 
-                             alt="Industrial warehouse floor coating" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/g6a37c4eeb2a7a2989e4be47976d2b455ec98ceaabda6a11d3ba6ae01d1ca9f1daabff2ad23d6be220129c8cf0d6fdc11a6726270f3582b6dd90928b866dbc9dd_1280.jpg"
-                             data-title="Industrial Warehouse Coating">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/gba7517bfe7b6434466eb17ab6e34736bdc514eb6349a75939c8a794ae4425fb7f9f946bac51a6cc430f89550d76bc8ceba471a53df8145978372c62fe7d0f642_1280.jpg" 
-                             alt="Heavy-duty commercial floor coating" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/gba7517bfe7b6434466eb17ab6e34736bdc514eb6349a75939c8a794ae4425fb7f9f946bac51a6cc430f89550d76bc8ceba471a53df8145978372c62fe7d0f642_1280.jpg"
-                             data-title="Heavy-Duty Commercial Coating">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6">
-                    <div class="gallery-item">
-                        <img src="https://pixabay.com/get/g12887774f5988292304513305a6e3166d832b4bbf4b6e19a340e365643285b1a80c9f552e9f9e25a34ad172e5068402cc0557a69a31e3bd2796cf7b6028f79e5_1280.jpg" 
-                             alt="Chemical resistant industrial coating" class="img-fluid rounded shadow gallery-image"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="https://pixabay.com/get/g12887774f5988292304513305a6e3166d832b4bbf4b6e19a340e365643285b1a80c9f552e9f9e25a34ad172e5068402cc0557a69a31e3bd2796cf7b6028f79e5_1280.jpg"
-                             data-title="Chemical Resistant Coating">
-                        <div class="gallery-overlay">
-                            <i class="fas fa-search-plus"></i>
+            
+            <!-- Epoxy Finishes -->
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="epoxy">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/gcee8e52d2bd290f01a21cd53a0d9a978d7fe4fdca3963206ae2f12c9aa7616a254deeea4f6b2231520e0d39a3bb337f81fe248d8c0f2937a0823b7d2973a811c_1280.jpg" 
+                         alt="High-gloss Epoxy Floor" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>High-Gloss Epoxy</h6>
+                            <p>Mirror-like finish for showroom quality</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Instagram CTA -->
-        <div class="text-center">
-            <h3 class="fw-bold mb-4">See More on Instagram</h3>
-            <p class="lead text-muted mb-4">Follow us for daily updates, behind-the-scenes content, and more project photos.</p>
-            <a href="https://www.instagram.com/tritonconcretecoatings/" target="_blank" class="btn btn-primary btn-lg">
-                <i class="fab fa-instagram me-2"></i>@tritonconcretecoatings
-            </a>
+            
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="epoxy">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/gac911e69111448b718e5a14a93def1776c37e0321a96ef7ce77a49da14737090d4ed0f4b0146e73c211fe0edfa29506a478d10e24f47d40617847ee06edf0fe6_1280.jpg" 
+                         alt="Metallic Epoxy Floor" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Metallic Epoxy Design</h6>
+                            <p>Custom metallic finish with unique patterns</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="epoxy">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/g249e6f027e19a2d871a91fffa72f961d6a8bc0474f79dcefb30274686fb29c2f6213dca022c322092eec4b0e64bbec66f43a7c4fa81f47c6185104f898ee318b_1280.jpg" 
+                         alt="Decorative Epoxy Pattern" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Decorative Pattern</h6>
+                            <p>Custom design with color blending</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Outdoor Concrete -->
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="outdoor">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/g27cac312b14f5ede39de76fc9e4f26e118fc9e0629fae94cee7c7bf025062d594226627b983f6511e679cb8ce46425d1be6c2f5a454e12f87d8590edbdeafa3f_1280.jpg" 
+                         alt="Outdoor Patio Coating" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Outdoor Patio</h6>
+                            <p>Weather-resistant decorative coating</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="outdoor">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/gcd2937fb4284e8db2538aa9f00adfe266f54858bd51b9848eff0ad7a2441efc3a4ef025f54069b479bdac33fffb18ff10df7a4cb59bf7476e0f8c4db49b66a25_1280.jpg" 
+                         alt="Pool Deck Coating" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Pool Deck</h6>
+                            <p>Non-slip coating for safety and style</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="outdoor">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/g8e44b572c1a84d15c34edad892cc9b55c177573eb28e0cdd89e6b6ecabb81bc441dde2a1239d0915ae265213325d2c39b897618c67c328a81fbed07fc27ee454_1280.jpg" 
+                         alt="Driveway Coating" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Driveway Enhancement</h6>
+                            <p>Durable coating with enhanced curb appeal</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Industrial -->
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="industrial">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/g6a37c4eeb2a7a2989e4be47976d2b455ec98ceaabda6a11d3ba6ae01d1ca9f1daabff2ad23d6be220129c8cf0d6fdc11a6726270f3582b6dd90928b866dbc9dd_1280.jpg" 
+                         alt="Industrial Warehouse Floor" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Warehouse Floor</h6>
+                            <p>Heavy-duty industrial coating</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="industrial">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/gba7517bfe7b6434466eb17ab6e34736bdc514eb6349a75939c8a794ae4425fb7f9f946bac51a6cc430f89550d76bc8ceba471a53df8145978372c62fe7d0f642_1280.jpg" 
+                         alt="Manufacturing Facility" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Manufacturing Floor</h6>
+                            <p>Chemical-resistant epoxy coating</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="industrial">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/g12887774f5988292304513305a6e3166d832b4bbf4b6e19a340e365643285b1a80c9f552e9f9e25a34ad172e5068402cc0557a69a31e3bd2796cf7b6028f79e5_1280.jpg" 
+                         alt="Commercial Kitchen Floor" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Commercial Kitchen</h6>
+                            <p>Food-safe, easy-clean coating</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Projects -->
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="garage">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/g5138d0580205521423a4250c9c6c83dee6ca0d832238bb51ae266919f6e02a72ab0a52234936d3839d3dc2ac2613f1eaf3540dd0abb38bd29c93f3ac1c9da123_1280.jpg" 
+                         alt="Luxury Garage Floor" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Luxury Garage</h6>
+                            <p>Premium finish with custom design</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="epoxy">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/gcfa08a2523700668274583f44da924f016f78a7eded8a17ee611a820c5586ff001de648c7793e0edb96ad1beec3d1a50c9ac4f0ed941881275bfff793a2930f7_1280.jpg" 
+                         alt="Unique Epoxy Design" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Artistic Epoxy</h6>
+                            <p>One-of-a-kind decorative finish</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item" data-category="outdoor">
+                <div class="gallery-card">
+                    <img src="https://pixabay.com/get/gae6fee2664ad52d9834c44feb63383cc3c9c59312cd50fc082bc1d900c911d412ddbedc587865529bbe83c499d9f0bef895081ed66d479358b398815b6cd2f15_1280.jpg" 
+                         alt="Outdoor Entertainment Area" class="img-fluid rounded shadow">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h6>Entertainment Area</h6>
+                            <p>Stylish and functional outdoor coating</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Image Modal -->
-<div class="modal fade" id="imageModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="imageModalLabel">Image</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-0">
-                <img id="modalImage" src="" alt="" class="img-fluid w-100">
-            </div>
-        </div>
+<!-- Instagram Section -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4">Follow Our Latest Work</h2>
+        <p class="lead mb-4">See more of our projects and behind-the-scenes content on Instagram</p>
+        <a href="https://www.instagram.com/tritonconcretecoatings/" target="_blank" class="btn btn-primary btn-lg">
+            <i class="fab fa-instagram me-2"></i>@tritonconcretecoatings
+        </a>
     </div>
-</div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4">Ready for Your Own Transformation?</h2>
+        <p class="lead mb-4">Let's discuss your concrete coating project and create something amazing</p>
+        <a href="{{ url_for('consultation') }}" class="btn btn-warning btn-lg px-5">
+            <i class="fas fa-calendar-check me-2"></i>Request Free Consultation
+        </a>
+    </div>
+</section>
 {% endblock %}
 
 {% block scripts %}
 <script>
-// Gallery image modal functionality
+// Gallery filter functionality
 document.addEventListener('DOMContentLoaded', function() {
-    const galleryImages = document.querySelectorAll('.gallery-image');
-    const modalImage = document.getElementById('modalImage');
-    const modalTitle = document.getElementById('imageModalLabel');
+    const filterButtons = document.querySelectorAll('[data-filter]');
+    const galleryItems = document.querySelectorAll('.gallery-item');
     
-    galleryImages.forEach(function(image) {
-        image.addEventListener('click', function() {
-            const imageUrl = this.getAttribute('data-image');
-            const title = this.getAttribute('data-title');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.getAttribute('data-filter');
             
-            modalImage.src = imageUrl;
-            modalImage.alt = title;
-            modalTitle.textContent = title;
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter gallery items
+            galleryItems.forEach(item => {
+                if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         });
     });
 });

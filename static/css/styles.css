@@ -1,0 +1,425 @@
+/* Custom CSS for Triton Concrete Coating */
+
+:root {
+    --primary-color: 210 11% 15%; /* #2c3e50 */
+    --secondary-color: 210 11% 71%; /* #bdc3c7 */
+    --accent-color: 35 91% 65%; /* #f39c12 */
+    --success-color: 142 71% 45%; /* #27ae60 */
+    --info-color: 204 70% 53%; /* #3498db */
+    --warning-color: 35 91% 65%; /* #f39c12 */
+    --danger-color: 348 83% 47%; /* #e74c3c */
+    --light-color: 210 11% 98%; /* #f8f9fa */
+    --dark-color: 210 11% 15%; /* #2c3e50 */
+    --background: 210 11% 98%; /* #f8f9fa */
+    --text-color: 210 11% 15%; /* #2c3e50 */
+    --text-muted: 210 8% 46%; /* #6c757d */
+}
+
+/* Global Styles */
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: hsl(var(--text-color));
+    background-color: hsl(var(--background));
+}
+
+/* Navigation Styles */
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: hsl(var(--accent-color)) !important;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(52, 152, 219, 0.8)), 
+                url('https://pixabay.com/get/g5eef83515dd5beb58efc3b1c09a62690532a181d42cd0a1f8f9a5e76fc032cbe610d30f88cd10b817faee64afb4b868e62f1b25ac05c78a4ba69e3cac8d6554f_1280.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    position: relative;
+}
+
+.hero-overlay {
+    background: rgba(44, 62, 80, 0.8);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+/* Page Headers */
+.page-header {
+    padding: 120px 0 80px;
+    background: linear-gradient(135deg, hsl(var(--primary-color)), hsl(var(--info-color)));
+}
+
+/* Cards and Components */
+.card {
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.service-card {
+    height: 100%;
+}
+
+.service-card .card-img-top {
+    border-radius: 15px 15px 0 0;
+    transition: transform 0.3s ease;
+}
+
+.service-card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/* Buttons */
+.btn {
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: hsl(var(--primary-color));
+    border-color: hsl(var(--primary-color));
+}
+
+.btn-primary:hover {
+    background-color: hsl(var(--info-color));
+    border-color: hsl(var(--info-color));
+    transform: translateY(-2px);
+}
+
+.btn-warning {
+    background-color: hsl(var(--accent-color));
+    border-color: hsl(var(--accent-color));
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: hsl(35 91% 55%);
+    border-color: hsl(35 91% 55%);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.cta-button {
+    background: hsl(var(--accent-color));
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+    background: hsl(35 91% 55%);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(243, 156, 18, 0.3);
+}
+
+/* Feature Icons */
+.feature-icon i {
+    transition: transform 0.3s ease;
+}
+
+.feature-icon:hover i {
+    transform: scale(1.1);
+}
+
+/* Gallery Styles */
+.gallery-item {
+    overflow: hidden;
+    border-radius: 15px;
+    position: relative;
+}
+
+.gallery-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.gallery-card img {
+    transition: transform 0.3s ease;
+    height: 250px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.gallery-card:hover img {
+    transform: scale(1.1);
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    display: flex;
+    align-items: flex-end;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-card:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-info {
+    color: white;
+    padding: 20px;
+}
+
+/* Contact Styles */
+.contact-icon {
+    width: 60px;
+    text-align: center;
+}
+
+.contact-item {
+    padding: 20px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.contact-item:hover {
+    background-color: hsl(var(--light-color));
+}
+
+/* Review Cards */
+.review-card {
+    transition: transform 0.3s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-5px);
+}
+
+.stars i {
+    color: hsl(var(--accent-color));
+}
+
+/* Admin Dashboard */
+.table th {
+    font-weight: 600;
+    border-top: none;
+    color: hsl(var(--primary-color));
+}
+
+.dropdown-toggle::after {
+    margin-left: 8px;
+}
+
+/* Step Cards */
+.step-card {
+    padding: 20px;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    background: hsl(var(--primary-color));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 0 auto 15px;
+}
+
+/* Consultation Options */
+.consultation-option {
+    padding: 30px 20px;
+    transition: transform 0.3s ease;
+}
+
+.consultation-option:hover {
+    transform: translateY(-5px);
+}
+
+/* Form Styles */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 2px solid hsl(var(--secondary-color));
+    padding: 12px 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: hsl(var(--primary-color));
+    box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    color: hsl(var(--primary-color));
+    margin-bottom: 8px;
+}
+
+/* Flash Messages */
+.flash-messages {
+    position: fixed;
+    top: 76px;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+}
+
+/* Social Links */
+.social-links a {
+    transition: transform 0.3s ease;
+}
+
+.social-links a:hover {
+    transform: translateY(-2px);
+}
+
+/* Footer */
+footer {
+    background: hsl(var(--primary-color)) !important;
+}
+
+footer a {
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: hsl(var(--accent-color)) !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        background-attachment: scroll;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .page-header {
+        padding: 100px 0 60px;
+    }
+    
+    .gallery-card img {
+        height: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-lg {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading States */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn-loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus Styles */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+    outline: 2px solid hsl(var(--accent-color));
+    outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    .btn,
+    footer {
+        display: none !important;
+    }
+    
+    .hero-section {
+        background: none !important;
+        color: black !important;
+    }
+}

@@ -1,85 +1,120 @@
 {% extends "base.html" %}
 
-{% block title %}Request Free Consultation - Triton Concrete Coating{% endblock %}
+{% block title %}Request Consultation - Triton Concrete Coating{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="page-hero py-5 bg-primary text-white">
+<!-- Page Header -->
+<section class="page-header bg-primary text-white py-5">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto text-center">
-                <h1 class="display-4 fw-bold mb-4">Request a Free Consultation</h1>
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold">Request a Free Consultation</h1>
                 <p class="lead">Call, Zoom, or In-person — your choice!</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Consultation Form Section -->
+<!-- Consultation Options -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Choose Your Consultation Style</h2>
+            <p class="lead text-muted">We offer flexible consultation options to fit your schedule</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 text-center">
+                <div class="consultation-option">
+                    <i class="fas fa-phone fa-3x text-primary mb-3"></i>
+                    <h5>Phone Consultation</h5>
+                    <p class="text-muted">Quick and convenient discussion about your project needs and initial pricing</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 text-center">
+                <div class="consultation-option">
+                    <i class="fas fa-video fa-3x text-success mb-3"></i>
+                    <h5>Video Call (Zoom)</h5>
+                    <p class="text-muted">Face-to-face discussion with the ability to share photos and detailed project plans</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 text-center">
+                <div class="consultation-option">
+                    <i class="fas fa-home fa-3x text-warning mb-3"></i>
+                    <h5>In-Person Visit</h5>
+                    <p class="text-muted">On-site assessment for accurate measurements and detailed project evaluation</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Consultation Form -->
 <section class="py-5">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto">
-                <div class="card shadow-lg border-0">
+                <div class="card border-0 shadow">
                     <div class="card-body p-5">
-                        <h2 class="card-title text-center mb-4">Get Your Free Quote</h2>
-                        <p class="text-center text-muted mb-5">
-                            Fill out the form below and we'll contact you within 24 hours to schedule your consultation.
-                        </p>
+                        <h3 class="text-center mb-4">Consultation Request Form</h3>
                         
-                        <form method="POST" action="{{ url_for('consultation') }}" id="consultationForm">
+                        <form method="POST" action="{{ url_for('consultation') }}">
                             <div class="row g-3">
                                 <!-- Personal Information -->
                                 <div class="col-md-6">
-                                    <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                    <label for="name" class="form-label">Full Name *</label>
                                     <input type="text" class="form-control" id="name" name="name" required>
                                 </div>
                                 
                                 <div class="col-md-6">
-                                    <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                    <label for="email" class="form-label">Email Address *</label>
                                     <input type="email" class="form-control" id="email" name="email" required>
                                 </div>
                                 
                                 <div class="col-md-6">
-                                    <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                    <label for="phone" class="form-label">Phone Number *</label>
                                     <input type="tel" class="form-control" id="phone" name="phone" required>
                                 </div>
                                 
-                                <!-- Service Information -->
                                 <div class="col-md-6">
-                                    <label for="service" class="form-label">Service Needed <span class="text-danger">*</span></label>
+                                    <label for="service" class="form-label">Service Interested In *</label>
                                     <select class="form-select" id="service" name="service" required>
                                         <option value="">Select a service</option>
-                                        <option value="garage_floor">Garage Floor Coating</option>
-                                        <option value="outdoor_concrete">Outdoor Concrete Finish</option>
-                                        <option value="industrial_coating">Industrial Epoxy Coating</option>
-                                        <option value="concrete_resurfacing">Concrete Resurfacing</option>
+                                        <option value="garage-floor">Garage Floor Coating</option>
+                                        <option value="outdoor-concrete">Outdoor Concrete Finishes</option>
+                                        <option value="industrial-epoxy">Industrial Epoxy Coatings</option>
+                                        <option value="decorative-concrete">Decorative Concrete</option>
+                                        <option value="repair-restoration">Repair & Restoration</option>
                                         <option value="other">Other / Not Sure</option>
                                     </select>
                                 </div>
                                 
+                                <!-- Project Details -->
                                 <div class="col-md-6">
-                                    <label for="project_type" class="form-label">Project Type</label>
-                                    <select class="form-select" id="project_type" name="project_type">
-                                        <option value="">Select project type</option>
+                                    <label for="property_type" class="form-label">Property Type</label>
+                                    <select class="form-select" id="property_type" name="property_type">
+                                        <option value="">Select property type</option>
                                         <option value="residential">Residential</option>
                                         <option value="commercial">Commercial</option>
                                         <option value="industrial">Industrial</option>
                                     </select>
                                 </div>
                                 
-                                <!-- Consultation Preferences -->
                                 <div class="col-md-6">
-                                    <label for="consultation_type" class="form-label">Consultation Preference</label>
-                                    <select class="form-select" id="consultation_type" name="consultation_type">
-                                        <option value="">Select preference</option>
-                                        <option value="in_person">In-Person Visit</option>
-                                        <option value="phone">Phone Call</option>
-                                        <option value="zoom">Video Call (Zoom)</option>
-                                        <option value="no_preference">No Preference</option>
+                                    <label for="square_footage" class="form-label">Approximate Square Footage</label>
+                                    <select class="form-select" id="square_footage" name="square_footage">
+                                        <option value="">Select size range</option>
+                                        <option value="under-500">Under 500 sq ft</option>
+                                        <option value="500-1000">500 - 1,000 sq ft</option>
+                                        <option value="1000-2000">1,000 - 2,000 sq ft</option>
+                                        <option value="2000-5000">2,000 - 5,000 sq ft</option>
+                                        <option value="over-5000">Over 5,000 sq ft</option>
                                     </select>
                                 </div>
                                 
+                                <!-- Consultation Preferences -->
                                 <div class="col-md-6">
                                     <label for="preferred_date" class="form-label">Preferred Date</label>
                                     <input type="date" class="form-control" id="preferred_date" name="preferred_date">
@@ -88,24 +123,61 @@
                                 <div class="col-md-6">
                                     <label for="preferred_time" class="form-label">Preferred Time</label>
                                     <select class="form-select" id="preferred_time" name="preferred_time">
-                                        <option value="">Select time</option>
-                                        <option value="morning">Morning (8AM - 12PM)</option>
-                                        <option value="afternoon">Afternoon (12PM - 5PM)</option>
-                                        <option value="evening">Evening (5PM - 8PM)</option>
+                                        <option value="">Select time preference</option>
+                                        <option value="morning">Morning (8 AM - 12 PM)</option>
+                                        <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
+                                        <option value="evening">Evening (5 PM - 7 PM)</option>
                                         <option value="flexible">Flexible</option>
                                     </select>
                                 </div>
                                 
-                                <!-- Project Details -->
                                 <div class="col-12">
-                                    <label for="message" class="form-label">Project Details</label>
-                                    <textarea class="form-control" id="message" name="message" rows="4" placeholder="Tell us about your project - approximate square footage, any specific requirements, timeline, etc."></textarea>
+                                    <label for="consultation_type" class="form-label">Consultation Preference *</label>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="consultation_type" id="phone_consult" value="phone" required>
+                                                <label class="form-check-label" for="phone_consult">
+                                                    <i class="fas fa-phone me-2"></i>Phone Call
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="consultation_type" id="video_consult" value="video" required>
+                                                <label class="form-check-label" for="video_consult">
+                                                    <i class="fas fa-video me-2"></i>Video Call
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="consultation_type" id="inperson_consult" value="in-person" required>
+                                                <label class="form-check-label" for="inperson_consult">
+                                                    <i class="fas fa-home me-2"></i>In-Person
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 
-                                <!-- Submit Button -->
-                                <div class="col-12 text-center mt-4">
+                                <div class="col-12">
+                                    <label for="message" class="form-label">Project Details & Questions</label>
+                                    <textarea class="form-control" id="message" name="message" rows="4" placeholder="Please describe your project, any specific requirements, or questions you have..."></textarea>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="terms" required>
+                                        <label class="form-check-label" for="terms">
+                                            I agree to be contacted by Triton Concrete Coating regarding my consultation request *
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 text-center">
                                     <button type="submit" class="btn btn-primary btn-lg px-5">
-                                        <i class="fas fa-paper-plane me-2"></i>Request Free Consultation
+                                        <i class="fas fa-paper-plane me-2"></i>Submit Consultation Request
                                     </button>
                                 </div>
                             </div>
@@ -113,101 +185,71 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Sidebar with Contact Info -->
-            <div class="col-lg-4">
-                <div class="sticky-top" style="top: 100px;">
-                    <!-- Quick Contact -->
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Prefer to Call?</h5>
-                            <p class="text-muted">Get immediate assistance</p>
-                            <a href="tel:+18085551234" class="btn btn-primary btn-lg w-100 mb-3">
-                                <i class="fas fa-phone me-2"></i>(808) 555-1234
-                            </a>
-                            <small class="text-muted">Mon-Fri: 7AM-6PM<br>Sat: 8AM-4PM</small>
-                        </div>
-                    </div>
-                    
-                    <!-- Service Areas -->
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Service Areas</h5>
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Honolulu</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Pearl City</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Kaneohe</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Kapolei</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Mililani</li>
-                                <li class="mb-0"><i class="fas fa-check text-success me-2"></i>All of O'ahu</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <!-- Why Choose Us -->
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Why Choose Triton?</h5>
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-2">
-                                    <i class="fas fa-certificate text-primary me-2"></i>
-                                    <small>Licensed & Insured</small>
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-home text-primary me-2"></i>
-                                    <small>Locally Owned & Operated</small>
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-star text-primary me-2"></i>
-                                    <small>5-Star Customer Reviews</small>
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-clock text-primary me-2"></i>
-                                    <small>Quick Response Time</small>
-                                </li>
-                                <li class="mb-0">
-                                    <i class="fas fa-money-bill-wave text-primary me-2"></i>
-                                    <small>Free Estimates</small>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Contact Options -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h3>Need to Talk Right Now?</h3>
+            <p class="text-muted">We're here to help with immediate questions</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="tel:+18085551234" class="btn btn-warning btn-lg">
+                        <i class="fas fa-phone me-2"></i>Call (808) 555-1234
+                    </a>
+                    <a href="mailto:info@tritoncoatings.com" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-envelope me-2"></i>Email Us
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- What to Expect Section -->
-<section class="py-5 bg-light">
+<!-- What to Expect -->
+<section class="py-5">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="fw-bold text-center mb-5">What to Expect</h2>
-                <div class="row g-4">
-                    <div class="col-md-4 text-center">
-                        <div class="step-icon mb-3">
-                            <i class="fas fa-calendar-check fa-3x text-primary"></i>
-                        </div>
-                        <h5 class="fw-bold">1. Schedule Consultation</h5>
-                        <p class="text-muted">We'll contact you within 24 hours to schedule your preferred consultation type.</p>
-                    </div>
-                    
-                    <div class="col-md-4 text-center">
-                        <div class="step-icon mb-3">
-                            <i class="fas fa-clipboard-list fa-3x text-primary"></i>
-                        </div>
-                        <h5 class="fw-bold">2. Project Assessment</h5>
-                        <p class="text-muted">We'll assess your project needs and provide expert recommendations.</p>
-                    </div>
-                    
-                    <div class="col-md-4 text-center">
-                        <div class="step-icon mb-3">
-                            <i class="fas fa-file-invoice-dollar fa-3x text-primary"></i>
-                        </div>
-                        <h5 class="fw-bold">3. Free Quote</h5>
-                        <p class="text-muted">Receive a detailed, no-obligation quote for your concrete coating project.</p>
-                    </div>
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">What to Expect</h2>
+            <p class="lead text-muted">Our consultation process is designed to provide you with all the information you need</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h6>Initial Contact</h6>
+                    <p class="text-muted small">We'll contact you within 24 hours to schedule your consultation</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h6>Project Discussion</h6>
+                    <p class="text-muted small">We'll discuss your needs, preferences, and project goals</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h6>Assessment</h6>
+                    <p class="text-muted small">For in-person visits, we'll evaluate your space and take measurements</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h6>Proposal</h6>
+                    <p class="text-muted small">You'll receive a detailed proposal with pricing and timeline</p>
                 </div>
             </div>
         </div>
@@ -217,33 +259,11 @@
 
 {% block scripts %}
 <script>
-// Set minimum date to tomorrow
+// Set minimum date to today
 document.addEventListener('DOMContentLoaded', function() {
     const dateInput = document.getElementById('preferred_date');
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    dateInput.min = tomorrow.toISOString().split('T')[0];
-});
-
-// Form validation
-document.getElementById('consultationForm').addEventListener('submit', function(e) {
-    const requiredFields = ['name', 'email', 'phone', 'service'];
-    let isValid = true;
-    
-    requiredFields.forEach(function(fieldId) {
-        const field = document.getElementById(fieldId);
-        if (!field.value.trim()) {
-            field.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            field.classList.remove('is-invalid');
-        }
-    });
-    
-    if (!isValid) {
-        e.preventDefault();
-        alert('Please fill in all required fields.');
-    }
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', today);
 });
 </script>
 {% endblock %}
