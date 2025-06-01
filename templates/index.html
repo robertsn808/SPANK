@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100 py-5">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-white mb-4">
+                    Protect & Beautify Your Concrete
+                </h1>
+                <p class="lead text-white mb-4">
+                    O'ahu's trusted concrete coating professionals. Transform your garage floors, patios, and commercial spaces with durable, beautiful coatings.
+                </p>
+                <div class="d-flex flex-column flex-sm-row gap-3">
+                    <a href="tel:+18085551234" class="btn btn-primary btn-lg">
+                        <i class="fas fa-phone me-2"></i>Call Now: (808) 555-1234
+                    </a>
+                    <a href="{{ url_for('consultation') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-calendar-check me-2"></i>Free Consultation
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://pixabay.com/get/g5eef83515dd5beb58efc3b1c09a62690532a181d42cd0a1f8f9a5e76fc032cbe610d30f88cd10b817faee64afb4b868e62f1b25ac05c78a4ba69e3cac8d6554f_1280.jpg" 
+                     alt="Professional garage floor coating" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="services-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold mb-4">Our Services</h2>
+                <p class="lead text-muted">
+                    Professional concrete coating solutions for residential and commercial properties across O'ahu.
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="service-card h-100">
+                    <div class="service-image">
+                        <img src="https://pixabay.com/get/gce24ea5c4ea4702216549490b837cba262189adeba11ea33c86a5b9186ad7b0b55b22f2eadaff48eb762f92e8eaf32f9afe199a04c65d31f1c6258027db90286_1280.jpg" 
+                             alt="Garage Floor Coatings" class="img-fluid">
+                    </div>
+                    <div class="service-content">
+                        <h4><i class="fas fa-car me-2 text-primary"></i>Garage Floor Coatings</h4>
+                        <p>Transform your garage with durable epoxy coatings that resist stains, chemicals, and wear. Easy to clean and maintain.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="service-card h-100">
+                    <div class="service-image">
+                        <img src="https://pixabay.com/get/g27cac312b14f5ede39de76fc9e4f26e118fc9e0629fae94cee7c7bf025062d594226627b983f6511e679cb8ce46425d1be6c2f5a454e12f87d8590edbdeafa3f_1280.jpg" 
+                             alt="Outdoor Concrete Finishes" class="img-fluid">
+                    </div>
+                    <div class="service-content">
+                        <h4><i class="fas fa-umbrella-beach me-2 text-primary"></i>Outdoor Concrete Finishes</h4>
+                        <p>Weather-resistant coatings for patios, driveways, and walkways. UV protection and slip-resistant options available.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="service-card h-100">
+                    <div class="service-image">
+                        <img src="https://pixabay.com/get/g6a37c4eeb2a7a2989e4be47976d2b455ec98ceaabda6a11d3ba6ae01d1ca9f1daabff2ad23d6be220129c8cf0d6fdc11a6726270f3582b6dd90928b866dbc9dd_1280.jpg" 
+                             alt="Industrial Epoxy Coatings" class="img-fluid">
+                    </div>
+                    <div class="service-content">
+                        <h4><i class="fas fa-industry me-2 text-primary"></i>Industrial Epoxy Coatings</h4>
+                        <p>Heavy-duty coatings for warehouses, factories, and commercial spaces. Chemical resistant and high-traffic rated.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="why-choose-section py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold mb-4">Why Choose Triton?</h2>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3 text-center">
+                <div class="feature-icon">
+                    <i class="fas fa-certificate fa-3x text-primary mb-3"></i>
+                </div>
+                <h5>Licensed & Insured</h5>
+                <p class="text-muted">Fully licensed and insured for your peace of mind.</p>
+            </div>
+            
+            <div class="col-md-3 text-center">
+                <div class="feature-icon">
+                    <i class="fas fa-home fa-3x text-primary mb-3"></i>
+                </div>
+                <h5>Locally Owned</h5>
+                <p class="text-muted">O'ahu owned and operated business serving our community.</p>
+            </div>
+            
+            <div class="col-md-3 text-center">
+                <div class="feature-icon">
+                    <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+                </div>
+                <h5>Quick Response</h5>
+                <p class="text-muted">Fast quotes and efficient project completion.</p>
+            </div>
+            
+            <div class="col-md-3 text-center">
+                <div class="feature-icon">
+                    <i class="fas fa-star fa-3x text-primary mb-3"></i>
+                </div>
+                <h5>Quality Work</h5>
+                <p class="text-muted">Premium materials and expert craftsmanship guaranteed.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Instagram Section -->
+<section class="instagram-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-5 fw-bold mb-4">See Our Latest Work</h2>
+                <p class="lead text-muted">
+                    Follow us on Instagram for project updates and inspiration.
+                </p>
+                <a href="https://www.instagram.com/tritonconcretecoatings/" target="_blank" class="btn btn-primary">
+                    <i class="fab fa-instagram me-2"></i>Follow @tritonconcretecoatings
+                </a>
+            </div>
+        </div>
+        
+        <div class="row g-3">
+            <div class="col-md-4">
+                <img src="https://pixabay.com/get/gcee8e52d2bd290f01a21cd53a0d9a978d7fe4fdca3963206ae2f12c9aa7616a254deeea4f6b2231520e0d39a3bb337f81fe248d8c0f2937a0823b7d2973a811c_1280.jpg" 
+                     alt="Recent project" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-md-4">
+                <img src="https://pixabay.com/get/gac911e69111448b718e5a14a93def1776c37e0321a96ef7ce77a49da14737090d4ed0f4b0146e73c211fe0edfa29506a478d10e24f47d40617847ee06edf0fe6_1280.jpg" 
+                     alt="Recent project" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-md-4">
+                <img src="https://pixabay.com/get/gcd2937fb4284e8db2538aa9f00adfe266f54858bd51b9848eff0ad7a2441efc3a4ef025f54069b479bdac33fffb18ff10df7a4cb59bf7476e0f8c4db49b66a25_1280.jpg" 
+                     alt="Recent project" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="display-5 fw-bold mb-4">Ready to Transform Your Concrete?</h2>
+                <p class="lead mb-4">
+                    Get a free consultation and quote for your concrete coating project. No obligation, just expert advice.
+                </p>
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="{{ url_for('consultation') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-calendar-check me-2"></i>Schedule Free Consultation
+                    </a>
+                    <a href="tel:+18085551234" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-phone me-2"></i>(808) 555-1234
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

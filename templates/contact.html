@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Triton Concrete Coating - O'ahu's Concrete Experts{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="page-hero py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-4">Contact Us</h1>
+                <p class="lead">Get in touch with O'ahu's trusted concrete coating professionals</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Information -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Contact Details -->
+            <div class="col-lg-6">
+                <h2 class="fw-bold mb-4">Get In Touch</h2>
+                <p class="lead text-muted mb-5">
+                    Ready to transform your concrete surfaces? Contact us today for your free consultation and quote.
+                </p>
+                
+                <div class="contact-info">
+                    <!-- Phone -->
+                    <div class="contact-item d-flex align-items-center mb-4">
+                        <div class="contact-icon me-4">
+                            <i class="fas fa-phone fa-2x text-primary"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h5 class="fw-bold mb-1">Phone</h5>
+                            <a href="tel:+18085551234" class="text-decoration-none fs-5">(808) 555-1234</a>
+                            <p class="text-muted mb-0">Mon-Fri: 7AM-6PM, Sat: 8AM-4PM</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="contact-item d-flex align-items-center mb-4">
+                        <div class="contact-icon me-4">
+                            <i class="fas fa-envelope fa-2x text-primary"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h5 class="fw-bold mb-1">Email</h5>
+                            <a href="mailto:info@tritoncoatings.com" class="text-decoration-none fs-5">info@tritoncoatings.com</a>
+                            <p class="text-muted mb-0">We respond within 24 hours</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Location -->
+                    <div class="contact-item d-flex align-items-center mb-4">
+                        <div class="contact-icon me-4">
+                            <i class="fas fa-map-marker-alt fa-2x text-primary"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h5 class="fw-bold mb-1">Service Area</h5>
+                            <p class="fs-5 mb-1">All of O'ahu, Hawaii</p>
+                            <p class="text-muted mb-0">Licensed & insured statewide</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Social Media -->
+                    <div class="contact-item d-flex align-items-center mb-4">
+                        <div class="contact-icon me-4">
+                            <i class="fas fa-share-alt fa-2x text-primary"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h5 class="fw-bold mb-1">Follow Us</h5>
+                            <div class="social-links">
+                                <a href="https://www.instagram.com/tritonconcretecoatings/" target="_blank" class="me-3 text-decoration-none">
+                                    <i class="fab fa-instagram fa-lg me-1"></i>Instagram
+                                </a>
+                                <a href="https://www.yelp.com/biz/triton-concrete-coatings-honolulu" target="_blank" class="text-decoration-none">
+                                    <i class="fab fa-yelp fa-lg me-1"></i>Yelp
+                                </a>
+                            </div>
+                            <p class="text-muted mb-0">See our latest projects and reviews</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Emergency Contact -->
+                <div class="alert alert-info">
+                    <h6 class="fw-bold mb-2"><i class="fas fa-exclamation-circle me-2"></i>Emergency Service</h6>
+                    <p class="mb-0">For urgent concrete coating needs or damage assessment, call us directly at <a href="tel:+18085551234" class="fw-bold">(808) 555-1234</a></p>
+                </div>
+            </div>
+            
+            <!-- Quick Contact Form -->
+            <div class="col-lg-6">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-4">Quick Contact Form</h3>
+                        <form>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="quick_name" class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="quick_name" required>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="quick_phone" class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" id="quick_phone" required>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <label for="quick_email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="quick_email" required>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <label for="quick_service" class="form-label">Service Interest</label>
+                                    <select class="form-select" id="quick_service">
+                                        <option value="">Select a service</option>
+                                        <option value="garage_floor">Garage Floor Coating</option>
+                                        <option value="outdoor_concrete">Outdoor Concrete Finish</option>
+                                        <option value="industrial_coating">Industrial Epoxy Coating</option>
+                                        <option value="other">Other / Not Sure</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <label for="quick_message" class="form-label">Message</label>
+                                    <textarea class="form-control" id="quick_message" rows="3" placeholder="Tell us about your project..."></textarea>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100" onclick="redirectToConsultation()">
+                                        <i class="fas fa-paper-plane me-2"></i>Send Message
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div class="text-center mt-4">
+                            <p class="text-muted mb-2">Or schedule a detailed consultation:</p>
+                            <a href="{{ url_for('consultation') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-calendar-check me-2"></i>Free Consultation
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Service Areas -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="fw-bold mb-4">Service Areas on O'ahu</h2>
+                <p class="lead text-muted mb-5">
+                    We proudly serve residential and commercial customers throughout O'ahu with professional concrete coating services.
+                </p>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="service-area-card p-4 bg-white rounded shadow-sm h-100">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-city me-2 text-primary"></i>Urban Areas</h5>
+                            <ul class="list-unstyled text-start">
+                                <li class="mb-2"><i class="fas fa-map-marker-alt text-primary me-2"></i>Honolulu</li>
+                                <li class="mb-2"><i class="fas fa-map-marker-alt text-primary me-2"></i>Pearl City</li>
+                                <li class="mb-2"><i class="fas fa-map-marker-alt text-primary me-2"></i>Kapolei</li>
+                                <li class="mb-2"><i class="fas fa-map-marker-alt text-primary me-2"></i>Mililani</li>
+                                <li class="mb-0"><i class="fas fa-map-marker-alt text-primary me-2"></i>Aiea</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="service-area-card p-4 bg-white rounded shadow-sm h-100">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-mountain me-2 text-primary"></i>Windward & Other Areas</h5>
+                            <ul class="list-unstyled text-start">
+                                <li class="mb-2"><i class="fas fa-map-marker-alt text-primary me-2"></i>Kaneohe</li>
+                                <li class="mb-2"><i class="fas fa-map-marker-alt text-primary me-2"></i>Kailua</li>
+                                <li class="mb-2"><i class="fas fa-map-marker-alt text-primary me-2"></i>Wahiawa</li>
+                                <li class="mb-2"><i class="fas fa-map-marker-alt text-primary me-2"></i>North Shore</li>
+                                <li class="mb-0"><i class="fas fa-map-marker-alt text-primary me-2"></i>All of O'ahu</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <p class="text-muted">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Don't see your area listed? We service all of O'ahu! Contact us to confirm service to your location.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Business Hours & Info -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="info-card text-center p-4 bg-light rounded h-100">
+                    <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+                    <h5 class="fw-bold">Business Hours</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-1"><strong>Monday - Friday:</strong> 7:00 AM - 6:00 PM</li>
+                        <li class="mb-1"><strong>Saturday:</strong> 8:00 AM - 4:00 PM</li>
+                        <li><strong>Sunday:</strong> Closed</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="info-card text-center p-4 bg-light rounded h-100">
+                    <i class="fas fa-tools fa-3x text-primary mb-3"></i>
+                    <h5 class="fw-bold">Emergency Service</h5>
+                    <p class="mb-0">Available for urgent concrete coating needs and damage assessment. Call us directly for immediate assistance.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="info-card text-center p-4 bg-light rounded h-100">
+                    <i class="fas fa-money-bill-wave fa-3x text-primary mb-3"></i>
+                    <h5 class="fw-bold">Free Estimates</h5>
+                    <p class="mb-0">All consultations and project estimates are completely free with no obligation. Get your quote today!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h3 class="fw-bold mb-4">Ready to Get Started?</h3>
+                <p class="lead mb-4">Contact us today and discover why we're O'ahu's most trusted concrete coating professionals.</p>
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="tel:+18085551234" class="btn btn-light btn-lg">
+                        <i class="fas fa-phone me-2"></i>Call Now: (808) 555-1234
+                    </a>
+                    <a href="{{ url_for('consultation') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-calendar-check me-2"></i>Schedule Consultation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function redirectToConsultation() {
+    // In a real implementation, you might want to collect the form data first
+    // For now, we'll redirect to the full consultation form
+    event.preventDefault();
+    window.location.href = "{{ url_for('consultation') }}";
+}
+</script>
+{% endblock %}
