@@ -129,36 +129,6 @@ function initFormValidation() {
  */
 function validateField(field) {
     const value = field.value.trim();
-    
-    // Check required fields
-    if (field.hasAttribute('required') && !value) {
-        showFieldError(field, 'This field is required');
-        return false;
-    }
-    
-    // Email validation
-    if (field.type === 'email' && value) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value)) {
-            showFieldError(field, 'Please enter a valid email address');
-            return false;
-        }
-    }
-    
-    // Phone validation
-    if (field.type === 'tel' && value) {
-        const phoneRegex = /^[\d\s\-\(\)]+$/;
-        if (!phoneRegex.test(value)) {
-            showFieldError(field, 'Please enter a valid phone number');
-            return false;
-        }
-    }
-    
-    clearFieldError(field);
-    return true;
-}
-function validateField(field) {
-    const value = field.value.trim();
     let isValid = true;
     let errorMessage = '';
     
@@ -271,11 +241,10 @@ function initLoadingStates() {
  * Set button loading state
  */
 function setLoadingState(button) {
+    const originalText = button.textContent;
     button.disabled = true;
-    button.classList.add('btn-loading');
-    
-    const originalText = button.innerHTML;
     button.setAttribute('data-original-text', originalText);
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
     
     // Reset after 10 seconds as fallback
     setTimeout(() => {
@@ -534,20 +503,7 @@ function formatPhoneNumber(input) {
     input.value = value;
 }
 
-/**
- * Set button loading state
- */
-function setLoadingState(button) {
-    const originalText = button.textContent;
-    button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
-    
-    // Reset after 3 seconds (fallback)
-    setTimeout(() => {
-        button.disabled = false;
-        button.textContent = originalText;
-    }, 3000);
-}
+
 function handleServiceChange(service) {
     // Add service-specific tips or requirements
     const serviceInfo = {

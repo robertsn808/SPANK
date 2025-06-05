@@ -128,6 +128,25 @@ def complete_booking(booking_id):
     
     return redirect(url_for('admin_dashboard'))
 
+@app.route('/admin/booking/<int:booking_id>/update', methods=['POST'])
+def update_booking(booking_id):
+    """Update booking status"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    status = request.form.get('status')
+    if status in ['pending', 'confirmed', 'completed', 'cancelled']:
+        try:
+            booking_storage.update_booking_status(booking_id, status)
+            flash(f'Booking status updated to {status}.', 'success')
+        except Exception as e:
+            logging.error(f"Error updating booking {booking_id}: {e}")
+            flash('Error updating booking status.', 'error')
+    else:
+        flash('Invalid status.', 'error')
+    
+    return redirect(url_for('admin_dashboard'))
+
 @app.route('/admin/booking/<int:booking_id>/delete')
 def delete_booking(booking_id):
     """Delete a booking"""
