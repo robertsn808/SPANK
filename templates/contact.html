@@ -99,26 +99,26 @@
                     <div class="card-body p-4">
                         <h3 class="card-title mb-4">Send Us a Message</h3>
                         
-                        <form>
+                        <form method="POST" action="{{ url_for('contact') }}">
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="contact_name" class="form-label">Name *</label>
-                                    <input type="text" class="form-control" id="contact_name" required>
+                                    <input type="text" class="form-control" id="contact_name" name="contact_name" required>
                                 </div>
                                 
                                 <div class="col-md-6">
                                     <label for="contact_email" class="form-label">Email *</label>
-                                    <input type="email" class="form-control" id="contact_email" required>
+                                    <input type="email" class="form-control" id="contact_email" name="contact_email" required>
                                 </div>
                                 
                                 <div class="col-12">
                                     <label for="contact_phone" class="form-label">Phone</label>
-                                    <input type="tel" class="form-control" id="contact_phone">
+                                    <input type="tel" class="form-control" id="contact_phone" name="contact_phone">
                                 </div>
                                 
                                 <div class="col-12">
                                     <label for="contact_subject" class="form-label">Subject</label>
-                                    <select class="form-select" id="contact_subject">
+                                    <select class="form-select" id="contact_subject" name="contact_subject">
                                         <option value="">Select a topic</option>
                                         <option value="consultation">Request Consultation</option>
                                         <option value="quote">Get a Quote</option>
@@ -129,7 +129,7 @@
                                 
                                 <div class="col-12">
                                     <label for="contact_message" class="form-label">Message *</label>
-                                    <textarea class="form-control" id="contact_message" rows="4" required placeholder="Tell us about your project or ask any questions..."></textarea>
+                                    <textarea class="form-control" id="contact_message" name="contact_message" rows="4" required placeholder="Tell us about your project or ask any questions..."></textarea>
                                 </div>
                                 
                                 <div class="col-12">

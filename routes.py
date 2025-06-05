@@ -76,9 +76,40 @@ def consultation():
     
     return render_template('consultation.html')
 
-@app.route('/contact')
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
-    """Contact page with business information"""
+    """Contact page with business information and form handling"""
+    if request.method == 'POST':
+        # Get form data
+        name = request.form.get('contact_name', '').strip()
+        email = request.form.get('contact_email', '').strip()
+        phone = request.form.get('contact_phone', '').strip()
+        subject = request.form.get('contact_subject', '').strip()
+        message = request.form.get('contact_message', '').strip()
+        
+        # Basic validation
+        if not all([name, email, message]):
+            flash('Please fill in all required fields.', 'error')
+            return render_template('contact.html')
+        
+        # Store contact message
+        try:
+            message_id = booking_storage.add_contact_message({
+                'name': name,
+                'email': email,
+                'phone': phone,
+                'subject': subject,
+                'message': message
+            })
+            
+            flash('Thank you! Your message has been sent. We will respond within 24 hours.', 'success')
+            logging.info(f"New contact message created with ID: {message_id}")
+            return redirect(url_for('contact'))
+            
+        except Exception as e:
+            logging.error(f"Error creating contact message: {e}")
+            flash('There was an error sending your message. Please try again or call us directly.', 'error')
+    
     return render_template('contact.html')
 
 @app.route('/admin/login', methods=['GET', 'POST'])
@@ -100,13 +131,14 @@ def admin_login():
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
-    """Admin dashboard showing all bookings"""
+    """Admin dashboard showing all bookings and contact messages"""
     if not session.get('admin_logged_in'):
         flash('Please log in to access the admin dashboard.', 'error')
         return redirect(url_for('admin_login'))
     
     bookings = booking_storage.get_all_bookings()
-    return render_template('admin_dashboard.html', bookings=bookings)
+    contact_messages = booking_storage.get_all_contact_messages()
+    return render_template('admin_dashboard.html', bookings=bookings, contact_messages=contact_messages)
 
 @app.route('/admin/logout')
 def admin_logout():
@@ -169,5 +201,43 @@ def delete_booking(booking_id):
     except Exception as e:
         logging.error(f"Error deleting booking {booking_id}: {e}")
         flash('Error deleting booking.', 'error')
+    
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/message/<int:message_id>/read')
+def mark_message_read(message_id):
+    """Mark a contact message as read"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        success = booking_storage.update_message_status(message_id, 'read')
+        if success:
+            flash('Message marked as read.', 'success')
+        else:
+            flash('Message not found.', 'error')
+    except Exception as e:
+        logging.error(f"Error updating message {message_id}: {e}")
+        flash('Error updating message status.', 'error')
+    
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/message/<int:message_id>/delete')
+def delete_contact_message(message_id):
+    """Delete a contact message"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Check if message exists before deletion
+        message_exists = any(m.id == message_id for m in booking_storage.get_all_contact_messages())
+        if message_exists:
+            booking_storage.delete_contact_message(message_id)
+            flash('Contact message deleted successfully.', 'success')
+        else:
+            flash('Message not found.', 'error')
+    except Exception as e:
+        logging.error(f"Error deleting message {message_id}: {e}")
+        flash('Error deleting message.', 'error')
     
     return redirect(url_for('admin_dashboard'))
