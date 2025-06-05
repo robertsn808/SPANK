@@ -26,6 +26,55 @@ function initializeApp() {
 }
 
 /**
+ * Initialize animations
+ */
+function initAnimations() {
+    // Add scroll animations or other UI animations here
+}
+
+/**
+ * Initialize navbar behavior
+ */
+function initNavbarBehavior() {
+    // Add navbar scroll behavior or mobile menu handling
+}
+
+/**
+ * Initialize gallery interactions
+ */
+function initGalleryInteractions() {
+    // Add gallery lightbox or image interactions
+}
+
+/**
+ * Initialize contact form enhancements
+ */
+function initContactFormEnhancements() {
+    // Add contact form specific enhancements
+}
+
+/**
+ * Initialize admin dashboard features
+ */
+function initAdminDashboardFeatures() {
+    // Add admin dashboard specific JavaScript features
+}
+
+/**
+ * Initialize accessibility features
+ */
+function initAccessibilityFeatures() {
+    // Add accessibility enhancements
+}
+
+/**
+ * Initialize performance optimizations
+ */
+function initPerformanceOptimizations() {
+    // Add performance optimizations like lazy loading
+}
+
+/**
  * Smooth scrolling for anchor links
  */
 function initSmoothScrolling() {
@@ -78,6 +127,36 @@ function initFormValidation() {
 /**
  * Validate individual form field
  */
+function validateField(field) {
+    const value = field.value.trim();
+    
+    // Check required fields
+    if (field.hasAttribute('required') && !value) {
+        showFieldError(field, 'This field is required');
+        return false;
+    }
+    
+    // Email validation
+    if (field.type === 'email' && value) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+            showFieldError(field, 'Please enter a valid email address');
+            return false;
+        }
+    }
+    
+    // Phone validation
+    if (field.type === 'tel' && value) {
+        const phoneRegex = /^[\d\s\-\(\)]+$/;
+        if (!phoneRegex.test(value)) {
+            showFieldError(field, 'Please enter a valid phone number');
+            return false;
+        }
+    }
+    
+    clearFieldError(field);
+    return true;
+}
 function validateField(field) {
     const value = field.value.trim();
     let isValid = true;
@@ -422,6 +501,53 @@ function initConsultationFormEnhancements() {
 /**
  * Handle service selection changes
  */
+function handleServiceChange(serviceValue) {
+    // Add service-specific field logic here if needed
+    console.log('Service changed to:', serviceValue);
+}
+
+/**
+ * Get next business day
+ */
+function getNextBusinessDay() {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    
+    // Skip weekends
+    while (date.getDay() === 0 || date.getDay() === 6) {
+        date.setDate(date.getDate() + 1);
+    }
+    
+    return date;
+}
+
+/**
+ * Format phone number
+ */
+function formatPhoneNumber(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length >= 6) {
+        value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+    } else if (value.length >= 3) {
+        value = value.replace(/(\d{3})(\d{3})/, '($1) $2');
+    }
+    input.value = value;
+}
+
+/**
+ * Set button loading state
+ */
+function setLoadingState(button) {
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+    
+    // Reset after 3 seconds (fallback)
+    setTimeout(() => {
+        button.disabled = false;
+        button.textContent = originalText;
+    }, 3000);
+}
 function handleServiceChange(service) {
     // Add service-specific tips or requirements
     const serviceInfo = {

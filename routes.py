@@ -94,7 +94,7 @@ def admin_login():
             flash('Invalid credentials. Please try again.', 'error')
             logging.warning(f"Failed admin login attempt for username: {username}")
     
-    return render_template('admin/login.html')
+    return render_template('admin_login.html')
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
@@ -104,7 +104,7 @@ def admin_dashboard():
         return redirect(url_for('admin_login'))
     
     bookings = booking_storage.get_all_bookings()
-    return render_template('admin/dashboard.html', bookings=bookings)
+    return render_template('admin_dashboard.html', bookings=bookings)
 
 @app.route('/admin/logout')
 def admin_logout():
