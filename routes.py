@@ -447,13 +447,11 @@ def add_staff():
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/staff/<int:staff_id>/create_login", methods=["POST"])
-def create_staff_login():
+def create_staff_login(staff_id):
     """Create login credentials for staff member"""
     if not session.get("admin_logged_in") or session.get("user_role") != "admin":
         flash("Access denied. Admin privileges required.", "error")
         return redirect(url_for("admin_dashboard"))
-    
-    staff_id = request.view_args["staff_id"]
     try:
         # Check if staff member exists
         staff_member = None
@@ -500,13 +498,11 @@ def create_staff_login():
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/staff/<int:staff_id>/toggle_status", methods=["POST"])
-def toggle_staff_status():
+def toggle_staff_status(staff_id):
     """Toggle staff member active status"""
     if not session.get("admin_logged_in") or session.get("user_role") != "admin":
         flash("Access denied. Admin privileges required.", "error")
         return redirect(url_for("admin_dashboard"))
-    
-    staff_id = request.view_args["staff_id"]
     try:
         for staff in staff_members:
             if staff.id == staff_id:
@@ -523,12 +519,10 @@ def toggle_staff_status():
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/appointment/<int:appointment_id>/add_note", methods=["POST"])
-def add_appointment_note():
+def add_appointment_note(appointment_id):
     """Add or update notes for an appointment"""
     if not session.get("admin_logged_in"):
         return redirect(url_for("admin_login"))
-    
-    appointment_id = request.view_args["appointment_id"]
     try:
         note = request.form.get("note", "").strip()
         for appointment in appointments:

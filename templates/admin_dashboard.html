@@ -95,9 +95,22 @@
                                             <div class="fw-bold">{{ appointment.time }}</div>
                                             <div>{{ appointment.client_name }}</div>
                                             <div>{{ appointment.service[:20] }}{% if appointment.service|length > 20 %}...{% endif %}</div>
+                                            {% if appointment.staff_id %}
+                                                {% for staff in staff_members %}
+                                                    {% if staff.id == appointment.staff_id|int %}
+                                                    <div class="small"><i class="fas fa-user me-1"></i>{{ staff.name }}</div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                            {% if appointment.notes %}
+                                            <div class="small"><i class="fas fa-sticky-note me-1"></i>Notes</div>
+                                            {% endif %}
                                             <div class="mt-1">
                                                 <button class="btn btn-sm btn-outline-light me-1" data-bs-toggle="modal" data-bs-target="#editAppointmentModal{{ appointment.id }}">
                                                     <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-light me-1" data-bs-toggle="modal" data-bs-target="#appointmentNotesModal{{ appointment.id }}">
+                                                    <i class="fas fa-sticky-note"></i>
                                                 </button>
                                                 <form method="POST" action="{{ url_for('delete_appointment', appointment_id=appointment.id) }}" class="d-inline">
                                                     <button type="submit" class="btn btn-sm btn-outline-light" onclick="return confirm('Delete this appointment?')">
@@ -147,9 +160,14 @@
                         <a href="#consultation-requests" class="btn btn-outline-primary w-100 mb-2">
                             <i class="fas fa-list me-2"></i>View Consultation Requests
                         </a>
-                        <a href="#contact-messages" class="btn btn-outline-success w-100">
+                        <a href="#contact-messages" class="btn btn-outline-success w-100 mb-2">
                             <i class="fas fa-envelope me-2"></i>View Contact Messages
                         </a>
+                        {% if user_role == 'admin' %}
+                        <a href="#staff-management" class="btn btn-outline-info w-100">
+                            <i class="fas fa-users me-2"></i>Manage Staff
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -255,6 +273,120 @@
         </div>
     </div>
 </section>
+
+<!-- Staff Management Section (Admin Only) -->
+{% if user_role == 'admin' %}
+<section class="py-4" id="staff-management">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">Staff Management</h3>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                    <i class="fas fa-user-plus me-1"></i>Add Staff Member
+                </button>
+            </div>
+            <div class="card-body p-0">
+                {% if staff_members %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Role</th>
+                                <th>Hire Date</th>
+                                <th>Status</th>
+                                <th>Login Access</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for staff in staff_members %}
+                            <tr class="{{ 'table-light' if not staff.active else '' }}">
+                                <td class="fw-bold">#{{ staff.id }}</td>
+                                <td>{{ staff.name }}</td>
+                                <td>
+                                    <a href="mailto:{{ staff.email }}" class="text-decoration-none">
+                                        <i class="fas fa-envelope me-1"></i>{{ staff.email }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if staff.phone %}
+                                    <a href="tel:{{ staff.phone }}" class="text-decoration-none">
+                                        <i class="fas fa-phone me-1"></i>{{ staff.phone }}
+                                    </a>
+                                    {% else %}
+                                    <span class="text-muted">Not provided</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'primary' if staff.role == 'Manager' else 'secondary' }}">{{ staff.role }}</span>
+                                </td>
+                                <td>{{ staff.hire_date }}</td>
+                                <td>
+                                    {% if staff.active %}
+                                    <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% set has_login = staff_logins|selectattr('staff_id', 'equalto', staff.id)|list|length > 0 %}
+                                    {% if has_login %}
+                                    <span class="badge bg-success">Enabled</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">Not Set</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            {% if not (staff_logins|selectattr('staff_id', 'equalto', staff.id)|list|length > 0) %}
+                                            <li>
+                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#createLoginModal{{ staff.id }}">
+                                                    <i class="fas fa-key text-primary me-2"></i>Create Login
+                                                </button>
+                                            </li>
+                                            {% endif %}
+                                            <li>
+                                                <form method="POST" action="{{ url_for('toggle_staff_status', staff_id=staff.id) }}" class="d-inline">
+                                                    <button type="submit" class="dropdown-item">
+                                                        {% if staff.active %}
+                                                        <i class="fas fa-pause text-warning me-2"></i>Deactivate
+                                                        {% else %}
+                                                        <i class="fas fa-play text-success me-2"></i>Activate
+                                                        {% endif %}
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No staff members yet</h5>
+                    <p class="text-muted">Add staff members to assign them to appointments and manage access.</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                        <i class="fas fa-user-plus me-2"></i>Add First Staff Member
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
 
 <!-- Consultation Requests -->
 <section class="py-4" id="consultation-requests">
@@ -456,8 +588,19 @@
                             </select>
                         </div>
                         <div class="col-12">
+                            <label for="staff_id" class="form-label">Assign Staff</label>
+                            <select class="form-select" id="staff_id" name="staff_id">
+                                <option value="">Unassigned</option>
+                                {% for staff in staff_members %}
+                                    {% if staff.active %}
+                                    <option value="{{ staff.id }}">{{ staff.name }} ({{ staff.role }})</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12">
                             <label for="notes" class="form-label">Notes</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Add any special instructions or notes for this appointment..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -489,6 +632,17 @@
                         <div class="col-md-6">
                             <label for="appointment_time_{{ booking.id }}" class="form-label">Time</label>
                             <input type="time" class="form-control" id="appointment_time_{{ booking.id }}" name="appointment_time" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="staff_id_{{ booking.id }}" class="form-label">Assign Staff</label>
+                            <select class="form-select" id="staff_id_{{ booking.id }}" name="staff_id">
+                                <option value="">Unassigned</option>
+                                {% for staff in staff_members %}
+                                    {% if staff.active %}
+                                    <option value="{{ staff.id }}">{{ staff.name }} ({{ staff.role }})</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
                         </div>
                         <div class="col-12">
                             <h6>Client Information:</h6>
@@ -548,6 +702,176 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Update Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Add Staff Modal -->
+{% if user_role == 'admin' %}
+<div class="modal fade" id="addStaffModal" tabindex="-1" aria-labelledby="addStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStaffModalLabel">Add New Staff Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_staff') }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="staff_name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="staff_name" name="staff_name" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="staff_email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="staff_email" name="staff_email" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="staff_phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="staff_phone" name="staff_phone">
+                        </div>
+                        <div class="col-12">
+                            <label for="staff_role" class="form-label">Role</label>
+                            <select class="form-select" id="staff_role" name="staff_role" required>
+                                <option value="">Select a role</option>
+                                <option value="Technician">Technician</option>
+                                <option value="Senior Technician">Senior Technician</option>
+                                <option value="Project Manager">Project Manager</option>
+                                <option value="Supervisor">Supervisor</option>
+                                <option value="Manager">Manager</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Staff Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Create Login Modals for Staff -->
+{% for staff in staff_members %}
+<div class="modal fade" id="createLoginModal{{ staff.id }}" tabindex="-1" aria-labelledby="createLoginModalLabel{{ staff.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createLoginModalLabel{{ staff.id }}">Create Login for {{ staff.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('create_staff_login', staff_id=staff.id) }}">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Creating login access for <strong>{{ staff.name }}</strong> ({{ staff.role }})
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="username_{{ staff.id }}" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username_{{ staff.id }}" name="username" required>
+                            <div class="form-text">Username must be unique and will be used for login</div>
+                        </div>
+                        <div class="col-12">
+                            <label for="password_{{ staff.id }}" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password_{{ staff.id }}" name="password" required>
+                            <div class="form-text">Choose a secure password for the staff member</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<!-- Appointment Notes Modals -->
+{% for appointment in week_appointments %}
+<div class="modal fade" id="appointmentNotesModal{{ appointment.id }}" tabindex="-1" aria-labelledby="appointmentNotesModalLabel{{ appointment.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="appointmentNotesModalLabel{{ appointment.id }}">Appointment Notes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_appointment_note', appointment_id=appointment.id) }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <h6>Appointment Details:</h6>
+                        <p class="mb-1"><strong>Date:</strong> {{ appointment.date }} at {{ appointment.time }}</p>
+                        <p class="mb-1"><strong>Client:</strong> {{ appointment.client_name }}</p>
+                        <p class="mb-1"><strong>Service:</strong> {{ appointment.service }}</p>
+                        {% if appointment.staff_id %}
+                            {% for staff in staff_members %}
+                                {% if staff.id == appointment.staff_id|int %}
+                                <p class="mb-1"><strong>Assigned to:</strong> {{ staff.name }}</p>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="note_{{ appointment.id }}" class="form-label">Notes</label>
+                        <textarea class="form-control" id="note_{{ appointment.id }}" name="note" rows="4" placeholder="Add notes about this appointment...">{{ appointment.notes or '' }}</textarea>
+                    </div>
+                    {% if appointment.get('last_updated') %}
+                    <div class="small text-muted">
+                        Last updated: {{ appointment.last_updated }} by {{ appointment.get('updated_by', 'Unknown') }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Notes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Staff Assignment Modals -->
+{% for appointment in week_appointments %}
+<div class="modal fade" id="assignStaffModal{{ appointment.id }}" tabindex="-1" aria-labelledby="assignStaffModalLabel{{ appointment.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignStaffModalLabel{{ appointment.id }}">Assign Staff to Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('assign_staff_to_appointment', appointment_id=appointment.id) }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <h6>Appointment Details:</h6>
+                        <p class="mb-1"><strong>Date:</strong> {{ appointment.date }} at {{ appointment.time }}</p>
+                        <p class="mb-1"><strong>Client:</strong> {{ appointment.client_name }}</p>
+                        <p class="mb-1"><strong>Service:</strong> {{ appointment.service }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assign_staff_id_{{ appointment.id }}" class="form-label">Assign Staff Member</label>
+                        <select class="form-select" id="assign_staff_id_{{ appointment.id }}" name="staff_id" required>
+                            <option value="">Select staff member</option>
+                            {% for staff in staff_members %}
+                                {% if staff.active %}
+                                <option value="{{ staff.id }}" {{ 'selected' if appointment.staff_id and staff.id == appointment.staff_id|int else '' }}>
+                                    {{ staff.name }} ({{ staff.role }})
+                                </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Assign Staff</button>
                 </div>
             </form>
         </div>
