@@ -44,6 +44,7 @@ def consultation():
         preferred_date = request.form.get('preferred_date', '').strip()
         preferred_time = request.form.get('preferred_time', '').strip()
         message = request.form.get('message', '').strip()
+        square_footage = request.form.get('square_footage', '').strip()
         
         # Basic validation
         if not all([name, email, phone, service]):
@@ -61,7 +62,8 @@ def consultation():
                 'consultation_type': consultation_type,
                 'preferred_date': preferred_date,
                 'preferred_time': preferred_time,
-                'message': message
+                'message': message,
+                'square_footage': square_footage
             })
             
             flash('Thank you! Your consultation request has been submitted. We will contact you within 24 hours.', 'success')
@@ -120,8 +122,11 @@ def complete_booking(booking_id):
         return redirect(url_for('admin_login'))
     
     try:
-        booking_storage.update_booking_status(booking_id, 'completed')
-        flash('Booking marked as completed.', 'success')
+        success = booking_storage.update_booking_status(booking_id, 'completed')
+        if success:
+            flash('Booking marked as completed.', 'success')
+        else:
+            flash('Booking not found.', 'error')
     except Exception as e:
         logging.error(f"Error updating booking {booking_id}: {e}")
         flash('Error updating booking status.', 'error')
@@ -154,8 +159,13 @@ def delete_booking(booking_id):
         return redirect(url_for('admin_login'))
     
     try:
-        booking_storage.delete_booking(booking_id)
-        flash('Booking deleted successfully.', 'success')
+        # Check if booking exists before deletion
+        booking_exists = any(b.id == booking_id for b in booking_storage.get_all_bookings())
+        if booking_exists:
+            booking_storage.delete_booking(booking_id)
+            flash('Booking deleted successfully.', 'success')
+        else:
+            flash('Booking not found.', 'error')
     except Exception as e:
         logging.error(f"Error deleting booking {booking_id}: {e}")
         flash('Error deleting booking.', 'error')

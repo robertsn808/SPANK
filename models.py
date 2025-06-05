@@ -3,7 +3,7 @@ from datetime import datetime
 
 class Booking:
     def __init__(self, name, email, phone, service, project_type=None, preferred_date=None, 
-                 preferred_time=None, consultation_type=None, message=None):
+                 preferred_time=None, consultation_type=None, message=None, square_footage=None):
         self.name = name
         self.email = email
         self.phone = phone
@@ -13,6 +13,7 @@ class Booking:
         self.preferred_time = preferred_time
         self.consultation_type = consultation_type
         self.message = message
+        self.square_footage = square_footage
         self.status = 'pending'
         self.submitted_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
