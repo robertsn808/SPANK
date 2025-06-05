@@ -263,3 +263,111 @@ def delete_contact_message(message_id):
         flash('Error deleting message.', 'error')
     
     return redirect(url_for('admin_dashboard'))
+
+# Appointment scheduling routes
+@app.route("/admin/appointment/add", methods=["POST"])
+def add_appointment():
+    """Add a new appointment"""
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+    
+    try:
+        appointment = {
+            "id": len(appointments) + 1,
+            "date": request.form.get("appointment_date"),
+            "time": request.form.get("appointment_time"),
+            "client_name": request.form.get("client_name"),
+            "client_phone": request.form.get("client_phone"),
+            "client_email": request.form.get("client_email"),
+            "service": request.form.get("service"),
+            "notes": request.form.get("notes", ""),
+            "status": "scheduled",
+            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        appointments.append(appointment)
+        flash("Appointment scheduled successfully!", "success")
+    except Exception as e:
+        logging.error(f"Error adding appointment: {e}")
+        flash("Error scheduling appointment.", "error")
+    
+    return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/appointment/from_booking/<int:booking_id>", methods=["POST"])
+def schedule_from_booking(booking_id):
+    """Schedule appointment from consultation booking"""
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+    
+    try:
+        # Find the booking
+        booking = None
+        for b in booking_storage.get_all_bookings():
+            if b.id == booking_id:
+                booking = b
+                break
+        
+        if not booking:
+            flash("Booking not found.", "error")
+            return redirect(url_for("admin_dashboard"))
+        
+        appointment = {
+            "id": len(appointments) + 1,
+            "date": request.form.get("appointment_date"),
+            "time": request.form.get("appointment_time"),
+            "client_name": booking.name,
+            "client_phone": booking.phone,
+            "client_email": booking.email,
+            "service": booking.service,
+            "notes": f"From consultation: {booking.consultation_type}. {booking.message or ''}",
+            "status": "scheduled",
+            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "booking_id": booking_id
+        }
+        appointments.append(appointment)
+        
+        # Update booking status
+        booking_storage.update_booking_status(booking_id, "scheduled")
+        flash("Appointment scheduled from consultation request!", "success")
+    except Exception as e:
+        logging.error(f"Error scheduling appointment from booking {booking_id}: {e}")
+        flash("Error scheduling appointment.", "error")
+    
+    return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/appointment/<int:appointment_id>/update", methods=["POST"])
+def update_appointment(appointment_id):
+    """Update appointment status"""
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+    
+    try:
+        status = request.form.get("status")
+        for appointment in appointments:
+            if appointment["id"] == appointment_id:
+                appointment["status"] = status
+                flash(f"Appointment status updated to {status}", "success")
+                break
+        else:
+            flash("Appointment not found.", "error")
+    except Exception as e:
+        logging.error(f"Error updating appointment {appointment_id}: {e}")
+        flash("Error updating appointment.", "error")
+    
+    return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/appointment/<int:appointment_id>/delete", methods=["POST"])
+def delete_appointment(appointment_id):
+    """Delete appointment"""
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+    
+    try:
+        global appointments
+        appointments = [a for a in appointments if a["id"] != appointment_id]
+        flash("Appointment deleted successfully.", "success")
+    except Exception as e:
+        logging.error(f"Error deleting appointment {appointment_id}: {e}")
+        flash("Error deleting appointment.", "error")
+    
+    return redirect(url_for("admin_dashboard"))
+

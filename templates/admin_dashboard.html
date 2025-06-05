@@ -67,8 +67,197 @@
     </div>
 </section>
 
-<!-- Bookings Table -->
-<section class="py-5">
+<!-- Weekly Calendar -->
+<section class="py-4">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Weekly Calendar -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">Weekly Schedule</h3>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
+                            <i class="fas fa-plus me-1"></i>Add Appointment
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for date in week_dates %}
+                            <div class="col calendar-day">
+                                <div class="day-header text-center p-2 {{ 'bg-primary text-white' if date.date() == moment().date() else 'bg-light' }}">
+                                    <div class="fw-bold">{{ date.strftime('%a') }}</div>
+                                    <div class="small">{{ date.strftime('%m/%d') }}</div>
+                                </div>
+                                <div class="day-appointments" style="min-height: 200px; border-right: 1px solid #dee2e6;">
+                                    {% for appointment in week_appointments %}
+                                        {% if appointment.date == date.strftime('%Y-%m-%d') %}
+                                        <div class="appointment-item p-2 m-1 bg-{{ 'success' if appointment.status == 'completed' else 'warning' if appointment.status == 'scheduled' else 'info' }} text-white rounded small">
+                                            <div class="fw-bold">{{ appointment.time }}</div>
+                                            <div>{{ appointment.client_name }}</div>
+                                            <div>{{ appointment.service[:20] }}{% if appointment.service|length > 20 %}...{% endif %}</div>
+                                            <div class="mt-1">
+                                                <button class="btn btn-sm btn-outline-light me-1" data-bs-toggle="modal" data-bs-target="#editAppointmentModal{{ appointment.id }}">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <form method="POST" action="{{ url_for('delete_appointment', appointment_id=appointment.id) }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-outline-light" onclick="return confirm('Delete this appointment?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Stats and Actions -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow mb-3">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">This Week</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-6 text-center">
+                                <div class="h4 text-primary">{{ week_appointments|length }}</div>
+                                <small class="text-muted">Appointments</small>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div class="h4 text-success">{{ week_appointments|selectattr('status', 'equalto', 'completed')|list|length }}</div>
+                                <small class="text-muted">Completed</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
+                            <i class="fas fa-calendar-plus me-2"></i>Schedule Appointment
+                        </button>
+                        <a href="#consultation-requests" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-list me-2"></i>View Consultation Requests
+                        </a>
+                        <a href="#contact-messages" class="btn btn-outline-success w-100">
+                            <i class="fas fa-envelope me-2"></i>View Contact Messages
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Messages -->
+<section class="py-4" id="contact-messages">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-white">
+                <h3 class="mb-0">Contact Messages</h3>
+            </div>
+            <div class="card-body p-0">
+                {% if contact_messages %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Subject</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                                <th>Received</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for message in contact_messages|reverse %}
+                            <tr class="{{ 'table-warning' if message.status == 'unread' else '' }}">
+                                <td class="fw-bold">#{{ message.id }}</td>
+                                <td>{{ message.name }}</td>
+                                <td>
+                                    {% if message.phone %}
+                                    <a href="tel:{{ message.phone }}" class="text-decoration-none">
+                                        <i class="fas fa-phone me-1"></i>{{ message.phone }}
+                                    </a><br>
+                                    {% endif %}
+                                    <a href="mailto:{{ message.email }}" class="text-decoration-none small">
+                                        <i class="fas fa-envelope me-1"></i>{{ message.email }}
+                                    </a>
+                                </td>
+                                <td>{{ message.subject or 'General Inquiry' }}</td>
+                                <td>
+                                    <div class="message-preview">
+                                        {{ message.message[:100] }}{% if message.message|length > 100 %}...{% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if message.status == 'unread' %}
+                                    <span class="badge bg-warning">Unread</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Read</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small>{{ message.submitted_at }}</small>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            {% if message.status == 'unread' %}
+                                            <li>
+                                                <a href="{{ url_for('mark_message_read', message_id=message.id) }}" class="dropdown-item">
+                                                    <i class="fas fa-check text-success me-2"></i>Mark as Read
+                                                </a>
+                                            </li>
+                                            {% endif %}
+                                            <li>
+                                                <a href="mailto:{{ message.email }}" class="dropdown-item">
+                                                    <i class="fas fa-reply text-primary me-2"></i>Reply
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <form method="POST" action="{{ url_for('delete_message', message_id=message.id) }}" class="d-inline">
+                                                    <button type="submit" class="dropdown-item" onclick="return confirm('Delete this message?')">
+                                                        <i class="fas fa-trash text-danger me-2"></i>Delete
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-envelope-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No contact messages yet</h5>
+                    <p class="text-muted">New messages from the contact form will appear here.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Consultation Requests -->
+<section class="py-4" id="consultation-requests">
     <div class="container">
         <div class="card border-0 shadow">
             <div class="card-header bg-white">
@@ -152,6 +341,12 @@
                                         </button>
                                         <ul class="dropdown-menu">
                                             <li>
+                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#scheduleModal{{ booking.id }}">
+                                                    <i class="fas fa-calendar-plus text-primary me-2"></i>Schedule Appointment
+                                                </button>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
                                                 <form method="POST" action="{{ url_for('update_booking', booking_id=booking.id) }}" class="d-inline">
                                                     <input type="hidden" name="status" value="confirmed">
                                                     <button type="submit" class="dropdown-item">
@@ -216,4 +411,182 @@
         </div>
     </div>
 </section>
+
+<!-- Add Appointment Modal -->
+<div class="modal fade" id="addAppointmentModal" tabindex="-1" aria-labelledby="addAppointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAppointmentModalLabel">Schedule New Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_appointment') }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="appointment_date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="appointment_date" name="appointment_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="appointment_time" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="appointment_time" name="appointment_time" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="client_name" class="form-label">Client Name</label>
+                            <input type="text" class="form-control" id="client_name" name="client_name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="client_phone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="client_phone" name="client_phone" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="client_email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="client_email" name="client_email" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="service" class="form-label">Service</label>
+                            <select class="form-select" id="service" name="service" required>
+                                <option value="">Select a service</option>
+                                <option value="Garage Floor Coating">Garage Floor Coating</option>
+                                <option value="Commercial Flooring">Commercial Flooring</option>
+                                <option value="Residential Walkways">Residential Walkways</option>
+                                <option value="Patio Coating">Patio Coating</option>
+                                <option value="Stairs & Steps">Stairs & Steps</option>
+                                <option value="Custom Project">Custom Project</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule from Booking Modals -->
+{% for booking in bookings %}
+<div class="modal fade" id="scheduleModal{{ booking.id }}" tabindex="-1" aria-labelledby="scheduleModalLabel{{ booking.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scheduleModalLabel{{ booking.id }}">Schedule Appointment for {{ booking.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('schedule_from_booking', booking_id=booking.id) }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="appointment_date_{{ booking.id }}" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="appointment_date_{{ booking.id }}" name="appointment_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="appointment_time_{{ booking.id }}" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="appointment_time_{{ booking.id }}" name="appointment_time" required>
+                        </div>
+                        <div class="col-12">
+                            <h6>Client Information:</h6>
+                            <p class="mb-1"><strong>Name:</strong> {{ booking.name }}</p>
+                            <p class="mb-1"><strong>Phone:</strong> {{ booking.phone }}</p>
+                            <p class="mb-1"><strong>Email:</strong> {{ booking.email }}</p>
+                            <p class="mb-1"><strong>Service:</strong> {{ booking.service }}</p>
+                            {% if booking.consultation_type %}
+                            <p class="mb-1"><strong>Consultation Type:</strong> {{ booking.consultation_type }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Edit Appointment Modals -->
+{% for appointment in week_appointments %}
+<div class="modal fade" id="editAppointmentModal{{ appointment.id }}" tabindex="-1" aria-labelledby="editAppointmentModalLabel{{ appointment.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAppointmentModalLabel{{ appointment.id }}">Edit Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('update_appointment', appointment_id=appointment.id) }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="status_{{ appointment.id }}" class="form-label">Status</label>
+                        <select class="form-select" id="status_{{ appointment.id }}" name="status" required>
+                            <option value="scheduled" {{ 'selected' if appointment.status == 'scheduled' else '' }}>Scheduled</option>
+                            <option value="in_progress" {{ 'selected' if appointment.status == 'in_progress' else '' }}>In Progress</option>
+                            <option value="completed" {{ 'selected' if appointment.status == 'completed' else '' }}>Completed</option>
+                            <option value="cancelled" {{ 'selected' if appointment.status == 'cancelled' else '' }}>Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h6>Appointment Details:</h6>
+                            <p class="mb-1"><strong>Date:</strong> {{ appointment.date }}</p>
+                            <p class="mb-1"><strong>Time:</strong> {{ appointment.time }}</p>
+                            <p class="mb-1"><strong>Client:</strong> {{ appointment.client_name }}</p>
+                            <p class="mb-1"><strong>Service:</strong> {{ appointment.service }}</p>
+                            {% if appointment.notes %}
+                            <p class="mb-1"><strong>Notes:</strong> {{ appointment.notes }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<style>
+.calendar-day {
+    border-right: 1px solid #dee2e6;
+}
+.calendar-day:last-child {
+    border-right: none;
+}
+.appointment-item {
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.appointment-item:hover {
+    opacity: 0.9;
+}
+.message-preview {
+    max-width: 300px;
+    word-wrap: break-word;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set minimum date to today for appointment scheduling
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelectorAll('input[type="date"]').forEach(input => {
+        input.min = today;
+    });
+    
+    // Auto-refresh dashboard every 5 minutes
+    setTimeout(() => {
+        window.location.reload();
+    }, 300000);
+});
+</script>
 {% endblock %}
