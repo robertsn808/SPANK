@@ -541,12 +541,10 @@ def add_appointment_note(appointment_id):
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/appointment/<int:appointment_id>/assign_staff", methods=["POST"])
-def assign_staff_to_appointment():
+def assign_staff_to_appointment(appointment_id):
     """Assign staff member to appointment"""
     if not session.get("admin_logged_in"):
         return redirect(url_for("admin_login"))
-    
-    appointment_id = request.view_args["appointment_id"]
     try:
         staff_id = request.form.get("staff_id")
         for appointment in appointments:
