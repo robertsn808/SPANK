@@ -12,17 +12,84 @@ document.addEventListener('DOMContentLoaded', function() {
  * Main initialization function
  */
 function initializeApp() {
-    initSmoothScrolling();
-    initFormValidation();
-    initLoadingStates();
-    initAnimations();
-    initNavbarBehavior();
-    initGalleryInteractions();
-    initContactFormEnhancements();
-    initConsultationFormEnhancements();
-    initAdminDashboardFeatures();
-    initAccessibilityFeatures();
-    initPerformanceOptimizations();
+    try {
+        // Core functionality first
+        initSmoothScrolling();
+        initFormValidation();
+        initLoadingStates();
+        initNavbarBehavior();
+        
+        // UI enhancements
+        initAnimations();
+        initGalleryInteractions();
+        
+        // Form enhancements
+        initContactFormEnhancements();
+        initConsultationFormEnhancements();
+        
+        // Admin features (if present)
+        initAdminDashboardFeatures();
+        
+        // Accessibility and performance
+        initAccessibilityFeatures();
+        initPerformanceOptimizations();
+        
+        // Mobile-specific optimizations
+        initMobileOptimizations();
+        
+        console.log('✅ App initialized successfully');
+    } catch (error) {
+        console.error('❌ Error initializing app:', error);
+        // Fallback: ensure basic functionality works
+        try {
+            initSmoothScrolling();
+            initFormValidation();
+        } catch (fallbackError) {
+            console.error('❌ Critical error in fallback initialization:', fallbackError);
+        }
+    }
+}
+
+/**
+ * Mobile-specific optimizations
+ */
+function initMobileOptimizations() {
+    // Improve touch responsiveness
+    document.addEventListener('touchstart', function() {}, { passive: true });
+    
+    // Optimize scroll performance on mobile
+    let ticking = false;
+    function updateOnScroll() {
+        updateNavbarOnScroll();
+        ticking = false;
+    }
+    
+    document.addEventListener('scroll', function() {
+        if (!ticking) {
+            requestAnimationFrame(updateOnScroll);
+            ticking = true;
+        }
+    }, { passive: true });
+    
+    // Handle orientation changes
+    window.addEventListener('orientationchange', function() {
+        setTimeout(() => {
+            handleResponsiveChanges();
+        }, 100);
+    });
+    
+    // Improve form experience on mobile
+    const inputs = document.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+        // Prevent zoom on focus for iOS
+        if (input.type !== 'file') {
+            input.addEventListener('focus', function() {
+                if (window.innerWidth <= 768) {
+                    this.style.fontSize = '16px';
+                }
+            });
+        }
+    });
 }
 
 /**
@@ -36,7 +103,64 @@ function initAnimations() {
  * Initialize navbar behavior
  */
 function initNavbarBehavior() {
-    // Add navbar scroll behavior or mobile menu handling
+    const navbar = document.querySelector('.navbar');
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    
+    if (!navbar) return;
+    
+    let lastScrollTop = 0;
+    
+    // Enhanced scroll behavior
+    window.addEventListener('scroll', function() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Add shadow when scrolled
+        if (scrollTop > 10) {
+            navbar.classList.add('shadow');
+        } else {
+            navbar.classList.remove('shadow');
+        }
+        
+        // Hide navbar on scroll down (mobile only)
+        if (window.innerWidth <= 768) {
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                navbar.style.transform = 'translateY(-100%)';
+            } else {
+                navbar.style.transform = 'translateY(0)';
+            }
+        }
+        
+        lastScrollTop = scrollTop;
+    });
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+            if (!navbar.contains(e.target)) {
+                const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
+                    toggle: false
+                });
+                bsCollapse.hide();
+            }
+        }
+    });
+    
+    // Close mobile menu when clicking on nav links
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
+                    toggle: false
+                });
+                bsCollapse.hide();
+            }
+        });
+    });
+    
+    // Smooth transition for navbar
+    navbar.style.transition = 'transform 0.3s ease-in-out, box-shadow 0.3s ease';
 }
 
 /**
@@ -324,41 +448,52 @@ function initGalleryInteractions() {
     if (filterButtons.length === 0) return;
     
     filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const filter = this.getAttribute('data-filter');
-            
-            // Update active button with animation
-            filterButtons.forEach(btn => {
-                btn.classList.remove('active');
-                btn.style.transform = 'scale(1)';
-            });
-            
-            this.classList.add('active');
-            this.style.transform = 'scale(1.05)';
-            
-            // Filter gallery items with animation
-            galleryItems.forEach((item, index) => {
-                const category = item.getAttribute('data-category');
-                const shouldShow = filter === 'all' || category === filter;
+        // Add touch-friendly events
+        ['click', 'touchend'].forEach(event => {
+            button.addEventListener(event, function(e) {
+                e.preventDefault();
+                const filter = this.getAttribute('data-filter');
                 
-                if (shouldShow) {
-                    setTimeout(() => {
-                        item.style.display = 'block';
-                        item.style.opacity = '0';
-                        item.style.transform = 'translateY(20px)';
+                try {
+                    // Update active button with animation
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                        btn.style.transform = 'scale(1)';
+                    });
+                    
+                    this.classList.add('active');
+                    this.style.transform = 'scale(1.05)';
+                    
+                    // Filter gallery items with animation
+                    galleryItems.forEach((item, index) => {
+                        const category = item.getAttribute('data-category');
+                        const shouldShow = filter === 'all' || category === filter;
                         
-                        setTimeout(() => {
-                            item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                            item.style.opacity = '1';
-                            item.style.transform = 'translateY(0)';
-                        }, 50);
-                    }, index * 50);
-                } else {
-                    item.style.opacity = '0';
-                    item.style.transform = 'translateY(-20px)';
-                    setTimeout(() => {
-                        item.style.display = 'none';
-                    }, 300);
+                        if (shouldShow) {
+                            setTimeout(() => {
+                                item.style.display = 'block';
+                                item.style.opacity = '0';
+                                item.style.transform = 'translateY(20px)';
+                                
+                                setTimeout(() => {
+                                    item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                                    item.style.opacity = '1';
+                                    item.style.transform = 'translateY(0)';
+                                }, 50);
+                            }, index * 50);
+                        } else {
+                            item.style.opacity = '0';
+                            item.style.transform = 'translateY(-20px)';
+                            setTimeout(() => {
+                                item.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                    
+                    // Announce filter change to screen readers
+                    announceToScreenReader(`Showing ${filter === 'all' ? 'all' : filter} gallery items`);
+                } catch (error) {
+                    console.error('Error filtering gallery:', error);
                 }
             });
         });
@@ -388,33 +523,85 @@ function initGalleryModal() {
  * Create modal for gallery image
  */
 function createImageModal(img) {
-    // Create modal elements
-    const modal = document.createElement('div');
-    modal.className = 'modal fade';
-    modal.innerHTML = `
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content bg-dark">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title text-white">${img.alt}</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center p-0">
-                    <img src="${img.src}" alt="${img.alt}" class="img-fluid">
+    try {
+        // Create modal elements
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.setAttribute('tabindex', '-1');
+        modal.setAttribute('aria-labelledby', 'imageModalLabel');
+        modal.setAttribute('aria-hidden', 'true');
+        
+        const modalSize = window.innerWidth <= 768 ? 'modal-fullscreen-sm-down' : 'modal-lg';
+        
+        modal.innerHTML = `
+            <div class="modal-dialog ${modalSize} modal-dialog-centered">
+                <div class="modal-content bg-dark">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title text-white" id="imageModalLabel">${img.alt || 'Gallery Image'}</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center p-0">
+                        <img src="${img.src}" alt="${img.alt || 'Gallery Image'}" class="img-fluid" 
+                             style="max-height: 80vh; width: auto; object-fit: contain;"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjE4IiBmaWxsPSIjYWFhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pjwvc3ZnPg==';">
+                        <div class="p-3">
+                            <small class="text-muted d-block mt-2">Tap outside or press ESC to close</small>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Show modal
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
-    
-    // Remove modal from DOM when hidden
-    modal.addEventListener('hidden.bs.modal', function() {
-        document.body.removeChild(modal);
-    });
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Show modal with error handling
+        const bsModal = new bootstrap.Modal(modal, {
+            backdrop: true,
+            keyboard: true,
+            focus: true
+        });
+        
+        bsModal.show();
+        
+        // Mobile-friendly: Close on swipe down
+        if (window.innerWidth <= 768) {
+            let startY = 0;
+            const modalContent = modal.querySelector('.modal-content');
+            
+            modalContent.addEventListener('touchstart', function(e) {
+                startY = e.touches[0].clientY;
+            });
+            
+            modalContent.addEventListener('touchmove', function(e) {
+                const currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+                
+                if (diff > 100) { // Swipe down threshold
+                    bsModal.hide();
+                }
+            });
+        }
+        
+        // Remove modal from DOM when hidden
+        modal.addEventListener('hidden.bs.modal', function() {
+            try {
+                document.body.removeChild(modal);
+            } catch (e) {
+                console.warn('Modal already removed from DOM');
+            }
+        });
+        
+        // Handle image load errors
+        const modalImg = modal.querySelector('img');
+        modalImg.addEventListener('error', function() {
+            console.warn('Gallery image failed to load:', img.src);
+            announceToScreenReader('Image could not be loaded');
+        });
+        
+    } catch (error) {
+        console.error('Error creating image modal:', error);
+        announceToScreenReader('Unable to open image viewer');
+    }
 }
 
 /**

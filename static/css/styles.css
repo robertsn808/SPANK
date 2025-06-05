@@ -310,14 +310,63 @@ footer a:hover {
     color: hsl(var(--accent-color)) !important;
 }
 
+/* Mobile Navigation Improvements */
+.navbar-toggler {
+    padding: 6px 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+}
+
+.navbar-nav .nav-link {
+    padding: 12px 16px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+/* Touch-friendly buttons */
+.btn {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.btn-lg {
+    min-height: 48px;
+}
+
+/* Responsive text sizing */
+.display-1 {
+    font-size: clamp(2.5rem, 8vw, 5rem);
+}
+
+.display-4 {
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
+}
+
+.lead {
+    font-size: clamp(1rem, 4vw, 1.25rem);
+}
+
+/* Responsive spacing */
+.py-5 {
+    padding-top: clamp(2rem, 5vw, 3rem) !important;
+    padding-bottom: clamp(2rem, 5vw, 3rem) !important;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .hero-section {
         background-attachment: scroll;
+        min-height: 80vh;
     }
     
-    .display-4 {
-        font-size: 2.5rem;
+    .hero-overlay {
+        min-height: 80vh;
+        padding: 2rem 0;
     }
     
     .page-header {
@@ -327,22 +376,108 @@ footer a:hover {
     .gallery-card img {
         height: 200px;
     }
+    
+    .navbar-nav .nav-item {
+        text-align: center;
+    }
+    
+    .navbar-nav .nav-link {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .navbar-nav .nav-link.btn {
+        margin: 10px 15px;
+        border-radius: 8px !important;
+        border-bottom: none !important;
+    }
+    
+    .card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .contact-item {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    /* Stack form elements better on mobile */
+    .form-row .col-md-6 {
+        margin-bottom: 1rem;
+    }
 }
 
 @media (max-width: 576px) {
-    .btn-lg {
-        padding: 10px 20px;
-        font-size: 1rem;
+    body {
+        font-size: 0.9rem;
     }
     
-    .display-4 {
-        font-size: 2rem;
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .btn-lg {
+        padding: 12px 24px;
+        font-size: 1rem;
     }
     
     .step-number {
         width: 40px;
         height: 40px;
         font-size: 1rem;
+    }
+    
+    .hero-section {
+        min-height: 70vh;
+    }
+    
+    .hero-overlay {
+        min-height: 70vh;
+    }
+    
+    /* Better mobile form layout */
+    .form-control,
+    .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Gallery improvements */
+    .gallery-card {
+        margin-bottom: 1rem;
+    }
+    
+    .gallery-card img {
+        height: 180px;
+    }
+    
+    /* Service cards stack better */
+    .service-card .card-body {
+        padding: 1rem;
+    }
+    
+    /* Contact info stacking */
+    .contact-icon {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 375px) {
+    .display-4 {
+        font-size: 1.5rem;
+    }
+    
+    .btn {
+        font-size: 0.875rem;
+        padding: 10px 16px;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .gallery-card img {
+        height: 160px;
     }
 }
 
