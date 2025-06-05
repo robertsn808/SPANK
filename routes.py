@@ -7,9 +7,32 @@ import logging
 # Initialize booking storage
 booking_storage = BookingStorage()
 
-# Additional storage for contact messages and appointments
+# Additional storage for contact messages, appointments, and staff
 contact_messages = []
 appointments = []
+staff_members = []
+staff_logins = []
+
+# Staff class
+class Staff:
+    def __init__(self, name, email, phone=None, role=None, hire_date=None, active=True):
+        self.id = len(staff_members) + 1
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.role = role or 'Technician'
+        self.hire_date = hire_date or datetime.now().strftime('%Y-%m-%d')
+        self.active = active
+
+# Staff login class
+class StaffLogin:
+    def __init__(self, staff_id, username, password):
+        self.id = len(staff_logins) + 1
+        self.staff_id = staff_id
+        self.username = username
+        self.password = password
+        self.role = 'staff'
+        self.created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 # Admin credentials
 ADMIN_USERNAME = "tccadmin808"
@@ -119,18 +142,39 @@ def contact():
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
-    """Admin login page"""
+    """Admin and staff login page"""
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
         
+        # Check admin credentials
         if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             session['admin_logged_in'] = True
+            session['user_role'] = 'admin'
+            session['user_name'] = 'Admin'
             logging.info("Admin login successful")
             return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Invalid credentials. Please try again.', 'error')
-            logging.warning(f"Failed admin login attempt for username: {username}")
+        
+        # Check staff credentials
+        for staff_login in staff_logins:
+            if staff_login.username == username and staff_login.password == password:
+                # Find staff member details
+                staff_member = None
+                for staff in staff_members:
+                    if staff.id == staff_login.staff_id and staff.active:
+                        staff_member = staff
+                        break
+                
+                if staff_member:
+                    session['admin_logged_in'] = True
+                    session['user_role'] = 'staff'
+                    session['user_name'] = staff_member.name
+                    session['staff_id'] = staff_member.id
+                    logging.info(f"Staff login successful: {staff_member.name}")
+                    return redirect(url_for('admin_dashboard'))
+        
+        flash('Invalid credentials. Please try again.', 'error')
+        logging.warning(f"Failed login attempt for username: {username}")
     
     return render_template('admin_login.html')
 
@@ -160,7 +204,10 @@ def admin_dashboard():
                          bookings=bookings, 
                          contact_messages=contact_messages,
                          week_dates=week_dates,
-                         week_appointments=week_appointments)
+                         week_appointments=week_appointments,
+                         staff_members=staff_members,
+                         user_role=session.get('user_role', 'admin'),
+                         user_name=session.get('user_name', 'Admin'))
 
 @app.route('/admin/logout')
 def admin_logout():
@@ -281,8 +328,10 @@ def add_appointment():
             "client_email": request.form.get("client_email"),
             "service": request.form.get("service"),
             "notes": request.form.get("notes", ""),
+            "staff_id": request.form.get("staff_id"),
             "status": "scheduled",
-            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "created_by": session.get('user_name', 'Admin')
         }
         appointments.append(appointment)
         flash("Appointment scheduled successfully!", "success")
@@ -319,9 +368,11 @@ def schedule_from_booking(booking_id):
             "client_email": booking.email,
             "service": booking.service,
             "notes": f"From consultation: {booking.consultation_type}. {booking.message or ''}",
+            "staff_id": request.form.get("staff_id"),
             "status": "scheduled",
             "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "booking_id": booking_id
+            "booking_id": booking_id,
+            "created_by": session.get('user_name', 'Admin')
         }
         appointments.append(appointment)
         
@@ -368,6 +419,163 @@ def delete_appointment(appointment_id):
     except Exception as e:
         logging.error(f"Error deleting appointment {appointment_id}: {e}")
         flash("Error deleting appointment.", "error")
+    
+    return redirect(url_for("admin_dashboard"))
+
+
+# Staff management routes
+@app.route("/admin/staff/add", methods=["POST"])
+def add_staff():
+    """Add a new staff member"""
+    if not session.get("admin_logged_in") or session.get("user_role") != "admin":
+        flash("Access denied. Admin privileges required.", "error")
+        return redirect(url_for("admin_dashboard"))
+    
+    try:
+        staff = Staff(
+            name=request.form.get("staff_name"),
+            email=request.form.get("staff_email"),
+            phone=request.form.get("staff_phone"),
+            role=request.form.get("staff_role")
+        )
+        staff_members.append(staff)
+        flash(f"Staff member {staff.name} added successfully!", "success")
+    except Exception as e:
+        logging.error(f"Error adding staff: {e}")
+        flash("Error adding staff member.", "error")
+    
+    return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/staff/<int:staff_id>/create_login", methods=["POST"])
+def create_staff_login():
+    """Create login credentials for staff member"""
+    if not session.get("admin_logged_in") or session.get("user_role") != "admin":
+        flash("Access denied. Admin privileges required.", "error")
+        return redirect(url_for("admin_dashboard"))
+    
+    staff_id = request.view_args["staff_id"]
+    try:
+        # Check if staff member exists
+        staff_member = None
+        for staff in staff_members:
+            if staff.id == staff_id:
+                staff_member = staff
+                break
+        
+        if not staff_member:
+            flash("Staff member not found.", "error")
+            return redirect(url_for("admin_dashboard"))
+        
+        # Check if login already exists
+        existing_login = None
+        for login in staff_logins:
+            if login.staff_id == staff_id:
+                existing_login = login
+                break
+        
+        if existing_login:
+            flash("Login already exists for this staff member.", "warning")
+            return redirect(url_for("admin_dashboard"))
+        
+        username = request.form.get("username")
+        password = request.form.get("password")
+        
+        # Check if username is already taken
+        for login in staff_logins:
+            if login.username == username:
+                flash("Username already taken.", "error")
+                return redirect(url_for("admin_dashboard"))
+        
+        if username == ADMIN_USERNAME:
+            flash("Username conflicts with admin account.", "error")
+            return redirect(url_for("admin_dashboard"))
+        
+        staff_login = StaffLogin(staff_id, username, password)
+        staff_logins.append(staff_login)
+        flash(f"Login created for {staff_member.name}!", "success")
+    except Exception as e:
+        logging.error(f"Error creating staff login: {e}")
+        flash("Error creating staff login.", "error")
+    
+    return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/staff/<int:staff_id>/toggle_status", methods=["POST"])
+def toggle_staff_status():
+    """Toggle staff member active status"""
+    if not session.get("admin_logged_in") or session.get("user_role") != "admin":
+        flash("Access denied. Admin privileges required.", "error")
+        return redirect(url_for("admin_dashboard"))
+    
+    staff_id = request.view_args["staff_id"]
+    try:
+        for staff in staff_members:
+            if staff.id == staff_id:
+                staff.active = not staff.active
+                status = "activated" if staff.active else "deactivated"
+                flash(f"Staff member {staff.name} {status}.", "success")
+                break
+        else:
+            flash("Staff member not found.", "error")
+    except Exception as e:
+        logging.error(f"Error toggling staff status: {e}")
+        flash("Error updating staff status.", "error")
+    
+    return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/appointment/<int:appointment_id>/add_note", methods=["POST"])
+def add_appointment_note():
+    """Add or update notes for an appointment"""
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+    
+    appointment_id = request.view_args["appointment_id"]
+    try:
+        note = request.form.get("note", "").strip()
+        for appointment in appointments:
+            if appointment["id"] == appointment_id:
+                appointment["notes"] = note
+                appointment["last_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                appointment["updated_by"] = session.get("user_name", "Unknown")
+                flash("Appointment note updated successfully.", "success")
+                break
+        else:
+            flash("Appointment not found.", "error")
+    except Exception as e:
+        logging.error(f"Error updating appointment note: {e}")
+        flash("Error updating appointment note.", "error")
+    
+    return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/appointment/<int:appointment_id>/assign_staff", methods=["POST"])
+def assign_staff_to_appointment():
+    """Assign staff member to appointment"""
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+    
+    appointment_id = request.view_args["appointment_id"]
+    try:
+        staff_id = request.form.get("staff_id")
+        for appointment in appointments:
+            if appointment["id"] == appointment_id:
+                appointment["staff_id"] = staff_id
+                appointment["last_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                appointment["updated_by"] = session.get("user_name", "Unknown")
+                
+                # Get staff name for confirmation
+                staff_name = "Unassigned"
+                if staff_id:
+                    for staff in staff_members:
+                        if staff.id == int(staff_id):
+                            staff_name = staff.name
+                            break
+                
+                flash(f"Appointment assigned to {staff_name}.", "success")
+                break
+        else:
+            flash("Appointment not found.", "error")
+    except Exception as e:
+        logging.error(f"Error assigning staff to appointment: {e}")
+        flash("Error assigning staff to appointment.", "error")
     
     return redirect(url_for("admin_dashboard"))
 
