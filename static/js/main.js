@@ -908,7 +908,7 @@ function formatDate(date) {
 console.log(`
 🌺 Triton Concrete Coating Website
 🏝️ Serving O'ahu with professional concrete coating solutions
-📞 Contact: (808) 555-1234
+📞 Contact: (808) 599-0908
 🌐 Licensed & Insured
 
 Built with ❤️ for the local community
