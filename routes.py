@@ -1,10 +1,15 @@
-from flask import render_template, request, redirect, url_for, session, flash
+from flask import render_template, request, redirect, url_for, session, flash, jsonify
 from app import app
 from models import BookingStorage
+from datetime import datetime, timedelta
 import logging
 
 # Initialize booking storage
 booking_storage = BookingStorage()
+
+# Additional storage for contact messages and appointments
+contact_messages = []
+appointments = []
 
 # Admin credentials
 ADMIN_USERNAME = "tccadmin808"
@@ -131,14 +136,31 @@ def admin_login():
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
-    """Admin dashboard showing all bookings and contact messages"""
+    """Admin dashboard showing all bookings, contact messages, and weekly calendar"""
     if not session.get('admin_logged_in'):
         flash('Please log in to access the admin dashboard.', 'error')
         return redirect(url_for('admin_login'))
     
     bookings = booking_storage.get_all_bookings()
     contact_messages = booking_storage.get_all_contact_messages()
-    return render_template('admin_dashboard.html', bookings=bookings, contact_messages=contact_messages)
+    
+    # Generate current week dates for calendar
+    today = datetime.now()
+    start_of_week = today - timedelta(days=today.weekday())
+    week_dates = [(start_of_week + timedelta(days=i)) for i in range(7)]
+    
+    # Get appointments for current week
+    week_appointments = []
+    for appointment in appointments:
+        appointment_date = datetime.strptime(appointment['date'], '%Y-%m-%d')
+        if start_of_week <= appointment_date < start_of_week + timedelta(days=7):
+            week_appointments.append(appointment)
+    
+    return render_template('admin_dashboard.html', 
+                         bookings=bookings, 
+                         contact_messages=contact_messages,
+                         week_dates=week_dates,
+                         week_appointments=week_appointments)
 
 @app.route('/admin/logout')
 def admin_logout():
