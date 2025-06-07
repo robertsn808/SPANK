@@ -38,7 +38,53 @@ body {
     color: hsl(var(--accent-color)) !important;
 }
 
-/* Hero Section */
+/* Hero Section with Video Background */
+.hero-section-video {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.hero-video-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.hero-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+}
+
+.hero-video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.7), rgba(52, 152, 219, 0.6));
+    z-index: 2;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+}
+
+/* Original Hero Section (for other pages) */
 .hero-section {
     background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(52, 152, 219, 0.8)), 
                 url('https://pixabay.com/get/g5eef83515dd5beb58efc3b1c09a62690532a181d42cd0a1f8f9a5e76fc032cbe610d30f88cd10b817faee64afb4b868e62f1b25ac05c78a4ba69e3cac8d6554f_1280.jpg');
@@ -545,6 +591,83 @@ footer a:hover {
     outline-offset: 2px;
 }
 
+/* About Page Hero Image */
+.about-hero-image {
+    transition: transform 0.3s ease;
+}
+
+.about-hero-image:hover {
+    transform: scale(1.02);
+}
+
+/* Mobile Responsiveness for Video Background */
+@media (max-width: 768px) {
+    .hero-section-video {
+        min-height: 80vh;
+    }
+    
+    .hero-video {
+        /* On mobile, prioritize performance over perfect positioning */
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: none;
+        top: 0;
+        left: 0;
+    }
+    
+    .hero-content .display-3 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-content .fs-4 {
+        font-size: 1.1rem !important;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section-video {
+        min-height: 70vh;
+    }
+    
+    .hero-content .display-3 {
+        font-size: 2rem;
+    }
+    
+    .hero-content .lead {
+        font-size: 1rem;
+    }
+    
+    .d-flex.gap-3 {
+        gap: 1rem !important;
+    }
+    
+    .btn-lg {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Ensure video performance on older devices */
+@media (prefers-reduced-motion: reduce) {
+    .hero-video {
+        animation: none;
+    }
+    
+    .about-hero-image {
+        transition: none;
+    }
+    
+    .about-hero-image:hover {
+        transform: none;
+    }
+}
+
 /* Print Styles */
 @media print {
     .navbar,
@@ -553,8 +676,13 @@ footer a:hover {
         display: none !important;
     }
     
-    .hero-section {
+    .hero-section,
+    .hero-section-video {
         background: none !important;
         color: black !important;
+    }
+    
+    .hero-video {
+        display: none !important;
     }
 }

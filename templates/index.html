@@ -1,31 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="hero-overlay">
+<!-- Hero Section with Video Background -->
+<section class="hero-section-video">
+    <div class="hero-video-container">
+        <video autoplay muted loop class="hero-video">
+            <source src="{{ url_for('static', filename='images/AQPzeY7WxRMxb_yUhn_Vp2XkS9JRZLJhxjtFrEKuD_Z5ykF4XphO-J4W-CWsSGDd0UmSwwXltVqahytfMth-QRW_qCHWBsib6JbxjKo.mp4') }}" type="video/mp4">
+        </video>
+        <div class="hero-video-overlay"></div>
+    </div>
+    <div class="hero-content">
         <div class="container">
             <div class="row align-items-center min-vh-100">
-                <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold text-white mb-4">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1 class="display-3 fw-bold text-white mb-4">
                         Protect & Beautify Your Concrete
                     </h1>
-                    <p class="lead text-white mb-4">
+                    <p class="lead text-white mb-5 fs-4">
                         O'ahu's trusted concrete coating professionals. Transform your garage floors, patios, and industrial spaces with durable, beautiful epoxy coatings.
                     </p>
-                    <div class="d-flex flex-column flex-sm-row gap-3">
-                        <a href="tel:+18085990908" class="btn btn-warning btn-lg px-4">
-                            <i class="fas fa-phone me-2"></i>Call Now:(808) 599-0908
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                        <a href="tel:+18085990908" class="btn btn-warning btn-lg px-5 py-3">
+                            <i class="fas fa-phone me-2"></i>Call Now: (808) 599-0908
                         </a>
-                        <a href="{{ url_for('consultation') }}" class="btn btn-outline-light btn-lg px-4">
+                        <a href="{{ url_for('consultation') }}" class="btn btn-outline-light btn-lg px-5 py-3">
                             <i class="fas fa-calendar-check me-2"></i>Free Consultation
                         </a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="hero-image">
-                        <img src="{{ url_for('static', filename='images/cartoonvan.png') }}" 
-                             alt="Professional garage floor coating with Aloha design" class="img-fluid rounded shadow">
                     </div>
                 </div>
             </div>
