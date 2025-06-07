@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for, session, flash, j
 from app import app
 from models import BookingStorage
 from datetime import datetime, timedelta
+import pytz
 import logging
 
 # Initialize booking storage
@@ -37,6 +38,13 @@ class StaffLogin:
 # Admin credentials
 ADMIN_USERNAME = "tccadmin808"
 ADMIN_PASSWORD = "Money$$"
+
+# Helper function for Hawaii timezone
+def get_hawaii_time():
+    """Get current time in Hawaii timezone"""
+    hawaii_tz = pytz.timezone('Pacific/Honolulu')
+    utc_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
+    return utc_now.astimezone(hawaii_tz)
 
 @app.route('/')
 def index():
@@ -188,9 +196,11 @@ def admin_dashboard():
     bookings = booking_storage.get_all_bookings()
     contact_messages = booking_storage.get_all_contact_messages()
     
-    # Generate current week dates for calendar
-    today = datetime.now()
-    start_of_week = today - timedelta(days=today.weekday())
+    # Generate current week dates for calendar using Hawaii timezone
+    hawaii_now = get_hawaii_time()
+    
+    # Get the start of the week (Monday) in Hawaii time
+    start_of_week = hawaii_now - timedelta(days=hawaii_now.weekday())
     week_dates = [(start_of_week + timedelta(days=i)) for i in range(7)]
     
     # Get appointments for current week
@@ -207,7 +217,7 @@ def admin_dashboard():
                          week_appointments=week_appointments,
                          staff_members=staff_members,
                          staff_logins=staff_logins,
-                         today=today.strftime('%Y-%m-%d'),
+                         today=hawaii_now.strftime('%Y-%m-%d'),
                          user_role=session.get('user_role', 'admin'),
                          user_name=session.get('user_name', 'Admin'))
 
