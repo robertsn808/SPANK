@@ -45,6 +45,7 @@ body {
     overflow: hidden;
     display: flex;
     align-items: center;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
 }
 
 .hero-video-container {
@@ -80,7 +81,9 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+    background: 
+        radial-gradient(ellipse at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.2));
     z-index: 2;
     pointer-events: none;
 }
@@ -89,6 +92,113 @@ body {
     position: relative;
     z-index: 3;
     width: 100%;
+}
+
+/* Premium Hero Styling */
+.hero-badge {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-title {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    letter-spacing: -1px;
+}
+
+.hero-subtitle {
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+    font-weight: 300;
+    line-height: 1.4;
+}
+
+.hero-stats {
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.stat-item {
+    padding: 1rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.hero-cta {
+    animation: fadeInUp 0.8s ease-out 0.8s both;
+}
+
+.hero-guarantee {
+    animation: fadeInUp 0.8s ease-out 1s both;
+}
+
+.btn-warning {
+    background: linear-gradient(45deg, #f39c12, #e67e22);
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(243, 156, 18, 0.4);
+    background: linear-gradient(45deg, #e67e22, #d35400);
+}
+
+.btn-outline-light {
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Feature Cards Styling */
+.feature-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(243, 156, 18, 0.1) !important;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1) !important;
+    border-color: rgba(243, 156, 18, 0.3) !important;
+}
+
+.feature-icon {
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+}
+
+.bg-warning.bg-gradient {
+    background: linear-gradient(45deg, #f39c12, #e67e22) !important;
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.2);
 }
 
 /* Original Hero Section (for other pages) */
@@ -610,11 +720,10 @@ footer a:hover {
 /* Mobile Responsiveness for Video Background */
 @media (max-width: 768px) {
     .hero-section-video {
-        min-height: 80vh;
+        min-height: 90vh;
     }
     
     .hero-video {
-        /* On mobile, prioritize performance over perfect positioning */
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -623,17 +732,25 @@ footer a:hover {
         left: 0;
     }
     
-    .hero-content .display-3 {
-        font-size: 2.5rem;
+    .hero-title.display-2 {
+        font-size: 2.5rem !important;
     }
     
-    .hero-content .fs-4 {
-        font-size: 1.1rem !important;
+    .hero-subtitle.fs-3 {
+        font-size: 1.3rem !important;
     }
     
     .btn-lg {
         padding: 0.75rem 2rem;
         font-size: 1rem;
+    }
+    
+    .stat-item {
+        margin-bottom: 1rem;
+    }
+    
+    .hero-stats .row {
+        gap: 0.5rem;
     }
 }
 

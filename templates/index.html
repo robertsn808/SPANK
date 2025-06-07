@@ -13,20 +13,53 @@
     <div class="hero-content">
         <div class="container">
             <div class="row align-items-center min-vh-100">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h1 class="display-3 fw-bold text-white mb-4">
-                        Transform & Protect Your Concrete
+                <div class="col-lg-10 mx-auto text-center">
+                    <div class="hero-badge mb-4">
+                        <span class="badge bg-warning text-dark px-4 py-2 rounded-pill fs-6 fw-semibold">
+                            <i class="fas fa-star me-2"></i>Hawaii's Premier Concrete Coating Specialists
+                        </span>
+                    </div>
+                    <h1 class="hero-title display-2 fw-bold text-white mb-4 lh-1">
+                        Transform & Protect<br>
+                        <span class="text-warning">Your Concrete</span>
                     </h1>
-                    <p class="lead text-white mb-5 fs-4">
-                        O'ahu's trusted concrete coating professionals. Transform your garage floors, patios, and industrial spaces with durable, beautiful epoxy coatings.
+                    <p class="hero-subtitle lead text-white mb-5 fs-3 opacity-90 mx-auto" style="max-width: 800px;">
+                        Elevate your spaces with premium epoxy coatings. From garage floors to commercial facilities, we deliver unmatched durability and stunning finishes across O'ahu.
                     </p>
-                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                        <a href="tel:+18085990908" class="btn btn-warning btn-lg px-5 py-3">
+                    <div class="hero-stats mb-5">
+                        <div class="row g-4 text-center">
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <h3 class="text-warning fw-bold mb-2">500+</h3>
+                                    <p class="text-white-50 mb-0">Projects Completed</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <h3 class="text-warning fw-bold mb-2">15+</h3>
+                                    <p class="text-white-50 mb-0">Years Experience</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <h3 class="text-warning fw-bold mb-2">100%</h3>
+                                    <p class="text-white-50 mb-0">Licensed & Insured</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-cta d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                        <a href="tel:+18085990908" class="btn btn-warning btn-lg px-5 py-3 fw-semibold shadow-lg">
                             <i class="fas fa-phone me-2"></i>Call Now: (808) 599-0908
                         </a>
-                        <a href="{{ url_for('consultation') }}" class="btn btn-outline-light btn-lg px-5 py-3">
+                        <a href="{{ url_for('consultation') }}" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold">
                             <i class="fas fa-calendar-check me-2"></i>Free Consultation
                         </a>
+                    </div>
+                    <div class="hero-guarantee mt-4">
+                        <p class="text-white-50 mb-0">
+                            <i class="fas fa-shield-alt me-2"></i>Lifetime Warranty • <i class="fas fa-clock me-2"></i>24/7 Support • <i class="fas fa-thumbs-up me-2"></i>Satisfaction Guaranteed
+                        </p>
                     </div>
                 </div>
             </div>
@@ -34,8 +67,67 @@
     </div>
 </section>
 
+<!-- Features Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="display-5 fw-bold text-dark mb-4">Why Choose Triton Concrete Coating</h2>
+                <p class="lead text-muted">Industry-leading expertise, premium materials, and unmatched customer service across Hawaii</p>
+            </div>
+        </div>
+        
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card h-100 text-center p-4 bg-white rounded-4 shadow-sm border-0">
+                    <div class="feature-icon mb-3">
+                        <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                            <i class="fas fa-award text-white fs-4"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3">Premium Materials</h5>
+                    <p class="text-muted mb-0">Military-grade epoxy coatings that withstand Hawaii's unique climate conditions</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card h-100 text-center p-4 bg-white rounded-4 shadow-sm border-0">
+                    <div class="feature-icon mb-3">
+                        <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                            <i class="fas fa-clock text-white fs-4"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3">Fast Installation</h5>
+                    <p class="text-muted mb-0">Most projects completed in 1-2 days with minimal disruption to your schedule</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card h-100 text-center p-4 bg-white rounded-4 shadow-sm border-0">
+                    <div class="feature-icon mb-3">
+                        <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                            <i class="fas fa-shield-alt text-white fs-4"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3">Lifetime Warranty</h5>
+                    <p class="text-muted mb-0">Comprehensive coverage on all materials and workmanship for complete peace of mind</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card h-100 text-center p-4 bg-white rounded-4 shadow-sm border-0">
+                    <div class="feature-icon mb-3">
+                        <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                            <i class="fas fa-users text-white fs-4"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3">Expert Team</h5>
+                    <p class="text-muted mb-0">Certified professionals with 15+ years of specialized concrete coating experience</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Services Section -->
-<section class="py-5 bg-light">
+<section class="py-5 bg-white">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="display-5 fw-bold">Our Expert Services</h2>
