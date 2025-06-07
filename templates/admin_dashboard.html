@@ -84,7 +84,7 @@
                         <div class="row">
                             {% for date in week_dates %}
                             <div class="col calendar-day">
-                                <div class="day-header text-center p-2 {{ 'bg-primary text-white' if date.date() == moment().date() else 'bg-light' }}">
+                                <div class="day-header text-center p-2 {{ 'bg-primary text-white' if date.strftime('%Y-%m-%d') == today else 'bg-light' }}">
                                     <div class="fw-bold">{{ date.strftime('%a') }}</div>
                                     <div class="small">{{ date.strftime('%m/%d') }}</div>
                                 </div>

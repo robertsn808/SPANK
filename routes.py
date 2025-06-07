@@ -206,6 +206,8 @@ def admin_dashboard():
                          week_dates=week_dates,
                          week_appointments=week_appointments,
                          staff_members=staff_members,
+                         staff_logins=staff_logins,
+                         today=today.strftime('%Y-%m-%d'),
                          user_role=session.get('user_role', 'admin'),
                          user_name=session.get('user_name', 'Admin'))
 
