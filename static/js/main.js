@@ -18,6 +18,7 @@ function initializeApp() {
         initFormValidation();
         initLoadingStates();
         initNavbarBehavior();
+        initVideoBackground();
         
         // UI enhancements
         initAnimations();
@@ -196,6 +197,46 @@ function initAccessibilityFeatures() {
  */
 function initPerformanceOptimizations() {
     // Add performance optimizations like lazy loading
+}
+
+/**
+ * Initialize video background behavior
+ */
+function initVideoBackground() {
+    const heroVideo = document.querySelector('.hero-video');
+    if (heroVideo) {
+        // Ensure video stays as background element
+        heroVideo.setAttribute('playsinline', 'true');
+        heroVideo.setAttribute('webkit-playsinline', 'true');
+        heroVideo.setAttribute('x5-playsinline', 'true');
+        heroVideo.controls = false;
+        heroVideo.disablePictureInPicture = true;
+        
+        // Prevent any modal or popup behavior
+        heroVideo.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+        
+        heroVideo.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Ensure video loads and plays properly
+        heroVideo.addEventListener('loadeddata', function() {
+            this.play().catch(function(error) {
+                console.log('Video autoplay prevented by browser policy');
+            });
+        });
+        
+        // Handle play errors gracefully
+        heroVideo.addEventListener('error', function() {
+            console.log('Video failed to load, using fallback background');
+            this.style.display = 'none';
+        });
+    }
 }
 
 /**
