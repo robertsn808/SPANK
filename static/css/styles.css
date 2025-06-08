@@ -65,6 +65,27 @@ body {
     transform: translateY(-1px);
 }
 
+/* Admin Dashboard Styles */
+.admin-body {
+    background-color: #f8f9fa;
+    font-family: 'Poppins', sans-serif;
+}
+
+.admin-header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%) !important;
+    box-shadow: 0 2px 10px rgba(30, 60, 114, 0.2);
+}
+
+.admin-main {
+    min-height: calc(100vh - 140px);
+    padding-top: 20px;
+}
+
+.admin-footer {
+    background-color: #343a40 !important;
+    border-top: 3px solid #1e3c72;
+}
+
 /* Hero Section with Video Background */
 .hero-section-video {
     position: relative;

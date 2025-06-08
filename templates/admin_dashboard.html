@@ -1,24 +1,8 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 
 {% block title %}Admin Dashboard - Triton Concrete Coating{% endblock %}
 
 {% block content %}
-<!-- Dashboard Header -->
-<section class="py-4 bg-primary text-white">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h1 class="display-6 fw-bold">Admin Dashboard</h1>
-                <p class="lead mb-0">Manage consultation requests and bookings</p>
-            </div>
-            <div class="col-lg-4 text-lg-end">
-                <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-light">
-                    <i class="fas fa-sign-out-alt me-2"></i>Logout
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
 
 <!-- Dashboard Stats -->
 <section class="py-4 bg-light">
