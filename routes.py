@@ -36,7 +36,7 @@ class StaffLogin:
         self.created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 # Admin credentials
-ADMIN_USERNAME = "tccadmin808"
+ADMIN_USERNAME = "spankysadmin808"
 ADMIN_PASSWORD = "Money$$"
 
 # Helper function for Hawaii timezone
