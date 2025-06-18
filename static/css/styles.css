@@ -86,6 +86,41 @@ body {
     border-top: 3px solid #1e3c72;
 }
 
+/* New Hero Section with Gradient Background */
+.hero-section-new {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 82, 152, 0.8) 50%, rgba(20, 40, 80, 0.9) 100%),
+        radial-gradient(ellipse at top right, rgba(255, 193, 7, 0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom left, rgba(23, 162, 184, 0.2) 0%, transparent 50%),
+        linear-gradient(45deg, #1e3c72 0%, #2a5298 25%, #1a252f 50%, #2c3e50 75%, #1e3c72 100%);
+    background-size: 100% 100%, 70% 70%, 60% 60%, 200% 200%;
+    background-position: center, top right, bottom left, center;
+    animation: gradientShift 15s ease-in-out infinite;
+    z-index: 1;
+}
+
+@keyframes gradientShift {
+    0%, 100% {
+        background-position: center, top right, bottom left, 0% 50%;
+    }
+    50% {
+        background-position: center, bottom left, top right, 100% 50%;
+    }
+}
+
 /* Hero Section with Video Background */
 .hero-section-video {
     position: relative;
@@ -222,6 +257,57 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Service Preview Cards */
+.service-preview-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.service-preview-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    border-color: rgba(0,123,255,0.3);
+}
+
+.service-icon {
+    transition: transform 0.3s ease;
+}
+
+.service-preview-card:hover .service-icon {
+    transform: scale(1.1);
+}
+
+/* Gallery Preview Items */
+.gallery-preview-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+}
+
+.gallery-preview-item:hover {
+    transform: scale(1.05);
+}
+
+.gallery-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    color: white;
+    padding: 2rem 1rem 1rem;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.gallery-preview-item:hover .gallery-overlay {
+    transform: translateY(0);
 }
 
 /* Feature Cards Styling */
