@@ -9,8 +9,7 @@ import logging
 # Initialize handyman storage
 handyman_storage = HandymanStorage()
 
-# Additional storage for contact messages, appointments, and staff
-contact_messages = []
+# Additional storage for appointments and staff
 appointments = []
 staff_members = []
 staff_logins = []
@@ -90,7 +89,7 @@ def consultation():
         
         # Store booking
         try:
-            booking_id = booking_storage.add_booking({
+            request_id = handyman_storage.add_service_request({
                 'name': name,
                 'email': email,
                 'phone': phone,
@@ -131,7 +130,7 @@ def contact():
         
         # Store contact message
         try:
-            message_id = booking_storage.add_contact_message({
+            message_id = handyman_storage.add_contact_message({
                 'name': name,
                 'email': email,
                 'phone': phone,

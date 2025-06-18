@@ -44,7 +44,11 @@ class AILeadGenerator:
                 response_format={"type": "json_object"}
             )
             
-            return json.loads(response.choices[0].message.content)
+            content = response.choices[0].message.content
+            if content:
+                return json.loads(content)
+            else:
+                return {"error": "Empty AI response"}
             
         except Exception as e:
             return {"error": f"AI analysis failed: {str(e)}"}
@@ -81,7 +85,11 @@ class AILeadGenerator:
                 response_format={"type": "json_object"}
             )
             
-            return json.loads(response.choices[0].message.content)
+            content = response.choices[0].message.content
+            if content:
+                return json.loads(content)
+            else:
+                return {"error": "Empty AI response"}
             
         except Exception as e:
             return {"error": f"Service recommendation failed: {str(e)}"}
