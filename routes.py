@@ -103,7 +103,7 @@ def consultation():
             })
             
             flash('Thank you! Your consultation request has been submitted. We will contact you within 24 hours.', 'success')
-            logging.info(f"New booking created with ID: {booking_id}")
+            logging.info(f"New service request created with ID: {request_id}")
             return redirect(url_for('consultation'))
             
         except Exception as e:
@@ -193,8 +193,8 @@ def admin_dashboard():
         flash('Please log in to access the admin dashboard.', 'error')
         return redirect(url_for('admin_login'))
     
-    bookings = booking_storage.get_all_bookings()
-    contact_messages = booking_storage.get_all_contact_messages()
+    service_requests = handyman_storage.get_all_service_requests()
+    contact_messages = handyman_storage.get_all_contact_messages()
     
     # Generate current week dates for calendar using Hawaii timezone
     hawaii_now = get_hawaii_time()
@@ -211,7 +211,7 @@ def admin_dashboard():
             week_appointments.append(appointment)
     
     return render_template('admin_dashboard.html', 
-                         bookings=bookings, 
+                         service_requests=service_requests, 
                          contact_messages=contact_messages,
                          week_dates=week_dates,
                          week_appointments=week_appointments,
@@ -235,7 +235,7 @@ def complete_booking(booking_id):
         return redirect(url_for('admin_login'))
     
     try:
-        success = booking_storage.update_booking_status(booking_id, 'completed')
+        success = handyman_storage.update_service_request_status(booking_id, 'completed')
         if success:
             flash('Booking marked as completed.', 'success')
         else:
@@ -255,7 +255,7 @@ def update_booking(booking_id):
     status = request.form.get('status')
     if status in ['pending', 'confirmed', 'completed', 'cancelled']:
         try:
-            booking_storage.update_booking_status(booking_id, status)
+            handyman_storage.update_service_request_status(booking_id, status)
             flash(f'Booking status updated to {status}.', 'success')
         except Exception as e:
             logging.error(f"Error updating booking {booking_id}: {e}")
@@ -273,9 +273,9 @@ def delete_booking(booking_id):
     
     try:
         # Check if booking exists before deletion
-        booking_exists = any(b.id == booking_id for b in booking_storage.get_all_bookings())
-        if booking_exists:
-            booking_storage.delete_booking(booking_id)
+        request_exists = any(r.id == booking_id for r in handyman_storage.get_all_service_requests())
+        if request_exists:
+            handyman_storage.delete_service_request(booking_id)
             flash('Booking deleted successfully.', 'success')
         else:
             flash('Booking not found.', 'error')
@@ -292,7 +292,7 @@ def mark_message_read(message_id):
         return redirect(url_for('admin_login'))
     
     try:
-        success = booking_storage.update_message_status(message_id, 'read')
+        success = handyman_storage.update_message_status(message_id, 'read')
         if success:
             flash('Message marked as read.', 'success')
         else:
@@ -311,9 +311,9 @@ def delete_contact_message(message_id):
     
     try:
         # Check if message exists before deletion
-        message_exists = any(m.id == message_id for m in booking_storage.get_all_contact_messages())
+        message_exists = any(m.id == message_id for m in handyman_storage.get_all_contact_messages())
         if message_exists:
-            booking_storage.delete_contact_message(message_id)
+            handyman_storage.delete_contact_message(message_id)
             flash('Contact message deleted successfully.', 'success')
         else:
             flash('Message not found.', 'error')
@@ -362,7 +362,7 @@ def schedule_from_booking(booking_id):
     try:
         # Find the booking
         booking = None
-        for b in booking_storage.get_all_bookings():
+        for b in handyman_storage.get_all_service_requests():
             if b.id == booking_id:
                 booking = b
                 break
