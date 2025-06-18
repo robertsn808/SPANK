@@ -29,10 +29,11 @@ The application follows a simple Flask MVC pattern with the following structure:
 - **Responsive Design**: Mobile-first Bootstrap 5 implementation
 
 ### Data Models
-- **ContactMessage**: Customer inquiries with status tracking
-- **Booking**: Service requests with consultation preferences
+- **ContactMessage**: Customer inquiries with AI analysis and priority scoring
+- **ServiceRequest**: Handyman service requests with AI recommendations
+- **Lead**: Lead management with AI scoring and follow-up suggestions
 - **Staff**: Employee management (basic structure in place)
-- **BookingStorage**: In-memory storage manager
+- **HandymanStorage**: In-memory storage manager for all business data
 
 ## Data Flow
 
