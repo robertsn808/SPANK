@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Gallery - Triton Concrete Coating{% endblock %}
+{% block title %}Gallery - SpankysHandyman Services{% endblock %}
 
 {% block content %}
 <!-- Page Header -->
@@ -9,7 +9,7 @@
         <div class="row align-items-center">
             <div class="col-lg-8">
                 <h1 class="display-4 fw-bold">Our Work Gallery</h1>
-                <p class="lead">Showcasing our concrete coating transformations across O'ahu</p>
+                <p class="lead">Showcasing our handyman projects and home improvements across O'ahu</p>
             </div>
         </div>
     </div>
@@ -21,10 +21,10 @@
         <div class="text-center">
             <div class="btn-group" role="group" aria-label="Gallery filters">
                 <button type="button" class="btn btn-outline-primary active" data-filter="all">All Projects</button>
-                <button type="button" class="btn btn-outline-primary" data-filter="garage">Garage Floors</button>
-                <button type="button" class="btn btn-outline-primary" data-filter="outdoor">Outdoor</button>
-                <button type="button" class="btn btn-outline-primary" data-filter="industrial">Industrial</button>
-                <button type="button" class="btn btn-outline-primary" data-filter="epoxy">Epoxy Finishes</button>
+                <button type="button" class="btn btn-outline-primary" data-filter="garage">Home Repairs</button>
+                <button type="button" class="btn btn-outline-primary" data-filter="outdoor">Outdoor Projects</button>
+                <button type="button" class="btn btn-outline-primary" data-filter="industrial">Commercial Work</button>
+                <button type="button" class="btn btn-outline-primary" data-filter="epoxy">Specialty Projects</button>
             </div>
         </div>
     </div>
@@ -34,15 +34,15 @@
 <section class="py-5">
     <div class="container">
         <div class="row g-4" id="gallery-grid">
-            <!-- Garage Floor Coatings -->
+            <!-- Home Repairs -->
             <div class="col-lg-4 col-md-6 gallery-item" data-category="garage">
                 <div class="gallery-card">
                     <img src="{{ url_for('static', filename='images/aloha-garage.jpg') }}" 
-                         alt="Aloha Garage Floor Coating - O'ahu" class="img-fluid rounded shadow">
+                         alt="Garage Renovation Project - O'ahu" class="img-fluid rounded shadow">
                     <div class="gallery-overlay">
                         <div class="gallery-info">
-                            <h6>Aloha Garage Design</h6>
-                            <p>Custom epoxy with decorative flakes and logo</p>
+                            <h6>Garage Renovation</h6>
+                            <p>Complete garage makeover with custom design</p>
                         </div>
                     </div>
                 </div>
@@ -51,11 +51,11 @@
             <div class="col-lg-4 col-md-6 gallery-item" data-category="garage">
                 <div class="gallery-card">
                     <img src="{{ url_for('static', filename='images/smallhall.png') }}" 
-                         alt="Custom Logo Epoxy Floor" class="img-fluid rounded shadow">
+                         alt="Custom Interior Work" class="img-fluid rounded shadow">
                     <div class="gallery-overlay">
                         <div class="gallery-info">
-                            <h6>Custom Logo Design</h6>
-                            <p>Metallic epoxy with embedded logo</p>
+                            <h6>Custom Interior Project</h6>
+                            <p>Specialized interior improvement work</p>
                         </div>
                     </div>
                 </div>
@@ -64,11 +64,11 @@
             <div class="col-lg-4 col-md-6 gallery-item" data-category="industrial">
                 <div class="gallery-card">
                     <img src="{{ url_for('static', filename='images/fastfood-restaurant.jpg') }}" 
-                         alt="Commercial Restaurant Floor" class="img-fluid rounded shadow">
+                         alt="Commercial Renovation" class="img-fluid rounded shadow">
                     <div class="gallery-overlay">
                         <div class="gallery-info">
-                            <h6>Restaurant Flooring</h6>
-                            <p>Food-safe commercial epoxy coating</p>
+                            <h6>Restaurant Renovation</h6>
+                            <p>Commercial space improvement project</p>
                         </div>
                     </div>
                 </div>
@@ -242,8 +242,8 @@
     <div class="container text-center">
         <h2 class="fw-bold mb-4">Follow Our Latest Work</h2>
         <p class="lead mb-4">See more of our projects and behind-the-scenes content on Instagram</p>
-        <a href="https://www.instagram.com/tritonconcretecoatings/" target="_blank" class="btn btn-primary btn-lg">
-            <i class="fab fa-instagram me-2"></i>@tritonconcretecoatings
+        <a href="https://www.instagram.com/spankyshandyman/" target="_blank" class="btn btn-primary btn-lg">
+            <i class="fab fa-instagram me-2"></i>@spankyshandyman
         </a>
     </div>
 </section>
@@ -251,8 +251,8 @@
 <!-- CTA Section -->
 <section class="py-5 bg-primary text-white">
     <div class="container text-center">
-        <h2 class="fw-bold mb-4">Ready for Your Own Transformation?</h2>
-        <p class="lead mb-4">Let's discuss your concrete coating project and create something amazing</p>
+        <h2 class="fw-bold mb-4">Ready for Your Own Home Improvement?</h2>
+        <p class="lead mb-4">Let's discuss your handyman project and bring your vision to life</p>
         <a href="{{ url_for('consultation') }}" class="btn btn-warning btn-lg px-5">
             <i class="fas fa-calendar-check me-2"></i>Request Free Consultation
         </a>

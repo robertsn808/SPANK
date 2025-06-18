@@ -86,12 +86,12 @@ def consultation():
         preferred_time = request.form.get('preferred_time', '').strip()
         message = request.form.get('message', '').strip()
         square_footage = request.form.get('square_footage', '').strip()
-        
+
         # Basic validation
         if not all([name, email, phone, service]):
             flash('Please fill in all required fields.', 'error')
             return render_template('consultation.html')
-        
+
         # Store booking
         try:
             request_id = handyman_storage.add_service_request({
@@ -106,15 +106,15 @@ def consultation():
                 'message': message,
                 'square_footage': square_footage
             })
-            
+
             flash('Thank you! Your consultation request has been submitted. We will contact you within 24 hours.', 'success')
             logging.info(f"New service request created with ID: {request_id}")
             return redirect(url_for('consultation'))
-            
+
         except Exception as e:
             logging.error(f"Error creating booking: {e}")
             flash('There was an error submitting your request. Please try again or call us directly.', 'error')
-    
+
     return render_template('consultation.html')
 
 @app.route('/contact', methods=['GET', 'POST'])
@@ -127,12 +127,12 @@ def contact():
         phone = request.form.get('contact_phone', '').strip()
         subject = request.form.get('contact_subject', '').strip()
         message = request.form.get('contact_message', '').strip()
-        
+
         # Basic validation
         if not all([name, email, message]):
             flash('Please fill in all required fields.', 'error')
             return render_template('contact.html')
-        
+
         # Store contact message
         try:
             message_id = handyman_storage.add_contact_message({
@@ -142,15 +142,15 @@ def contact():
                 'subject': subject,
                 'message': message
             })
-            
+
             flash('Thank you! Your message has been sent. We will respond within 24 hours.', 'success')
             logging.info(f"New contact message created with ID: {message_id}")
             return redirect(url_for('contact'))
-            
+
         except Exception as e:
             logging.error(f"Error creating contact message: {e}")
             flash('There was an error sending your message. Please try again or call us directly.', 'error')
-    
+
     return render_template('contact.html')
 
 @app.route('/admin/login', methods=['GET', 'POST'])
@@ -159,7 +159,7 @@ def admin_login():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
-        
+
         # Check admin credentials
         if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             session['admin_logged_in'] = True
@@ -167,7 +167,7 @@ def admin_login():
             session['user_name'] = 'Admin'
             logging.info("Admin login successful")
             return redirect(url_for('admin_dashboard'))
-        
+
         # Check staff credentials
         for staff_login in staff_logins:
             if staff_login.username == username and staff_login.password == password:
@@ -177,7 +177,7 @@ def admin_login():
                     if staff.id == staff_login.staff_id and staff.active:
                         staff_member = staff
                         break
-                
+
                 if staff_member:
                     session['admin_logged_in'] = True
                     session['user_role'] = 'staff'
@@ -185,10 +185,10 @@ def admin_login():
                     session['staff_id'] = staff_member.id
                     logging.info(f"Staff login successful: {staff_member.name}")
                     return redirect(url_for('admin_dashboard'))
-        
+
         flash('Invalid credentials. Please try again.', 'error')
         logging.warning(f"Failed login attempt for username: {username}")
-    
+
     return render_template('admin_login.html')
 
 @app.route('/admin/ai-leads')
@@ -197,12 +197,12 @@ def ai_leads():
     if not session.get('admin_logged_in'):
         flash('Please log in to access the AI lead generator.', 'error')
         return redirect(url_for('admin_login'))
-    
+
     # Get all leads and analyze them with AI
     leads = handyman_storage.get_all_leads()
     contact_messages = handyman_storage.get_all_contact_messages()
     service_requests = handyman_storage.get_all_service_requests()
-    
+
     # Analyze unanalyzed contact messages with AI
     for message in contact_messages:
         if not message.ai_analysis:
@@ -212,7 +212,7 @@ def ai_leads():
                 message.priority_score = analysis.get('urgency_score', 0)
             except Exception as e:
                 logging.error(f"AI analysis failed for message {message.id}: {e}")
-    
+
     # Generate service recommendations for pending requests
     for request in service_requests:
         if not request.ai_recommendations and request.status == 'pending':
@@ -223,7 +223,7 @@ def ai_leads():
                 request.estimated_cost = recommendations.get('material_considerations', 'TBD')
             except Exception as e:
                 logging.error(f"AI recommendations failed for request {request.id}: {e}")
-    
+
     # Score existing leads
     for lead in leads:
         if lead.ai_score == 0:
@@ -233,12 +233,12 @@ def ai_leads():
                 lead.follow_up_suggestions = scoring.get('recommended_approach', '')
             except Exception as e:
                 logging.error(f"AI scoring failed for lead {lead.id}: {e}")
-    
+
     # Get high priority items
     high_priority_messages = [m for m in contact_messages if m.priority_score >= 7]
     high_value_leads = handyman_storage.get_high_priority_leads()
     urgent_requests = [r for r in service_requests if r.priority == 'high' or (r.ai_recommendations and 'urgent' in str(r.ai_recommendations).lower())]
-    
+
     return render_template('admin/ai_leads.html',
                          leads=leads,
                          contact_messages=contact_messages,
@@ -253,24 +253,24 @@ def admin_dashboard():
     if not session.get('admin_logged_in'):
         flash('Please log in to access the admin dashboard.', 'error')
         return redirect(url_for('admin_login'))
-    
+
     service_requests = handyman_storage.get_all_service_requests()
     contact_messages = handyman_storage.get_all_contact_messages()
-    
+
     # Generate current week dates for calendar using Hawaii timezone
     hawaii_now = get_hawaii_time()
-    
+
     # Get the start of the week (Monday) in Hawaii time
     start_of_week = hawaii_now - timedelta(days=hawaii_now.weekday())
     week_dates = [(start_of_week + timedelta(days=i)) for i in range(7)]
-    
+
     # Get appointments for current week
     week_appointments = []
     for appointment in appointments:
         appointment_date = datetime.strptime(appointment['date'], '%Y-%m-%d')
         if start_of_week <= appointment_date < start_of_week + timedelta(days=7):
             week_appointments.append(appointment)
-    
+
     return render_template('admin_dashboard.html', 
                          service_requests=service_requests, 
                          contact_messages=contact_messages,
@@ -294,7 +294,7 @@ def complete_booking(booking_id):
     """Mark a booking as completed"""
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
-    
+
     try:
         success = handyman_storage.update_service_request_status(booking_id, 'completed')
         if success:
@@ -304,7 +304,7 @@ def complete_booking(booking_id):
     except Exception as e:
         logging.error(f"Error updating booking {booking_id}: {e}")
         flash('Error updating booking status.', 'error')
-    
+
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/booking/<int:booking_id>/update', methods=['POST'])
@@ -312,7 +312,7 @@ def update_booking(booking_id):
     """Update booking status"""
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
-    
+
     status = request.form.get('status')
     if status in ['pending', 'confirmed', 'completed', 'cancelled']:
         try:
@@ -323,7 +323,7 @@ def update_booking(booking_id):
             flash('Error updating booking status.', 'error')
     else:
         flash('Invalid status.', 'error')
-    
+
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/booking/<int:booking_id>/delete')
@@ -331,7 +331,7 @@ def delete_booking(booking_id):
     """Delete a booking"""
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
-    
+
     try:
         # Check if booking exists before deletion
         request_exists = any(r.id == booking_id for r in handyman_storage.get_all_service_requests())
@@ -343,7 +343,7 @@ def delete_booking(booking_id):
     except Exception as e:
         logging.error(f"Error deleting booking {booking_id}: {e}")
         flash('Error deleting booking.', 'error')
-    
+
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/message/<int:message_id>/read')
@@ -351,7 +351,7 @@ def mark_message_read(message_id):
     """Mark a contact message as read"""
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
-    
+
     try:
         success = handyman_storage.update_message_status(message_id, 'read')
         if success:
@@ -361,7 +361,7 @@ def mark_message_read(message_id):
     except Exception as e:
         logging.error(f"Error updating message {message_id}: {e}")
         flash('Error updating message status.', 'error')
-    
+
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/message/<int:message_id>/delete')
@@ -369,7 +369,7 @@ def delete_contact_message(message_id):
     """Delete a contact message"""
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
-    
+
     try:
         # Check if message exists before deletion
         message_exists = any(m.id == message_id for m in handyman_storage.get_all_contact_messages())
@@ -381,7 +381,7 @@ def delete_contact_message(message_id):
     except Exception as e:
         logging.error(f"Error deleting message {message_id}: {e}")
         flash('Error deleting message.', 'error')
-    
+
     return redirect(url_for('admin_dashboard'))
 
 # Appointment scheduling routes
@@ -390,7 +390,7 @@ def add_appointment():
     """Add a new appointment"""
     if not session.get("admin_logged_in"):
         return redirect(url_for("admin_login"))
-    
+
     try:
         appointment = {
             "id": len(appointments) + 1,
@@ -411,7 +411,7 @@ def add_appointment():
     except Exception as e:
         logging.error(f"Error adding appointment: {e}")
         flash("Error scheduling appointment.", "error")
-    
+
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/appointment/from_booking/<int:booking_id>", methods=["POST"])
@@ -419,7 +419,7 @@ def schedule_from_booking(booking_id):
     """Schedule appointment from consultation booking"""
     if not session.get("admin_logged_in"):
         return redirect(url_for("admin_login"))
-    
+
     try:
         # Find the booking
         booking = None
@@ -427,11 +427,11 @@ def schedule_from_booking(booking_id):
             if b.id == booking_id:
                 booking = b
                 break
-        
+
         if not booking:
             flash("Booking not found.", "error")
             return redirect(url_for("admin_dashboard"))
-        
+
         appointment = {
             "id": len(appointments) + 1,
             "date": request.form.get("appointment_date"),
@@ -448,14 +448,14 @@ def schedule_from_booking(booking_id):
             "created_by": session.get('user_name', 'Admin')
         }
         appointments.append(appointment)
-        
+
         # Update service request status
         handyman_storage.update_service_request_status(booking_id, "scheduled")
         flash("Appointment scheduled from consultation request!", "success")
     except Exception as e:
         logging.error(f"Error scheduling appointment from booking {booking_id}: {e}")
         flash("Error scheduling appointment.", "error")
-    
+
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/appointment/<int:appointment_id>/update", methods=["POST"])
@@ -463,7 +463,7 @@ def update_appointment(appointment_id):
     """Update appointment status"""
     if not session.get("admin_logged_in"):
         return redirect(url_for("admin_login"))
-    
+
     try:
         status = request.form.get("status")
         for appointment in appointments:
@@ -476,7 +476,7 @@ def update_appointment(appointment_id):
     except Exception as e:
         logging.error(f"Error updating appointment {appointment_id}: {e}")
         flash("Error updating appointment.", "error")
-    
+
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/appointment/<int:appointment_id>/delete", methods=["POST"])
@@ -484,7 +484,7 @@ def delete_appointment(appointment_id):
     """Delete appointment"""
     if not session.get("admin_logged_in"):
         return redirect(url_for("admin_login"))
-    
+
     try:
         global appointments
         appointments = [a for a in appointments if a["id"] != appointment_id]
@@ -492,7 +492,7 @@ def delete_appointment(appointment_id):
     except Exception as e:
         logging.error(f"Error deleting appointment {appointment_id}: {e}")
         flash("Error deleting appointment.", "error")
-    
+
     return redirect(url_for("admin_dashboard"))
 
 
@@ -503,7 +503,7 @@ def add_staff():
     if not session.get("admin_logged_in") or session.get("user_role") != "admin":
         flash("Access denied. Admin privileges required.", "error")
         return redirect(url_for("admin_dashboard"))
-    
+
     try:
         staff = Staff(
             name=request.form.get("staff_name"),
@@ -516,7 +516,7 @@ def add_staff():
     except Exception as e:
         logging.error(f"Error adding staff: {e}")
         flash("Error adding staff member.", "error")
-    
+
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/staff/<int:staff_id>/create_login", methods=["POST"])
@@ -532,42 +532,42 @@ def create_staff_login(staff_id):
             if staff.id == staff_id:
                 staff_member = staff
                 break
-        
+
         if not staff_member:
             flash("Staff member not found.", "error")
             return redirect(url_for("admin_dashboard"))
-        
+
         # Check if login already exists
         existing_login = None
         for login in staff_logins:
             if login.staff_id == staff_id:
                 existing_login = login
                 break
-        
+
         if existing_login:
             flash("Login already exists for this staff member.", "warning")
             return redirect(url_for("admin_dashboard"))
-        
+
         username = request.form.get("username")
         password = request.form.get("password")
-        
+
         # Check if username is already taken
         for login in staff_logins:
             if login.username == username:
                 flash("Username already taken.", "error")
                 return redirect(url_for("admin_dashboard"))
-        
+
         if username == ADMIN_USERNAME:
             flash("Username conflicts with admin account.", "error")
             return redirect(url_for("admin_dashboard"))
-        
+
         staff_login = StaffLogin(staff_id, username, password)
         staff_logins.append(staff_login)
         flash(f"Login created for {staff_member.name}!", "success")
     except Exception as e:
         logging.error(f"Error creating staff login: {e}")
         flash("Error creating staff login.", "error")
-    
+
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/staff/<int:staff_id>/toggle_status", methods=["POST"])
@@ -588,7 +588,7 @@ def toggle_staff_status(staff_id):
     except Exception as e:
         logging.error(f"Error toggling staff status: {e}")
         flash("Error updating staff status.", "error")
-    
+
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/appointment/<int:appointment_id>/add_note", methods=["POST"])
@@ -610,7 +610,7 @@ def add_appointment_note(appointment_id):
     except Exception as e:
         logging.error(f"Error updating appointment note: {e}")
         flash("Error updating appointment note.", "error")
-    
+
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/appointment/<int:appointment_id>/assign_staff", methods=["POST"])
@@ -625,7 +625,7 @@ def assign_staff_to_appointment(appointment_id):
                 appointment["staff_id"] = staff_id
                 appointment["last_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 appointment["updated_by"] = session.get("user_name", "Unknown")
-                
+
                 # Get staff name for confirmation
                 staff_name = "Unassigned"
                 if staff_id:
@@ -633,7 +633,7 @@ def assign_staff_to_appointment(appointment_id):
                         if staff.id == int(staff_id):
                             staff_name = staff.name
                             break
-                
+
                 flash(f"Appointment assigned to {staff_name}.", "success")
                 break
         else:
@@ -641,6 +641,5 @@ def assign_staff_to_appointment(appointment_id):
     except Exception as e:
         logging.error(f"Error assigning staff to appointment: {e}")
         flash("Error assigning staff to appointment.", "error")
-    
-    return redirect(url_for("admin_dashboard"))
 
+    return redirect(url_for("admin_dashboard"))
