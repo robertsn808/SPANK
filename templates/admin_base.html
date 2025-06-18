@@ -22,17 +22,27 @@
     {% block head %}{% endblock %}
 </head>
 <body class="admin-body">
-    <!-- Admin Header (no navigation menu) -->
+    <!-- Admin Header with Navigation -->
     <header class="admin-header bg-primary text-white py-3 shadow-sm">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-6">
+                <div class="col-md-4">
                     <h4 class="mb-0">
-                        <i class="fas fa-shield-alt me-2"></i>
-                        Triton Admin Dashboard
+                        <i class="fas fa-tools me-2"></i>
+                        Handyman Admin
                     </h4>
                 </div>
-                <div class="col-6 text-end">
+                <div class="col-md-4 text-center">
+                    <nav class="admin-nav">
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light btn-sm me-2">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                        <a href="{{ url_for('ai_leads') }}" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-robot me-1"></i>AI Leads
+                        </a>
+                    </nav>
+                </div>
+                <div class="col-md-4 text-end">
                     <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-light btn-sm">
                         <i class="fas fa-sign-out-alt me-1"></i>Logout
                     </a>

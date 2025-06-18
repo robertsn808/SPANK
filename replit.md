@@ -1,8 +1,8 @@
-# Triton Concrete Coating Website
+# Professional Handyman Services Website
 
 ## Overview
 
-Triton Concrete Coating is a Flask-based web application for a concrete coating business serving O'ahu, Hawaii. The application provides a complete business website with customer-facing features and an admin dashboard for managing bookings and customer inquiries.
+This is a comprehensive Flask-based web application for a professional handyman business. The application features a complete business website with customer-facing services and an AI-powered lead generation system in the management portal.
 
 ## System Architecture
 
