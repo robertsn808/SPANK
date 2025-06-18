@@ -56,6 +56,11 @@ def about():
     """About page with company information"""
     return render_template('about.html')
 
+@app.route('/services')
+def services():
+    """Services page with comprehensive handyman service listings"""
+    return render_template('services.html')
+
 @app.route('/gallery')
 def gallery():
     """Gallery page showcasing work samples"""
@@ -185,6 +190,62 @@ def admin_login():
         logging.warning(f"Failed login attempt for username: {username}")
     
     return render_template('admin_login.html')
+
+@app.route('/admin/ai-leads')
+def ai_leads():
+    """AI Lead Generator page for analyzing and managing leads"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access the AI lead generator.', 'error')
+        return redirect(url_for('admin_login'))
+    
+    # Get all leads and analyze them with AI
+    leads = handyman_storage.get_all_leads()
+    contact_messages = handyman_storage.get_all_contact_messages()
+    service_requests = handyman_storage.get_all_service_requests()
+    
+    # Analyze unanalyzed contact messages with AI
+    for message in contact_messages:
+        if not message.ai_analysis:
+            try:
+                analysis = ai_service.analyze_contact_message(message)
+                message.ai_analysis = analysis
+                message.priority_score = analysis.get('urgency_score', 0)
+            except Exception as e:
+                logging.error(f"AI analysis failed for message {message.id}: {e}")
+    
+    # Generate service recommendations for pending requests
+    for request in service_requests:
+        if not request.ai_recommendations and request.status == 'pending':
+            try:
+                recommendations = ai_service.generate_service_recommendations(request)
+                request.ai_recommendations = recommendations
+                request.estimated_duration = recommendations.get('estimated_project_duration', 'TBD')
+                request.estimated_cost = recommendations.get('material_considerations', 'TBD')
+            except Exception as e:
+                logging.error(f"AI recommendations failed for request {request.id}: {e}")
+    
+    # Score existing leads
+    for lead in leads:
+        if lead.ai_score == 0:
+            try:
+                scoring = ai_service.score_lead_quality(lead)
+                lead.ai_score = scoring.get('conversion_score', 0)
+                lead.follow_up_suggestions = scoring.get('recommended_approach', '')
+            except Exception as e:
+                logging.error(f"AI scoring failed for lead {lead.id}: {e}")
+    
+    # Get high priority items
+    high_priority_messages = [m for m in contact_messages if m.priority_score >= 7]
+    high_value_leads = handyman_storage.get_high_priority_leads()
+    urgent_requests = [r for r in service_requests if r.priority == 'high' or (r.ai_recommendations and 'urgent' in str(r.ai_recommendations).lower())]
+    
+    return render_template('admin/ai_leads.html',
+                         leads=leads,
+                         contact_messages=contact_messages,
+                         service_requests=service_requests,
+                         high_priority_messages=high_priority_messages,
+                         high_value_leads=high_value_leads,
+                         urgent_requests=urgent_requests)
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
@@ -388,8 +449,8 @@ def schedule_from_booking(booking_id):
         }
         appointments.append(appointment)
         
-        # Update booking status
-        booking_storage.update_booking_status(booking_id, "scheduled")
+        # Update service request status
+        handyman_storage.update_service_request_status(booking_id, "scheduled")
         flash("Appointment scheduled from consultation request!", "success")
     except Exception as e:
         logging.error(f"Error scheduling appointment from booking {booking_id}: {e}")
