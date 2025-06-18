@@ -1,12 +1,13 @@
 from flask import render_template, request, redirect, url_for, session, flash, jsonify
 from app import app
-from models import BookingStorage
+from models import HandymanStorage
+from ai_service import ai_service
 from datetime import datetime, timedelta
 import pytz
 import logging
 
-# Initialize booking storage
-booking_storage = BookingStorage()
+# Initialize handyman storage
+handyman_storage = HandymanStorage()
 
 # Additional storage for contact messages, appointments, and staff
 contact_messages = []

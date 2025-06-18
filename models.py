@@ -1,8 +1,10 @@
 
+import uuid
 from datetime import datetime
 
 class ContactMessage:
     def __init__(self, name, email, phone=None, subject=None, message=None):
+        self.id = str(uuid.uuid4())
         self.name = name
         self.email = email
         self.phone = phone
@@ -10,56 +12,71 @@ class ContactMessage:
         self.message = message
         self.status = 'unread'
         self.created_at = datetime.now()
+        self.ai_analysis = None
+        self.priority_score = 0
 
-class Booking:
-    def __init__(self, name, email, phone, service, project_type=None, preferred_date=None, 
-                 preferred_time=None, consultation_type=None, message=None, square_footage=None):
+class ServiceRequest:
+    def __init__(self, name, email, phone, service, priority=None, preferred_date=None, 
+                 preferred_time=None, location=None, description=None, budget_range=None):
+        self.id = str(uuid.uuid4())
         self.name = name
         self.email = email
         self.phone = phone
         self.service = service
-        self.project_type = project_type
+        self.priority = priority or 'medium'
         self.preferred_date = preferred_date
         self.preferred_time = preferred_time
-        self.consultation_type = consultation_type
-        self.message = message
-        self.square_footage = square_footage
+        self.location = location
+        self.description = description
+        self.budget_range = budget_range
         self.status = 'pending'
         self.submitted_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.ai_recommendations = None
+        self.estimated_duration = None
+        self.estimated_cost = None
 
-class BookingStorage:
+class Lead:
+    def __init__(self, name, email, phone, source, interest_level=None, notes=None):
+        self.id = str(uuid.uuid4())
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.source = source  # website, referral, social_media, etc.
+        self.interest_level = interest_level or 'medium'
+        self.notes = notes
+        self.status = 'new'  # new, contacted, qualified, converted, closed
+        self.created_at = datetime.now()
+        self.ai_score = 0
+        self.follow_up_suggestions = None
+
+class HandymanStorage:
     def __init__(self):
-        self.bookings = []
+        self.service_requests = []
         self.contact_messages = []
-        self.next_booking_id = 1
-        self.next_message_id = 1
+        self.leads = []
     
-    def add_booking(self, booking_data):
-        booking = Booking(**booking_data)
-        booking.id = self.next_booking_id
-        self.bookings.append(booking)
-        self.next_booking_id += 1
-        return booking.id
+    def add_service_request(self, request_data):
+        request = ServiceRequest(**request_data)
+        self.service_requests.append(request)
+        return request.id
     
-    def get_all_bookings(self):
-        return self.bookings
+    def get_all_service_requests(self):
+        return self.service_requests
     
-    def update_booking_status(self, booking_id, status):
-        for booking in self.bookings:
-            if booking.id == booking_id:
-                booking.status = status
+    def update_service_request_status(self, request_id, status):
+        for request in self.service_requests:
+            if request.id == request_id:
+                request.status = status
                 return True
         return False
     
-    def delete_booking(self, booking_id):
-        self.bookings = [b for b in self.bookings if b.id != booking_id]
+    def delete_service_request(self, request_id):
+        self.service_requests = [r for r in self.service_requests if r.id != request_id]
         return True
     
     def add_contact_message(self, message_data):
         message = ContactMessage(**message_data)
-        message.id = self.next_message_id
         self.contact_messages.append(message)
-        self.next_message_id += 1
         return message.id
     
     def get_all_contact_messages(self):
@@ -75,6 +92,28 @@ class BookingStorage:
     def delete_contact_message(self, message_id):
         self.contact_messages = [m for m in self.contact_messages if m.id != message_id]
         return True
+    
+    def add_lead(self, lead_data):
+        lead = Lead(**lead_data)
+        self.leads.append(lead)
+        return lead.id
+    
+    def get_all_leads(self):
+        return self.leads
+    
+    def update_lead_status(self, lead_id, status):
+        for lead in self.leads:
+            if lead.id == lead_id:
+                lead.status = status
+                return True
+        return False
+    
+    def delete_lead(self, lead_id):
+        self.leads = [l for l in self.leads if l.id != lead_id]
+        return True
+    
+    def get_high_priority_leads(self):
+        return [lead for lead in self.leads if lead.ai_score > 7 or lead.interest_level == 'high']
 
 class Admin:
     def __init__(self, username, password_hash):
