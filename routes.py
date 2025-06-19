@@ -99,12 +99,11 @@ def consultation():
                 'email': email,
                 'phone': phone,
                 'service': service,
-                'project_type': project_type,
-                'consultation_type': consultation_type,
                 'preferred_date': preferred_date,
                 'preferred_time': preferred_time,
-                'message': message,
-                'square_footage': square_footage
+                'location': f"{consultation_type} consultation" if consultation_type else None,
+                'description': f"{message}. Project type: {project_type}. Square footage: {square_footage}" if message else f"Project type: {project_type}. Square footage: {square_footage}",
+                'budget_range': None
             })
 
             flash('Thank you! Your consultation request has been submitted. We will contact you within 24 hours.', 'success')
