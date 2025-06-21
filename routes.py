@@ -736,12 +736,13 @@ def process_referral():
         if not referrer_email or not referred_email:
             return jsonify({'success': False, 'error': 'Both emails are required'}), 400
         
-        # Send $25 SPANK Buck reward for successful referral
-        reward_sent = notification_service.send_spank_buck_email(
-            to_email=referrer_email,
+        # Send $25 SPANK Buck reward for successful referral via SMS
+        reward_sent = notification_service.send_spank_buck_reward(
+            phone_number=referrer_phone,
             amount=25,
             reason=f'referring {referred_email} to SPANK services',
-            customer_name=referrer_name
+            customer_name=referrer_name,
+            email=referrer_email
         )
         
         # Store referral record

@@ -939,6 +939,361 @@ footer a:hover {
     }
 }
 
+/* Enhanced Desktop Layout Optimizations */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1400px;
+    }
+    
+    /* Hero Section Enhancements */
+    .hero-section {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        padding: 2rem 0;
+    }
+    
+    .hero-content {
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        padding: 3rem;
+        border-radius: 20px;
+    }
+    
+    .hero-content h1, .hero-title {
+        font-size: 4.5rem;
+        line-height: 1.1;
+        margin-bottom: 2rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .hero-content .lead, .hero-subtitle {
+        font-size: 1.6rem;
+        line-height: 1.5;
+        margin-bottom: 3rem;
+        opacity: 0.95;
+    }
+    
+    .hero-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .hero-buttons .btn {
+        font-size: 1.2rem;
+        padding: 18px 40px;
+        min-width: 200px;
+        border-radius: 50px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+    }
+    
+    .hero-buttons .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Section Enhancements */
+    .section-padding {
+        padding: 120px 0;
+    }
+    
+    /* Service Cards Grid Layout */
+    .services-section .row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 3rem;
+        margin-top: 4rem;
+    }
+    
+    .service-card {
+        padding: 3rem 2.5rem;
+        height: 100%;
+        border-radius: 20px;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .service-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(0,123,255,0.05) 0%, rgba(40,167,69,0.05) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .service-card:hover::before {
+        opacity: 1;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-15px) scale(1.02);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
+    
+    .service-card h4 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        color: var(--bs-primary);
+    }
+    
+    .service-card p {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: #666;
+    }
+    
+    /* Enhanced Pricing Layout */
+    .pricing-section .row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 3rem;
+        margin-top: 4rem;
+    }
+    
+    .pricing-card {
+        padding: 3.5rem 3rem;
+        border-radius: 25px;
+        position: relative;
+        transition: all 0.4s ease;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .pricing-card:hover {
+        transform: translateY(-20px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+    }
+    
+    .pricing-table {
+        margin-top: 4rem;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .pricing-table th,
+    .pricing-table td {
+        padding: 1.2rem 1.5rem;
+        font-size: 1.1rem;
+        vertical-align: middle;
+        border-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    .pricing-table th {
+        background: rgba(0, 123, 255, 0.1);
+        font-weight: 600;
+    }
+    
+    /* Contact Section Optimization */
+    .contact-section .row {
+        align-items: stretch;
+        gap: 3rem;
+    }
+    
+    .contact-info {
+        padding: 3rem;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(0,123,255,0.1) 0%, rgba(40,167,69,0.1) 100%);
+        height: 100%;
+        backdrop-filter: blur(10px);
+    }
+    
+    .contact-form {
+        padding: 3rem;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        height: 100%;
+        backdrop-filter: blur(10px);
+    }
+    
+    /* Enhanced Typography */
+    h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 2rem;
+    }
+    
+    h2 {
+        font-size: 3rem;
+        font-weight: 600;
+        margin-bottom: 3rem;
+        line-height: 1.3;
+        text-align: center;
+    }
+    
+    h3 {
+        font-size: 2.2rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        line-height: 1.4;
+    }
+    
+    h4 {
+        font-size: 1.8rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+    }
+    
+    p {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+    }
+    
+    .lead {
+        font-size: 1.4rem;
+        line-height: 1.6;
+        font-weight: 300;
+    }
+    
+    /* Enhanced Button Styles */
+    .btn {
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 12px 24px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .btn-lg {
+        padding: 18px 40px;
+        font-size: 1.1rem;
+        border-radius: 50px;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Navbar Enhancements */
+    .navbar-nav .nav-link {
+        font-size: 1.05rem;
+        font-weight: 500;
+        margin: 0 0.5rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+    }
+    
+    .navbar-nav .nav-link:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .navbar-brand {
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+    
+    /* Card Enhancements */
+    .card {
+        border-radius: 20px;
+        border: none;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Form Enhancements */
+    .form-control, .form-select {
+        border-radius: 12px;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.9);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        background: white;
+    }
+    
+    /* SPANK School Desktop Enhancements */
+    .course-card {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+    }
+    
+    .course-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    .course-card:hover::before {
+        left: 100%;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Enhanced Grid Layouts */
+    .row.g-4 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+    }
+    
+    .testimonial-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    
+    /* About section two-column layout */
+    .about-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5rem;
+        align-items: center;
+        margin-top: 4rem;
+    }
+}
+
 /* Print Styles */
 @media print {
     .navbar,
