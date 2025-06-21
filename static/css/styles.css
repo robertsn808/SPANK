@@ -21,20 +21,31 @@ body {
     line-height: 1.6;
     color: hsl(var(--text-color));
     background-color: hsl(var(--background));
+    padding-top: 0;
+}
+
+/* Content sections without hero need padding */
+.content-section {
+    padding-top: 100px;
+}
+
+.content-section.with-hero {
+    padding-top: 0;
 }
 
 /* Premium Navigation Styles */
 .navbar-premium {
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%) !important;
+    background: rgba(0, 0, 0, 0.3) !important;
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 2px 20px rgba(30, 60, 114, 0.3);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
 
 .navbar-premium.scrolled {
     background: linear-gradient(135deg, rgba(30, 60, 114, 0.95) 0%, rgba(42, 82, 152, 0.95) 50%, rgba(30, 60, 114, 0.95) 100%) !important;
     backdrop-filter: blur(15px);
+    box-shadow: 0 2px 20px rgba(30, 60, 114, 0.3);
 }
 
 .navbar-brand {

@@ -1150,7 +1150,7 @@ function updateNavbarOnScroll() {
     
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     
-    if (scrollTop > 100) {
+    if (scrollTop > 50) {
         navbar.classList.add('scrolled');
     } else {
         navbar.classList.remove('scrolled');
