@@ -72,6 +72,11 @@ def spank_school():
     """Spank School - Educational DIY learning platform"""
     return render_template('spank_school.html')
 
+@app.route('/test-email')
+def test_email():
+    """Email testing interface for SPANK Buck rewards"""
+    return render_template('test_email.html')
+
 @app.route('/consultation', methods=['GET', 'POST'])
 def consultation():
     """Consultation booking page"""
