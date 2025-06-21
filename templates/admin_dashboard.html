@@ -282,25 +282,6 @@
         </div>
     </div>
 </section>
-                                                <button class="btn btn-sm btn-outline-light me-1" data-bs-toggle="modal" data-bs-target="#appointmentNotesModal{{ appointment.id }}">
-                                                    <i class="fas fa-sticky-note"></i>
-                                                </button>
-                                                <form method="POST" action="{{ url_for('delete_appointment', appointment_id=appointment.id) }}" class="d-inline">
-                                                    <button type="submit" class="btn btn-sm btn-outline-light" onclick="return confirm('Delete this appointment?')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
             
             <!-- Quick Stats and Actions -->
             <div class="col-lg-4">
