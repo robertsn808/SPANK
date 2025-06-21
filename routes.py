@@ -113,6 +113,15 @@ def consultation():
                 'budget_range': None
             })
 
+            # Send inquiry alert to admin
+            notification_service.send_inquiry_alert(
+                inquiry_type="consultation",
+                customer_name=name,
+                phone_number=phone,
+                email=email,
+                service_type=service
+            )
+            
             flash('Thank you! Your consultation request has been submitted. We will contact you within 24 hours.', 'success')
             logging.info(f"New service request created with ID: {request_id}")
             return redirect(url_for('consultation'))
@@ -149,6 +158,14 @@ def contact():
                 'message': message
             })
 
+            # Send inquiry alert to admin
+            notification_service.send_inquiry_alert(
+                inquiry_type="contact",
+                customer_name=name,
+                phone_number=phone,
+                email=email
+            )
+            
             flash('Thank you! Your message has been sent. We will respond within 24 hours.', 'success')
             logging.info(f"New contact message created with ID: {message_id}")
             return redirect(url_for('contact'))

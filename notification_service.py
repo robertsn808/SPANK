@@ -136,6 +136,35 @@ class NotificationService:
         except Exception as e:
             logging.error(f"Failed to send SPANK Buck SMS: {e}")
             return False
+
+    def send_inquiry_alert(self, inquiry_type, customer_name, phone_number, email, service_type=None):
+        """Send SMS alert to admin when new inquiries come in"""
+        admin_phone = "+18084529779"
+        
+        try:
+            if not self.twilio_client:
+                logging.warning("Twilio not configured - skipping inquiry alert")
+                return False
+            
+            if inquiry_type == "contact":
+                message_body = f"🔔 New Contact Inquiry!\n\nCustomer: {customer_name}\nPhone: {phone_number}\nEmail: {email}\n\nPlease follow up promptly.\n- SPANK Team"
+            elif inquiry_type == "consultation":
+                message_body = f"🔔 New Consultation Request!\n\nCustomer: {customer_name}\nPhone: {phone_number}\nEmail: {email}\nService: {service_type or 'General'}\n\nPlease schedule consultation.\n- SPANK Team"
+            else:
+                message_body = f"🔔 New Inquiry!\n\nCustomer: {customer_name}\nPhone: {phone_number}\nEmail: {email}\n\nPlease follow up.\n- SPANK Team"
+            
+            message = self.twilio_client.messages.create(
+                body=message_body,
+                from_=self.twilio_phone,
+                to=admin_phone
+            )
+            
+            logging.info(f"Inquiry alert sent to admin for {customer_name}")
+            return True
+            
+        except Exception as e:
+            logging.error(f"Failed to send inquiry alert: {e}")
+            return False
     
     def _send_via_rapidapi(self, to_email, amount, reason, customer_name):
         """Send email via RapidAPI SendGrid service"""
