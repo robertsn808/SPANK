@@ -718,6 +718,209 @@
     </div>
 </section>
 
+<!-- Job Opportunities Section -->
+<section class="py-4" id="job-opportunities">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-gradient-success text-white d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-1 text-white"><i class="fas fa-briefcase me-2"></i>Job Opportunities</h3>
+                    <p class="mb-0 opacity-75">Find new projects and manage potential work opportunities</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light btn-sm" onclick="refreshOpportunities()">
+                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                    </button>
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addOpportunityModal">
+                        <i class="fas fa-plus me-1"></i>Add Lead
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Opportunity Sources -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-primary-light mb-3">
+                                    <i class="fas fa-home fa-2x text-primary"></i>
+                                </div>
+                                <h6 class="fw-bold">Nextdoor Leads</h6>
+                                <span class="h4 fw-bold text-primary">12</span>
+                                <p class="text-muted small mb-0">Active neighborhood requests</p>
+                                <button class="btn btn-outline-primary btn-sm mt-2" onclick="viewNextdoorLeads()">View All</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-success-light mb-3">
+                                    <i class="fas fa-handshake fa-2x text-success"></i>
+                                </div>
+                                <h6 class="fw-bold">Referrals</h6>
+                                <span class="h4 fw-bold text-success">5</span>
+                                <p class="text-muted small mb-0">Customer referrals pending</p>
+                                <button class="btn btn-outline-success btn-sm mt-2" onclick="viewReferrals()">View All</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-warning-light mb-3">
+                                    <i class="fas fa-search fa-2x text-warning"></i>
+                                </div>
+                                <h6 class="fw-bold">Online Platforms</h6>
+                                <span class="h4 fw-bold text-warning">8</span>
+                                <p class="text-muted small mb-0">TaskRabbit, Thumbtack, etc.</p>
+                                <button class="btn btn-outline-warning btn-sm mt-2" onclick="viewOnlineLeads()">Check Platforms</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-info-light mb-3">
+                                    <i class="fas fa-phone fa-2x text-info"></i>
+                                </div>
+                                <h6 class="fw-bold">Direct Inquiries</h6>
+                                <span class="h4 fw-bold text-info">3</span>
+                                <p class="text-muted small mb-0">Phone and email contacts</p>
+                                <button class="btn btn-outline-info btn-sm mt-2" onclick="viewDirectInquiries()">View All</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Opportunities -->
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-3">Active Opportunities</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Lead</th>
+                                        <th>Service Type</th>
+                                        <th>Location</th>
+                                        <th>Est. Value</th>
+                                        <th>Urgency</th>
+                                        <th>Source</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>Maria Rodriguez</strong><br>
+                                            <small class="text-muted">(808) 555-0123</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">Flooring</span><br>
+                                            <small class="text-muted">LVP installation, 400 sq ft</small>
+                                        </td>
+                                        <td>Kailua</td>
+                                        <td><span class="text-success fw-bold">$1,600</span></td>
+                                        <td><span class="badge bg-warning">Medium</span></td>
+                                        <td>Nextdoor</td>
+                                        <td><span class="badge bg-info">Quoted</span></td>
+                                        <td>
+                                            <button class="btn btn-success btn-sm" onclick="followUpLead('maria')">Follow Up</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>James Chen</strong><br>
+                                            <small class="text-muted">(808) 555-0456</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">Fence</span><br>
+                                            <small class="text-muted">Wood fence, 80 linear ft</small>
+                                        </td>
+                                        <td>Honolulu</td>
+                                        <td><span class="text-success fw-bold">$5,200</span></td>
+                                        <td><span class="badge bg-danger">High</span></td>
+                                        <td>Referral</td>
+                                        <td><span class="badge bg-warning">Contacted</span></td>
+                                        <td>
+                                            <button class="btn btn-primary btn-sm" onclick="scheduleLead('james')">Schedule</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Sarah Williams</strong><br>
+                                            <small class="text-muted">(808) 555-0789</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">Drywall</span><br>
+                                            <small class="text-muted">Water damage repair</small>
+                                        </td>
+                                        <td>Pearl City</td>
+                                        <td><span class="text-success fw-bold">$450</span></td>
+                                        <td><span class="badge bg-danger">High</span></td>
+                                        <td>Website</td>
+                                        <td><span class="badge bg-secondary">New</span></td>
+                                        <td>
+                                            <button class="btn btn-warning btn-sm" onclick="contactLead('sarah')">Contact</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>David Park</strong><br>
+                                            <small class="text-muted">(808) 555-0321</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-dark">Renovation</span><br>
+                                            <small class="text-muted">Bathroom remodel</small>
+                                        </td>
+                                        <td>Kaneohe</td>
+                                        <td><span class="text-success fw-bold">$6,800</span></td>
+                                        <td><span class="badge bg-success">Low</span></td>
+                                        <td>TaskRabbit</td>
+                                        <td><span class="badge bg-info">Quoted</span></td>
+                                        <td>
+                                            <button class="btn btn-success btn-sm" onclick="followUpLead('david')">Follow Up</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-3">Quick Actions</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="checkNextdoorRequests()">
+                                <i class="fas fa-home me-1"></i>Check Nextdoor Requests
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="updateTaskRabbit()">
+                                <i class="fas fa-tasks me-1"></i>Update TaskRabbit Profile
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="checkThumbtack()">
+                                <i class="fas fa-thumbtack me-1"></i>Check Thumbtack Leads
+                            </button>
+                            <button class="btn btn-outline-info btn-sm" onclick="sendFollowUps()">
+                                <i class="fas fa-envelope me-1"></i>Send Follow-up Emails
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="generateQuotes()">
+                                <i class="fas fa-calculator me-1"></i>Generate Quotes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Consultation Requests -->
 <section class="py-4" id="consultation-requests">
     <div class="container">
@@ -1316,6 +1519,73 @@ function addRecentActivity(activity, time) {
         const currentCount = parseInt(engagementElement.textContent);
         engagementElement.textContent = currentCount + Math.floor(Math.random() * 10) + 5;
     }
+}
+
+// Job Opportunities Functions
+function refreshOpportunities() {
+    // Simulate refreshing data from various platforms
+    alert('Refreshing opportunities from all sources...\n\n✓ Nextdoor: 2 new requests\n✓ TaskRabbit: 1 new project\n✓ Thumbtack: 3 quote requests\n✓ Direct inquiries: 1 new phone call');
+}
+
+function viewNextdoorLeads() {
+    alert('Nextdoor Neighborhood Leads:\n\n1. Flooring repair - Kailua ($800)\n2. Fence installation - Hawaii Kai ($3,200)\n3. Drywall patch - Kaneohe ($250)\n4. Bathroom renovation - Honolulu ($4,500)\n5. Kitchen cabinet repair - Pearl City ($600)\n6. Deck staining - Aiea ($1,200)\n\n+ 6 more active requests');
+}
+
+function viewReferrals() {
+    alert('Customer Referrals:\n\n1. John Smith → Maria Lopez (Tile work)\n2. Lisa Wong → David Kim (Flooring)\n3. Mike Johnson → Sarah Chen (Fence repair)\n4. Anna Rodriguez → Tom Wilson (Drywall)\n5. Chris Park → Amy Lee (Renovation)\n\nAll referrals eligible for $25 Spankks Bucks reward');
+}
+
+function viewOnlineLeads() {
+    alert('Online Platform Leads:\n\nTaskRabbit (3 active):\n• Furniture assembly - $75\n• Shelf mounting - $120\n• Minor electrical - $150\n\nThumbtack (5 quotes):\n• Bathroom remodel - $6,500\n• Fence building - $4,200\n• Flooring install - $2,800\n• Kitchen update - $8,900\n• Drywall repair - $380');
+}
+
+function viewDirectInquiries() {
+    alert('Direct Contact Inquiries:\n\n1. (808) 555-1234 - Fence repair quote\n2. spank808@gmail.com - Kitchen renovation\n3. (808) 555-5678 - Emergency drywall fix\n\nAll pending initial contact within 24 hours');
+}
+
+function followUpLead(leadName) {
+    const messages = {
+        'maria': 'Following up with Maria Rodriguez about LVP flooring project...\n\nSending: "Hi Maria, just checking if you had any questions about our $1,600 quote for your 400 sq ft LVP installation in Kailua. We can start next week!"',
+        'david': 'Following up with David Park about bathroom renovation...\n\nSending: "Hi David, wanted to follow up on your bathroom remodel project. Our $6,800 quote includes all materials and labor. Would you like to schedule a final walkthrough?"'
+    };
+    
+    alert(messages[leadName] || 'Sending follow-up message to lead...');
+}
+
+function scheduleLead(leadName) {
+    const schedules = {
+        'james': 'Scheduling consultation with James Chen...\n\nProposed times:\n• Monday 2:00 PM - Fence site visit\n• Tuesday 10:00 AM - Alternative time\n• Wednesday 3:00 PM - Final option\n\nSending calendar invite for 80 linear ft wood fence project ($5,200)'
+    };
+    
+    alert(schedules[leadName] || 'Scheduling consultation with lead...');
+}
+
+function contactLead(leadName) {
+    const contacts = {
+        'sarah': 'Contacting Sarah Williams about water damage repair...\n\nCalling (808) 555-0789 now...\n\n"Hi Sarah, this is from Spankks Construction. I see you need emergency drywall repair for water damage. We can be there today for $450 total. When works best for you?"'
+    };
+    
+    alert(contacts[leadName] || 'Initiating contact with new lead...');
+}
+
+function checkNextdoorRequests() {
+    alert('Checking Nextdoor for new service requests...\n\n🔍 Found 4 new posts in the last 2 hours:\n\n1. "Need flooring expert in Kailua" - 15 min ago\n2. "Fence repair ASAP - Pearl City" - 32 min ago  \n3. "Bathroom tile work - Honolulu" - 1 hr ago\n4. "Drywall patch needed" - 2 hrs ago\n\nClick to respond to these requests?');
+}
+
+function updateTaskRabbit() {
+    alert('Updating TaskRabbit profile and availability...\n\n✓ Profile photos updated\n✓ Service descriptions refreshed\n✓ Availability set to "Available Now"\n✓ Pricing updated to match current rates\n✓ Portfolio images added\n\nYour profile is now optimized for maximum visibility!');
+}
+
+function checkThumbtack() {
+    alert('Checking Thumbtack for new quote requests...\n\n💼 3 new quote opportunities:\n\n1. Kitchen renovation - Kaneohe ($8,000-12,000)\n2. Fence installation - Hawaii Kai ($3,500-5,000)\n3. Flooring replacement - Aiea ($2,200-3,800)\n\nAll requests submitted within last 6 hours. Respond quickly to increase win rate!');
+}
+
+function sendFollowUps() {
+    alert('Sending automated follow-up emails...\n\n📧 Sending to 12 previous quotes:\n\n• 3 quotes from last week\n• 5 quotes from 2 weeks ago  \n• 4 quotes from last month\n\nMessages customized based on project type and timeline. Expected response rate: 15-20%');
+}
+
+function generateQuotes() {
+    alert('Opening quote generator...\n\n📋 Quick quote templates available:\n\n• Drywall repair: $155-600\n• Flooring install: $3-8/sq ft\n• Fence building: $35-70/linear ft\n• General repairs: $90-200\n• Renovations: $2,500-25,000\n\nSelect service type to generate professional quote with Spankks Construction branding');
 }
 </script>
 {% endblock %}
