@@ -30,17 +30,13 @@
         z-index: 2;
     }
     
-    .progress-indicator {
-        height: 4px;
-        background: #e9ecef;
-        border-radius: 2px;
-        overflow: hidden;
-    }
-    
-    .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #28a745, #20c997);
-        transition: width 0.3s ease;
+    .reward-badge {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        font-size: 0.75rem;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-weight: bold;
     }
     
     .course-stats {
@@ -113,7 +109,7 @@
                         <i class="fas fa-play me-2"></i>Start Learning
                     </button>
                     <div class="points-display">
-                        <i class="fas fa-star me-2"></i>Spank Points: <span id="userPoints">0</span>
+                        <i class="fas fa-dollar-sign me-2"></i>Earn $5 SPANK Bucks
                     </div>
                 </div>
             </div>
@@ -154,8 +150,8 @@
                 <div class="feature-icon">
                     <i class="fas fa-award"></i>
                 </div>
-                <h5>Earn Points</h5>
-                <p class="text-muted">Complete courses and earn Spank Points</p>
+                <h5>Earn SPANK Bucks</h5>
+                <p class="text-muted">Complete courses and earn $5 SPANK Bucks</p>
             </div>
         </div>
     </div>
@@ -190,8 +186,10 @@
                                         <i class="fas fa-list-ol me-1"></i>3 lessons
                                     </p>
                                     <p class="card-text">Stop the drip and save your sanity. Learn to identify, disassemble, and fix common faucet problems.</p>
-                                    <div class="progress-indicator mb-3">
-                                        <div class="progress-fill" style="width: 0%"></div>
+                                    <div class="mb-3">
+                                        <span class="reward-badge">
+                                            <i class="fas fa-dollar-sign me-1"></i>Earn $5 SPANK Bucks
+                                        </span>
                                     </div>
                                     <button class="btn btn-primary w-100" onclick="startCourse('faucet')">
                                         <i class="fas fa-play me-2"></i>Start Course
@@ -213,8 +211,10 @@
                                         <i class="fas fa-list-ol me-1"></i>4 lessons
                                     </p>
                                     <p class="card-text">Master toilet repair with our comprehensive 4-step guide to stop running water.</p>
-                                    <div class="progress-indicator mb-3">
-                                        <div class="progress-fill" style="width: 0%"></div>
+                                    <div class="mb-3">
+                                        <span class="reward-badge">
+                                            <i class="fas fa-dollar-sign me-1"></i>Earn $5 SPANK Bucks
+                                        </span>
                                     </div>
                                     <button class="btn btn-primary w-100" onclick="startCourse('toilet')">
                                         <i class="fas fa-play me-2"></i>Start Course
@@ -628,11 +628,10 @@ const courses = {
 // JavaScript functionality
 let currentCourse = null;
 let currentLesson = 0;
-let userPoints = parseInt(localStorage.getItem('spankPoints') || '0');
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('userPoints').textContent = userPoints;
+    console.log('SPANK School loaded successfully');
 });
 
 // Smooth scroll to courses
@@ -687,19 +686,23 @@ function nextLesson() {
 
 // Complete course
 function completeCourse() {
-    updatePoints(10);
     bootstrap.Modal.getInstance(document.getElementById('courseModal')).hide();
     
     setTimeout(() => {
-        alert(`Congratulations! You've completed ${currentCourse.title} and earned 10 Spank Points!`);
+        const email = prompt(`Congratulations! You've completed ${currentCourse.title}!\n\nEnter your email to receive $5 SPANK Bucks:`);
+        if (email && email.includes('@')) {
+            alert(`Thank you! Your $5 SPANK Bucks will be emailed to ${email} within 24 hours.`);
+            // In a real implementation, this would send the email
+            console.log(`Send $5 SPANK Bucks to: ${email} for completing: ${currentCourse.title}`);
+        }
     }, 500);
 }
 
-// Update points
-function updatePoints(points) {
-    userPoints += points;
-    localStorage.setItem('spankPoints', userPoints.toString());
-    document.getElementById('userPoints').textContent = userPoints;
+// Send SPANK Bucks reward
+function sendSpankBucks(email, amount, reason) {
+    // In a real implementation, this would integrate with email service
+    console.log(`Sending $${amount} SPANK Bucks to ${email} for: ${reason}`);
+    return true;
 }
 
 // Interactive functions
@@ -708,7 +711,6 @@ function showAnswer(quizId, answer) {
     if (element) {
         element.innerHTML = `<div class="alert alert-light mt-2"><strong>Answer:</strong> ${answer}</div>`;
         element.style.display = 'block';
-        updatePoints(2);
     }
 }
 
