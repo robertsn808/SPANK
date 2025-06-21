@@ -243,3 +243,15 @@ class Membership:
         self.monthly_fee = {"essential": 29, "premium": 59, "elite": 99}.get(plan_type, 0)
         self.benefits_used = 0
         self.next_billing_date = None
+
+class AdminNotification:
+    def __init__(self, type, customer_name, phone_number, email, amount, reason, timestamp, status="unread"):
+        self.id = str(uuid.uuid4())
+        self.type = type  # spank_buck_reward
+        self.customer_name = customer_name
+        self.phone_number = phone_number
+        self.email = email
+        self.amount = amount
+        self.reason = reason
+        self.timestamp = timestamp
+        self.status = status  # unread, read

@@ -665,31 +665,23 @@ def send_spank_bucks():
         if not email:
             return jsonify({'success': False, 'error': 'Email is required'}), 400
         
-        # Send email notification
-        email_sent = notification_service.send_spank_buck_email(
-            to_email=email,
+        # Send SMS notification only
+        sms_sent = notification_service.send_spank_buck_reward(
+            phone_number=phone,
             amount=amount,
             reason=reason,
-            customer_name=name
+            customer_name=name,
+            email=email
         )
         
-        # Send SMS if phone number provided
-        sms_sent = False
-        if phone:
-            sms_sent = notification_service.send_spank_buck_sms(
-                to_phone=phone,
-                amount=amount,
-                reason=reason,
-                customer_name=name
-            )
+        # SMS already sent via send_spank_buck_reward above
         
         logging.info(f"SPANK Buck reward processed: ${amount} to {email} for {reason}")
         
         return jsonify({
-            'success': True,
-            'email_sent': email_sent,
+            'success': sms_sent,
             'sms_sent': sms_sent,
-            'message': f'${amount} SPANK Bucks sent to {email}'
+            'message': f'${amount} SPANK Bucks sent to {phone or email}'
         })
         
     except Exception as e:
@@ -709,12 +701,13 @@ def complete_course():
         if not email or not course_name:
             return jsonify({'success': False, 'error': 'Email and course name are required'}), 400
         
-        # Send $5 SPANK Buck reward for course completion
-        reward_sent = notification_service.send_spank_buck_email(
-            to_email=email,
+        # Send $5 SPANK Buck reward for course completion via SMS
+        reward_sent = notification_service.send_spank_buck_reward(
+            phone_number=phone,
             amount=5,
             reason=f'completing the "{course_name}" course at SPANK School',
-            customer_name=student_name
+            customer_name=student_name,
+            email=email
         )
         
         logging.info(f"Course completion reward sent: {email} completed {course_name}")

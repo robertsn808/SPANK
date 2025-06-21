@@ -43,7 +43,12 @@ class NotificationService:
                 
             client = Client(self.twilio_sid, self.twilio_token)
             
-            message_body = f"🎉 Congratulations {customer_name or 'there'}! You've earned ${amount} SPANK Bucks for {reason}. Use them on your next handyman service! - SPANK Team"
+            if "referral" in reason.lower():
+                message_body = f"🎉 Congratulations {customer_name or 'there'}! You've earned ${amount} SPANK Bucks for {reason}. Our SPANK team will reach out to your referred guest soon. Use your SPANK Bucks on your next service! - SPANK Team"
+            elif "course" in reason.lower() or "lesson" in reason.lower():
+                message_body = f"🎉 Congratulations {customer_name or 'there'}! You've earned ${amount} SPANK Bucks for {reason}. A SPANK team member will follow up to see how we can help with your project! Use your SPANK Bucks on any service! - SPANK Team"
+            else:
+                message_body = f"🎉 Congratulations {customer_name or 'there'}! You've earned ${amount} SPANK Bucks for {reason}. Our SPANK team will be in touch soon. Use your SPANK Bucks on your next service! - SPANK Team"
             
             message = client.messages.create(
                 body=message_body,
