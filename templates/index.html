@@ -5,7 +5,7 @@
 {% block head %}
 <style>
     .hero-section {
-        background: linear-gradient(135deg, rgba(52, 58, 64, 0.8), rgba(73, 80, 87, 0.8)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23f8f9fa" width="1200" height="600"/><g fill="%23dee2e6"><circle cx="200" cy="100" r="3"/><circle cx="400" cy="200" r="3"/><circle cx="600" cy="150" r="3"/><circle cx="800" cy="300" r="3"/><circle cx="1000" cy="250" r="3"/></g></svg>');
+        background: linear-gradient(135deg, rgba(52, 58, 64, 0.8), rgba(73, 80, 87, 0.8)), url('/static/images/spank_img.png');
         background-size: cover;
         background-position: center;
         color: white;
@@ -217,6 +217,59 @@
             <a href="{{ url_for('pricing') }}" class="btn btn-primary btn-lg px-4">
                 View All Services & Pricing
             </a>
+        </div>
+    </div>
+</section>
+
+<!-- SPANK School Section -->
+<section class="py-5 bg-warning">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <img src="/static/images/SPANK school_1750469084359.png" alt="SPANK School Character" class="img-fluid rounded-3 shadow">
+            </div>
+            <div class="col-lg-6">
+                <div class="text-dark">
+                    <h2 class="display-5 fw-bold mb-3">Learn DIY with SPANK School!</h2>
+                    <p class="lead mb-4">Master home repairs with our interactive courses featuring step-by-step visual guides, safety tips, and instant quizzes. Perfect your skills before calling the pros!</p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-graduation-cap text-primary me-2"></i>
+                                <strong>15+ Interactive Courses</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-images text-primary me-2"></i>
+                                <strong>Visual Step-by-Step Guides</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-dollar-sign text-success me-2"></i>
+                                <strong>Earn $5 SPANK Bucks</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-quiz text-primary me-2"></i>
+                                <strong>Interactive Quizzes</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-3">
+                        <a href="/spank-school" class="btn btn-primary btn-lg">
+                            <i class="fas fa-play me-2"></i>Start Learning
+                        </a>
+                        <a href="/spank-school" class="btn btn-outline-dark btn-lg">
+                            <i class="fas fa-eye me-2"></i>View Courses
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>

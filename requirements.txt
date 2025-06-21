@@ -12,3 +12,7 @@ openai
 sendgrid
 twilio
 twilio
+flask-dance
+flask-login
+oauthlib
+pyjwt

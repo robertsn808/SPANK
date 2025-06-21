@@ -1,0 +1,94 @@
+🧠 Spank School: Problem Solver
+Step-by-Step Home Troubleshooting Assistant
+
+🛠️ 1. Faucet Won’t Stop Dripping
+Step 1: Where is it leaking from?
+💧 Tip of the spout → Likely a worn cartridge or washer
+
+💧 Base of handle → Likely a loose packing nut or o-ring
+
+Step 2: Shut off water valves under the sink
+Step 3: Identify faucet type
+🧩 Cartridge
+
+🔩 Compression
+
+🧽 Ball / Ceramic Disk
+
+Step 4: Replace the faulty part
+Cartridge = pull + swap
+
+Washer = unscrew + swap
+📍 Still leaking? → Call Spank. You may have a cracked valve seat.
+
+🚽 2. Toilet Keeps Running
+Step 1: Open the tank
+Is water level too high? → Adjust float height
+
+Is flapper not sealing? → Replace flapper
+
+Is fill valve hissing? → Replace fill valve
+
+Step 2: Shut off water and replace broken part
+📍 Still running? → Call Spank. Your overflow pipe or flush valve seat may be damaged.
+
+⚡ 3. Outlet Isn’t Working
+Step 1: Try a different device or lamp
+Still dead? → Continue
+
+Works fine? → Problem is with the original item
+
+Step 2: Check the circuit breaker
+Tripped? → Flip it OFF then ON
+
+GFCI outlet? → Press RESET
+
+Step 3: Test with voltage tester
+No power at all → Outlet or wiring issue
+📍 Still no power? → Call Spank for safe outlet replacement.
+
+🚿 4. Low Water Pressure in Faucet
+Step 1: Check hot vs cold water
+Only hot? → Water heater issue
+
+Both? → Likely the aerator is clogged
+
+Step 2: Unscrew and clean the aerator
+Step 3: Check supply valves (fully open?)
+📍 Still low pressure? → You may need a pipe flush or full fixture replacement.
+
+🌀 5. Slow Drain or Smell from Sink
+Step 1: Pour hot water (not boiling)
+Smell gone? → It was likely a grease clog
+
+Still there? → Proceed
+
+Step 2: Use baking soda + vinegar
+Fizzing = working
+
+Wait 10 mins and flush
+
+Step 3: Snake the drain
+📍 Still clogged or smelly? → Trap may need to be removed or drain re-vented
+
+🎯 Interactive Flowchart Design Suggestions
+Each problem could be built with:
+
+✅ Yes/No buttons
+
+📸 Image-based choices (e.g. “Which part looks like this?”)
+
+🧰 Tooltips (“You’ll need: wrench, bucket, gloves”)
+
+🛎️ CTA: “Still stuck? Book a Spank visit now” at bottom of each flow
+
+🔧 Suggested Initial Problems to Include
+Problem	Difficulty
+Dripping faucet	Easy
+Toilet running	Easy
+Outlet not working	Moderate
+Door won’t latch properly	Easy
+Slow drain or smells	Easy
+Light switch not turning on light	Moderate
+Thermostat unresponsive	Advanced
+Water stain on ceiling	Alert/Pro
