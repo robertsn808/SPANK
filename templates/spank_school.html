@@ -233,8 +233,10 @@
                                         <i class="fas fa-list-ol me-1"></i>4 lessons
                                     </p>
                                     <p class="card-text">Three safe methods to unclog drains without chemicals or damage to your pipes.</p>
-                                    <div class="progress-indicator mb-3">
-                                        <div class="progress-fill" style="width: 0%"></div>
+                                    <div class="mb-3">
+                                        <span class="reward-badge">
+                                            <i class="fas fa-dollar-sign me-1"></i>Earn $5 SPANK Bucks
+                                        </span>
                                     </div>
                                     <button class="btn btn-primary w-100" onclick="startCourse('drain')">
                                         <i class="fas fa-play me-2"></i>Start Course
@@ -421,7 +423,7 @@
                                         <i class="fas fa-brain"></i>
                                     </div>
                                     <h5 class="card-title">Knowledge Quiz</h5>
-                                    <p class="card-text">Test your DIY knowledge and earn Spank Points</p>
+                                    <p class="card-text">Test your DIY knowledge and earn $5 SPANK Bucks</p>
                                     <button class="btn btn-outline-primary w-100" onclick="startQuiz()">
                                         <i class="fas fa-question-circle me-2"></i>Take Quiz
                                     </button>
@@ -744,7 +746,12 @@ function startTroubleshooter() {
 }
 
 function startQuiz() {
-    alert('Knowledge Quiz coming soon! Test your DIY skills and earn more Spank Points.');
+    const email = prompt('Take our DIY Knowledge Quiz!\n\nEnter your email to receive $5 SPANK Bucks upon completion:');
+    if (email && email.includes('@')) {
+        alert(`Great! Complete the quiz and your $5 SPANK Bucks will be emailed to ${email} within 24 hours.`);
+        // Quiz implementation would go here
+        console.log(`Send $5 SPANK Bucks to: ${email} for completing quiz`);
+    }
 }
 
 function joinLiveSession() {
