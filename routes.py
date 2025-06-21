@@ -66,10 +66,10 @@ def pricing():
     """Pricing page with service rates and packages"""
     return render_template('pricing.html')
 
-@app.route('/reviews')
-def reviews():
-    """Reviews page with customer testimonials"""
-    return render_template('reviews.html')
+@app.route('/spank-school')
+def spank_school():
+    """Spank School - Educational DIY learning platform"""
+    return render_template('spank_school.html')
 
 @app.route('/consultation', methods=['GET', 'POST'])
 def consultation():

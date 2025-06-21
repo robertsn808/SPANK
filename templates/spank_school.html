@@ -1,0 +1,1181 @@
+{% extends "base.html" %}
+
+{% block title %}🧠 Spank School - Learn While You Fix | SPANK Handyman{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-gradient-primary text-white py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-5 fw-bold mb-3">🧠 Spank School</h1>
+                <p class="lead mb-3">Learn While You Fix - Master DIY skills with our interactive courses</p>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <span class="badge bg-warning text-dark px-3 py-2">Free Learning</span>
+                    <span class="badge bg-warning text-dark px-3 py-2">Expert Tips</span>
+                    <span class="badge bg-warning text-dark px-3 py-2">Earn Badges</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Navigation Tabs -->
+<section class="py-3 bg-light">
+    <div class="container">
+        <ul class="nav nav-pills nav-fill" id="spankSchoolTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="courses-tab" data-bs-toggle="pill" data-bs-target="#courses" type="button" role="tab">
+                    <i class="fas fa-graduation-cap me-2"></i>DIY Courses
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="troubleshooter-tab" data-bs-toggle="pill" data-bs-target="#troubleshooter" type="button" role="tab">
+                    <i class="fas fa-search me-2"></i>Troubleshooter
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tools-tab" data-bs-toggle="pill" data-bs-target="#tools" type="button" role="tab">
+                    <i class="fas fa-tools me-2"></i>Tool Time
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="webinars-tab" data-bs-toggle="pill" data-bs-target="#webinars" type="button" role="tab">
+                    <i class="fas fa-video me-2"></i>Live Q&A
+                </button>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<div class="tab-content py-5" id="spankSchoolContent">
+    <!-- DIY Courses Tab -->
+    <div class="tab-pane fade show active" id="courses" role="tabpanel">
+        <div class="container">
+            <!-- Progress Dashboard -->
+            <div class="row mb-5">
+                <div class="col-lg-12">
+                    <div class="card border-0 bg-gradient-primary text-white">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h4 class="mb-2">Your Learning Journey</h4>
+                                    <p class="mb-0">Complete courses to earn Spank Points and unlock service discounts!</p>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="d-flex justify-content-center gap-3">
+                                        <div class="text-center">
+                                            <div class="badge bg-warning text-dark fs-6 px-3 py-2">0</div>
+                                            <small class="d-block mt-1">Spank Points</small>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="badge bg-warning text-dark fs-6 px-3 py-2">0</div>
+                                            <small class="d-block mt-1">Badges Earned</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Categories -->
+            <div class="row g-4">
+                <!-- Plumbing Courses -->
+                <div class="col-lg-6">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-wrench me-2"></i>Plumbing Basics</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="course-item mb-3 p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Fix a Leaky Faucet</h6>
+                                        <small class="text-muted">3 lessons • 8 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-success">Beginner</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('faucet')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="course-item mb-3 p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Unclog a Drain (Without Melting Your Pipes)</h6>
+                                        <small class="text-muted">4 lessons • 15 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-success">Beginner</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('drain')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="course-item p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Toilet Running Water Fix</h6>
+                                        <small class="text-muted">4 lessons • 12 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-warning text-dark">Intermediate</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('toilet')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Electrical Courses -->
+                <div class="col-lg-6">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Electrical Safety</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="course-item mb-3 p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Replace an Outlet</h6>
+                                        <small class="text-muted">3 lessons • 10 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-warning text-dark">Intermediate</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('outlet')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="course-item mb-3 p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Install a Light Switch</h6>
+                                        <small class="text-muted">2 lessons • 7 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-warning text-dark">Intermediate</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('switch')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="course-item p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Circuit Breaker Basics</h6>
+                                        <small class="text-muted">3 lessons • 9 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-success">Beginner</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('breaker')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carpentry Courses -->
+                <div class="col-lg-6">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-hammer me-2"></i>Carpentry & Repairs</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="course-item mb-3 p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">How to Patch Drywall</h6>
+                                        <small class="text-muted">4 lessons • 15 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-success">Beginner</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('drywall')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="course-item mb-3 p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Squeaky Door Fix</h6>
+                                        <small class="text-muted">2 lessons • 4 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-success">Beginner</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('door')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="course-item p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Hang a Picture Properly</h6>
+                                        <small class="text-muted">3 lessons • 6 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-success">Beginner</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('picture')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- General Courses -->
+                <div class="col-lg-6">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Essential Skills</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="course-item mb-3 p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Toolbelt Basics</h6>
+                                        <small class="text-muted">1 lesson • 10 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-info">Foundational</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('toolbelt')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="course-item p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Smart Home Upgrades</h6>
+                                        <small class="text-muted">4 lessons • 45-60 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-warning text-dark">Intermediate</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('smarthome')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Painting Courses -->
+                <div class="col-lg-6">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-paint-roller me-2"></i>Painting & Finishing</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="course-item mb-3 p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Touch-Up Paint Like a Pro</h6>
+                                        <small class="text-muted">3 lessons • 8 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-success">Beginner</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('touchup')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="course-item mb-3 p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Caulking Basics</h6>
+                                        <small class="text-muted">2 lessons • 6 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-success">Beginner</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('caulking')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="course-item p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Remove Wallpaper</h6>
+                                        <small class="text-muted">4 lessons • 12 min</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-warning text-dark">Intermediate</span>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('wallpaper')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="progress mt-2" style="height: 4px;">
+                                    <div class="progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievement Badges -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h4 class="mb-4">Achievement Badges</h4>
+                    <div class="row g-3">
+                        <div class="col-md-2 col-4 text-center">
+                            <div class="badge-item p-3 bg-light rounded">
+                                <i class="fas fa-tools fa-2x text-muted mb-2"></i>
+                                <small class="d-block">First Fix</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-4 text-center">
+                            <div class="badge-item p-3 bg-light rounded">
+                                <i class="fas fa-wrench fa-2x text-muted mb-2"></i>
+                                <small class="d-block">Plumber Pro</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-4 text-center">
+                            <div class="badge-item p-3 bg-light rounded">
+                                <i class="fas fa-bolt fa-2x text-muted mb-2"></i>
+                                <small class="d-block">Spark Master</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-4 text-center">
+                            <div class="badge-item p-3 bg-light rounded">
+                                <i class="fas fa-hammer fa-2x text-muted mb-2"></i>
+                                <small class="d-block">Wood Worker</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-4 text-center">
+                            <div class="badge-item p-3 bg-light rounded">
+                                <i class="fas fa-paint-roller fa-2x text-muted mb-2"></i>
+                                <small class="d-block">Paint Expert</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-4 text-center">
+                            <div class="badge-item p-3 bg-light rounded">
+                                <i class="fas fa-trophy fa-2x text-muted mb-2"></i>
+                                <small class="d-block">Weekend Warrior</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Troubleshooter Tab -->
+    <div class="tab-pane fade" id="troubleshooter" role="tabpanel">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="text-center mb-5">
+                        <h3>Problem Solver Simulator</h3>
+                        <p class="lead text-muted">Walk through common household problems step-by-step</p>
+                    </div>
+
+                    <!-- Troubleshooter Interface -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div id="troubleshooter-content">
+                                <!-- Problem Categories -->
+                                <div id="problem-categories">
+                                    <h5 class="mb-4">What's your problem?</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <button class="btn btn-outline-primary w-100 p-3 text-start" onclick="startTroubleshooter('electrical')">
+                                                <i class="fas fa-bolt me-3"></i>
+                                                <div>
+                                                    <strong>Electrical Issues</strong>
+                                                    <br><small class="text-muted">Outlets, switches, lights not working</small>
+                                                </div>
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button class="btn btn-outline-primary w-100 p-3 text-start" onclick="startTroubleshooter('plumbing')">
+                                                <i class="fas fa-wrench me-3"></i>
+                                                <div>
+                                                    <strong>Plumbing Problems</strong>
+                                                    <br><small class="text-muted">Leaks, clogs, running water</small>
+                                                </div>
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button class="btn btn-outline-primary w-100 p-3 text-start" onclick="startTroubleshooter('hvac')">
+                                                <i class="fas fa-wind me-3"></i>
+                                                <div>
+                                                    <strong>HVAC Issues</strong>
+                                                    <br><small class="text-muted">Heating, cooling, ventilation</small>
+                                                </div>
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button class="btn btn-outline-primary w-100 p-3 text-start" onclick="startTroubleshooter('general')">
+                                                <i class="fas fa-tools me-3"></i>
+                                                <div>
+                                                    <strong>General Repairs</strong>
+                                                    <br><small class="text-muted">Doors, windows, walls, misc</small>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic troubleshooting content will be loaded here -->
+                                <div id="troubleshooter-steps" style="display: none;">
+                                    <!-- Content loaded by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results will appear here -->
+                    <div id="troubleshooter-result" class="mt-4" style="display: none;">
+                        <!-- Results loaded by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tool Time Tab -->
+    <div class="tab-pane fade" id="tools" role="tabpanel">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h3>Know Your Gear</h3>
+                <p class="lead text-muted">Master the tools of the trade with expert guidance</p>
+            </div>
+
+            <!-- Tool Categories -->
+            <div class="row g-4 mb-5">
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-hammer me-2"></i>Basic Hand Tools</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="tool-item mb-3 p-2 rounded border" onclick="showTool('screwdriver')">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-screwdriver fa-2x text-primary me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">Screwdrivers</h6>
+                                        <small class="text-muted">Phillips & Flathead basics</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tool-item mb-3 p-2 rounded border" onclick="showTool('hammer')">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-hammer fa-2x text-primary me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">Hammers</h6>
+                                        <small class="text-muted">Types and proper use</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tool-item p-2 rounded border" onclick="showTool('level')">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-ruler fa-2x text-primary me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">Level</h6>
+                                        <small class="text-muted">Getting things straight</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Electrical Tools</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="tool-item mb-3 p-2 rounded border" onclick="showTool('multimeter')">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-tachometer-alt fa-2x text-warning me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">Multimeter</h6>
+                                        <small class="text-muted">Electrical testing basics</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tool-item mb-3 p-2 rounded border" onclick="showTool('wirestrippper')">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-cut fa-2x text-warning me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">Wire Strippers</h6>
+                                        <small class="text-muted">Safe wire handling</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tool-item p-2 rounded border" onclick="showTool('voltdetector')">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-search fa-2x text-warning me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">Voltage Detector</h6>
+                                        <small class="text-muted">Safety first testing</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-wrench me-2"></i>Plumbing Tools</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="tool-item mb-3 p-2 rounded border" onclick="showTool('plunger')">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-toilet fa-2x text-info me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">Plungers</h6>
+                                        <small class="text-muted">Types and techniques</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tool-item mb-3 p-2 rounded border" onclick="showTool('pipewrench')">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-wrench fa-2x text-info me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">Pipe Wrench</h6>
+                                        <small class="text-muted">Proper grip and use</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tool-item p-2 rounded border" onclick="showTool('snakeauger')">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-redo fa-2x text-info me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">Drain Snake</h6>
+                                        <small class="text-muted">Unclog like a pro</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tool Quiz Section -->
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body text-center p-4">
+                            <h5 class="mb-3">🎯 Tool Challenge</h5>
+                            <p class="mb-4">Not sure what tool you need? Take our quick quiz!</p>
+                            <button class="btn btn-primary btn-lg" onclick="startToolQuiz()">
+                                <i class="fas fa-question-circle me-2"></i>What Tool Do I Need?
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Course Modal -->
+<div class="modal fade" id="courseModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="courseModalTitle">Course Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="courseModalBody">
+                <!-- Course content loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="nextLessonBtn">Next Lesson</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tool Modal -->
+<div class="modal fade" id="toolModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="toolModalTitle">Tool Guide</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="toolModalBody">
+                <!-- Tool content loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" class="btn btn-primary" id="buyToolBtn" target="_blank">Shop for This Tool</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Course data and functionality
+const courses = {
+    faucet: {
+        title: "Fix That Leaky Faucet (Without Flooding Your Kitchen)",
+        level: "Beginner",
+        duration: "20-30 minutes",
+        lessons: [
+            { 
+                title: "What's Leaking, Exactly?", 
+                duration: "5 min", 
+                content: `
+                    <h6>Learn the parts:</h6>
+                    <ul>
+                        <li><strong>Handle</strong> - Where you turn the water on/off</li>
+                        <li><strong>Cartridge</strong> - The internal valve mechanism</li>
+                        <li><strong>Aerator</strong> - Screen at the spout tip</li>
+                        <li><strong>Washer</strong> - Rubber seal inside the faucet</li>
+                    </ul>
+                    <div class="alert alert-info">
+                        <strong>Quick Test:</strong> Which part is causing the drip? Look for water coming from the spout vs. base.
+                    </div>
+                `
+            },
+            { 
+                title: "Tools & Supplies You'll Need", 
+                duration: "5 min", 
+                content: `
+                    <h6>Essential Tools:</h6>
+                    <ul>
+                        <li>✅ Adjustable wrench</li>
+                        <li>✅ Screwdriver</li>
+                        <li>✅ Replacement cartridge or washers</li>
+                        <li>✅ Plumber's tape (Teflon)</li>
+                        <li>✅ Clean cloth</li>
+                    </ul>
+                    <h6>Optional but Helpful:</h6>
+                    <ul>
+                        <li>🪣 Bucket</li>
+                        <li>🔦 Flashlight</li>
+                    </ul>
+                `
+            },
+            { 
+                title: "Turn Off That Water (Seriously, Do It First)", 
+                duration: "3 min", 
+                content: `
+                    <div class="alert alert-warning">
+                        <strong>⚠️ CRITICAL STEP:</strong> Always turn off water before starting!
+                    </div>
+                    <ol>
+                        <li>Find shutoff valves under the sink</li>
+                        <li>Turn clockwise to close</li>
+                        <li>Test the faucet - no water should come out</li>
+                        <li>If no local shutoffs, use main water valve</li>
+                    </ol>
+                `
+            },
+            { 
+                title: "The Fix", 
+                duration: "10 min", 
+                content: `
+                    <h6>Step-by-step repair:</h6>
+                    <ol>
+                        <li><strong>Remove handle</strong> - Unscrew or pop off decorative cap</li>
+                        <li><strong>Access cartridge</strong> - Remove packing nut with wrench</li>
+                        <li><strong>Pull out old cartridge</strong> - Note orientation!</li>
+                        <li><strong>Install new cartridge</strong> - Match exact position</li>
+                        <li><strong>Reassemble</strong> - Reverse the steps</li>
+                        <li><strong>Test</strong> - Turn water back on and check for leaks</li>
+                    </ol>
+                    <div class="alert alert-success">
+                        <strong>Pro Tip:</strong> Take photos during disassembly for reference!
+                    </div>
+                `
+            },
+            { 
+                title: "Prevent Future Leaks", 
+                duration: "2 min", 
+                content: `
+                    <h6>Maintenance Tips:</h6>
+                    <ul>
+                        <li>Clean aerator monthly</li>
+                        <li>Don't over-tighten handles</li>
+                        <li>Replace washers annually</li>
+                        <li>Check for mineral buildup</li>
+                    </ul>
+                    <h6>Signs to replace the whole fixture:</h6>
+                    <ul>
+                        <li>Multiple repairs needed</li>
+                        <li>Frequent cartridge failures</li>
+                        <li>Visible corrosion or damage</li>
+                    </ul>
+                `
+            }
+        ],
+        quiz: {
+            question: "Your faucet is dripping, but your sink also fills slowly. What's likely the issue?",
+            options: [
+                "Faucet cartridge",
+                "Clogged aerator", 
+                "Bad plumbing",
+                "You're cursed"
+            ],
+            correct: 1,
+            explanation: "A clogged aerator can cause both slow filling AND dripping by creating back-pressure in the system."
+        }
+    },
+    drain: {
+        title: "Unclog a Drain (Without Melting Your Pipes)",
+        level: "Beginner", 
+        duration: "15 minutes",
+        lessons: [
+            {
+                title: "Common Causes of Clogs",
+                duration: "3 min",
+                content: `
+                    <h6>What's Usually Blocking Your Drain:</h6>
+                    <ul>
+                        <li><strong>Hair</strong> - #1 bathroom culprit</li>
+                        <li><strong>Soap scum</strong> - Builds up over time</li>
+                        <li><strong>Food particles</strong> - Kitchen sink enemy</li>
+                        <li><strong>Grease</strong> - Hardens and traps debris</li>
+                    </ul>
+                    <div class="alert alert-info">
+                        Prevention is easier than fixing! Use drain screens and avoid pouring grease down drains.
+                    </div>
+                `
+            },
+            {
+                title: "Start With the Plunger",
+                duration: "5 min", 
+                content: `
+                    <h6>Proper Plunging Technique:</h6>
+                    <ol>
+                        <li><strong>Cover overflow holes</strong> with a rag (bathroom sinks)</li>
+                        <li><strong>Create a seal</strong> around the drain</li>
+                        <li><strong>Plunge vertically</strong> with strong, rapid motions</li>
+                        <li><strong>Pull up quickly</strong> to break the clog loose</li>
+                    </ol>
+                    <div class="alert alert-warning">
+                        Use a cup plunger for sinks, not a toilet plunger!
+                    </div>
+                `
+            },
+            {
+                title: "Snake It Gently",
+                duration: "4 min",
+                content: `
+                    <h6>Using a Drain Snake or Zip Tool:</h6>
+                    <ol>
+                        <li><strong>Feed slowly</strong> - Don't force it</li>
+                        <li><strong>Rotate as you go</strong> - Catches hair and debris</li>
+                        <li><strong>Feel for resistance</strong> - That's your clog</li>
+                        <li><strong>Pull out slowly</strong> - Don't look too close! 🤢</li>
+                    </ol>
+                    <p><strong>Pro Tip:</strong> Disposable zip tools work great for hair clogs and cost under $5.</p>
+                `
+            },
+            {
+                title: "DIY Drain Bomb",
+                duration: "3 min",
+                content: `
+                    <h6>Natural Chemical-Free Solution:</h6>
+                    <ol>
+                        <li><strong>Pour ½ cup baking soda</strong> down the drain</li>
+                        <li><strong>Add 1 cup vinegar</strong> (it will fizz!)</li>
+                        <li><strong>Cover the drain</strong> with a plug or rag</li>
+                        <li><strong>Wait 10 minutes</strong> for the reaction</li>
+                        <li><strong>Flush with hot water</strong> (not boiling for PVC!)</li>
+                    </ol>
+                    <div class="alert alert-success">
+                        This method is safe for all pipe types and actually cleans as it unclogs.
+                    </div>
+                `
+            }
+        ],
+        quiz: {
+            question: "True or False: Pouring boiling water into a PVC drain is always safe.",
+            options: ["True", "False"],
+            correct: 1,
+            explanation: "False! Boiling water can warp plastic PVC pipes. Use hot (not boiling) water instead."
+        }
+    },
+    toolbelt: {
+        title: "Toolbelt Basics: What Every Homeowner Needs",
+        level: "Foundational",
+        duration: "10 minutes", 
+        lessons: [
+            {
+                title: "Top 10 Essential Tools",
+                duration: "10 min",
+                content: `
+                    <h6>Your Must-Have Tool Kit:</h6>
+                    <ol>
+                        <li><strong>Adjustable Wrench</strong> - Fits multiple nut sizes</li>
+                        <li><strong>Screwdriver Set</strong> - Phillips + Flathead varieties</li>
+                        <li><strong>Claw Hammer</strong> - For nails and light demolition</li>
+                        <li><strong>Tape Measure</strong> - 25-foot minimum</li>
+                        <li><strong>Utility Knife</strong> - Retractable blade</li>
+                        <li><strong>Cordless Drill</strong> - Game changer for speed</li>
+                        <li><strong>Stud Finder</strong> - Essential for wall work</li>
+                        <li><strong>Pliers</strong> - Needle nose + slip joint</li>
+                        <li><strong>Level</strong> - 2-foot length is perfect</li>
+                        <li><strong>Headlamp or Work Light</strong> - Hands-free lighting</li>
+                    </ol>
+                    
+                    <h6>Extra Credit Tools:</h6>
+                    <ul>
+                        <li>Zip ties (fix everything temporarily)</li>
+                        <li>Painter's tape (clean lines, no residue)</li>
+                        <li>Allen wrench set (furniture assembly)</li>
+                        <li>Safety goggles (Spank-approved!)</li>
+                    </ul>
+                    
+                    <div class="alert alert-warning">
+                        <strong>🚨 Pro Tip:</strong> If it comes in a plastic toolbox for $14.99 at checkout, run away!
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-primary text-white rounded">
+                        <h6>🧠 Challenge:</h6>
+                        <p class="mb-2">Upload a pic of your current tool kit!</p>
+                        <p class="mb-0">Missing more than 3 of the top 10? That's a "Tool Emergency" 🚨</p>
+                    </div>
+                `
+            }
+        ]
+    },
+    smarthome: {
+        title: "Smart Home Upgrades You Can Actually Do Yourself", 
+        level: "Intermediate",
+        duration: "45-60 minutes",
+        lessons: [
+            {
+                title: "Smart Plugs - The Gateway Drug",
+                duration: "15 min",
+                content: `
+                    <h6>🔌 Smart Plugs - Easy Win!</h6>
+                    <ul>
+                        <li><strong>Control lamps/appliances</strong> with your phone</li>
+                        <li><strong>Set timers & automation</strong> - vacation mode!</li>
+                        <li><strong>Just plug in and connect to WiFi</strong> - no wiring needed</li>
+                    </ul>
+                    <p><strong>Best for:</strong> Lamps, coffee makers, holiday lights, space heaters</p>
+                `
+            },
+            {
+                title: "Smart Bulbs - Mood Lighting Master",
+                duration: "10 min", 
+                content: `
+                    <h6>💡 Smart Bulbs</h6>
+                    <ul>
+                        <li><strong>Install like a regular bulb</strong> - screw it in!</li>
+                        <li><strong>App control + color options</strong> - party mode enabled</li>
+                        <li><strong>Integrate with Alexa/Google</strong> - voice control</li>
+                    </ul>
+                    <p><strong>Pro Tip:</strong> Start with one room to test compatibility with your setup.</p>
+                `
+            },
+            {
+                title: "Video Doorbell - See Who's There",
+                duration: "20 min",
+                content: `
+                    <h6>🛎️ Battery-Based Video Doorbell</h6>
+                    <ul>
+                        <li><strong>Mount near door</strong> with adhesive or screws</li>
+                        <li><strong>Download app, follow setup wizard</strong></li>
+                        <li><strong>No electrical knowledge required</strong> - battery powered!</li>
+                    </ul>
+                    <p><strong>Features:</strong> Motion alerts, two-way talk, cloud recording options</p>
+                `
+            },
+            {
+                title: "Smart Thermostat - For the Brave", 
+                duration: "15 min",
+                content: `
+                    <h6>🌡️ Smart Thermostat (Advanced)</h6>
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Warning:</strong> This involves electrical wiring! Consider professional installation.
+                    </div>
+                    <ul>
+                        <li><strong>Choose models with simple install kits</strong></li>
+                        <li><strong>Take photos of old wiring</strong> before disconnecting</li>
+                        <li><strong>Save money and flex your tech skills</strong></li>
+                    </ul>
+                    <p><strong>When to call SPANK:</strong> If you see more than 4 wires or feel unsure about anything electrical!</p>
+                `
+            }
+        ],
+        quiz: {
+            question: "Which smart upgrade requires electrical wiring knowledge?",
+            options: ["Smart plug", "Smart bulb", "Thermostat", "None"],
+            correct: 2,
+            explanation: "Smart thermostats typically require connecting to your home's electrical system and HVAC wiring."
+        },
+        challenge: {
+            title: "The Wi-Fixer Badge",
+            description: "Try one of the upgrades and submit a screenshot of your app connected!",
+            badge: "wi-fixer"
+        }
+    }
+};
+
+const troubleshooterData = {
+    electrical: {
+        title: "Electrical Problem Solver",
+        steps: [
+            {
+                question: "Is the entire house without power?",
+                yes: { next: "checkBreaker" },
+                no: { next: "specificArea" }
+            },
+            {
+                id: "checkBreaker",
+                question: "Check your main circuit breaker. Is it tripped?",
+                yes: { result: "diy", solution: "Reset the main breaker by switching it fully off, then on. If it trips again immediately, call Spank!" },
+                no: { result: "call", solution: "This could be a utility issue. Check with neighbors and contact your electric company." }
+            },
+            {
+                id: "specificArea",
+                question: "Is it just one outlet or switch not working?",
+                yes: { next: "checkGFCI" },
+                no: { next: "checkRoomBreaker" }
+            }
+        ]
+    }
+};
+
+const toolGuides = {
+    screwdriver: {
+        title: "Screwdrivers - The Essential Tool",
+        content: `
+            <h6>Types of Screwdrivers:</h6>
+            <ul>
+                <li><strong>Phillips Head</strong> - Cross-shaped tip for Phillips screws</li>
+                <li><strong>Flathead</strong> - Single blade for slotted screws</li>
+                <li><strong>Robertson (Square)</strong> - Square tip, less common but secure</li>
+            </ul>
+            <h6>Pro Tips:</h6>
+            <ul>
+                <li>Match the screwdriver size to the screw head</li>
+                <li>Apply downward pressure while turning</li>
+                <li>Use magnetic tips to hold screws</li>
+            </ul>
+            <h6>Safety:</h6>
+            <p>Always check that electrical power is off before working on switches or outlets.</p>
+        `,
+        buyLink: "https://www.homedepot.com/b/Tools-Hand-Tools-Screwdrivers/N-5yc1vZc28q"
+    },
+    multimeter: {
+        title: "Multimeter - Your Electrical Detective",
+        content: `
+            <h6>What It Does:</h6>
+            <p>Measures voltage, current, and resistance in electrical circuits.</p>
+            <h6>Basic Steps:</h6>
+            <ol>
+                <li>Set to voltage (V) mode</li>
+                <li>Insert black probe to COM port</li>
+                <li>Insert red probe to V port</li>
+                <li>Touch probes to test points</li>
+            </ol>
+            <h6>Safety First:</h6>
+            <p class="text-danger">Always turn off power at the breaker before testing. Never touch bare probes while circuit is live.</p>
+        `,
+        buyLink: "https://www.homedepot.com/b/Tools-Electrical-Tools-Electrical-Testers-Multimeters/N-5yc1vZc26c"
+    }
+};
+
+function startCourse(courseId) {
+    const course = courses[courseId];
+    if (!course) return;
+    
+    document.getElementById('courseModalTitle').textContent = course.title;
+    document.getElementById('courseModalBody').innerHTML = `
+        <div class="course-lesson">
+            <h6>${course.lessons[0].title}</h6>
+            <p class="text-muted mb-3">Duration: ${course.lessons[0].duration}</p>
+            <div class="lesson-content">
+                <p>${course.lessons[0].content}</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    Complete this lesson to earn 10 Spank Points!
+                </div>
+            </div>
+        </div>
+    `;
+    
+    new bootstrap.Modal(document.getElementById('courseModal')).show();
+}
+
+function startTroubleshooter(category) {
+    const data = troubleshooterData[category];
+    if (!data) return;
+    
+    document.getElementById('problem-categories').style.display = 'none';
+    document.getElementById('troubleshooter-steps').style.display = 'block';
+    
+    document.getElementById('troubleshooter-steps').innerHTML = `
+        <h5>${data.title}</h5>
+        <div class="troubleshooter-step">
+            <p class="lead">${data.steps[0].question}</p>
+            <div class="d-flex gap-3">
+                <button class="btn btn-success" onclick="handleTroubleshooterAnswer('${category}', 0, 'yes')">Yes</button>
+                <button class="btn btn-danger" onclick="handleTroubleshooterAnswer('${category}', 0, 'no')">No</button>
+            </div>
+        </div>
+    `;
+}
+
+function handleTroubleshooterAnswer(category, stepIndex, answer) {
+    const data = troubleshooterData[category];
+    const currentStep = data.steps[stepIndex];
+    const nextAction = currentStep[answer];
+    
+    if (nextAction.result) {
+        showTroubleshooterResult(nextAction);
+    } else if (nextAction.next) {
+        const nextStep = data.steps.find(s => s.id === nextAction.next);
+        if (nextStep) {
+            document.getElementById('troubleshooter-steps').innerHTML = `
+                <h5>${data.title}</h5>
+                <div class="troubleshooter-step">
+                    <p class="lead">${nextStep.question}</p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-success" onclick="handleTroubleshooterAnswer('${category}', ${data.steps.indexOf(nextStep)}, 'yes')">Yes</button>
+                        <button class="btn btn-danger" onclick="handleTroubleshooterAnswer('${category}', ${data.steps.indexOf(nextStep)}, 'no')">No</button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+}
+
+function showTroubleshooterResult(result) {
+    const resultDiv = document.getElementById('troubleshooter-result');
+    resultDiv.style.display = 'block';
+    
+    if (result.result === 'diy') {
+        resultDiv.innerHTML = `
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-wrench me-2"></i>DIY Solution</h5>
+                </div>
+                <div class="card-body">
+                    <p>${result.solution}</p>
+                    <button class="btn btn-primary" onclick="resetTroubleshooter()">Try Another Problem</button>
+                </div>
+            </div>
+        `;
+    } else {
+        resultDiv.innerHTML = `
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-phone me-2"></i>Call the Professionals</h5>
+                </div>
+                <div class="card-body">
+                    <p>${result.solution}</p>
+                    <div class="d-flex gap-3">
+                        <a href="tel:8085990908" class="btn btn-warning">Call SPANK Now</a>
+                        <button class="btn btn-outline-primary" onclick="resetTroubleshooter()">Try Another Problem</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function resetTroubleshooter() {
+    document.getElementById('problem-categories').style.display = 'block';
+    document.getElementById('troubleshooter-steps').style.display = 'none';
+    document.getElementById('troubleshooter-result').style.display = 'none';
+}
+
+function showTool(toolId) {
+    const tool = toolGuides[toolId];
+    if (!tool) return;
+    
+    document.getElementById('toolModalTitle').textContent = tool.title;
+    document.getElementById('toolModalBody').innerHTML = tool.content;
+    document.getElementById('buyToolBtn').href = tool.buyLink;
+    
+    new bootstrap.Modal(document.getElementById('toolModal')).show();
+}
+
+function startToolQuiz() {
+    alert('Tool Quiz feature coming soon! This will help you identify the right tool for your specific project.');
+}
+</script>
+
+<style>
+.course-item:hover {
+    background-color: #e9ecef !important;
+    cursor: pointer;
+}
+
+.tool-item:hover {
+    background-color: #f8f9fa !important;
+    cursor: pointer;
+    border-color: #007bff !important;
+}
+
+.badge-item {
+    transition: all 0.3s ease;
+}
+
+.badge-item:hover {
+    transform: scale(1.05);
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.troubleshooter-step {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+</style>
+{% endblock %}
