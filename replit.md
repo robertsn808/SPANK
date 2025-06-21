@@ -110,6 +110,7 @@ The application follows a simple Flask MVC pattern with the following structure:
 - June 21, 2025. Implemented comprehensive "Caulk a Bathtub Like a Pro" course with drag-and-scrape caulk removal simulator, virtual caulk gun alignment practice, and professional bead application techniques, plus "Install a Ceiling Light Fixture" course featuring circuit breaker safety simulator, voltage testing practice, and color-coded wire matching activities with electrical safety protocols
 - June 21, 2025. Added "DIY Smart Switches Installation" course ($10 SPANK Bucks) with 4 interactive lessons: understanding smart switches, tools/safety checks with voltage testing simulator, wire identification with drag-and-drop matching, and step-by-step installation progress tracker with brand recommendations (Lutron Caseta, TP-Link Kasa)
 - June 21, 2025. Created "Installing a Doggy Door" ($5 SPANK Bucks) and "Choosing the Right Anchor" ($5 SPANK Bucks) beginner courses based on user-provided guides, featuring pet sizing guidance, wall type identification, weight-based anchor selection, and comprehensive installation instructions with Spankks Construction professional service integration
+- June 21, 2025. Updated navigation branding to capitalize "SPANKKS Construction" and corrected logo image path for consistent brand presentation
 
 ## User Preferences
 
