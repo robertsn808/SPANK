@@ -1140,9 +1140,247 @@ function showTool(toolId) {
     new bootstrap.Modal(document.getElementById('toolModal')).show();
 }
 
-function startToolQuiz() {
-    alert('Tool Quiz feature coming soon! This will help you identify the right tool for your specific project.');
+function startQuiz(quizId) {
+    let quizData;
+    
+    if (quizId === 'leak-or-clog') {
+        quizData = courses.faucet.quiz;
+    } else if (quizId === 'drain-safety') {
+        quizData = courses.drain.quiz;
+    } else if (quizId === 'smart-wiring') {
+        quizData = courses.smarthome.quiz;
+    } else {
+        alert('Quiz coming soon! This will test your knowledge on the selected topic.');
+        return;
+    }
+    
+    // Create quiz modal content
+    const quizModal = new bootstrap.Modal(document.getElementById('courseModal'));
+    document.getElementById('courseModalTitle').textContent = 'Quick Knowledge Check';
+    
+    let optionsHtml = '';
+    quizData.options.forEach((option, index) => {
+        optionsHtml += `
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" name="quizAnswer" id="option${index}" value="${index}">
+                <label class="form-check-label" for="option${index}">
+                    ${option}
+                </label>
+            </div>
+        `;
+    });
+    
+    document.getElementById('courseModalBody').innerHTML = `
+        <div class="quiz-content">
+            <h6 class="mb-3">${quizData.question}</h6>
+            ${optionsHtml}
+            <div id="quiz-result" class="mt-3" style="display: none;"></div>
+        </div>
+    `;
+    
+    document.getElementById('nextLessonBtn').textContent = 'Submit Answer';
+    document.getElementById('nextLessonBtn').onclick = () => checkQuizAnswer(quizData);
+    
+    quizModal.show();
 }
+
+function checkQuizAnswer(quizData) {
+    const selectedAnswer = document.querySelector('input[name="quizAnswer"]:checked');
+    
+    if (!selectedAnswer) {
+        alert('Please select an answer first!');
+        return;
+    }
+    
+    const answerIndex = parseInt(selectedAnswer.value);
+    const resultDiv = document.getElementById('quiz-result');
+    
+    if (answerIndex === quizData.correct) {
+        resultDiv.innerHTML = `
+            <div class="alert alert-success">
+                <h6>Correct!</h6>
+                <p class="mb-0">${quizData.explanation}</p>
+                <div class="mt-2">
+                    <strong>+5 Spank Points earned!</strong>
+                </div>
+            </div>
+        `;
+        updateSpankPoints(5);
+    } else {
+        resultDiv.innerHTML = `
+            <div class="alert alert-warning">
+                <h6>Not quite right!</h6>
+                <p class="mb-2">The correct answer is: <strong>${quizData.options[quizData.correct]}</strong></p>
+                <p class="mb-0">${quizData.explanation}</p>
+            </div>
+        `;
+    }
+    
+    resultDiv.style.display = 'block';
+    document.getElementById('nextLessonBtn').textContent = 'Try Another Quiz';
+    document.getElementById('nextLessonBtn').onclick = () => {
+        bootstrap.Modal.getInstance(document.getElementById('courseModal')).hide();
+    };
+}
+
+function updateSpankPoints(points) {
+    const currentPoints = localStorage.getItem('spankPoints') || 0;
+    const newPoints = parseInt(currentPoints) + points;
+    localStorage.setItem('spankPoints', newPoints);
+    
+    // Update display
+    const pointsDisplay = document.querySelector('.badge.bg-warning.text-dark');
+    if (pointsDisplay) {
+        pointsDisplay.textContent = newPoints;
+    }
+}
+
+function startToolQuiz() {
+    const questions = [
+        {
+            question: "You need to hang a heavy mirror. What tool helps you find wall studs?",
+            options: ["Level", "Stud Finder", "Tape Measure", "Drill"],
+            correct: 1,
+            explanation: "A stud finder locates wooden studs behind drywall for secure mounting."
+        },
+        {
+            question: "Which tool is best for removing a stuck screw?",
+            options: ["Hammer", "Pliers", "Penetrating Oil + Screwdriver", "Level"],
+            correct: 2,
+            explanation: "Penetrating oil loosens rust and corrosion, making screws easier to remove."
+        }
+    ];
+    
+    const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+    
+    const quizModal = new bootstrap.Modal(document.getElementById('courseModal'));
+    document.getElementById('courseModalTitle').textContent = 'Tool Challenge Quiz';
+    
+    let optionsHtml = '';
+    randomQuestion.options.forEach((option, index) => {
+        optionsHtml += `
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" name="toolQuizAnswer" id="toolOption${index}" value="${index}">
+                <label class="form-check-label" for="toolOption${index}">
+                    ${option}
+                </label>
+            </div>
+        `;
+    });
+    
+    document.getElementById('courseModalBody').innerHTML = `
+        <div class="quiz-content">
+            <h6 class="mb-3">${randomQuestion.question}</h6>
+            ${optionsHtml}
+            <div id="tool-quiz-result" class="mt-3" style="display: none;"></div>
+        </div>
+    `;
+    
+    document.getElementById('nextLessonBtn').textContent = 'Submit Answer';
+    document.getElementById('nextLessonBtn').onclick = () => checkToolQuizAnswer(randomQuestion);
+    
+    quizModal.show();
+}
+
+function checkToolQuizAnswer(questionData) {
+    const selectedAnswer = document.querySelector('input[name="toolQuizAnswer"]:checked');
+    
+    if (!selectedAnswer) {
+        alert('Please select an answer first!');
+        return;
+    }
+    
+    const answerIndex = parseInt(selectedAnswer.value);
+    const resultDiv = document.getElementById('tool-quiz-result');
+    
+    if (answerIndex === questionData.correct) {
+        resultDiv.innerHTML = `
+            <div class="alert alert-success">
+                <h6>Excellent!</h6>
+                <p class="mb-0">${questionData.explanation}</p>
+                <div class="mt-2">
+                    <strong>+3 Spank Points earned!</strong>
+                </div>
+            </div>
+        `;
+        updateSpankPoints(3);
+    } else {
+        resultDiv.innerHTML = `
+            <div class="alert alert-info">
+                <h6>Good try!</h6>
+                <p class="mb-2">The correct answer is: <strong>${questionData.options[questionData.correct]}</strong></p>
+                <p class="mb-0">${questionData.explanation}</p>
+            </div>
+        `;
+    }
+    
+    resultDiv.style.display = 'block';
+    document.getElementById('nextLessonBtn').textContent = 'Try Another Question';
+    document.getElementById('nextLessonBtn').onclick = () => startToolQuiz();
+}
+
+// Webinar and interactive functions
+function joinWebinar(sessionId) {
+    alert('Joining live session... In a real implementation, this would connect to a video platform like Zoom or custom streaming solution.');
+}
+
+function registerWebinar(sessionId) {
+    alert('Registration successful! You will receive a calendar invite and reminder email.');
+    updateSpankPoints(2);
+}
+
+function submitQuestion(sessionId) {
+    const question = prompt('What would you like to ask our SPANK experts?');
+    if (question) {
+        alert('Question submitted! It will be answered during the live session.');
+        updateSpankPoints(1);
+    }
+}
+
+function submitProject() {
+    alert('Project submission feature coming soon! You will be able to upload photos and descriptions for expert review.');
+}
+
+function uploadProjectPhoto() {
+    alert('Photo upload feature coming soon! This will allow you to submit project images for live expert feedback.');
+}
+
+function askExpertQuestion() {
+    window.location.href = '/contact';
+}
+
+function scheduleConsult() {
+    window.location.href = '/consultation';
+}
+
+function playVideo(videoId) {
+    alert('Video player coming soon! This will show embedded short-form instructional videos.');
+}
+
+function openChecklist(checklistId) {
+    alert('Interactive checklist coming soon! This will provide step-by-step printable guides.');
+}
+
+function openARDemo(demoId) {
+    if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
+        alert('AR Demo coming soon! This will use your camera to overlay 3D instructions on real objects.');
+    } else {
+        alert('AR features require a compatible device with camera access.');
+    }
+}
+
+function requestARAccess() {
+    alert('AR Measurement tool coming soon! This will help you measure spaces and mark locations using your phone camera.');
+}
+
+// Initialize points on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedPoints = localStorage.getItem('spankPoints') || 0;
+    const pointsDisplay = document.querySelector('.badge.bg-warning.text-dark');
+    if (pointsDisplay) {
+        pointsDisplay.textContent = savedPoints;
+    }
+});
 </script>
 
 <style>
