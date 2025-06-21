@@ -1216,8 +1216,8 @@ function formatDate(date) {
  * Console welcome message
  */
 console.log(`
-🔨 SPANK Handyman Services
-🏝️ Professional home repairs and improvements across O'ahu
+🏗️ Spankks Construction
+🏝️ Professional construction and home improvements across O'ahu
 📞 Contact: (808) 778-9132
 🌐 Licensed & Insured
 
