@@ -171,7 +171,7 @@
                                     </div>
                                     <div>
                                         <span class="badge bg-warning text-dark">Intermediate</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('switch')">Start</button>
+                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('lightswitch')">Start</button>
                                     </div>
                                 </div>
                                 <div class="progress mt-2" style="height: 4px;">
@@ -884,64 +884,321 @@ const courses = {
             }
         ]
     },
+    toilet: {
+        title: "Toilet Running Water Fix",
+        level: "Intermediate",
+        duration: "12 minutes",
+        lessons: [
+            {
+                title: "How a Toilet Works (Fast!)",
+                duration: "3 min",
+                content: `
+                    <h6>Understanding Your Toilet's Components:</h6>
+                    <ul>
+                        <li><strong>Tank</strong> - Holds water for flushing</li>
+                        <li><strong>Flapper</strong> - Rubber seal at tank bottom</li>
+                        <li><strong>Fill Valve</strong> - Controls water entering tank</li>
+                        <li><strong>Float</strong> - Signals when tank is full</li>
+                        <li><strong>Chain</strong> - Connects handle to flapper</li>
+                    </ul>
+                    <p><strong>How it works:</strong> Flush → Flapper lifts → Water drains → Float drops → Fill valve opens → Tank refills → Float rises → Fill valve closes</p>
+                `
+            },
+            {
+                title: "Diagnose the Running Water (Flapper or Fill?)",
+                duration: "3 min",
+                content: `
+                    <h6>Quick Diagnosis Steps:</h6>
+                    <ol>
+                        <li><strong>Remove tank lid</strong> - Set aside carefully</li>
+                        <li><strong>Check the flapper</strong> - Is it sealing properly?</li>
+                        <li><strong>Listen to the sound</strong> - Constant hiss = fill valve, intermittent = flapper</li>
+                        <li><strong>Check the chain</strong> - Too tight or too loose?</li>
+                    </ol>
+                    <div class="alert alert-info">
+                        <strong>Pro Tip:</strong> Add food coloring to tank water. If color appears in bowl without flushing, it's a flapper issue.
+                    </div>
+                `
+            },
+            {
+                title: "Replace the Flapper or Fill Valve",
+                duration: "4 min",
+                content: `
+                    <h6>Flapper Replacement:</h6>
+                    <ol>
+                        <li>Turn off water supply</li>
+                        <li>Flush to empty tank</li>
+                        <li>Unhook old flapper from chain</li>
+                        <li>Remove from hinge pins</li>
+                        <li>Install new flapper (match size)</li>
+                        <li>Adjust chain length</li>
+                    </ol>
+                    
+                    <h6>Fill Valve Replacement:</h6>
+                    <ol>
+                        <li>Turn off water and flush</li>
+                        <li>Disconnect water supply line</li>
+                        <li>Remove old valve assembly</li>
+                        <li>Install new valve per instructions</li>
+                        <li>Reconnect and test</li>
+                    </ol>
+                `
+            },
+            {
+                title: "Fine-Tune the Water Level",
+                duration: "2 min",
+                content: `
+                    <h6>Adjusting Water Level:</h6>
+                    <ul>
+                        <li><strong>Correct level:</strong> 1 inch below rim of tank</li>
+                        <li><strong>Too high:</strong> Bend float arm down or adjust screw</li>
+                        <li><strong>Too low:</strong> Bend float arm up or adjust screw</li>
+                        <li><strong>Modern toilets:</strong> Turn adjustment screw on fill valve</li>
+                    </ul>
+                    <div class="alert alert-success">
+                        <strong>Success:</strong> Tank should fill, stop automatically, and stay quiet between flushes.
+                    </div>
+                `
+            }
+        ],
+        quiz: {
+            question: "True or False: Adjusting the float can stop most minor toilet runs.",
+            options: ["True", "False"],
+            correct: 0,
+            explanation: "True! Many toilet running issues are caused by incorrect water levels, which can be fixed by adjusting the float mechanism."
+        }
+    },
+    outlet: {
+        title: "Replace an Outlet",
+        level: "Intermediate",
+        duration: "10 minutes",
+        lessons: [
+            {
+                title: "Shut Off Power Like a Pro",
+                duration: "3 min",
+                content: `
+                    <h6>Critical Safety Steps:</h6>
+                    <ol>
+                        <li><strong>Find the right breaker</strong> - Test outlets to identify circuit</li>
+                        <li><strong>Turn off breaker</strong> - Switch to OFF position</li>
+                        <li><strong>Test with voltage tester</strong> - NEVER skip this step</li>
+                        <li><strong>Test the tester</strong> - Verify it works on known live outlet</li>
+                    </ol>
+                    <div class="alert alert-danger">
+                        <strong>⚠️ SAFETY FIRST:</strong> Always use a voltage tester before touching any wires!
+                    </div>
+                `
+            },
+            {
+                title: "Remove & Inspect the Old Outlet",
+                duration: "4 min",
+                content: `
+                    <h6>Removal Process:</h6>
+                    <ol>
+                        <li><strong>Remove outlet cover</strong> - Unscrew faceplate</li>
+                        <li><strong>Unscrew outlet</strong> - Pull from wall box</li>
+                        <li><strong>Take photos</strong> - Document wire connections</li>
+                        <li><strong>Disconnect wires</strong> - Unscrew terminals carefully</li>
+                    </ol>
+                    <h6>Wire Identification:</h6>
+                    <ul>
+                        <li><strong>Black wire:</strong> Hot (carries power)</li>
+                        <li><strong>White wire:</strong> Neutral (return path)</li>
+                        <li><strong>Green/bare wire:</strong> Ground (safety)</li>
+                    </ul>
+                `
+            },
+            {
+                title: "Wire and Test the New Outlet",
+                duration: "3 min",
+                content: `
+                    <h6>Installation Steps:</h6>
+                    <ol>
+                        <li><strong>Connect ground wire first</strong> - Green screw terminal</li>
+                        <li><strong>Connect white to silver</strong> - Neutral wire</li>
+                        <li><strong>Connect black to brass</strong> - Hot wire</li>
+                        <li><strong>Fold wires into box</strong> - Don't pinch</li>
+                        <li><strong>Screw outlet to box</strong> - Mount securely</li>
+                        <li><strong>Attach faceplate</strong> - Final step</li>
+                    </ol>
+                    <div class="alert alert-success">
+                        <strong>Testing:</strong> Turn breaker on, test with voltage tester, then plug in a lamp to verify.
+                    </div>
+                `
+            }
+        ],
+        quiz: {
+            question: "Which tool should you always use before touching wires?",
+            options: ["Screwdriver", "Voltage tester", "Wire strippers", "Pliers"],
+            correct: 1,
+            explanation: "A voltage tester is essential to verify power is off before working with electrical wires. This prevents dangerous shocks."
+        }
+    },
+    lightswitch: {
+        title: "Install a Light Switch",
+        level: "Intermediate", 
+        duration: "7 minutes",
+        lessons: [
+            {
+                title: "Switch Wiring: The Basics",
+                duration: "4 min",
+                content: `
+                    <h6>Understanding Switch Wiring:</h6>
+                    <ul>
+                        <li><strong>Single-pole switch:</strong> Controls one light from one location</li>
+                        <li><strong>Two black wires:</strong> Both are "hot" (power in and out)</li>
+                        <li><strong>Ground wire:</strong> Connect to green screw</li>
+                        <li><strong>No neutral needed:</strong> White wires stay connected together</li>
+                    </ul>
+                    <div class="alert alert-warning">
+                        <strong>Important:</strong> Turn off power at breaker and test before starting!
+                    </div>
+                `
+            },
+            {
+                title: "Install + Test a New Switch",
+                duration: "3 min",
+                content: `
+                    <h6>Installation Process:</h6>
+                    <ol>
+                        <li><strong>Remove old switch</strong> - Take photo first</li>
+                        <li><strong>Connect ground wire</strong> - Green screw on switch</li>
+                        <li><strong>Connect black wires</strong> - Either screw (doesn't matter which)</li>
+                        <li><strong>Secure switch in box</strong> - Don't pinch wires</li>
+                        <li><strong>Install cover plate</strong> - Final touch</li>
+                    </ol>
+                    <p><strong>Testing:</strong> Turn power back on and test switch operation. Light should turn on/off smoothly.</p>
+                `
+            }
+        ]
+    },
+    breaker: {
+        title: "Circuit Breaker Basics",
+        level: "Beginner",
+        duration: "9 minutes", 
+        lessons: [
+            {
+                title: "What's in the Panel?",
+                duration: "3 min",
+                content: `
+                    <h6>Understanding Your Electrical Panel:</h6>
+                    <ul>
+                        <li><strong>Main breaker:</strong> Controls power to entire house</li>
+                        <li><strong>Individual breakers:</strong> Control specific circuits</li>
+                        <li><strong>Labels:</strong> Should identify what each controls</li>
+                        <li><strong>Amperage:</strong> 15A or 20A for most household circuits</li>
+                    </ul>
+                    <p><strong>Safety note:</strong> Never touch the main lines at the top of the panel.</p>
+                `
+            },
+            {
+                title: "Reset a Tripped Breaker",
+                duration: "3 min",
+                content: `
+                    <h6>How to Reset:</h6>
+                    <ol>
+                        <li><strong>Find the tripped breaker</strong> - Will be in middle position</li>
+                        <li><strong>Turn fully OFF first</strong> - Push to OFF position</li>
+                        <li><strong>Then turn ON</strong> - Should click firmly into place</li>
+                        <li><strong>Test the circuit</strong> - Check outlets/lights</li>
+                    </ol>
+                    <div class="alert alert-warning">
+                        <strong>If it trips again immediately:</strong> You have a serious electrical problem. Call SPANK!
+                    </div>
+                `
+            },
+            {
+                title: "When to Call an Electrician",
+                duration: "3 min",
+                content: `
+                    <h6>Call SPANK immediately if:</h6>
+                    <ul>
+                        <li><strong>Breaker keeps tripping</strong> - Underlying electrical issue</li>
+                        <li><strong>Burning smell</strong> - Fire hazard</li>
+                        <li><strong>Sparks from panel</strong> - Serious danger</li>
+                        <li><strong>Hot breaker or panel</strong> - Overloaded circuit</li>
+                        <li><strong>Multiple circuits out</strong> - May be main breaker issue</li>
+                    </ul>
+                    <p><strong>Remember:</strong> Electrical work can be dangerous. When in doubt, call the professionals!</p>
+                `
+            }
+        ]
+    },
     smarthome: {
         title: "Smart Home Upgrades You Can Actually Do Yourself", 
         level: "Intermediate",
         duration: "45-60 minutes",
         lessons: [
             {
-                title: "Smart Plugs - The Gateway Drug",
+                title: "Intro to Smart Home Basics",
+                duration: "10 min",
+                content: `
+                    <h6>Getting Started with Smart Home:</h6>
+                    <ul>
+                        <li><strong>WiFi is essential</strong> - Strong signal where you're installing</li>
+                        <li><strong>Start simple</strong> - Begin with plugs and bulbs</li>
+                        <li><strong>Choose an ecosystem</strong> - Google, Alexa, or Apple</li>
+                        <li><strong>Read compatibility</strong> - Not all devices work together</li>
+                    </ul>
+                    <p><strong>Pro Tip:</strong> Start with one room to test your setup before expanding.</p>
+                `
+            },
+            {
+                title: "Install Smart Bulbs & Plugs",
                 duration: "15 min",
                 content: `
-                    <h6>🔌 Smart Plugs - Easy Win!</h6>
-                    <ul>
-                        <li><strong>Control lamps/appliances</strong> with your phone</li>
-                        <li><strong>Set timers & automation</strong> - vacation mode!</li>
-                        <li><strong>Just plug in and connect to WiFi</strong> - no wiring needed</li>
-                    </ul>
-                    <p><strong>Best for:</strong> Lamps, coffee makers, holiday lights, space heaters</p>
+                    <h6>Smart Bulbs:</h6>
+                    <ol>
+                        <li>Replace regular bulb with smart bulb</li>
+                        <li>Download manufacturer's app</li>
+                        <li>Follow setup wizard in app</li>
+                        <li>Connect to WiFi network</li>
+                        <li>Test controls and features</li>
+                    </ol>
+                    
+                    <h6>Smart Plugs:</h6>
+                    <ol>
+                        <li>Plug into wall outlet</li>
+                        <li>Download app and create account</li>
+                        <li>Add device in app</li>
+                        <li>Set up schedules and automation</li>
+                    </ol>
                 `
             },
             {
-                title: "Smart Bulbs - Mood Lighting Master",
-                duration: "10 min", 
-                content: `
-                    <h6>💡 Smart Bulbs</h6>
-                    <ul>
-                        <li><strong>Install like a regular bulb</strong> - screw it in!</li>
-                        <li><strong>App control + color options</strong> - party mode enabled</li>
-                        <li><strong>Integrate with Alexa/Google</strong> - voice control</li>
-                    </ul>
-                    <p><strong>Pro Tip:</strong> Start with one room to test compatibility with your setup.</p>
-                `
-            },
-            {
-                title: "Video Doorbell - See Who's There",
-                duration: "20 min",
-                content: `
-                    <h6>🛎️ Battery-Based Video Doorbell</h6>
-                    <ul>
-                        <li><strong>Mount near door</strong> with adhesive or screws</li>
-                        <li><strong>Download app, follow setup wizard</strong></li>
-                        <li><strong>No electrical knowledge required</strong> - battery powered!</li>
-                    </ul>
-                    <p><strong>Features:</strong> Motion alerts, two-way talk, cloud recording options</p>
-                `
-            },
-            {
-                title: "Smart Thermostat - For the Brave", 
+                title: "Doorbells & Cameras",
                 duration: "15 min",
                 content: `
-                    <h6>🌡️ Smart Thermostat (Advanced)</h6>
+                    <h6>Battery-Powered Video Doorbell:</h6>
+                    <ol>
+                        <li><strong>Choose location</strong> - Good WiFi signal area</li>
+                        <li><strong>Mount bracket</strong> - Use screws or adhesive</li>
+                        <li><strong>Install battery</strong> - Charge fully first</li>
+                        <li><strong>Setup app</strong> - Follow manufacturer instructions</li>
+                        <li><strong>Test features</strong> - Motion, recording, two-way audio</li>
+                    </ol>
+                    <p><strong>Features to test:</strong> Motion alerts, video quality, app notifications</p>
+                `
+            },
+            {
+                title: "Thermostats Made Easy (Optional Wiring)",
+                duration: "15 min",
+                content: `
+                    <h6>Before You Start:</h6>
                     <div class="alert alert-warning">
-                        <strong>⚠️ Warning:</strong> This involves electrical wiring! Consider professional installation.
+                        <strong>⚠️ Warning:</strong> This involves electrical wiring! Take photos before disconnecting anything.
                     </div>
-                    <ul>
-                        <li><strong>Choose models with simple install kits</strong></li>
-                        <li><strong>Take photos of old wiring</strong> before disconnecting</li>
-                        <li><strong>Save money and flex your tech skills</strong></li>
-                    </ul>
-                    <p><strong>When to call SPANK:</strong> If you see more than 4 wires or feel unsure about anything electrical!</p>
+                    
+                    <h6>Basic Installation:</h6>
+                    <ol>
+                        <li><strong>Turn off power</strong> - At breaker and HVAC unit</li>
+                        <li><strong>Remove old thermostat</strong> - Label all wires</li>
+                        <li><strong>Install new baseplate</strong> - Level it properly</li>
+                        <li><strong>Connect wires</strong> - Follow color coding</li>
+                        <li><strong>Attach thermostat</strong> - Test all functions</li>
+                    </ol>
+                    
+                    <p><strong>When to call SPANK:</strong> More than 4 wires, no C-wire, or uncertainty about connections</p>
                 `
             }
         ],
@@ -950,12 +1207,160 @@ const courses = {
             options: ["Smart plug", "Smart bulb", "Thermostat", "None"],
             correct: 2,
             explanation: "Smart thermostats typically require connecting to your home's electrical system and HVAC wiring."
-        },
-        challenge: {
-            title: "The Wi-Fixer Badge",
-            description: "Try one of the upgrades and submit a screenshot of your app connected!",
-            badge: "wi-fixer"
         }
+    },
+    touchup: {
+        title: "Touch-Up Paint Like a Pro",
+        level: "Beginner",
+        duration: "8 minutes",
+        lessons: [
+            {
+                title: "Color Matching Secrets",
+                duration: "3 min",
+                content: `
+                    <h6>Getting the Perfect Match:</h6>
+                    <ul>
+                        <li><strong>Save paint codes</strong> - Keep records from original paint job</li>
+                        <li><strong>Bring a sample</strong> - Cut small piece from hidden area</li>
+                        <li><strong>Natural lighting</strong> - Check color match in daylight</li>
+                        <li><strong>Test first</strong> - Apply to hidden area before touch-up</li>
+                    </ul>
+                    <p><strong>Pro Tip:</strong> Paint looks different as it dries. Wait for full cure before judging color match.</p>
+                `
+            },
+            {
+                title: "Prep the Wall (No Dust!)",
+                duration: "3 min",
+                content: `
+                    <h6>Surface Preparation:</h6>
+                    <ol>
+                        <li><strong>Clean the area</strong> - Remove dirt, grease, crayon marks</li>
+                        <li><strong>Sand lightly</strong> - 220-grit for glossy surfaces</li>
+                        <li><strong>Fill holes</strong> - Use spackling compound for nail holes</li>
+                        <li><strong>Prime if needed</strong> - Raw drywall or stain coverage</li>
+                    </ol>
+                    <div class="alert alert-info">
+                        <strong>When to prime:</strong> New drywall, dramatic color changes, or covering stains.
+                    </div>
+                `
+            },
+            {
+                title: "Touch-Up Without Texture Woes",
+                duration: "2 min",
+                content: `
+                    <h6>Application Technique:</h6>
+                    <ul>
+                        <li><strong>Use small brush</strong> - Artist brush for tiny areas</li>
+                        <li><strong>Feather edges</strong> - Blend into surrounding paint</li>
+                        <li><strong>Thin coats</strong> - Multiple light coats vs one thick coat</li>
+                        <li><strong>Match texture</strong> - Dab don't brush on textured walls</li>
+                    </ul>
+                    <p><strong>Success tip:</strong> Work quickly while paint is wet to blend seamlessly.</p>
+                `
+            }
+        ]
+    },
+    caulking: {
+        title: "Caulking Basics", 
+        level: "Beginner",
+        duration: "6 minutes",
+        lessons: [
+            {
+                title: "Prep & Tape the Area",
+                duration: "3 min",
+                content: `
+                    <h6>Preparation Steps:</h6>
+                    <ol>
+                        <li><strong>Remove old caulk</strong> - Use caulk removal tool</li>
+                        <li><strong>Clean thoroughly</strong> - Remove all residue and mildew</li>
+                        <li><strong>Dry completely</strong> - Wait 24 hours after cleaning</li>
+                        <li><strong>Apply painter's tape</strong> - 1/8" from each side of gap</li>
+                    </ol>
+                    <p><strong>Pro Tip:</strong> Use high-quality tape and remove while caulk is still wet.</p>
+                `
+            },
+            {
+                title: "Apply + Smooth for a Clean Seal",
+                duration: "3 min",
+                content: `
+                    <h6>Application Technique:</h6>
+                    <ol>
+                        <li><strong>Cut tube tip</strong> - 45-degree angle, small opening</li>
+                        <li><strong>Apply steady bead</strong> - Keep gun moving at consistent speed</li>
+                        <li><strong>Smooth immediately</strong> - Use finger or tool</li>
+                        <li><strong>Remove tape</strong> - Pull at 45-degree angle while wet</li>
+                    </ol>
+                    <div class="alert alert-success">
+                        <strong>Perfect bead:</strong> Should be concave, not convex, for best water sealing.
+                    </div>
+                `
+            }
+        ]
+    },
+    wallpaper: {
+        title: "Remove Wallpaper",
+        level: "Intermediate", 
+        duration: "12 minutes",
+        lessons: [
+            {
+                title: "Prep and Protect Your Space",
+                duration: "3 min",
+                content: `
+                    <h6>Room Preparation:</h6>
+                    <ul>
+                        <li><strong>Remove furniture</strong> - Or cover with plastic</li>
+                        <li><strong>Cover floors</strong> - Use plastic sheeting and tape</li>
+                        <li><strong>Turn off electricity</strong> - Remove outlet covers safely</li>
+                        <li><strong>Score the wallpaper</strong> - Use scoring tool for better penetration</li>
+                    </ul>
+                    <p><strong>Safety note:</strong> Wear gloves and eye protection when using removal solutions.</p>
+                `
+            },
+            {
+                title: "Soften the Adhesive",
+                duration: "3 min", 
+                content: `
+                    <h6>Removal Methods:</h6>
+                    <ul>
+                        <li><strong>Steamer method:</strong> Rent or buy wallpaper steamer</li>
+                        <li><strong>Solution method:</strong> Mix hot water with wallpaper remover</li>
+                        <li><strong>Fabric softener trick:</strong> Mix 1:1 with hot water</li>
+                        <li><strong>Apply liberally:</strong> Let solution penetrate 15 minutes</li>
+                    </ul>
+                    <p><strong>Pro Tip:</strong> Work in sections. Don't let areas dry out completely.</p>
+                `
+            },
+            {
+                title: "Remove + Scrape Safely",
+                duration: "4 min",
+                content: `
+                    <h6>Removal Technique:</h6>
+                    <ol>
+                        <li><strong>Start at seam</strong> - Use putty knife to lift edge</li>
+                        <li><strong>Pull at low angle</strong> - Keep close to wall surface</li>
+                        <li><strong>Scrape stubborn areas</strong> - Use plastic scraper, not metal</li>
+                        <li><strong>Re-wet as needed</strong> - Don't let adhesive dry</li>
+                    </ol>
+                    <div class="alert alert-warning">
+                        <strong>Be gentle:</strong> Aggressive scraping can damage drywall underneath.
+                    </div>
+                `
+            },
+            {
+                title: "Clean Residue for Paint-Ready Walls",
+                duration: "2 min",
+                content: `
+                    <h6>Final Cleanup:</h6>
+                    <ol>
+                        <li><strong>Remove all adhesive</strong> - Use adhesive remover solution</li>
+                        <li><strong>Wash walls</strong> - Clean with TSP or degreaser</li>
+                        <li><strong>Rinse thoroughly</strong> - Remove all cleaning residue</li>
+                        <li><strong>Let dry completely</strong> - 24-48 hours before painting</li>
+                    </ol>
+                    <p><strong>Final step:</strong> Prime walls before painting for best results.</p>
+                `
+            }
+        ]
     }
 };
 
