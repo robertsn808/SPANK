@@ -271,6 +271,7 @@ def admin_dashboard():
             week_appointments.append(appointment)
 
     return render_template('admin_dashboard.html', 
+                         bookings=service_requests,
                          service_requests=service_requests, 
                          contact_messages=contact_messages,
                          week_dates=week_dates,

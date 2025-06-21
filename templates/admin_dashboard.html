@@ -389,7 +389,7 @@
                                 <th>Name</th>
                                 <th>Contact</th>
                                 <th>Service</th>
-                                <th>Consultation Type</th>
+                                <th>Location/Type</th>
                                 <th>Preferred Date</th>
                                 <th>Status</th>
                                 <th>Submitted</th>
@@ -399,11 +399,11 @@
                         <tbody>
                             {% for booking in bookings|reverse %}
                             <tr>
-                                <td class="fw-bold">#{{ booking.id }}</td>
+                                <td class="fw-bold">#{{ booking.id[:8] }}</td>
                                 <td>
                                     <strong>{{ booking.name }}</strong>
-                                    {% if booking.property_type %}
-                                    <br><small class="text-muted">{{ booking.property_type.title() }}</small>
+                                    {% if booking.description %}
+                                    <br><small class="text-muted">{{ booking.description[:50] }}{% if booking.description|length > 50 %}...{% endif %}</small>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -416,15 +416,19 @@
                                 </td>
                                 <td>
                                     {{ booking.service.replace('-', ' ').title() }}
-                                    {% if booking.square_footage %}
-                                    <br><small class="text-muted">{{ booking.square_footage.replace('-', ' ').title() }}</small>
+                                    {% if booking.budget_range %}
+                                    <br><small class="text-muted">Budget: {{ booking.budget_range }}</small>
                                     {% endif %}
                                 </td>
                                 <td>
+                                    {% if booking.location %}
                                     <span class="badge bg-light text-dark">
-                                        <i class="fas fa-{{ 'phone' if booking.consultation_type == 'phone' else 'video' if booking.consultation_type == 'video' else 'home' }} me-1"></i>
-                                        {{ booking.consultation_type.replace('-', ' ').title() }}
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        {{ booking.location }}
                                     </span>
+                                    {% else %}
+                                    <span class="text-muted">Not specified</span>
+                                    {% endif %}
                                     {% if booking.preferred_time %}
                                     <br><small class="text-muted">{{ booking.preferred_time.title() }}</small>
                                     {% endif %}
