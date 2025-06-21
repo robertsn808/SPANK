@@ -893,30 +893,43 @@ const courses = {
                 title: "How a Toilet Works (Fast!)",
                 duration: "3 min",
                 content: `
-                    <h6>Understanding Your Toilet's Components:</h6>
-                    <ul>
-                        <li><strong>Tank</strong> - Holds water for flushing</li>
-                        <li><strong>Flapper</strong> - Rubber seal at tank bottom</li>
-                        <li><strong>Fill Valve</strong> - Controls water entering tank</li>
-                        <li><strong>Float</strong> - Signals when tank is full</li>
-                        <li><strong>Chain</strong> - Connects handle to flapper</li>
-                    </ul>
-                    <p><strong>How it works:</strong> Flush → Flapper lifts → Water drains → Float drops → Fill valve opens → Tank refills → Float rises → Fill valve closes</p>
+                    <h6>🎯 Goal: Understand how the tank, flapper, and fill valve work together</h6>
+                    <h6>🛠️ Steps:</h6>
+                    <ol>
+                        <li><strong>Lift tank lid</strong> - Set aside carefully</li>
+                        <li><strong>Identify parts:</strong> handle, flapper, overflow tube, fill valve</li>
+                        <li><strong>Observe the mechanism</strong> - How parts connect and move</li>
+                    </ol>
+                    <div class="alert alert-success">
+                        <strong>✅ Pro Tip:</strong> A worn flapper or misaligned float is often the culprit.
+                    </div>
+                    <div class="mt-3 p-3 bg-primary text-white rounded">
+                        <h6>📌 Quick Quiz:</h6>
+                        <p class="mb-2">What prevents water from constantly flowing into the bowl?</p>
+                        <button class="btn btn-warning btn-sm" onclick="showAnswer('toilet-quiz-1', 'The flapper! It acts as a seal at the bottom of the tank.')">Show Answer</button>
+                        <div id="toilet-quiz-1" class="mt-2" style="display: none;"></div>
+                    </div>
                 `
             },
             {
-                title: "Diagnose the Running Water (Flapper or Fill?)",
+                title: "Diagnose the Running Water",
                 duration: "3 min",
                 content: `
-                    <h6>Quick Diagnosis Steps:</h6>
+                    <h6>🎯 Goal: Find out if it's the flapper, fill valve, or overflow</h6>
+                    <h6>🛠️ Steps:</h6>
                     <ol>
-                        <li><strong>Remove tank lid</strong> - Set aside carefully</li>
-                        <li><strong>Check the flapper</strong> - Is it sealing properly?</li>
-                        <li><strong>Listen to the sound</strong> - Constant hiss = fill valve, intermittent = flapper</li>
-                        <li><strong>Check the chain</strong> - Too tight or too loose?</li>
+                        <li><strong>Drop food coloring in the tank</strong></li>
+                        <li><strong>Wait 5-10 minutes</strong></li>
+                        <li><strong>Check the bowl</strong> - If it shows in the bowl → flapper is leaking</li>
                     </ol>
-                    <div class="alert alert-info">
-                        <strong>Pro Tip:</strong> Add food coloring to tank water. If color appears in bowl without flushing, it's a flapper issue.
+                    <div class="alert alert-success">
+                        <strong>✅ Pro Tip:</strong> Listen for hissing = fill valve problem
+                    </div>
+                    <div class="mt-3 p-3 bg-primary text-white rounded">
+                        <h6>📌 Quick Quiz:</h6>
+                        <p class="mb-2">What does colored water in the bowl mean?</p>
+                        <button class="btn btn-warning btn-sm" onclick="showAnswer('toilet-quiz-2', 'The flapper is not sealing properly! Water is leaking from tank to bowl.')">Show Answer</button>
+                        <div id="toilet-quiz-2" class="mt-2" style="display: none;"></div>
                     </div>
                 `
             },
@@ -924,39 +937,46 @@ const courses = {
                 title: "Replace the Flapper or Fill Valve",
                 duration: "4 min",
                 content: `
-                    <h6>Flapper Replacement:</h6>
+                    <h6>🎯 Goal: Perform a quick hardware swap</h6>
+                    <h6>🛠️ Steps:</h6>
                     <ol>
-                        <li>Turn off water supply</li>
-                        <li>Flush to empty tank</li>
-                        <li>Unhook old flapper from chain</li>
-                        <li>Remove from hinge pins</li>
-                        <li>Install new flapper (match size)</li>
-                        <li>Adjust chain length</li>
+                        <li><strong>Turn off water at shutoff valve</strong></li>
+                        <li><strong>Flush to drain tank</strong></li>
+                        <li><strong>Replace flapper</strong> (hooks and chain) OR <strong>fill valve</strong> (unscrew and reseat)</li>
                     </ol>
-                    
-                    <h6>Fill Valve Replacement:</h6>
-                    <ol>
-                        <li>Turn off water and flush</li>
-                        <li>Disconnect water supply line</li>
-                        <li>Remove old valve assembly</li>
-                        <li>Install new valve per instructions</li>
-                        <li>Reconnect and test</li>
-                    </ol>
+                    <div class="alert alert-success">
+                        <strong>✅ Pro Tip:</strong> Don't overtighten plastic components.
+                    </div>
+                    <div class="mt-3 p-3 bg-primary text-white rounded">
+                        <h6>📌 Quick Quiz:</h6>
+                        <p class="mb-2">Which part seals the tank from the bowl?</p>
+                        <button class="btn btn-warning btn-sm" onclick="showAnswer('toilet-quiz-3', 'The flapper! It creates a watertight seal at the bottom of the tank.')">Show Answer</button>
+                        <div id="toilet-quiz-3" class="mt-2" style="display: none;"></div>
+                    </div>
                 `
             },
             {
                 title: "Fine-Tune the Water Level",
                 duration: "2 min",
                 content: `
-                    <h6>Adjusting Water Level:</h6>
-                    <ul>
-                        <li><strong>Correct level:</strong> 1 inch below rim of tank</li>
-                        <li><strong>Too high:</strong> Bend float arm down or adjust screw</li>
-                        <li><strong>Too low:</strong> Bend float arm up or adjust screw</li>
-                        <li><strong>Modern toilets:</strong> Turn adjustment screw on fill valve</li>
-                    </ul>
+                    <h6>🎯 Goal: Prevent wasteful overfilling</h6>
+                    <h6>🛠️ Steps:</h6>
+                    <ol>
+                        <li><strong>Adjust float arm or screw</strong> until water is 1" below overflow</li>
+                        <li><strong>Test multiple times</strong> - Ensure consistent operation</li>
+                    </ol>
                     <div class="alert alert-success">
-                        <strong>Success:</strong> Tank should fill, stop automatically, and stay quiet between flushes.
+                        <strong>✅ Pro Tip:</strong> Re-test flush performance 3-5 times.
+                    </div>
+                    <div class="mt-3 p-3 bg-info text-white rounded">
+                        <h6>📌 Interactive Element:</h6>
+                        <p class="mb-2">Water Level Adjuster</p>
+                        <div class="d-flex align-items-center gap-3">
+                            <span>Low</span>
+                            <input type="range" class="form-range" id="waterLevel" min="1" max="10" value="7" onchange="updateWaterLevel(this.value)">
+                            <span>High</span>
+                        </div>
+                        <div id="waterLevelFeedback" class="mt-2">Perfect level: 1" below overflow tube</div>
                     </div>
                 `
             }
@@ -1361,6 +1381,97 @@ const courses = {
                 `
             }
         ]
+    },
+    drywall: {
+        title: "Patch Drywall",
+        level: "Beginner",
+        duration: "15 minutes",
+        lessons: [
+            {
+                title: "Assess the Damage",
+                duration: "4 min",
+                content: `
+                    <h6>🎯 Goal: Know if it's a simple patch or a full repair</h6>
+                    <h6>🛠️ Steps:</h6>
+                    <ul>
+                        <li><strong>Small = nail/screw hole</strong> - Pinky-sized or smaller</li>
+                        <li><strong>Medium = anchor holes</strong> - Quarter-sized holes</li>
+                        <li><strong>Large = cut out section</strong> - Fist-sized damage</li>
+                    </ul>
+                    <div class="mt-3 p-3 bg-primary text-white rounded">
+                        <h6>📌 Quick Quiz:</h6>
+                        <p class="mb-2">What size hole needs mesh tape?</p>
+                        <button class="btn btn-warning btn-sm" onclick="showAnswer('drywall-quiz-1', 'Medium to large holes (quarter-sized and bigger) need mesh tape for proper reinforcement.')">Show Answer</button>
+                        <div id="drywall-quiz-1" class="mt-2" style="display: none;"></div>
+                    </div>
+                `
+            },
+            {
+                title: "Prep & Patch",
+                duration: "4 min",
+                content: `
+                    <h6>🎯 Goal: Apply spackle or compound properly</h6>
+                    <h6>🛠️ Steps:</h6>
+                    <ol>
+                        <li><strong>Clean area</strong> - Remove loose debris</li>
+                        <li><strong>Apply compound in layers</strong> - Build up gradually</li>
+                    </ol>
+                    <div class="alert alert-success">
+                        <strong>✅ Pro Tip:</strong> Use a putty knife at a shallow angle
+                    </div>
+                    <div class="mt-3 p-3 bg-info text-white rounded">
+                        <h6>📌 Interactive Element:</h6>
+                        <p class="mb-2">Drag-and-spread animation</p>
+                        <div class="text-center">
+                            <div class="btn btn-warning" onclick="animateSpread()">Try Spreading Motion</div>
+                            <div id="spreadAnimation" class="mt-2">Use smooth, overlapping strokes</div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Sand Smooth",
+                duration: "4 min",
+                content: `
+                    <h6>🎯 Goal: Blend it seamlessly</h6>
+                    <h6>🛠️ Steps:</h6>
+                    <ol>
+                        <li><strong>Wait for drying</strong> - Usually overnight</li>
+                        <li><strong>Sand lightly with 120-150 grit</strong></li>
+                    </ol>
+                    <div class="alert alert-success">
+                        <strong>✅ Pro Tip:</strong> Use a sanding sponge for curves
+                    </div>
+                    <div class="mt-3 p-3 bg-primary text-white rounded">
+                        <h6>📌 Quick Quiz:</h6>
+                        <p class="mb-2">Why wait overnight before sanding?</p>
+                        <button class="btn btn-warning btn-sm" onclick="showAnswer('drywall-quiz-2', 'Compound needs to fully cure/dry or it will tear and create rough patches when sanded.')">Show Answer</button>
+                        <div id="drywall-quiz-2" class="mt-2" style="display: none;"></div>
+                    </div>
+                `
+            },
+            {
+                title: "Prime + Paint",
+                duration: "3 min",
+                content: `
+                    <h6>🎯 Goal: Match your wall's finish</h6>
+                    <h6>🛠️ Steps:</h6>
+                    <ol>
+                        <li><strong>Prime first</strong> - Seals the compound</li>
+                        <li><strong>Use leftover wall paint or get a color match</strong></li>
+                    </ol>
+                    <div class="alert alert-success">
+                        <strong>✅ Pro Tip:</strong> Feather out brush strokes past the patch
+                    </div>
+                `
+            }
+        ],
+        quiz: {
+            question: "What's the most important step before painting a drywall patch?",
+            options: ["Sanding", "Priming", "Cleaning", "Measuring"],
+            correct: 1,
+            explanation: "Priming seals the compound and prevents the patch from showing through the paint."
+        }
     }
 };
 

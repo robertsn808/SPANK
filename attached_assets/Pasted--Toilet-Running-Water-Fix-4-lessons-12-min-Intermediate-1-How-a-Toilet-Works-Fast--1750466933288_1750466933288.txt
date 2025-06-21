@@ -1,0 +1,169 @@
+🚽 Toilet Running Water Fix (4 lessons • 12 min • Intermediate)
+🧠 1. How a Toilet Works (Fast!)
+🎯 Understand how the tank, flapper, and fill valve work together.
+🛠️ Steps:
+
+Lift tank lid
+
+Identify parts: handle, flapper, overflow tube, fill valve
+✅ Tip: A worn flapper or misaligned float is often the culprit.
+📌 Quiz: “What prevents water from constantly flowing into the bowl?”
+
+🧠 2. Diagnose the Running Water
+🎯 Find out if it’s the flapper, fill valve, or overflow.
+🛠️ Steps:
+
+Drop food coloring in the tank
+
+Wait 5–10 min
+
+If it shows in the bowl → flapper is leaking
+✅ Tip: Listen for hissing = fill valve problem
+📌 Quiz: “What does colored water in the bowl mean?”
+
+🧠 3. Replace the Flapper or Fill Valve
+🎯 Perform a quick hardware swap.
+🛠️ Steps:
+
+Turn off water at shutoff valve
+
+Flush to drain tank
+
+Replace flapper (hooks and chain) OR fill valve (unscrew and reseat)
+✅ Tip: Don’t overtighten plastic components.
+📌 Quiz: “Which part seals the tank from the bowl?”
+
+🧠 4. Fine-Tune the Water Level
+🎯 Prevent wasteful overfilling.
+🛠️ Steps:
+
+Adjust float arm or screw until water is 1" below overflow
+✅ Tip: Re-test flush performance 3–5 times.
+📌 Interaction: Water level drag slider game.
+
+⚡ Replace an Outlet (3 lessons • 10 min • Intermediate)
+🧠 1. Shut Off Power Like a Pro
+🎯 Safely cut power to the outlet.
+🛠️ Steps:
+
+Flip circuit breaker
+
+Use voltage tester to confirm it’s dead
+✅ Tip: Tape over breaker switch to prevent accidental reset.
+📌 Quiz: “Why use a voltage tester even after switching off the breaker?”
+
+🧠 2. Remove & Inspect
+🎯 Get a clear look at existing wiring.
+🛠️ Steps:
+
+Unscrew faceplate and outlet
+
+Take a photo for reference
+✅ Tip: White wires = neutral, black = hot, green/bare = ground
+📌 Quiz: “Which wire connects to the brass screw?”
+
+🧠 3. Wire + Test the New Outlet
+🎯 Finish the swap confidently.
+🛠️ Steps:
+
+Match wire colors to terminal screws
+
+Gently tuck wires back
+
+Mount outlet & test
+✅ Tip: Use tamper-resistant outlets in homes with kids.
+📌 Interaction: Wire-matching drag and drop.
+
+💡 Install a Light Switch (2 lessons • 7 min • Intermediate)
+🧠 1. Switch Wiring Basics
+🎯 Understand single-pole vs three-way switches.
+🛠️ Steps:
+
+Identify switch type
+
+Note terminal layout
+✅ Tip: Label wires before disconnecting.
+📌 Quiz: “What color wire is typically the ‘hot’ wire?”
+
+🧠 2. Install + Test
+🎯 Wire the switch and confirm it works.
+🛠️ Steps:
+
+Secure wires to terminals
+
+Fit switch into box
+
+Test functionality before final mounting
+✅ Tip: If switch hums, recheck connections.
+📌 Interaction: Tap a virtual switch and see simulated light response.
+
+⚡ Circuit Breaker Basics (3 lessons • 9 min • Beginner)
+🧠 1. What’s in the Panel?
+🎯 Learn the layout and labels.
+🛠️ Steps:
+
+Open panel cover
+
+Identify main breaker vs branch circuits
+✅ Tip: Use a flashlight and label your circuits.
+📌 Quiz: “Which switch controls the whole house?”
+
+🧠 2. Reset a Breaker
+🎯 Know what to do when the power goes out.
+🛠️ Steps:
+
+Find tripped breaker (slightly off-center)
+
+Flip fully OFF, then ON
+✅ Tip: Never force a breaker that won't reset.
+📌 Interaction: Flip virtual breakers to troubleshoot a room.
+
+🧠 3. When to Call a Pro
+🎯 Spot warning signs of bigger issues.
+🛠️ Tips:
+
+Frequent trips? Possible overload or faulty appliance
+
+Burnt smell? Immediate danger
+📌 Quiz: “What does repeated tripping suggest?”
+
+🧱 Patch Drywall (4 lessons • 15 min • Beginner)
+🧠 1. Assess the Damage
+🎯 Know if it’s a simple patch or a full repair.
+🛠️ Steps:
+
+Small = nail/screw hole
+
+Medium = anchor holes
+
+Large = cut out section
+📌 Quiz: “What size hole needs mesh tape?”
+
+🧠 2. Prep & Patch
+🎯 Apply spackle or compound properly.
+🛠️ Steps:
+
+Clean area
+
+Apply compound in layers
+✅ Tip: Use a putty knife at a shallow angle
+📌 Interaction: Drag-and-spread animation.
+
+🧠 3. Sand Smooth
+🎯 Blend it seamlessly.
+🛠️ Steps:
+
+Wait for drying
+
+Sand lightly with 120–150 grit
+✅ Tip: Use a sanding sponge for curves
+📌 Quiz: “Why wait overnight before sanding?”
+
+🧠 4. Prime + Paint
+🎯 Match your wall’s finish.
+🛠️ Steps:
+
+Prime first
+
+Use leftover wall paint or get a color match
+📌 Tip: Feather out brush strokes past the patch
