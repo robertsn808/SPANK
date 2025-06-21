@@ -103,6 +103,7 @@ The application follows a simple Flask MVC pattern with the following structure:
 - June 21, 2025. Added comprehensive Smart Home Upgrades course to SPANKKS SKOOL featuring 4-lesson structure covering smart switches vs bulbs, renovation planning with Spankks, kitchen/bath smart fixtures, and bonus $85 smart switch install offer for renovation estimates
 - June 21, 2025. Enhanced desktop pricing page styling with pricing-card CSS class for improved visual hierarchy, better spacing, and professional presentation on larger screens while maintaining mobile responsiveness
 - June 21, 2025. Updated hero backgrounds: home page features SPANKKS fence construction photo showing professional team at work, SPANKKS SKOOL page features character mascot creating educational brand identity
+- June 21, 2025. Updated website favicon and background wallpapers across pricing, contact, and SPANKKS SKOOL pages to use new SPANKKS logo with construction worker character, hammer, and wrench tools for consistent branding
 
 ## User Preferences
 
