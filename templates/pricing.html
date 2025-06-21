@@ -1,0 +1,392 @@
+{% extends "base.html" %}
+
+{% block title %}Pricing - SPANK Handyman Services{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-4">Transparent Pricing</h1>
+                <p class="lead mb-4">Quality handyman services with upfront, honest pricing. No hidden fees, no surprises.</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <span class="badge bg-warning text-dark px-3 py-2 fs-6">Licensed & Insured</span>
+                    <span class="badge bg-warning text-dark px-3 py-2 fs-6">Free Estimates</span>
+                    <span class="badge bg-warning text-dark px-3 py-2 fs-6">Quality Guarantee</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Overview -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center mb-5">
+                <h2 class="display-6 fw-bold mb-3">Service Rates</h2>
+                <p class="lead text-muted">Professional handyman services at competitive rates. All prices include labor and basic materials.</p>
+            </div>
+        </div>
+
+        <!-- Hourly Rates -->
+        <div class="row mb-5">
+            <div class="col-lg-10 mx-auto">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-clock me-2"></i>Hourly Rates</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <h5 class="text-primary mb-2">Standard Service</h5>
+                                    <div class="display-6 fw-bold text-dark">$85</div>
+                                    <small class="text-muted">per hour</small>
+                                    <p class="mt-2 mb-0 small">General repairs, maintenance, basic installations</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-3 bg-warning bg-opacity-10 rounded border border-warning">
+                                    <h5 class="text-warning mb-2">Specialized Service</h5>
+                                    <div class="display-6 fw-bold text-dark">$95</div>
+                                    <small class="text-muted">per hour</small>
+                                    <p class="mt-2 mb-0 small">Electrical, plumbing, HVAC work</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <h5 class="text-danger mb-2">Emergency Service</h5>
+                                    <div class="display-6 fw-bold text-dark">$120</div>
+                                    <small class="text-muted">per hour</small>
+                                    <p class="mt-2 mb-0 small">After hours, weekends, urgent repairs</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <p class="text-muted mb-0"><i class="fas fa-info-circle me-1"></i>Minimum 2-hour charge for all service calls</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Service Categories -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-6 fw-bold">Service Categories & Pricing</h2>
+            <p class="lead text-muted">Detailed pricing for our most popular handyman services</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Plumbing -->
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-wrench me-2"></i>Plumbing Services</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="pricing-list">
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Faucet repair/replacement</span>
+                                <strong>$75 - $150</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Toilet repair/installation</span>
+                                <strong>$95 - $200</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Drain cleaning</span>
+                                <strong>$85 - $125</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Pipe leak repair</span>
+                                <strong>$95 - $175</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <span>Water heater service</span>
+                                <strong>$125 - $250</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Electrical -->
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Electrical Services</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="pricing-list">
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Outlet installation/repair</span>
+                                <strong>$65 - $120</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Light fixture installation</span>
+                                <strong>$75 - $150</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Ceiling fan installation</span>
+                                <strong>$125 - $200</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Switch replacement</span>
+                                <strong>$45 - $85</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <span>GFCI outlet installation</span>
+                                <strong>$85 - $135</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carpentry -->
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-hammer me-2"></i>Carpentry Services</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="pricing-list">
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Door installation/repair</span>
+                                <strong>$95 - $250</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Window repair</span>
+                                <strong>$75 - $175</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Cabinet installation</span>
+                                <strong>$150 - $400</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Trim/molding installation</span>
+                                <strong>$8 - $15/ft</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <span>Deck repair</span>
+                                <strong>$125 - $300</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painting -->
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-paint-roller me-2"></i>Painting Services</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="pricing-list">
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Interior room painting</span>
+                                <strong>$2 - $4/sq ft</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Exterior house painting</span>
+                                <strong>$3 - $6/sq ft</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Trim painting</span>
+                                <strong>$2 - $5/linear ft</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Deck staining</span>
+                                <strong>$1.50 - $3/sq ft</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <span>Pressure washing</span>
+                                <strong>$0.50 - $1/sq ft</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HVAC -->
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0"><i class="fas fa-wind me-2"></i>HVAC Services</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="pricing-list">
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>AC filter replacement</span>
+                                <strong>$35 - $65</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Vent cleaning</span>
+                                <strong>$75 - $125</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Thermostat installation</span>
+                                <strong>$85 - $175</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Ductwork repair</span>
+                                <strong>$125 - $250</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <span>System maintenance</span>
+                                <strong>$95 - $145</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- General Repairs -->
+            <div class="col-lg-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-tools me-2"></i>General Repairs</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="pricing-list">
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Drywall repair</span>
+                                <strong>$65 - $150</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Tile repair/replacement</span>
+                                <strong>$75 - $125</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Caulking/sealing</span>
+                                <strong>$45 - $85</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>Furniture assembly</span>
+                                <strong>$55 - $95</strong>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <span>Home safety inspection</span>
+                                <strong>$125 - $175</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Package Deals -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-6 fw-bold">Popular Packages</h2>
+            <p class="lead text-muted">Save money with our bundled service packages</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card h-100 shadow border-0">
+                    <div class="card-header bg-info text-white text-center">
+                        <h5 class="mb-0">Home Maintenance</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="display-5 fw-bold text-primary mb-3">$299</div>
+                        <ul class="list-unstyled text-start">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>HVAC filter replacement</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Caulking touch-ups</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Safety inspection</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Minor plumbing checks</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Lighting assessment</li>
+                        </ul>
+                        <p class="small text-muted mt-3">Regular value: $350</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card h-100 shadow border-warning border-2">
+                    <div class="card-header bg-warning text-dark text-center">
+                        <h5 class="mb-0">Popular Choice</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="display-5 fw-bold text-primary mb-3">$499</div>
+                        <ul class="list-unstyled text-start">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Interior room painting</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Minor electrical repairs</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Drywall touch-ups</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Cabinet hardware updates</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Trim repair & paint</li>
+                        </ul>
+                        <p class="small text-muted mt-3">Regular value: $625</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card h-100 shadow border-0">
+                    <div class="card-header bg-success text-white text-center">
+                        <h5 class="mb-0">Complete Refresh</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="display-5 fw-bold text-primary mb-3">$899</div>
+                        <ul class="list-unstyled text-start">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Multiple room painting</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Flooring repairs</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Light fixture updates</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Plumbing improvements</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Full maintenance check</li>
+                        </ul>
+                        <p class="small text-muted mt-3">Regular value: $1,150</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Notes -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-0 bg-light">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3"><i class="fas fa-info-circle text-primary me-2"></i>Important Pricing Information</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>All prices include basic materials</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Free estimates for projects over $200</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Senior & military discounts available</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Emergency service available 24/7</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Licensed, bonded & insured</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>1-year warranty on all work</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <p class="text-muted mb-2">Specialized materials, permits, and disposal fees may apply</p>
+                            <a href="{{ url_for('consultation') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-calendar-check me-2"></i>Get Free Estimate
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

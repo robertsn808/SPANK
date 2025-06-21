@@ -1,5 +1,5 @@
 /**
- * Main JavaScript file for Triton Concrete Coating Website
+ * Main JavaScript file for SPANK Handyman Services Website
  * Handles interactive features, form validation, and user experience enhancements
  */
 
@@ -1216,8 +1216,8 @@ function formatDate(date) {
  * Console welcome message
  */
 console.log(`
-🌺 Triton Concrete Coating Website
-🏝️ Serving O'ahu with professional concrete coating solutions
+🔨 SPANK Handyman Services
+🏝️ Professional home repairs and improvements across O'ahu
 📞 Contact: (808) 599-0908
 🌐 Licensed & Insured
 

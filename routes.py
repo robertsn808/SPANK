@@ -61,6 +61,10 @@ def services():
     """Services page with comprehensive handyman service listings"""
     return render_template('services.html')
 
+@app.route('/pricing')
+def pricing():
+    """Pricing page with service rates and packages"""
+    return render_template('pricing.html')
 
 @app.route('/reviews')
 def reviews():
