@@ -22,9 +22,8 @@ class NotificationService:
         if self.twilio_sid and self.twilio_token:
             try:
                 self.twilio_client = Client(self.twilio_sid, self.twilio_token)
-                # Test credentials by fetching account info
-                account = self.twilio_client.api.accounts(self.twilio_sid).fetch()
-                logging.info(f"Twilio client initialized successfully for account: {account.friendly_name}")
+                # Skip account validation to prevent blocking dashboard
+                logging.info(f"Twilio client initialized with SID: {self.twilio_sid[:10]}...")
             except Exception as e:
                 logging.error(f"Twilio initialization failed: {e}")
                 self.twilio_client = None
