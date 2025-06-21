@@ -64,16 +64,86 @@
     /* Desktop pricing optimizations */
     @media (min-width: 1200px) {
         .hero-section {
-            padding: 140px 0 60px !important;
+            padding: 140px 0 80px !important;
+            min-height: 40vh;
         }
         
-        .membership-card {
+        .hero-section h1 {
+            font-size: 3.5rem !important;
+            line-height: 1.2;
+        }
+        
+        .hero-section .lead {
+            font-size: 1.4rem;
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-card {
             transform: scale(1);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
         }
         
-        .membership-card:hover {
-            transform: scale(1.05);
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .table th {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 1.2rem;
+        }
+        
+        .table td {
+            padding: 1rem 1.2rem;
+            font-size: 1rem;
+        }
+        
+        .badge {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+        
+        .card-header h4 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .pricing-highlight {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            color: white;
+        }
+        
+        .section-spacing {
+            padding: 4rem 0;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
         }
     }
     
@@ -109,12 +179,12 @@
 </section>
 
 <!-- Pricing Overview -->
-<section class="py-5" style="background: linear-gradient(rgba(248, 249, 250, 0.9), rgba(248, 249, 250, 0.9)), url('/static/images/spank-logo-background.png'); background-size: contain; background-repeat: no-repeat; background-position: center; background-attachment: fixed;">
+<section class="section-spacing" style="background: linear-gradient(rgba(248, 249, 250, 0.9), rgba(248, 249, 250, 0.9)), url('/static/images/spank-logo-background.png'); background-size: contain; background-repeat: no-repeat; background-position: center; background-attachment: fixed;">
     <div class="container">
         <!-- Drywall Services -->
         <div class="row mb-5">
             <div class="col-lg-12">
-                <div class="card shadow-sm border-0">
+                <div class="card pricing-card shadow-sm border-0">
                     <div class="card-header bg-primary text-white">
                         <h4 class="mb-0"><i class="fas fa-paint-roller me-2"></i>🧱 Drywall Services</h4>
                     </div>
@@ -168,7 +238,7 @@
         <!-- Flooring Installation -->
         <div class="row mb-5">
             <div class="col-lg-12">
-                <div class="card shadow-sm border-0">
+                <div class="card pricing-card shadow-sm border-0">
                     <div class="card-header bg-warning text-dark">
                         <h4 class="mb-0"><i class="fas fa-home me-2"></i>🪵 Flooring Installation</h4>
                     </div>
@@ -222,7 +292,7 @@
         <!-- Fence Building & Repair -->
         <div class="row mb-5">
             <div class="col-lg-12">
-                <div class="card shadow-sm border-0">
+                <div class="card pricing-card shadow-sm border-0">
                     <div class="card-header bg-success text-white">
                         <h4 class="mb-0"><i class="fas fa-tools me-2"></i>🛠️ Fence Building & Repair</h4>
                     </div>
@@ -276,7 +346,7 @@
         <!-- General Home Repair -->
         <div class="row mb-5">
             <div class="col-lg-12">
-                <div class="card shadow-sm border-0">
+                <div class="card pricing-card shadow-sm border-0">
                     <div class="card-header bg-info text-white">
                         <h4 class="mb-0"><i class="fas fa-wrench me-2"></i>🧰 General Home Repair</h4>
                     </div>
