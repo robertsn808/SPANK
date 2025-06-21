@@ -1,205 +1,131 @@
-
 {% extends "base.html" %}
 
+{% block title %}SPANK Handyman Services - Professional Home Repairs O'ahu{% endblock %}
+
+{% block head %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, rgba(52, 58, 64, 0.8), rgba(73, 80, 87, 0.8)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23f8f9fa" width="1200" height="600"/><g fill="%23dee2e6"><circle cx="200" cy="100" r="3"/><circle cx="400" cy="200" r="3"/><circle cx="600" cy="150" r="3"/><circle cx="800" cy="300" r="3"/><circle cx="1000" cy="250" r="3"/></g></svg>');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 120px 0 80px;
+        margin-top: 76px;
+    }
+    
+    .hero-content {
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 15px;
+        padding: 40px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .service-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        height: 100%;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .service-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #ff6b35, #f7931e);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: white;
+        font-size: 32px;
+    }
+    
+    .about-section {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #ff6b35, #f7931e);
+    }
+    
+    .stats-counter {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #ff6b35;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<!-- Hero Section with Gradient Background -->
-<section class="hero-section-new">
-    <div class="hero-background"></div>
-    <div class="hero-content">
-        <div class="container">
-            <div class="row align-items-center" style="min-height: 60vh;">
-                <div class="col-lg-10 mx-auto text-center">
-                    <div class="hero-logo mb-3">
-                        <img src="{{ url_for('static', filename='images/spank-logo.png') }}" alt="SPANK Handyman" class="hero-logo-img" style="max-height: 80px;">
-                    </div>
-                    <h1 class="hero-title display-2 fw-bold text-white mb-3 lh-1">
-                        Expert Home<br>
-                        <span class="text-warning">Repairs & Improvements</span>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Hawaii's Trusted Handyman Experts
                     </h1>
-                    <p class="hero-subtitle lead text-white mb-4 opacity-90 mx-auto" style="max-width: 600px;">
-                        Professional handyman services across O'ahu. Licensed, insured, and ready to help.
+                    <p class="lead mb-4">
+                        Professional home repairs and improvements across O'ahu. Licensed, insured, and committed to excellence since 2020.
                     </p>
-                    <div class="hero-cta d-flex flex-column flex-sm-row gap-3 justify-content-center mb-3">
-                        <a href="tel:+18085990908" class="btn btn-warning btn-lg px-4 py-3 fw-semibold shadow-lg">
-                            <i class="fas fa-phone me-2"></i>Call (808) 599-0908
+                    <div class="d-flex flex-column flex-sm-row gap-3">
+                        <a href="{{ url_for('consultation') }}" class="btn btn-warning btn-lg px-4">
+                            <i class="fas fa-calendar-check me-2"></i>Free Consultation
                         </a>
-                        <a href="{{ url_for('consultation') }}" class="btn btn-outline-light btn-lg px-4 py-3 fw-semibold">
-                            <i class="fas fa-calendar-check me-2"></i>Free Estimate
+                        <a href="tel:(808)599-0908" class="btn btn-outline-light btn-lg px-4">
+                            <i class="fas fa-phone me-2"></i>(808) 599-0908
                         </a>
                     </div>
-                    <div class="hero-guarantee">
-                        <p class="text-white-50 mb-0 small">
-                            <i class="fas fa-shield-alt me-1"></i>Quality Guarantee • <i class="fas fa-clock me-1"></i>Same Day Service
-                        </p>
-                    </div>
                 </div>
+            </div>
+            <div class="col-lg-4 text-center">
+                <img src="{{ url_for('static', filename='images/spank_logo.png') }}" 
+                     alt="SPANK Logo" class="img-fluid" style="max-height: 300px;">
             </div>
         </div>
     </div>
 </section>
-
-<!-- Services Preview Section -->
-<section class="py-5 bg-white">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="display-4 fw-bold text-dark mb-4">Our Expert Services</h2>
-                <p class="lead text-muted">Professional handyman solutions for every home improvement need</p>
-            </div>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="service-preview-card text-center p-4 h-100">
-                    <div class="service-icon mb-3">
-                        <i class="fas fa-hammer text-primary fa-3x"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">Home Repairs</h5>
-                    <p class="text-muted">Quick fixes and maintenance for all your household needs</p>
-                    <ul class="list-unstyled text-start">
-                        <li><i class="fas fa-check text-success me-2"></i>Drywall repair</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Door & window fixes</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Cabinet repairs</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6">
-                <div class="service-preview-card text-center p-4 h-100">
-                    <div class="service-icon mb-3">
-                        <i class="fas fa-wrench text-warning fa-3x"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">Plumbing</h5>
-                    <p class="text-muted">Professional plumbing solutions for your home</p>
-                    <ul class="list-unstyled text-start">
-                        <li><i class="fas fa-check text-success me-2"></i>Leak repairs</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Fixture installation</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Drain cleaning</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6">
-                <div class="service-preview-card text-center p-4 h-100">
-                    <div class="service-icon mb-3">
-                        <i class="fas fa-bolt text-danger fa-3x"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">Electrical</h5>
-                    <p class="text-muted">Safe and reliable electrical work by licensed professionals</p>
-                    <ul class="list-unstyled text-start">
-                        <li><i class="fas fa-check text-success me-2"></i>Outlet installation</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Light fixtures</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Ceiling fans</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6">
-                <div class="service-preview-card text-center p-4 h-100">
-                    <div class="service-icon mb-3">
-                        <i class="fas fa-paint-brush text-info fa-3x"></i>
-                    </div>
-                    <h5 class="fw-bold mb-3">Painting</h5>
-                    <p class="text-muted">Interior and exterior painting services</p>
-                    <ul class="list-unstyled text-start">
-                        <li><i class="fas fa-check text-success me-2"></i>Interior painting</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Exterior painting</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Pressure washing</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
-        <div class="text-center mt-5">
-            <a href="{{ url_for('services') }}" class="btn btn-primary btn-lg px-5">
-                <i class="fas fa-list me-2"></i>View All Services
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- Why Choose Us Section -->
-<section class="py-5" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-lg-8 mx-auto text-center">
-                <h2 class="display-5 fw-bold text-dark mb-4">Why Choose SpankysHandyman Services</h2>
-                <p class="lead text-muted">Trusted professionals delivering quality workmanship across O'ahu</p>
-            </div>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card h-100 text-center p-4 bg-white rounded-4 shadow-sm border-0">
-                    <div class="feature-icon mb-3">
-                        <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
-                            <i class="fas fa-shield-alt text-white fs-4"></i>
-                        </div>
-                    </div>
-                    <h5 class="fw-bold mb-3">Licensed & Insured</h5>
-                    <p class="text-muted mb-0">Fully licensed professionals with comprehensive insurance coverage for your peace of mind</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card h-100 text-center p-4 bg-white rounded-4 shadow-sm border-0">
-                    <div class="feature-icon mb-3">
-                        <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
-                            <i class="fas fa-clock text-white fs-4"></i>
-                        </div>
-                    </div>
-                    <h5 class="fw-bold mb-3">Fast & Reliable</h5>
-                    <p class="text-muted mb-0">Quick response times and efficient service to get your projects completed on schedule</p>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card h-100 text-center p-4 bg-white rounded-4 shadow-sm border-0">
-                    <div class="feature-icon mb-3">
-                        <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
-                            <i class="fas fa-star text-white fs-4"></i>
-                        </div>
-                    </div>
-                    <h5 class="fw-bold mb-3">Quality Guarantee</h5>
-                    <p class="text-muted mb-0">We stand behind our work with a satisfaction guarantee on all services provided</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
 
 <!-- About Section -->
-<section class="py-5 bg-light">
+<section class="about-section py-5">
     <div class="container">
-        <div class="row align-items-center mb-5">
+        <div class="row align-items-center">
             <div class="col-lg-6">
-                <h2 class="display-5 fw-bold mb-4">About SPANK Handyman Services</h2>
-                <p class="lead">We're proud to be a locally owned and operated business serving the beautiful island of O'ahu. We understand the unique challenges that Hawaii's climate presents to homes, and we've developed specialized solutions to maintain and improve your property investments.</p>
-                
-                <p>Our team is fully licensed and insured, giving you peace of mind with every project. We believe in building lasting relationships with our customers through exceptional service, quality workmanship, and honest business practices.</p>
-                
-                <div class="row mt-4">
-                    <div class="col-6">
-                        <div class="text-center">
-                            <i class="fas fa-shield-alt fa-2x text-primary mb-2"></i>
-                            <h6>Licensed & Insured</h6>
-                        </div>
+                <h2 class="display-5 fw-bold mb-4">About SPANK</h2>
+                <p class="lead mb-4">
+                    SPANK Handyman Services brings professional expertise and island spirit to every project. 
+                    We're your trusted local partner for all home repairs and improvements.
+                </p>
+                <div class="row text-center mb-4">
+                    <div class="col-4">
+                        <div class="stats-counter">500+</div>
+                        <small class="text-muted">Happy Customers</small>
                     </div>
-                    <div class="col-6">
-                        <div class="text-center">
-                            <i class="fas fa-map-marker-alt fa-2x text-warning mb-2"></i>
-                            <h6>Local Business</h6>
-                        </div>
+                    <div class="col-4">
+                        <div class="stats-counter">5★</div>
+                        <small class="text-muted">Average Rating</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="stats-counter">24/7</div>
+                        <small class="text-muted">Emergency Service</small>
                     </div>
                 </div>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Licensed & Insured</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Serving All of O'ahu</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Free Estimates</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Satisfaction Guaranteed</li>
+                </ul>
             </div>
-            <div class="col-lg-6">
-                <div class="about-hero-image">
-                    <img src="{{ url_for('static', filename='images/spank-character.png') }}" 
-                         alt="SPANK Handyman professional ready to help with tools and expertise" class="img-fluid rounded shadow">
-                </div>
+            <div class="col-lg-6 text-center">
+                <img src="{{ url_for('static', filename='images/spank_img.png') }}" 
+                     alt="SPANK Character" class="img-fluid" style="max-height: 400px;">
             </div>
         </div>
     </div>
@@ -209,201 +135,137 @@
 <section class="py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold">Our Professional Services</h2>
-            <p class="lead text-muted">Expert handyman solutions for every home improvement need</p>
+            <h2 class="display-5 fw-bold">Our Services</h2>
+            <p class="lead text-muted">Professional handyman solutions for your home</p>
         </div>
-
-        <div class="row g-4">
-            <!-- Plumbing Services -->
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card h-100 p-4 bg-white rounded-4 shadow-sm border-0 text-center">
-                    <div class="service-icon mb-3">
-                        <div class="bg-info bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
-                            <i class="fas fa-wrench text-white fs-4"></i>
+        
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card">
+                    <div class="card-body text-center">
+                        <div class="service-icon">
+                            <i class="fas fa-wrench"></i>
                         </div>
+                        <h4 class="card-title">Plumbing Repairs</h4>
+                        <p class="card-text">Leaky faucets, running toilets, drain cleaning, and pipe repairs</p>
                     </div>
-                    <h5 class="fw-bold mb-3">Plumbing Services</h5>
-                    <p class="text-muted mb-3">From leaky faucets to toilet repairs, we handle all your plumbing needs with precision and care.</p>
-                    <ul class="list-unstyled text-start small">
-                        <li><i class="fas fa-check text-success me-2"></i>Faucet repair & replacement</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Toilet installation & repair</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Drain cleaning & unclogging</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Pipe leak repairs</li>
-                    </ul>
                 </div>
             </div>
-
-            <!-- Electrical Services -->
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card h-100 p-4 bg-white rounded-4 shadow-sm border-0 text-center">
-                    <div class="service-icon mb-3">
-                        <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
-                            <i class="fas fa-bolt text-dark fs-4"></i>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card">
+                    <div class="card-body text-center">
+                        <div class="service-icon">
+                            <i class="fas fa-bolt"></i>
                         </div>
+                        <h4 class="card-title">Electrical Work</h4>
+                        <p class="card-text">Outlet installation, switch replacement, fixture mounting</p>
                     </div>
-                    <h5 class="fw-bold mb-3">Electrical Services</h5>
-                    <p class="text-muted mb-3">Safe and reliable electrical work for your home, from outlets to lighting installations.</p>
-                    <ul class="list-unstyled text-start small">
-                        <li><i class="fas fa-check text-success me-2"></i>Outlet installation & repair</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Light fixture installation</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Ceiling fan installation</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Switch replacement</li>
-                    </ul>
                 </div>
             </div>
-
-            <!-- Carpentry Services -->
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card h-100 p-4 bg-white rounded-4 shadow-sm border-0 text-center">
-                    <div class="service-icon mb-3">
-                        <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
-                            <i class="fas fa-hammer text-white fs-4"></i>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card">
+                    <div class="card-body text-center">
+                        <div class="service-icon">
+                            <i class="fas fa-paint-roller"></i>
                         </div>
+                        <h4 class="card-title">Painting & Drywall</h4>
+                        <p class="card-text">Interior painting, drywall repair, texture matching</p>
                     </div>
-                    <h5 class="fw-bold mb-3">Carpentry & Repairs</h5>
-                    <p class="text-muted mb-3">Custom carpentry work and repairs to enhance your home's functionality and beauty.</p>
-                    <ul class="list-unstyled text-start small">
-                        <li><i class="fas fa-check text-success me-2"></i>Door installation & repair</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Window repairs</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Cabinet installation</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Trim & molding work</li>
-                    </ul>
                 </div>
             </div>
-
-            <!-- Painting Services -->
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card h-100 p-4 bg-white rounded-4 shadow-sm border-0 text-center">
-                    <div class="service-icon mb-3">
-                        <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
-                            <i class="fas fa-paint-roller text-white fs-4"></i>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card">
+                    <div class="card-body text-center">
+                        <div class="service-icon">
+                            <i class="fas fa-hammer"></i>
                         </div>
+                        <h4 class="card-title">Carpentry</h4>
+                        <p class="card-text">Shelving, trim work, door installation, cabinet repairs</p>
                     </div>
-                    <h5 class="fw-bold mb-3">Painting Services</h5>
-                    <p class="text-muted mb-3">Professional painting services to refresh and protect your home inside and out.</p>
-                    <ul class="list-unstyled text-start small">
-                        <li><i class="fas fa-check text-success me-2"></i>Interior painting</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Exterior painting</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Trim & ceiling work</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Pressure washing</li>
-                    </ul>
                 </div>
             </div>
-
-            <!-- HVAC Services -->
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card h-100 p-4 bg-white rounded-4 shadow-sm border-0 text-center">
-                    <div class="service-icon mb-3">
-                        <div class="bg-danger bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
-                            <i class="fas fa-wind text-white fs-4"></i>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card">
+                    <div class="card-body text-center">
+                        <div class="service-icon">
+                            <i class="fas fa-home"></i>
                         </div>
+                        <h4 class="card-title">Home Maintenance</h4>
+                        <p class="card-text">Pressure washing, gutter cleaning, weatherproofing</p>
                     </div>
-                    <h5 class="fw-bold mb-3">HVAC Services</h5>
-                    <p class="text-muted mb-3">Keep your home comfortable with our heating and cooling maintenance services.</p>
-                    <ul class="list-unstyled text-start small">
-                        <li><i class="fas fa-check text-success me-2"></i>AC filter replacement</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Vent cleaning</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Thermostat installation</li>
-                        <li><i class="fas fa-check text-success me-2"></i>System maintenance</li>
-                    </ul>
                 </div>
             </div>
-
-            <!-- General Repairs -->
-            <div class="col-lg-4 col-md-6">
-                <div class="service-card h-100 p-4 bg-white rounded-4 shadow-sm border-0 text-center">
-                    <div class="service-icon mb-3">
-                        <div class="bg-secondary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
-                            <i class="fas fa-tools text-white fs-4"></i>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card">
+                    <div class="card-body text-center">
+                        <div class="service-icon">
+                            <i class="fas fa-tools"></i>
                         </div>
+                        <h4 class="card-title">General Repairs</h4>
+                        <p class="card-text">Furniture assembly, appliance installation, odd jobs</p>
                     </div>
-                    <h5 class="fw-bold mb-3">General Repairs</h5>
-                    <p class="text-muted mb-3">All those little fixes that make a big difference in your home's comfort and value.</p>
-                    <ul class="list-unstyled text-start small">
-                        <li><i class="fas fa-check text-success me-2"></i>Drywall repair</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Tile replacement</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Caulking & sealing</li>
-                        <li><i class="fas fa-check text-success me-2"></i>Furniture assembly</li>
-                    </ul>
                 </div>
             </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('pricing') }}" class="btn btn-primary btn-lg px-4">
+                View All Services & Pricing
+            </a>
         </div>
     </div>
 </section>
 
-<!-- Referral Program Section -->
-<section class="py-5 bg-warning bg-opacity-10">
+<!-- Why Choose Us Section -->
+<section class="py-5 bg-light">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h2 class="display-6 fw-bold text-dark mb-4">SPANK Referral Program</h2>
-                <p class="lead mb-4">Love our service? Share it with friends and earn Spank Bucks!</p>
-                <div class="referral-benefits mb-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                            <i class="fas fa-gift text-dark"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-1">$25 Spank Bucks for You</h6>
-                            <small class="text-muted">For every successful referral</small>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                            <i class="fas fa-percentage text-dark"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-1">10% Off for Your Friend</h6>
-                            <small class="text-muted">On their first service call</small>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                            <i class="fas fa-trophy text-dark"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-1">Exclusive SPANK Swag</h6>
-                            <small class="text-muted">Free gear after 5 referrals</small>
-                        </div>
-                    </div>
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Why Choose SPANK?</h2>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-clock fa-3x text-primary"></i>
                 </div>
-                <button class="btn btn-warning btn-lg" onclick="openReferralModal()">
-                    <i class="fas fa-share me-2"></i>Get Your Referral Code
-                </button>
+                <h5>Quick Response</h5>
+                <p class="text-muted">Same-day service available for urgent repairs</p>
             </div>
-            <div class="col-lg-6">
-                <div class="referral-visual text-center">
-                    <div class="bg-white p-4 rounded-4 shadow">
-                        <h5 class="text-primary mb-3">Your Referral Dashboard</h5>
-                        <div class="row g-3">
-                            <div class="col-4">
-                                <div class="stat-box">
-                                    <div class="h3 text-warning mb-1" id="referral-count">0</div>
-                                    <small class="text-muted">Referrals</small>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="stat-box">
-                                    <div class="h3 text-success mb-1" id="spank-bucks">$0</div>
-                                    <small class="text-muted">Spank Bucks</small>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="stat-box">
-                                    <div class="h3 text-primary mb-1" id="next-reward">5</div>
-                                    <small class="text-muted">To Free Swag</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            
+            <div class="col-lg-3 col-md-6 mb-4 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-shield-alt fa-3x text-primary"></i>
                 </div>
+                <h5>Fully Insured</h5>
+                <p class="text-muted">Licensed, bonded, and insured for your peace of mind</p>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-4 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-thumbs-up fa-3x text-primary"></i>
+                </div>
+                <h5>Satisfaction Guaranteed</h5>
+                <p class="text-muted">We stand behind our work with a 100% guarantee</p>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-4 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-dollar-sign fa-3x text-primary"></i>
+                </div>
+                <h5>Fair Pricing</h5>
+                <p class="text-muted">Transparent, competitive rates with free estimates</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- CTA Section -->
-<section class="py-5 bg-primary text-white">
+<section class="cta-section py-5 text-white">
     <div class="container text-center">
         <div class="row">
             <div class="col-lg-8 mx-auto">
@@ -426,108 +288,4 @@
         </div>
     </div>
 </section>
-
-<!-- Referral Modal -->
-<div class="modal fade" id="referralModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Your SPANK Referral Code</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                <div class="mb-4">
-                    <div class="bg-warning p-3 rounded mb-3">
-                        <h3 class="mb-0" id="referral-code">SPANK-REF-001</h3>
-                    </div>
-                    <p class="text-muted">Share this code with friends for rewards!</p>
-                </div>
-                <div class="d-grid gap-2">
-                    <button class="btn btn-primary" onclick="copyReferralCode()">
-                        <i class="fas fa-copy me-2"></i>Copy Code
-                    </button>
-                    <button class="btn btn-success" onclick="shareReferralLink()">
-                        <i class="fas fa-share me-2"></i>Share Link
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- JavaScript for Referral Program -->
-<script>
-function openReferralModal() {
-    // Generate unique referral code
-    const userId = localStorage.getItem('userId') || Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('userId', userId);
-    
-    const referralCode = `SPANK-${userId.toUpperCase()}`;
-    document.getElementById('referral-code').textContent = referralCode;
-    
-    new bootstrap.Modal(document.getElementById('referralModal')).show();
-}
-
-function copyReferralCode() {
-    const code = document.getElementById('referral-code').textContent;
-    navigator.clipboard.writeText(code).then(() => {
-        alert('Referral code copied to clipboard!');
-    });
-}
-
-function shareReferralLink() {
-    const code = document.getElementById('referral-code').textContent;
-    const url = `${window.location.origin}?ref=${code}`;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: 'SPANK Handyman Services',
-            text: 'Get 10% off your first handyman service with SPANK!',
-            url: url
-        });
-    } else {
-        navigator.clipboard.writeText(url).then(() => {
-            alert('Referral link copied to clipboard!');
-        });
-    }
-}
-
-// Check for referral code on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const refCode = urlParams.get('ref');
-    
-    if (refCode) {
-        localStorage.setItem('referralCode', refCode);
-        // Show referral success message
-        const alert = document.createElement('div');
-        alert.className = 'alert alert-success alert-dismissible fade show position-fixed';
-        alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
-        alert.innerHTML = `
-            <strong>Welcome!</strong> You'll get 10% off your first service with code: ${refCode}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        document.body.appendChild(alert);
-        
-        // Auto-dismiss after 5 seconds
-        setTimeout(() => {
-            if (alert.parentNode) {
-                alert.remove();
-            }
-        }, 5000);
-    }
-    
-    // Load referral stats (mock data for demo)
-    updateReferralStats();
-});
-
-function updateReferralStats() {
-    const referrals = localStorage.getItem('referralCount') || 0;
-    const spankBucks = localStorage.getItem('spankBucks') || 0;
-    const nextReward = Math.max(0, 5 - parseInt(referrals));
-    
-    document.getElementById('referral-count').textContent = referrals;
-    document.getElementById('spank-bucks').textContent = `$${spankBucks}`;
-    document.getElementById('next-reward').textContent = nextReward;
-}
-</script>
 {% endblock %}
