@@ -1020,5 +1020,389 @@ function showQuizAnswer(quizId, result, explanation) {
         }
     }
 }
+
+// Knowledge Quiz System
+const knowledgeQuiz = {
+    questions: [
+        {
+            question: "What's the first thing you should do before replacing a light switch?",
+            options: ["Remove the wall plate", "Test the new switch", "Turn off the power", "Grab a hammer"],
+            correct: 2,
+            explanation: "Always shut off power at the breaker before touching electrical components."
+        },
+        {
+            question: "What tool helps you detect a stud behind drywall?",
+            options: ["Tape measure", "Stud finder", "Level", "Flashlight"],
+            correct: 1,
+            explanation: "Stud finders use sensors to locate wooden framing behind walls."
+        },
+        {
+            question: "What's a good replacement for caulk that has cracked along the tub?",
+            options: ["Duct tape", "Fresh caulk", "Paint", "Silicone spray"],
+            correct: 1,
+            explanation: "Recaulking is the proper way to reseal a tub or sink joint."
+        },
+        {
+            question: "What color is typically used for the 'hot' electrical wire?",
+            options: ["Green", "White", "Black or red", "Blue"],
+            correct: 2,
+            explanation: "Black or red wires carry current in most home circuits."
+        },
+        {
+            question: "What's the purpose of primer before painting a patched wall?",
+            options: ["Makes the paint dry faster", "Hides the patch and improves paint adhesion", "Adds shine", "Makes it washable"],
+            correct: 1,
+            explanation: "Primer seals spackle and ensures even color coverage."
+        }
+    ],
+    currentQuestion: 0,
+    score: 0,
+    answers: []
+};
+
+function startKnowledgeQuiz() {
+    knowledgeQuiz.currentQuestion = 0;
+    knowledgeQuiz.score = 0;
+    knowledgeQuiz.answers = [];
+    
+    const modal = new bootstrap.Modal(document.getElementById('knowledgeQuizModal'));
+    showQuizQuestion();
+    modal.show();
+}
+
+function showQuizQuestion() {
+    const quiz = knowledgeQuiz;
+    const question = quiz.questions[quiz.currentQuestion];
+    
+    const content = `
+        <div class="quiz-header mb-4">
+            <div class="progress mb-3">
+                <div class="progress-bar bg-warning" style="width: ${((quiz.currentQuestion + 1) / quiz.questions.length) * 100}%"></div>
+            </div>
+            <h6 class="text-muted">Question ${quiz.currentQuestion + 1} of ${quiz.questions.length}</h6>
+        </div>
+        
+        <div class="quiz-question mb-4">
+            <h5 class="mb-4">${question.question}</h5>
+            <div class="quiz-options">
+                ${question.options.map((option, index) => `
+                    <button class="btn btn-outline-primary w-100 mb-2 quiz-option" 
+                            onclick="selectQuizAnswer(${index})" 
+                            data-option="${index}">
+                        ${String.fromCharCode(65 + index)}) ${option}
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+        
+        <div id="quiz-feedback" class="mb-3" style="display: none;"></div>
+    `;
+    
+    document.getElementById('quizContent').innerHTML = content;
+    document.getElementById('quizActionBtn').textContent = 'Next Question';
+    document.getElementById('quizActionBtn').onclick = nextQuizQuestion;
+}
+
+function selectQuizAnswer(selectedIndex) {
+    const quiz = knowledgeQuiz;
+    const question = quiz.questions[quiz.currentQuestion];
+    const isCorrect = selectedIndex === question.correct;
+    
+    // Store answer
+    quiz.answers.push(selectedIndex);
+    if (isCorrect) quiz.score++;
+    
+    // Show feedback
+    const feedback = document.getElementById('quiz-feedback');
+    const icon = isCorrect ? '✓' : '✗';
+    const alertClass = isCorrect ? 'alert-success' : 'alert-danger';
+    
+    feedback.innerHTML = `
+        <div class="alert ${alertClass}">
+            <strong>${icon} ${isCorrect ? 'Correct!' : 'Incorrect'}</strong>
+            <p class="mb-0 mt-2">${question.explanation}</p>
+        </div>
+    `;
+    feedback.style.display = 'block';
+    
+    // Disable all option buttons
+    document.querySelectorAll('.quiz-option').forEach(btn => {
+        btn.disabled = true;
+        if (parseInt(btn.dataset.option) === question.correct) {
+            btn.classList.add('btn-success');
+            btn.classList.remove('btn-outline-primary');
+        } else if (parseInt(btn.dataset.option) === selectedIndex && !isCorrect) {
+            btn.classList.add('btn-danger');
+            btn.classList.remove('btn-outline-primary');
+        }
+    });
+}
+
+function nextQuizQuestion() {
+    const quiz = knowledgeQuiz;
+    
+    if (quiz.currentQuestion < quiz.questions.length - 1) {
+        quiz.currentQuestion++;
+        showQuizQuestion();
+    } else {
+        showQuizResults();
+    }
+}
+
+function showQuizResults() {
+    const quiz = knowledgeQuiz;
+    const passed = quiz.score >= 4;
+    const percentage = Math.round((quiz.score / quiz.questions.length) * 100);
+    
+    const content = `
+        <div class="text-center">
+            <div class="quiz-result-icon mb-4">
+                <i class="fas fa-${passed ? 'trophy' : 'redo'} fa-4x text-${passed ? 'warning' : 'muted'}"></i>
+            </div>
+            
+            <h3 class="mb-3">${passed ? 'Congratulations!' : 'Almost There!'}</h3>
+            <h4 class="mb-4">You scored ${quiz.score} out of ${quiz.questions.length} (${percentage}%)</h4>
+            
+            ${passed ? `
+                <div class="alert alert-success">
+                    <h5><i class="fas fa-dollar-sign me-2"></i>You've earned $5 SPANK Bucks!</h5>
+                    <p class="mb-0">Check your email for your reward confirmation.</p>
+                </div>
+            ` : `
+                <div class="alert alert-info">
+                    <h6>Review SPANK School lessons and try again next week!</h6>
+                    <p class="mb-0">You need 4 or more correct answers to earn SPANK Bucks.</p>
+                </div>
+            `}
+            
+            <div class="mt-4">
+                <h6>Your Answers:</h6>
+                ${quiz.questions.map((q, index) => {
+                    const userAnswer = quiz.answers[index];
+                    const isCorrect = userAnswer === q.correct;
+                    return `
+                        <div class="text-start mb-2">
+                            <small class="text-muted">Q${index + 1}: ${q.question}</small><br>
+                            <span class="badge bg-${isCorrect ? 'success' : 'danger'} me-2">
+                                ${isCorrect ? '✓' : '✗'}
+                            </span>
+                            Your answer: ${q.options[userAnswer]}
+                            ${!isCorrect ? `<br><small class="text-success">Correct: ${q.options[q.correct]}</small>` : ''}
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('quizContent').innerHTML = content;
+    document.getElementById('quizActionBtn').textContent = 'Close';
+    document.getElementById('quizActionBtn').onclick = () => {
+        bootstrap.Modal.getInstance(document.getElementById('knowledgeQuizModal')).hide();
+    };
+    
+    // Send reward email if passed
+    if (passed) {
+        sendQuizReward();
+    }
+}
+
+function sendQuizReward() {
+    // Send SPANK Bucks reward email
+    const email = prompt('Enter your email to receive $5 SPANK Bucks:');
+    if (email) {
+        console.log(`Send $5 SPANK Bucks to: ${email} for passing knowledge quiz`);
+        alert('Congratulations! Your $5 SPANK Bucks reward has been sent to your email.');
+    }
+}
+
+// Problem Solver System
+const problemSolver = {
+    problems: [
+        {
+            title: "Faucet Won't Stop Dripping",
+            icon: "fas fa-tint",
+            steps: [
+                {
+                    question: "Where is it leaking from?",
+                    options: [
+                        { text: "Tip of the spout", next: "spout_leak" },
+                        { text: "Base of handle", next: "handle_leak" }
+                    ]
+                }
+            ],
+            solutions: {
+                spout_leak: {
+                    title: "Spout Leak Solution",
+                    content: "Likely a worn cartridge or washer. Turn off water valves under sink, remove handle, and replace the cartridge or washer.",
+                    callSpank: "Still leaking? You may have a cracked valve seat."
+                },
+                handle_leak: {
+                    title: "Handle Leak Solution", 
+                    content: "Likely a loose packing nut or o-ring. Tighten the packing nut or replace the o-ring around the stem.",
+                    callSpank: "Still leaking? The valve stem may need replacement."
+                }
+            }
+        },
+        {
+            title: "Toilet Keeps Running",
+            icon: "fas fa-toilet",
+            steps: [
+                {
+                    question: "Open the tank. What do you see?",
+                    options: [
+                        { text: "Water level too high", next: "high_water" },
+                        { text: "Flapper not sealing", next: "flapper_issue" },
+                        { text: "Fill valve hissing", next: "fill_valve" }
+                    ]
+                }
+            ],
+            solutions: {
+                high_water: {
+                    title: "High Water Level Fix",
+                    content: "Adjust the float height by bending the float arm down or adjusting the screw on newer fill valves.",
+                    callSpank: "Still running? Your overflow pipe may be damaged."
+                },
+                flapper_issue: {
+                    title: "Flapper Replacement",
+                    content: "Turn off water, flush to empty tank, and replace the rubber flapper. Make sure the chain has proper slack.",
+                    callSpank: "Still running? The flush valve seat may be warped."
+                },
+                fill_valve: {
+                    title: "Fill Valve Replacement",
+                    content: "Turn off water, disconnect supply line, and replace the entire fill valve assembly.",
+                    callSpank: "Still running? You may have mineral buildup in the system."
+                }
+            }
+        },
+        {
+            title: "Outlet Isn't Working",
+            icon: "fas fa-plug",
+            steps: [
+                {
+                    question: "Try a different device in the outlet. What happens?",
+                    options: [
+                        { text: "Still doesn't work", next: "outlet_dead" },
+                        { text: "Works fine now", next: "device_issue" }
+                    ]
+                }
+            ],
+            solutions: {
+                outlet_dead: {
+                    title: "Dead Outlet Troubleshooting",
+                    content: "Check circuit breaker (flip OFF then ON) and look for GFCI reset button. Test with voltage tester if you have one.",
+                    callSpank: "Still no power? You need safe outlet replacement or wiring repair."
+                },
+                device_issue: {
+                    title: "Device Problem",
+                    content: "The original device was faulty, not the outlet. Try the device in other outlets to confirm.",
+                    callSpank: "Device works elsewhere? The outlet may have loose connections."
+                }
+            }
+        }
+    ]
+};
+
+function showProblemSolver() {
+    const modal = new bootstrap.Modal(document.getElementById('problemSolverModal'));
+    showProblemList();
+    modal.show();
+}
+
+function showProblemList() {
+    const content = `
+        <div class="problem-solver-intro mb-4">
+            <h4>🛠️ What's Your Home Repair Problem?</h4>
+            <p class="text-muted">Select your issue below for step-by-step troubleshooting guidance.</p>
+        </div>
+        
+        <div class="problem-list">
+            ${problemSolver.problems.map((problem, index) => `
+                <div class="card mb-3 problem-card" onclick="startProblemSolving(${index})">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="problem-icon me-3">
+                            <i class="${problem.icon} fa-2x text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">${problem.title}</h6>
+                            <small class="text-muted">Click for step-by-step guidance</small>
+                        </div>
+                        <div class="ms-auto">
+                            <i class="fas fa-chevron-right text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    
+    document.getElementById('problemSolverContent').innerHTML = content;
+}
+
+function startProblemSolving(problemIndex) {
+    const problem = problemSolver.problems[problemIndex];
+    const firstStep = problem.steps[0];
+    
+    const content = `
+        <div class="problem-header mb-4">
+            <div class="d-flex align-items-center mb-3">
+                <button class="btn btn-outline-secondary btn-sm me-3" onclick="showProblemList()">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <h5 class="mb-0">${problem.title}</h5>
+            </div>
+        </div>
+        
+        <div class="problem-step">
+            <h6 class="mb-3">${firstStep.question}</h6>
+            <div class="step-options">
+                ${firstStep.options.map(option => `
+                    <button class="btn btn-outline-primary w-100 mb-2" 
+                            onclick="showSolution('${option.next}', ${problemIndex})">
+                        ${option.text}
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('problemSolverContent').innerHTML = content;
+}
+
+function showSolution(solutionKey, problemIndex) {
+    const problem = problemSolver.problems[problemIndex];
+    const solution = problem.solutions[solutionKey];
+    
+    const content = `
+        <div class="solution-header mb-4">
+            <div class="d-flex align-items-center mb-3">
+                <button class="btn btn-outline-secondary btn-sm me-3" onclick="startProblemSolving(${problemIndex})">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <h5 class="mb-0">${solution.title}</h5>
+            </div>
+        </div>
+        
+        <div class="solution-content">
+            <div class="alert alert-info">
+                <h6><i class="fas fa-tools me-2"></i>What to do:</h6>
+                <p class="mb-0">${solution.content}</p>
+            </div>
+            
+            <div class="alert alert-warning">
+                <h6><i class="fas fa-exclamation-triangle me-2"></i>Still having trouble?</h6>
+                <p class="mb-0">${solution.callSpank}</p>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button class="btn btn-warning btn-lg" onclick="window.location.href='/contact'">
+                    <i class="fas fa-phone me-2"></i>Call SPANK for Professional Help
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('problemSolverContent').innerHTML = content;
+}
 </script>
 {% endblock %}
