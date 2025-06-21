@@ -4,6 +4,80 @@
 {% block extra_head %}
   <meta name="description" content="Contact SPANK Handyman Services to schedule your next repair or consultation.">
   <meta name="keywords" content="contact handyman, Hawaii repair services, SPANK contact info">
+  <style>
+    /* Consultation page mobile optimizations */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 80px 0 40px !important;
+        }
+        
+        .consultation-option {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .consultation-option i {
+            font-size: 2rem !important;
+        }
+        
+        .form-section .form-control,
+        .form-section .form-select {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        .form-section textarea {
+            min-height: 120px;
+        }
+        
+        .quick-actions .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .urgency-badges .badge {
+            display: block;
+            margin-bottom: 0.5rem;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Tablet consultation optimizations */
+    @media (min-width: 768px) and (max-width: 991.98px) {
+        .consultation-option {
+            padding: 1.25rem;
+        }
+        
+        .form-section .row .col-md-6 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Desktop consultation optimizations */
+    @media (min-width: 1200px) {
+        .consultation-option:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+    }
+    
+    /* Touch device consultation cards */
+    @media (hover: none) {
+        .consultation-option:hover {
+            transform: none;
+        }
+        
+        .consultation-option:active {
+            transform: scale(0.98);
+        }
+    }
+  </style>
 {% endblock %}
 
 
