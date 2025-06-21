@@ -1,11 +1,12 @@
+import os
+import logging
+from datetime import datetime, timedelta
 from flask import render_template, request, redirect, url_for, session, flash, jsonify
 from app import app
 from models import HandymanStorage
 from ai_service import ai_service
-from notification_service import notification_service
-from datetime import datetime, timedelta
+from notification_service import notification_service, NotificationService
 import pytz
-import logging
 
 # Initialize handyman storage
 handyman_storage = HandymanStorage()
@@ -72,8 +73,8 @@ def spank_school():
     """Spank School - Educational DIY learning platform"""
     return render_template('spank_school.html')
 
-@app.route('/test-email')
-def test_email():
+@app.route('/test-email-interface')
+def test_email_interface():
     """Email testing interface for SPANK Buck rewards"""
     return render_template('test_email.html')
 
@@ -735,6 +736,7 @@ def test_sms():
         data = request.get_json()
         
         # Create temporary notification service with test credentials
+        from notification_service import NotificationService
         test_service = NotificationService()
         test_service.twilio_sid = data.get('twilio_sid')
         test_service.twilio_token = data.get('twilio_token') 
@@ -757,13 +759,14 @@ def test_sms():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
-@app.route('/api/test-email', methods=['POST'])
-def test_email():
-    """Test email functionality with provided credentials"""
+@app.route('/api/test-sendgrid', methods=['POST'])
+def test_sendgrid():
+    """Test SendGrid email functionality with provided credentials"""
     try:
         data = request.get_json()
         
         # Create temporary notification service with test credentials
+        from notification_service import NotificationService
         test_service = NotificationService()
         test_service.sendgrid_key = data.get('sendgrid_key')
         
