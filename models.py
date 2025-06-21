@@ -54,6 +54,8 @@ class HandymanStorage:
         self.service_requests = []
         self.contact_messages = []
         self.leads = []
+        self.referrals = []
+        self.memberships = []
     
     def add_service_request(self, request_data):
         request = ServiceRequest(**request_data)
@@ -119,3 +121,24 @@ class Admin:
     def __init__(self, username, password_hash):
         self.username = username
         self.password_hash = password_hash
+
+class Referral:
+    def __init__(self, referrer_code, referred_email, status="pending", reward_amount=25, created_date=None):
+        self.id = str(uuid.uuid4())
+        self.referrer_code = referrer_code
+        self.referred_email = referred_email
+        self.status = status  # pending, completed, rewarded
+        self.reward_amount = reward_amount
+        self.created_date = created_date or get_hawaii_time()
+        self.completed_date = None
+
+class Membership:
+    def __init__(self, customer_email, plan_type, start_date=None, status="active"):
+        self.id = str(uuid.uuid4())
+        self.customer_email = customer_email
+        self.plan_type = plan_type  # essential, premium, elite
+        self.start_date = start_date or get_hawaii_time()
+        self.status = status  # active, cancelled, suspended
+        self.monthly_fee = {"essential": 29, "premium": 59, "elite": 99}.get(plan_type, 0)
+        self.benefits_used = 0
+        self.next_billing_date = None

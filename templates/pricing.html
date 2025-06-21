@@ -283,11 +283,109 @@
     </div>
 </section>
 
+<!-- Membership Plans -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-6 fw-bold">SPANK Membership Plans</h2>
+            <p class="lead">Priority service, discounted rates, and peace of mind</p>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <!-- Essential Membership -->
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow">
+                    <div class="card-header bg-info text-white text-center py-3">
+                        <h4 class="mb-0">Essential</h4>
+                        <p class="mb-0 small">Perfect for basic home maintenance</p>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="membership-price mb-4">
+                            <div class="h1 text-primary mb-0">$29</div>
+                            <small class="text-muted">per month</small>
+                        </div>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>10% discount on all services</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Priority scheduling</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Free annual home safety inspection</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>24/7 phone support</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>No service call fees</li>
+                        </ul>
+                        <button class="btn btn-info w-100" onclick="selectMembership('essential')">
+                            Choose Essential
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium Membership -->
+            <div class="col-lg-4">
+                <div class="card h-100 border-warning border-2 shadow-lg">
+                    <div class="card-header bg-warning text-dark text-center py-3">
+                        <h4 class="mb-0">Premium</h4>
+                        <p class="mb-0 small">Most Popular Choice</p>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="membership-price mb-4">
+                            <div class="h1 text-primary mb-0">$59</div>
+                            <small class="text-muted">per month</small>
+                        </div>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>20% discount on all services</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Same-day priority scheduling</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Quarterly home maintenance visits</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Free emergency consultations</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>2 hours of free labor monthly</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Parts & materials at cost</li>
+                        </ul>
+                        <button class="btn btn-warning text-dark w-100" onclick="selectMembership('premium')">
+                            Choose Premium
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Elite Membership -->
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow">
+                    <div class="card-header bg-success text-white text-center py-3">
+                        <h4 class="mb-0">Elite</h4>
+                        <p class="mb-0 small">Complete home care solution</p>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="membership-price mb-4">
+                            <div class="h1 text-primary mb-0">$99</div>
+                            <small class="text-muted">per month</small>
+                        </div>
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>30% discount on all services</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>VIP priority scheduling</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Monthly home maintenance visits</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>4 hours of free labor monthly</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Free seasonal home preparations</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>24/7 emergency service</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Dedicated account manager</li>
+                        </ul>
+                        <button class="btn btn-success w-100" onclick="selectMembership('elite')">
+                            Choose Elite
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <p class="mb-2">All memberships include a 30-day money-back guarantee</p>
+            <p class="small opacity-75">Cancel anytime • No long-term contracts • Immediate benefits</p>
+        </div>
+    </div>
+</section>
+
 <!-- Package Deals -->
 <section class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-6 fw-bold">Popular Packages</h2>
+            <h2 class="display-6 fw-bold">One-Time Service Packages</h2>
             <p class="lead text-muted">Save money with our bundled service packages</p>
         </div>
 
@@ -388,4 +486,72 @@
         </div>
     </div>
 </section>
+
+<!-- JavaScript for Membership Selection -->
+<script>
+function selectMembership(plan) {
+    // Store selected plan
+    localStorage.setItem('selectedMembership', plan);
+    
+    // Show membership modal with plan details
+    let planDetails = {
+        essential: {
+            name: 'Essential',
+            price: '$29/month',
+            features: ['10% discount', 'Priority scheduling', 'Annual inspection', '24/7 support', 'No service fees']
+        },
+        premium: {
+            name: 'Premium',
+            price: '$59/month',
+            features: ['20% discount', 'Same-day scheduling', 'Quarterly visits', 'Free consultations', '2 hours free labor', 'Parts at cost']
+        },
+        elite: {
+            name: 'Elite',
+            price: '$99/month',
+            features: ['30% discount', 'VIP scheduling', 'Monthly visits', '4 hours free labor', 'Seasonal prep', '24/7 emergency', 'Account manager']
+        }
+    };
+    
+    const selected = planDetails[plan];
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Join SPANK ${selected.name} Membership</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <h3 class="text-primary">${selected.price}</h3>
+                        <p class="text-muted">Cancel anytime • 30-day money-back guarantee</p>
+                    </div>
+                    <h6>Membership Benefits:</h6>
+                    <ul class="list-unstyled">
+                        ${selected.features.map(feature => `<li class="mb-1"><i class="fas fa-check text-success me-2"></i>${feature}</li>`).join('')}
+                    </ul>
+                    <div class="alert alert-info">
+                        <small><i class="fas fa-info-circle me-1"></i>
+                        Call (808) 599-0908 to complete your membership enrollment or 
+                        <a href="/consultation" class="alert-link">schedule a consultation</a> to learn more.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Maybe Later</button>
+                    <a href="tel:+18085990908" class="btn btn-primary">Call to Enroll</a>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    new bootstrap.Modal(modal).show();
+    
+    modal.addEventListener('hidden.bs.modal', () => {
+        modal.remove();
+    });
+}
+</script>
 {% endblock %}
