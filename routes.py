@@ -61,10 +61,6 @@ def services():
     """Services page with comprehensive handyman service listings"""
     return render_template('services.html')
 
-@app.route('/gallery')
-def gallery():
-    """Gallery page showcasing work samples"""
-    return render_template('gallery.html')
 
 @app.route('/reviews')
 def reviews():
