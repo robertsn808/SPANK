@@ -93,22 +93,47 @@ class NotificationService:
             return False
     
     def _send_via_sendgrid(self, to_email, amount, reason, customer_name):
-        """Send email via direct SendGrid API"""
+        """Send email via direct SendGrid API using dynamic templates"""
         sg = SendGridAPIClient(self.sendgrid_key)
         
-        html_content = self._generate_email_template(amount, reason, customer_name)
+        # Generate unique reward code
+        import uuid
+        reward_code = f"SPANK-{str(uuid.uuid4())[:8].upper()}"
         
-        message = Mail(
-            from_email=Email(self.from_email, "SPANK Handyman Services"),
-            to_emails=To(to_email),
-            subject=f"🎉 You've Earned ${amount} SPANK Bucks!",
-            html_content=Content("text/html", html_content)
-        )
+        # Determine template ID based on amount
+        template_id = os.environ.get('SENDGRID_TEMPLATE_5') if amount == 5 else os.environ.get('SENDGRID_TEMPLATE_25')
+        
+        # If no dynamic template, fall back to HTML content
+        if not template_id:
+            html_content = self._generate_email_template(amount, reason, customer_name)
+            
+            message = Mail(
+                from_email=Email(self.from_email, "SPANK Handyman Services"),
+                to_emails=To(to_email),
+                subject=f"🎉 You've Earned ${amount} SPANK Bucks!",
+                html_content=Content("text/html", html_content)
+            )
+        else:
+            # Use dynamic template
+            message = Mail(
+                from_email=Email(self.from_email, "SPANK Handyman Services"),
+                to_emails=To(to_email)
+            )
+            
+            message.template_id = template_id
+            message.dynamic_template_data = {
+                'first_name': customer_name or to_email.split('@')[0],
+                'lesson_title': reason,
+                'reward_code': reward_code,
+                'amount': amount,
+                'spank_buck_image_url': f"https://your-domain.com/static/images/spank-buck-{amount}.png",
+                'booking_link': "https://your-domain.com/consultation"
+            }
         
         response = sg.send(message)
         
         if response.status_code == 202:
-            logging.info(f"SPANK Buck email sent via SendGrid to {to_email}: ${amount} for {reason}")
+            logging.info(f"SPANK Buck email sent via SendGrid to {to_email}: ${amount} for {reason} (Code: {reward_code})")
             return True
         else:
             logging.error(f"SendGrid email failed: {response.status_code}")
