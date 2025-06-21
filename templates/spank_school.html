@@ -723,100 +723,240 @@ const courses = {
     toolbelt: {
         title: "Toolbelt Basics",
         level: "Beginner",
+        duration: "30-40 minutes",
+        reward: "$5 SPANK Bucks",
         lessons: [
             {
-                title: "Essential Hand Tools",
+                title: "Know Your Tools",
                 image: "/static/images/toolbelt-basics.png",
                 content: `
                     <div class="lesson-visual mb-4">
-                        <img src="/static/images/toolbelt-basics.png" class="img-fluid rounded" alt="Essential Hand Tools">
+                        <img src="/static/images/toolbelt-basics.png" class="img-fluid rounded" alt="Essential Hand Tools Layout">
                     </div>
-                    <h6>🎯 Goal: Know the 10 must-have tools for any homeowner</h6>
-                    <h6>🛠️ Essential Tools:</h6>
-                    <ol>
-                        <li><strong>Hammer</strong> - For driving nails and general demolition</li>
-                        <li><strong>Screwdrivers</strong> - Phillips and flat head in multiple sizes</li>
-                        <li><strong>Pliers</strong> - Needle nose and standard for gripping</li>
-                        <li><strong>Tape Measure</strong> - 25ft minimum for accurate measurements</li>
-                        <li><strong>Level</strong> - Ensure everything hangs straight</li>
-                    </ol>
-                    <div class="alert alert-success">
-                        <strong>✅ Pro Tip:</strong> Quality tools last longer and work better. Invest in basics first.
+                    <h6>🎯 Objective: Identify the core tools used in home maintenance and understand their function</h6>
+                    
+                    <h6>🛠️ Essential Tools Visual Guide:</h6>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><strong>🔨 Claw Hammer</strong> - Driving nails & removing them</li>
+                                <li class="mb-2"><strong>🔧 Adjustable Wrench</strong> - Tightening/loosening bolts</li>
+                                <li class="mb-2"><strong>🪚 Utility Knife</strong> - Cutting materials safely</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2"><strong>🪚 Needle-nose Pliers</strong> - Precision gripping</li>
+                                <li class="mb-2"><strong>🪚 Slip-joint Pliers</strong> - General gripping tasks</li>
+                                <li class="mb-2"><strong>🪚 Screwdrivers</strong> - Phillips & flathead</li>
+                            </ul>
+                        </div>
                     </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-mouse-pointer me-2"></i>Interactive Activity:</h6>
+                        <p class="mb-0">Match each tool to its primary task below!</p>
+                    </div>
+                    
+                    <div class="tool-matching-game mb-4" id="toolMatchGame1">
+                        <div class="row">
+                            <div class="col-6">
+                                <h6>Tools:</h6>
+                                <div class="tool-items">
+                                    <div class="tool-item" draggable="true" data-tool="hammer">🔨 Hammer</div>
+                                    <div class="tool-item" draggable="true" data-tool="wrench">🔧 Wrench</div>
+                                    <div class="tool-item" draggable="true" data-tool="screwdriver">🪚 Screwdriver</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <h6>Tasks:</h6>
+                                <div class="task-zones">
+                                    <div class="task-zone" data-task="hammer">Remove a nail</div>
+                                    <div class="task-zone" data-task="wrench">Tighten a bolt</div>
+                                    <div class="task-zone" data-task="screwdriver">Install a screw</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="mt-3 p-3 bg-primary text-white rounded">
-                        <h6>📌 Quick Quiz:</h6>
-                        <p class="mb-2">What's the most important measurement tool for home projects?</p>
+                        <h6>📌 Checkpoint Quiz:</h6>
+                        <p class="mb-2">Which tool is best for removing nails?</p>
                         <div class="quiz-options">
-                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-1', 'wrong', 'Rulers are too short for most home projects.')">A) Ruler</button>
-                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-1', 'correct', 'Correct! A 25ft tape measure handles most home measurements.')">B) Tape measure</button>
-                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-1', 'wrong', 'Calipers are for precision work, not general home use.')">C) Calipers</button>
-                            <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('tool-quiz-1', 'wrong', 'Yardsticks are rigid and limited in length.')">D) Yardstick</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-1', 'correct', 'Correct! The claw end of a hammer grips and pulls nails out.')">A) Claw hammer</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-1', 'wrong', 'Pliers can grip nails but don\\'t have the leverage of a hammer.')">B) Pliers</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-1', 'wrong', 'Screwdrivers are for screws, not nails.')">C) Screwdriver</button>
+                            <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('tool-quiz-1', 'wrong', 'A utility knife cuts materials, not remove nails.')">D) Utility knife</button>
                         </div>
                         <div id="tool-quiz-1" class="mt-2" style="display: none;"></div>
                     </div>
                 `
             },
             {
-                title: "Power Tool Safety",
+                title: "Start with the Basics",
                 image: "/static/images/toolbelt-basics-2.png",
                 content: `
                     <div class="lesson-visual mb-4">
-                        <img src="/static/images/toolbelt-basics-2.png" class="img-fluid rounded" alt="Power Tool Safety">
+                        <img src="/static/images/toolbelt-basics-2.png" class="img-fluid rounded" alt="Toolbelt Organization Steps">
                     </div>
-                    <h6>🎯 Goal: Use power tools safely and effectively</h6>
-                    <h6>⚡ Safety First:</h6>
-                    <ol>
-                        <li><strong>Always wear safety glasses</strong> - Protect your eyes from debris</li>
-                        <li><strong>Check the cord</strong> - Look for damage before plugging in</li>
-                        <li><strong>Secure your workpiece</strong> - Clamp materials before cutting</li>
-                        <li><strong>Keep tools clean</strong> - Remove sawdust and debris regularly</li>
-                        <li><strong>Store properly</strong> - Keep in dry location away from children</li>
-                    </ol>
+                    <h6>🎯 Objective: Organize a minimalist starter toolbelt for common household tasks</h6>
+                    
+                    <h6>📦 Smart Toolbelt Setup:</h6>
+                    <div class="step-by-step mb-4">
+                        <div class="step mb-3">
+                            <span class="step-number">1</span>
+                            <strong>Empty Pouch Overview</strong> - Start with clean, organized pouches
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">2</span>
+                            <strong>Load Hammer & Pliers</strong> - Heavy tools on dominant side
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">3</span>
+                            <strong>Position Screwdrivers</strong> - Easy reach without bending
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">4</span>
+                            <strong>Balance Check</strong> - Distribute weight evenly
+                        </div>
+                    </div>
+                    
                     <div class="alert alert-warning">
-                        <strong>⚠️ Safety Warning:</strong> Never remove safety guards or bypass safety features.
+                        <strong>💡 Key Rule:</strong> Only carry what you need - overloading slows you down!
                     </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-puzzle-piece me-2"></i>Interactive Activity:</h6>
+                        <p class="mb-0">Pack a toolbelt with only 6 slots available. Choose wisely!</p>
+                    </div>
+                    
+                    <div class="toolbelt-simulator mb-4" id="toolbeltSim">
+                        <h6>Available Tools:</h6>
+                        <div class="available-tools mb-3">
+                            <div class="tool-choice" data-tool="hammer">🔨 Hammer</div>
+                            <div class="tool-choice" data-tool="tape">📏 Tape Measure</div>
+                            <div class="tool-choice" data-tool="screwdriver1">🪚 Phillips Screwdriver</div>
+                            <div class="tool-choice" data-tool="screwdriver2">🪚 Flathead Screwdriver</div>
+                            <div class="tool-choice" data-tool="pliers">🔧 Pliers</div>
+                            <div class="tool-choice" data-tool="level">📐 Level</div>
+                            <div class="tool-choice" data-tool="knife">🔪 Utility Knife</div>
+                            <div class="tool-choice" data-tool="wrench">🔧 Wrench</div>
+                        </div>
+                        <h6>Your Toolbelt (6 slots):</h6>
+                        <div class="toolbelt-slots">
+                            <div class="slot empty" data-slot="1">Slot 1</div>
+                            <div class="slot empty" data-slot="2">Slot 2</div>
+                            <div class="slot empty" data-slot="3">Slot 3</div>
+                            <div class="slot empty" data-slot="4">Slot 4</div>
+                            <div class="slot empty" data-slot="5">Slot 5</div>
+                            <div class="slot empty" data-slot="6">Slot 6</div>
+                        </div>
+                    </div>
+                    
                     <div class="mt-3 p-3 bg-primary text-white rounded">
-                        <h6>📌 Quick Quiz:</h6>
-                        <p class="mb-2">What should you always wear when using power tools?</p>
+                        <h6>📌 Checkpoint Quiz:</h6>
+                        <p class="mb-2">True or False: You should carry all tools you own in your toolbelt.</p>
                         <div class="quiz-options">
-                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-2', 'correct', 'Correct! Safety glasses protect your eyes from flying debris.')">A) Safety glasses</button>
-                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-2', 'wrong', 'Gloves can get caught in moving parts of power tools.')">B) Thick gloves</button>
-                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-2', 'wrong', 'Jewelry can catch on tools and cause injury.')">C) Jewelry</button>
-                            <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('tool-quiz-2', 'wrong', 'Loose clothing can get caught in machinery.')">D) Loose clothing</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-2', 'wrong', 'False! Carrying too many tools creates weight and balance problems.')">A) True</button>
+                            <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('tool-quiz-2', 'correct', 'Correct! Only carry essential tools for the specific job.')">B) False</button>
                         </div>
                         <div id="tool-quiz-2" class="mt-2" style="display: none;"></div>
                     </div>
                 `
             },
             {
-                title: "Organizing Your Toolkit",
+                title: "Keep Things Handy",
                 image: "/static/images/toolbelt-basics-3.png",
                 content: `
                     <div class="lesson-visual mb-4">
-                        <img src="/static/images/toolbelt-basics-3.png" class="img-fluid rounded" alt="Organizing Your Toolkit">
+                        <img src="/static/images/toolbelt-basics-3.png" class="img-fluid rounded" alt="Efficient Toolbox Organization">
                     </div>
-                    <h6>🎯 Goal: Keep tools organized and easily accessible</h6>
-                    <h6>📦 Organization Tips:</h6>
-                    <ol>
-                        <li><strong>Tool belt basics</strong> - Hammer, tape measure, screwdrivers, level</li>
-                        <li><strong>Toolbox essentials</strong> - Group similar tools together</li>
-                        <li><strong>Label everything</strong> - Quick identification saves time</li>
-                        <li><strong>Clean after use</strong> - Prevent rust and extend tool life</li>
-                        <li><strong>Regular maintenance</strong> - Sharpen, oil, and calibrate tools</li>
-                    </ol>
-                    <div class="alert alert-success">
-                        <strong>✅ Pro Tip:</strong> A well-organized toolkit makes every job faster and easier.
+                    <h6>🎯 Objective: Use a toolbox system for tool storage and transportation</h6>
+                    
+                    <h6>📦 Toolbox Types & Layout Tips:</h6>
+                    <div class="toolbox-types mb-4">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="toolbox-type p-3 border rounded">
+                                    <h6>🧳 Hard Case</h6>
+                                    <p class="small mb-0">Portable, protected storage for smaller jobs</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="toolbox-type p-3 border rounded">
+                                    <h6>🛞 Rolling Box</h6>
+                                    <p class="small mb-0">Mobile storage for larger tool collections</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="toolbox-type p-3 border rounded">
+                                    <h6>🧩 Modular Inserts</h6>
+                                    <p class="small mb-0">Customizable organization systems</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    
+                    <div class="layout-principle mb-4">
+                        <h6>🎯 Golden Rule: Top Tray for Daily Use Tools</h6>
+                        <p>Keep your most-used tools in the top tray or easily accessible compartments.</p>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-sort me-2"></i>Interactive Activity:</h6>
+                        <p class="mb-0">Organize this messy toolbox! Click and drag to create an efficient layout.</p>
+                    </div>
+                    
+                    <div class="toolbox-organizer mb-4" id="toolboxOrganizer">
+                        <div class="row">
+                            <div class="col-6">
+                                <h6>Disorganized Box:</h6>
+                                <div class="messy-box">
+                                    <div class="scattered-tool" data-tool="hammer">🔨</div>
+                                    <div class="scattered-tool" data-tool="screws">🔩</div>
+                                    <div class="scattered-tool" data-tool="tape">📏</div>
+                                    <div class="scattered-tool" data-tool="pliers">🔧</div>
+                                    <div class="scattered-tool" data-tool="level">📐</div>
+                                    <div class="scattered-tool" data-tool="nails">📎</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <h6>Organized Layout:</h6>
+                                <div class="organized-box">
+                                    <div class="top-tray">
+                                        <label>Top Tray (Daily Use)</label>
+                                        <div class="tray-zone" data-category="daily"></div>
+                                    </div>
+                                    <div class="bottom-section">
+                                        <label>Bottom (Hardware & Storage)</label>
+                                        <div class="tray-zone" data-category="storage"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="mt-3 p-3 bg-primary text-white rounded">
-                        <h6>📌 Quick Quiz:</h6>
-                        <p class="mb-2">What's the best way to prevent tool rust?</p>
+                        <h6>📌 Checkpoint Quiz:</h6>
+                        <p class="mb-2">Which toolbox layout is most efficient?</p>
                         <div class="quiz-options">
-                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-3', 'wrong', 'WD-40 displaces moisture but isn\\'t the best long-term solution.')">A) Spray with WD-40</button>
-                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-3', 'correct', 'Correct! Clean, dry storage prevents rust formation.')">B) Keep clean and dry</button>
-                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-3', 'wrong', 'Oil attracts dirt and dust in storage.')">C) Cover in oil</button>
-                            <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('tool-quiz-3', 'wrong', 'Leaving tools outside exposes them to moisture.')">D) Leave outside</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-3', 'wrong', 'Mixing tools randomly makes them hard to find quickly.')">A) All tools mixed together</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-3', 'correct', 'Correct! Grouping by use and putting daily tools on top saves time.')">B) Daily tools on top, grouped by type</button>
+                            <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('tool-quiz-3', 'wrong', 'Size-based organization doesn\\'t consider how often you use tools.')">C) Largest tools first</button>
                         </div>
                         <div id="tool-quiz-3" class="mt-2" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="completion-criteria mt-4">
+                        <h6>🎉 Course Completion Criteria:</h6>
+                        <ul class="list-unstyled">
+                            <li>✅ Pass all 3 checkpoint quizzes</li>
+                            <li>✅ Complete all 3 interactive activities</li>
+                            <li>✅ Spend at least 10 minutes per lesson</li>
+                        </ul>
+                        <div class="alert alert-success">
+                            <strong>🎁 Upon Completion:</strong> Earn $5 SPANK Bucks and unlock "Hang a Picture" lesson!
+                        </div>
                     </div>
                 `
             }
@@ -1215,7 +1355,21 @@ function showLesson() {
     const nextBtn = document.getElementById('nextLessonBtn');
     nextBtn.style.display = 'none'; // Hide default button since we have custom navigation
     
+    // Initialize interactive elements for toolbelt course
     modal.show();
+    
+    // Add slight delay to ensure DOM elements are rendered
+    setTimeout(() => {
+        if (currentCourse === courses.toolbelt) {
+            if (currentLesson === 0) {
+                initToolMatchingGame();
+            } else if (currentLesson === 1) {
+                initToolbeltSimulator();
+            } else if (currentLesson === 2) {
+                initToolboxOrganizer();
+            }
+        }
+    }, 200);
 }
 
 // Previous lesson function
@@ -1895,6 +2049,186 @@ function showSolution(solutionKey, problemIndex) {
     `;
     
     document.getElementById('problemSolverContent').innerHTML = content;
+}
+
+// Interactive Toolbelt Course Functions
+let toolbeltState = {
+    selectedSlot: null,
+    filledSlots: 0,
+    maxSlots: 6
+};
+
+// Initialize interactive elements when course modal opens
+document.addEventListener('DOMContentLoaded', function() {
+    // Tool matching game initialization will happen when course loads
+});
+
+// Tool Matching Game for Lesson 1
+function initToolMatchingGame() {
+    const toolItems = document.querySelectorAll('.tool-item');
+    const taskZones = document.querySelectorAll('.task-zone');
+    
+    toolItems.forEach(item => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
+    });
+    
+    taskZones.forEach(zone => {
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('drop', handleDrop);
+        zone.addEventListener('dragenter', handleDragEnter);
+        zone.addEventListener('dragleave', handleDragLeave);
+    });
+}
+
+function handleDragStart(e) {
+    e.dataTransfer.setData('text/plain', e.target.dataset.tool);
+    e.target.classList.add('dragging');
+}
+
+function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+}
+
+function handleDragEnter(e) {
+    e.preventDefault();
+    e.target.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    e.target.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    const toolType = e.dataTransfer.getData('text/plain');
+    const taskType = e.target.dataset.task;
+    
+    e.target.classList.remove('drag-over');
+    
+    if (toolType === taskType) {
+        e.target.classList.add('correct');
+        e.target.innerHTML = `✓ Correct! ${e.target.innerHTML}`;
+        
+        // Find and hide the dragged tool
+        const draggedTool = document.querySelector(`[data-tool="${toolType}"]`);
+        if (draggedTool) {
+            draggedTool.style.display = 'none';
+        }
+    } else {
+        // Show incorrect feedback
+        e.target.style.background = '#f8d7da';
+        e.target.style.borderColor = '#dc3545';
+        setTimeout(() => {
+            e.target.style.background = '#e9ecef';
+            e.target.style.borderColor = '#adb5bd';
+        }, 1000);
+    }
+}
+
+// Toolbelt Simulator for Lesson 2
+function initToolbeltSimulator() {
+    const toolChoices = document.querySelectorAll('.tool-choice');
+    const slots = document.querySelectorAll('.slot');
+    
+    toolChoices.forEach(choice => {
+        choice.addEventListener('click', function() {
+            if (this.classList.contains('selected')) {
+                // Deselect tool
+                this.classList.remove('selected');
+                toolbeltState.selectedSlot = null;
+            } else if (toolbeltState.filledSlots < toolbeltState.maxSlots) {
+                // Select tool
+                toolChoices.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // Find first empty slot and fill it
+                const emptySlot = document.querySelector('.slot.empty');
+                if (emptySlot) {
+                    emptySlot.classList.remove('empty');
+                    emptySlot.classList.add('filled');
+                    emptySlot.innerHTML = this.innerHTML;
+                    emptySlot.dataset.tool = this.dataset.tool;
+                    
+                    toolbeltState.filledSlots++;
+                    this.style.opacity = '0.5';
+                    this.style.pointerEvents = 'none';
+                }
+                
+                this.classList.remove('selected');
+            }
+        });
+    });
+    
+    slots.forEach(slot => {
+        slot.addEventListener('click', function() {
+            if (this.classList.contains('filled')) {
+                // Remove tool from slot
+                const toolType = this.dataset.tool;
+                this.classList.remove('filled');
+                this.classList.add('empty');
+                this.innerHTML = `Slot ${this.dataset.slot}`;
+                this.removeAttribute('data-tool');
+                
+                // Re-enable tool choice
+                const toolChoice = document.querySelector(`[data-tool="${toolType}"]`);
+                if (toolChoice) {
+                    toolChoice.style.opacity = '1';
+                    toolChoice.style.pointerEvents = 'auto';
+                }
+                
+                toolbeltState.filledSlots--;
+            }
+        });
+    });
+}
+
+// Toolbox Organizer for Lesson 3
+function initToolboxOrganizer() {
+    const scatteredTools = document.querySelectorAll('.scattered-tool');
+    const trayZones = document.querySelectorAll('.tray-zone');
+    
+    scatteredTools.forEach(tool => {
+        tool.addEventListener('dragstart', function(e) {
+            e.dataTransfer.setData('text/plain', this.dataset.tool);
+            this.style.opacity = '0.5';
+        });
+        
+        tool.addEventListener('dragend', function(e) {
+            this.style.opacity = '1';
+        });
+    });
+    
+    trayZones.forEach(zone => {
+        zone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+        
+        zone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            const toolType = e.dataTransfer.getData('text/plain');
+            const draggedTool = document.querySelector(`[data-tool="${toolType}"]`);
+            
+            if (draggedTool) {
+                // Create organized tool element
+                const organizedTool = document.createElement('div');
+                organizedTool.innerHTML = draggedTool.innerHTML;
+                organizedTool.style.background = '#28a745';
+                organizedTool.style.color = 'white';
+                organizedTool.style.padding = '5px 10px';
+                organizedTool.style.borderRadius = '4px';
+                organizedTool.style.margin = '2px';
+                organizedTool.style.display = 'inline-block';
+                
+                this.appendChild(organizedTool);
+                draggedTool.remove();
+            }
+        });
+    });
 }
 </script>
 {% endblock %}
