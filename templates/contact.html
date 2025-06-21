@@ -65,9 +65,118 @@
     
     /* Desktop contact optimizations */
     @media (min-width: 1200px) {
+        .page-header {
+            padding: 120px 0 60px !important;
+        }
+        
+        .page-header h1 {
+            font-size: 3.5rem !important;
+        }
+        
+        .page-header .lead {
+            font-size: 1.4rem;
+        }
+        
+        .contact-item {
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
         .contact-item:hover {
             transform: translateX(10px);
-            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .contact-form-card {
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        .contact-form-card h3 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .form-select {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+        
+        textarea.form-control {
+            min-height: 140px;
+            resize: vertical;
+        }
+        
+        .btn-primary {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3);
+        }
+        
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0d6efd, #6610f2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .contact-details h6 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .social-links .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .contact-section .container {
+            max-width: 1400px;
+        }
+        
+        .contact-section .row {
+            align-items: start;
         }
     }
     
@@ -95,7 +204,7 @@
 </section>
 
 <!-- Contact Information -->
-<section class="py-5" style="background: linear-gradient(rgba(248, 249, 250, 0.9), rgba(248, 249, 250, 0.9)), url('/static/images/spankks-logo-new.png'); background-size: contain; background-repeat: no-repeat; background-position: center; background-attachment: fixed;">
+<section class="py-5 contact-section" style="background: linear-gradient(rgba(248, 249, 250, 0.9), rgba(248, 249, 250, 0.9)), url('/static/images/spankks-logo-new.png'); background-size: contain; background-repeat: no-repeat; background-position: center; background-attachment: fixed;">
     <div class="container">
         <div class="row g-4">
             <!-- Contact Details -->
@@ -174,29 +283,29 @@
             
             <!-- Quick Contact Form -->
             <div class="col-lg-6">
-                <div class="card border-0 shadow">
-                    <div class="card-body p-4">
-                        <h3 class="card-title mb-4">Send Us a Message</h3>
+                <div class="card border-0 shadow contact-form-card">
+                    <div class="card-body">
+                        <h3 class="card-title">Send Us a Message</h3>
                         
                         <form method="POST" action="{{ url_for('contact') }}">
-                            <div class="row g-3">
+                            <div class="row g-4">
                                 <div class="col-md-6">
-                                    <label for="contact_name" class="form-label">Name *</label>
-                                    <input type="text" class="form-control" id="contact_name" name="contact_name" required>
+                                    <label for="contact_name" class="form-label fw-semibold">Name *</label>
+                                    <input type="text" class="form-control" id="contact_name" name="contact_name" required placeholder="Your full name">
                                 </div>
                                 
                                 <div class="col-md-6">
-                                    <label for="contact_email" class="form-label">Email *</label>
-                                    <input type="email" class="form-control" id="contact_email" name="contact_email" required>
+                                    <label for="contact_email" class="form-label fw-semibold">Email *</label>
+                                    <input type="email" class="form-control" id="contact_email" name="contact_email" required placeholder="your.email@example.com">
                                 </div>
                                 
-                                <div class="col-12">
-                                    <label for="contact_phone" class="form-label">Phone</label>
-                                    <input type="tel" class="form-control" id="contact_phone" name="contact_phone">
+                                <div class="col-md-6">
+                                    <label for="contact_phone" class="form-label fw-semibold">Phone</label>
+                                    <input type="tel" class="form-control" id="contact_phone" name="contact_phone" placeholder="(808) 123-4567">
                                 </div>
                                 
-                                <div class="col-12">
-                                    <label for="contact_subject" class="form-label">Subject</label>
+                                <div class="col-md-6">
+                                    <label for="contact_subject" class="form-label fw-semibold">Subject</label>
                                     <select class="form-select" id="contact_subject" name="contact_subject">
                                         <option value="">Select a topic</option>
                                         <option value="consultation">Request Consultation</option>
@@ -207,8 +316,8 @@
                                 </div>
                                 
                                 <div class="col-12">
-                                    <label for="contact_message" class="form-label">Message *</label>
-                                    <textarea class="form-control" id="contact_message" name="contact_message" rows="4" required placeholder="Tell us about your project or ask any questions..."></textarea>
+                                    <label for="contact_message" class="form-label fw-semibold">Message *</label>
+                                    <textarea class="form-control" id="contact_message" name="contact_message" rows="5" required placeholder="Tell us about your project or ask any questions..."></textarea>
                                 </div>
                                 
                                 <div class="col-12">
