@@ -1292,6 +1292,138 @@ footer a:hover {
         align-items: center;
         margin-top: 4rem;
     }
+    
+    /* Admin Dashboard Desktop Optimizations */
+    .stats-card {
+        transition: all 0.3s ease;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+    
+    .bg-primary-light { background: rgba(13, 110, 253, 0.1); }
+    .bg-warning-light { background: rgba(255, 193, 7, 0.1); }
+    .bg-success-light { background: rgba(25, 135, 84, 0.1); }
+    .bg-info-light { background: rgba(13, 202, 240, 0.1); }
+    .bg-purple-light { background: rgba(102, 16, 242, 0.1); }
+    .bg-orange-light { background: rgba(253, 126, 20, 0.1); }
+    
+    .text-purple { color: #6610f2; }
+    .text-orange { color: #fd7e14; }
+    .bg-purple { background-color: #6610f2; }
+    .bg-orange { background-color: #fd7e14; }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.05) 0%, rgba(25, 135, 84, 0.05) 100%);
+    }
+    
+    .calendar-day-desktop {
+        border-right: 1px solid #e9ecef;
+        min-height: 400px;
+    }
+    
+    .calendar-day-desktop:last-child {
+        border-right: none;
+    }
+    
+    .day-appointments-desktop {
+        overflow-y: auto;
+        max-height: 350px;
+    }
+    
+    .appointment-card {
+        transition: all 0.2s ease;
+        border-left: 4px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .appointment-card:hover {
+        transform: translateX(3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .activity-feed .avatar {
+        transition: all 0.2s ease;
+    }
+    
+    .activity-feed .d-flex:hover .avatar {
+        transform: scale(1.1);
+    }
+    
+    /* Enhanced table styles for admin */
+    .table-responsive {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table thead th {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        color: white;
+        border: none;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.875rem;
+    }
+    
+    .table tbody tr {
+        transition: all 0.2s ease;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .table tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table tbody td {
+        padding: 1.25rem 1.5rem;
+        vertical-align: middle;
+        border: none;
+    }
+    
+    /* Enhanced buttons for admin */
+    .btn-group .btn {
+        transition: all 0.2s ease;
+    }
+    
+    .btn-group .btn:hover {
+        transform: translateY(-1px);
+        z-index: 2;
+    }
+    
+    /* Dashboard cards */
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .card-header.bg-gradient-primary {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+    }
+    
+    .card-header.bg-gradient-success {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+    }
 }
 
 /* Print Styles */

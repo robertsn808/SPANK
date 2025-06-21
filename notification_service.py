@@ -179,8 +179,6 @@ class NotificationService:
 
     def _log_inquiry_for_admin(self, inquiry_type, customer_name, phone_number, email, service_type=None):
         """Log inquiry details for admin manual follow-up"""
-        from models import handyman_storage
-        
         notification_data = {
             'type': 'new_inquiry',
             'inquiry_type': inquiry_type,
@@ -192,7 +190,10 @@ class NotificationService:
             'status': 'unread'
         }
         
-        handyman_storage.add_admin_notification(notification_data)
+        # Import locally to avoid circular import
+        from models import HandymanStorage
+        storage = HandymanStorage()
+        storage.add_admin_notification(notification_data)
         logging.info(f"Inquiry logged for admin follow-up: {customer_name} - {inquiry_type}")
     
     def _send_via_rapidapi(self, to_email, amount, reason, customer_name):
