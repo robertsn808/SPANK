@@ -1,10 +1,83 @@
 {% extends "base.html" %}
 
-{% block title %}Contact Us - Triton Concrete Coating{% endblock %}
+{% block title %}Contact Us - SPANK Handyman Services{% endblock %}
 
 {% block extra_head %}
   <meta name="description" content="Contact SPANK Handyman Services to schedule your next repair or consultation.">
   <meta name="keywords" content="contact handyman, Hawaii repair services, SPANK contact info">
+  <style>
+    /* Contact page mobile optimizations */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 80px 0 40px !important;
+        }
+        
+        .contact-item {
+            margin-bottom: 2rem !important;
+            text-align: center;
+        }
+        
+        .contact-item .d-flex {
+            flex-direction: column;
+            align-items: center !important;
+        }
+        
+        .contact-icon {
+            margin-bottom: 1rem !important;
+            margin-right: 0 !important;
+        }
+        
+        .contact-details {
+            text-align: center;
+            margin-left: 0 !important;
+        }
+        
+        .social-links {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .social-links .btn {
+            display: block;
+            width: 100%;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .quick-contact-form .form-control {
+            margin-bottom: 1rem;
+        }
+        
+        .quick-contact-form textarea {
+            min-height: 120px;
+        }
+    }
+    
+    /* Tablet contact optimizations */
+    @media (min-width: 768px) and (max-width: 991.98px) {
+        .page-header {
+            padding: 100px 0 50px !important;
+        }
+        
+        .contact-item {
+            margin-bottom: 1.5rem;
+        }
+    }
+    
+    /* Desktop contact optimizations */
+    @media (min-width: 1200px) {
+        .contact-item:hover {
+            transform: translateX(10px);
+            transition: transform 0.3s ease;
+        }
+    }
+    
+    /* Touch device contact items */
+    @media (hover: none) {
+        .contact-item:hover {
+            transform: none;
+        }
+    }
+  </style>
 {% endblock %}
 
 

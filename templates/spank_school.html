@@ -193,11 +193,88 @@
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         border: none;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        min-height: 200px;
     }
     
     .action-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    /* Mobile Optimizations */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 2rem 0 !important;
+        }
+        
+        .display-4 {
+            font-size: 2.5rem !important;
+        }
+        
+        .action-card {
+            min-height: 180px;
+            margin-bottom: 1rem;
+        }
+        
+        .action-card .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .action-card .d-flex {
+            flex-direction: column;
+            align-items: center !important;
+            text-align: center;
+        }
+        
+        .spank-character-mobile {
+            max-height: 250px !important;
+            margin: 1rem auto !important;
+            display: block !important;
+        }
+        
+        .mobile-center {
+            text-align: center !important;
+        }
+        
+        .course-card {
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+        }
+    }
+    
+    /* Desktop Optimizations */
+    @media (min-width: 1200px) {
+        .container-fluid {
+            max-width: 1400px;
+        }
+        
+        .action-card {
+            min-height: 220px;
+        }
+        
+        .display-4 {
+            font-size: 3.5rem;
+        }
+    }
+    
+    /* Touch Device Optimizations */
+    @media (hover: none) {
+        .action-card:hover {
+            transform: none;
+        }
+        
+        .action-card:active {
+            transform: scale(0.98);
+        }
+        
+        .btn {
+            min-height: 48px; /* Touch target size */
+        }
     }
 </style>
 {% endblock %}
@@ -207,38 +284,38 @@
 <section class="hero-section py-5 bg-gradient-warning">
     <div class="container-fluid">
         <div class="row align-items-center">
-            <div class="col-lg-8">
+            <div class="col-lg-8 order-2 order-lg-1">
                 <div class="ps-3 ps-lg-5">
-                    <h1 class="display-4 fw-bold mb-3 text-dark">
+                    <h1 class="display-4 fw-bold mb-3 text-dark mobile-center">
                         🧠 Welcome to Spank School
                     </h1>
-                    <p class="lead mb-4 text-dark">
+                    <p class="lead mb-4 text-dark mobile-center">
                         Master DIY repairs with professional guidance from Hawaii's trusted handyman experts.
                     </p>
                     
                     <!-- Combined Action Cards -->
                     <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <div class="action-card bg-dark text-warning p-4 rounded-3 h-100">
+                        <div class="col-md-6 col-12">
+                            <div class="action-card bg-dark text-warning p-3 p-md-4 rounded-3 h-100">
                                 <h5 class="fw-bold mb-2">🎓 Monthly Knowledge Quiz</h5>
-                                <p class="mb-3">Answer 4/5 questions correctly for $5 SPANK Bucks!</p>
+                                <p class="mb-3 small">Answer 4/5 questions correctly for $5 SPANK Bucks!</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <button class="btn btn-warning btn-lg" onclick="startKnowledgeQuiz()">
                                         <i class="fas fa-brain me-2"></i>Take Quiz
                                     </button>
-                                    <img src="{{ url_for('static', filename='images/spank-buck-5.png') }}" alt="$5 SPANK Buck" style="height: 50px;">
+                                    <img src="{{ url_for('static', filename='images/spank-buck-5.png') }}" alt="$5 SPANK Buck" style="height: 45px;">
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="action-card bg-primary text-white p-4 rounded-3 h-100">
+                        <div class="col-md-6 col-12">
+                            <div class="action-card bg-primary text-white p-3 p-md-4 rounded-3 h-100">
                                 <h5 class="fw-bold mb-2">📚 Learn DIY Skills</h5>
-                                <p class="mb-3">Complete courses and earn $5 SPANK Bucks per course!</p>
+                                <p class="mb-3 small">Complete courses and earn $5 SPANK Bucks per course!</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <button class="btn btn-warning btn-lg" onclick="scrollToCourses()">
                                         <i class="fas fa-play me-2"></i>Start Learning
                                     </button>
-                                    <img src="{{ url_for('static', filename='images/spank-buck-5.png') }}" alt="$5 SPANK Buck" style="height: 50px;">
+                                    <img src="{{ url_for('static', filename='images/spank-buck-5.png') }}" alt="$5 SPANK Buck" style="height: 45px;">
                                 </div>
                             </div>
                         </div>
@@ -246,15 +323,16 @@
                     
                     <!-- Problem Solver Button -->
                     <div class="text-center text-lg-start">
-                        <button class="btn btn-outline-dark btn-lg" onclick="showProblemSolver()">
+                        <button class="btn btn-outline-dark btn-lg px-4" onclick="showProblemSolver()">
                             <i class="fas fa-tools me-2"></i>Problem Solver
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 text-end mt-4 mt-lg-0 p-0">
+            <div class="col-lg-4 order-1 order-lg-2 text-center text-lg-end mt-3 mt-lg-0 p-0">
                 <img src="{{ url_for('static', filename='images/spank-school-character.png') }}" 
-                     alt="SPANK Mascot" class="img-fluid" style="max-height: 400px; width: auto; margin-right: -15px;">
+                     alt="SPANK Mascot" class="img-fluid spank-character-mobile d-lg-block" 
+                     style="max-height: 400px; width: auto; margin-right: -15px;">
             </div>
         </div>
     </div>

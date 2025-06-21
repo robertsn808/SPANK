@@ -23,11 +23,47 @@
         backdrop-filter: blur(10px);
     }
     
+    /* Mobile hero optimizations */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 100px 0 60px;
+            min-height: 80vh;
+        }
+        
+        .hero-content {
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .hero-buttons .btn {
+            display: block;
+            width: 100%;
+            margin: 0 0 1rem 0;
+        }
+        
+        .hero-buttons .btn:last-child {
+            margin-bottom: 0;
+        }
+    }
+    
+    /* Tablet hero optimizations */
+    @media (min-width: 768px) and (max-width: 991.98px) {
+        .hero-section {
+            padding: 120px 0 70px;
+            min-height: 90vh;
+        }
+        
+        .hero-content {
+            padding: 30px;
+        }
+    }
+    
     .service-card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         border: none;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         height: 100%;
+        margin-bottom: 2rem;
     }
     
     .service-card:hover {
@@ -46,6 +82,44 @@
         margin: 0 auto 20px;
         color: white;
         font-size: 32px;
+    }
+    
+    /* Mobile service card optimizations */
+    @media (max-width: 768px) {
+        .service-card {
+            margin-bottom: 1.5rem;
+        }
+        
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .service-card .card-body {
+            padding: 1.25rem;
+            text-align: center;
+        }
+        
+        .service-card h5 {
+            font-size: 1.1rem;
+        }
+        
+        .service-card p {
+            font-size: 0.95rem;
+        }
+    }
+    
+    /* Touch device service cards */
+    @media (hover: none) {
+        .service-card:hover {
+            transform: none;
+        }
+        
+        .service-card:active {
+            transform: scale(0.98);
+        }
     }
     
     .about-section {

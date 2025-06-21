@@ -36,6 +36,158 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <!-- Global Responsive Optimizations -->
+    <style>
+        /* Global Mobile-First CSS */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        /* Touch-friendly buttons */
+        .btn {
+            min-height: 44px;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-lg {
+            min-height: 48px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Mobile-optimized typography */
+        .display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        
+        /* Responsive containers */
+        .container-fluid {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        
+        /* Mobile navigation optimizations */
+        @media (max-width: 991.98px) {
+            .navbar-nav .nav-link {
+                padding: 0.75rem 1rem;
+                font-size: 1.1rem;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            .navbar-collapse {
+                margin-top: 1rem;
+                background: rgba(0,0,0,0.95);
+                border-radius: 8px;
+                padding: 1rem;
+            }
+        }
+        
+        /* Mobile typography scaling */
+        @media (max-width: 768px) {
+            .display-1 { font-size: 2.5rem; }
+            .display-2 { font-size: 2.25rem; }
+            .display-3 { font-size: 2rem; }
+            .display-4 { font-size: 1.75rem; }
+            .display-5 { font-size: 1.5rem; }
+            .display-6 { font-size: 1.25rem; }
+            
+            .lead {
+                font-size: 1.1rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            h1 { font-size: 1.75rem; }
+            h2 { font-size: 1.5rem; }
+            h3 { font-size: 1.25rem; }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            
+            .btn:last-child {
+                margin-bottom: 0;
+            }
+            
+            /* Mobile padding adjustments */
+            .py-5 { padding: 2rem 0 !important; }
+            .py-4 { padding: 1.5rem 0 !important; }
+            .mb-5 { margin-bottom: 2rem !important; }
+            .mb-4 { margin-bottom: 1.5rem !important; }
+            
+            /* Mobile card spacing */
+            .card {
+                margin-bottom: 1.5rem;
+            }
+            
+            .card-body {
+                padding: 1.25rem;
+            }
+        }
+        
+        /* Tablet optimizations */
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            .display-4 { font-size: 2.5rem; }
+            .display-5 { font-size: 2rem; }
+            
+            .btn {
+                width: auto;
+            }
+        }
+        
+        /* Desktop optimizations */
+        @media (min-width: 1200px) {
+            .container, .container-lg, .container-md, .container-sm, .container-xl {
+                max-width: 1200px;
+            }
+            
+            .display-1 { font-size: 5rem; }
+            .display-2 { font-size: 4.5rem; }
+            .display-3 { font-size: 4rem; }
+            .display-4 { font-size: 3.5rem; }
+        }
+        
+        /* Touch device optimizations */
+        @media (hover: none) {
+            .card:hover, .btn:hover {
+                transform: none;
+            }
+            
+            .card:active, .btn:active {
+                transform: scale(0.98);
+            }
+        }
+        
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .btn {
+                border: 2px solid;
+            }
+            
+            .card {
+                border: 1px solid #000;
+            }
+        }
+    </style>
+
     {% block head %}{% endblock %}
     {% block extra_head %}{% endblock %}
 
