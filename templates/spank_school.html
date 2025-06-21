@@ -2055,6 +2055,307 @@ const courses = {
             }
         ]
     },
+    toilet: {
+        title: "Fix a Running Toilet",
+        level: "Intermediate",
+        duration: "35-45 minutes",
+        reward: "$10 SPANK Bucks",
+        lessons: [
+            {
+                title: "Diagnose the Problem",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjUwIiB5PSI4MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxODAiIGZpbGw9IiNkZWUyZTYiIHJ4PSIxNSIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjE0MCIgcj0iMzAiIGZpbGw9IiMwMDdiZmYiLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIxMjAiIHI9IjE1IiBmaWxsPSIjZmY2YjM1Ii8+PHJlY3QgeD0iMjMwIiB5PSIxNDAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0iI2ZmYzEwNyIgcng9IjUiLz48cGF0aCBkPSJNIDIwMCAxNjAgUSAyMjAgMTcwIDIwMCAxODAiIHN0cm9rZT0iIzI4YTc0NSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+PHRleHQgeD0iMjAwIiB5PSIyNzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzM0M2E0MCI+VG9pbGV0IEludGVybmFsczwvdGV4dD48L3N2Zz4=",
+                content: `
+                    <div class="lesson-visual mb-4">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjUwIiB5PSI4MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxODAiIGZpbGw9IiNkZWUyZTYiIHJ4PSIxNSIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjE0MCIgcj0iMzAiIGZpbGw9IiMwMDdiZmYiLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIxMjAiIHI9IjE1IiBmaWxsPSIjZmY2YjM1Ii8+PHJlY3QgeD0iMjMwIiB5PSIxNDAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0iI2ZmYzEwNyIgcng9IjUiLz48cGF0aCBkPSJNIDIwMCAxNjAgUSAyMjAgMTcwIDIwMCAxODAiIHN0cm9rZT0iIzI4YTc0NSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+PHRleHQgeD0iMjAwIiB5PSIyNzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzM0M2E0MCI+VG9pbGV0IEludGVybmFsczwvdGV4dD48L3N2Zz4=" class="img-fluid rounded" alt="Toilet Internals">
+                    </div>
+                    <h6>🎯 Objective: Identify what's causing the toilet to run continuously</h6>
+                    
+                    <h6>🔍 Common Causes of Running Toilets:</h6>
+                    <div class="toilet-problems mb-4">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="problem-item p-3 border rounded text-center">
+                                    <div class="problem-icon mb-2">🔴</div>
+                                    <h6>Warped Flapper</h6>
+                                    <p class="small mb-0">Doesn't seal properly</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="problem-item p-3 border rounded text-center">
+                                    <div class="problem-icon mb-2">⚖️</div>
+                                    <h6>Float Adjustment</h6>
+                                    <p class="small mb-0">Water level too high</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="problem-item p-3 border rounded text-center">
+                                    <div class="problem-icon mb-2">🔧</div>
+                                    <h6>Chain Length</h6>
+                                    <p class="small mb-0">Too tight or too loose</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6>🔧 Diagnostic Steps:</h6>
+                    <div class="diagnostic-steps mb-4">
+                        <div class="step mb-3">
+                            <span class="step-number">1</span>
+                            <strong>Remove Tank Lid</strong> - Carefully lift off ceramic lid
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">2</span>
+                            <strong>Check Flapper Seal</strong> - Press down to see if water stops
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">3</span>
+                            <strong>Examine Chain</strong> - Should have slight slack when flapper is closed
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">4</span>
+                            <strong>Test Float</strong> - Lift to see if fill valve stops
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-mouse-pointer me-2"></i>Interactive Activity:</h6>
+                        <p class="mb-0">Virtual toilet diagnosis - identify the problem!</p>
+                    </div>
+                    
+                    <div class="toilet-diagnosis-sim mb-4" id="toiletDiagnosisSim">
+                        <div class="virtual-toilet-tank">
+                            <h6>Virtual Toilet Tank</h6>
+                            <div class="tank-interior" id="tankInterior">
+                                <div class="flapper" id="virtualFlapper" onclick="checkFlapper()">Flapper</div>
+                                <div class="chain" id="virtualChain" onclick="checkChain()">Chain</div>
+                                <div class="float" id="virtualFloat" onclick="checkFloat()">Float</div>
+                                <div class="fill-valve" id="fillValve">Fill Valve</div>
+                            </div>
+                            
+                            <div class="diagnosis-results mt-3">
+                                <div class="water-flow" id="waterFlow">💧 Water continuously flowing</div>
+                                <div class="diagnosis-feedback mt-2" id="diagnosisFeedback"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 p-3 bg-primary text-white rounded">
+                        <h6>📌 Checkpoint Quiz:</h6>
+                        <p class="mb-2">What should you do first when diagnosing a running toilet?</p>
+                        <div class="quiz-options">
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('toilet-quiz-1', 'correct', 'Correct! Always remove the tank lid to see the internal components.')">A) Remove tank lid</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('toilet-quiz-1', 'wrong', 'Turn off water only if you need to make repairs.')">B) Turn off water</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('toilet-quiz-1', 'wrong', 'Flush first to observe, but remove lid to diagnose.')">C) Flush toilet</button>
+                            <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('toilet-quiz-1', 'wrong', 'Check flapper after removing the lid.')">D) Check flapper</button>
+                        </div>
+                        <div id="toilet-quiz-1" class="mt-2" style="display: none;"></div>
+                    </div>
+                `
+            },
+            {
+                title: "Fix the Most Common Issues",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjUwIiB5PSI4MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxODAiIGZpbGw9IiNkZWUyZTYiIHJ4PSIxNSIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjE0MCIgcj0iMzAiIGZpbGw9IiMyOGE3NDUiLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIxMjAiIHI9IjE1IiBmaWxsPSIjMjhhNzQ1Ii8+PHJlY3QgeD0iMjMwIiB5PSIxNDAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0iIzI4YTc0NSIgcng9IjUiLz48cGF0aCBkPSJNIDIwMCAxNjAgUSAyMjAgMTcwIDIwMCAxODAiIHN0cm9rZT0iIzI4YTc0NSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTSAyMDAgMTMwIEwgMTk1IDEyNSBMIDIwNSAxMjUgWiIgZmlsbD0iIzI4YTc0NSIvPjx0ZXh0IHg9IjIwMCIgeT0iMjcwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMzNDNhNDAiPlRvaWxldCBGaXhlZDwvdGV4dD48L3N2Zz4=",
+                content: `
+                    <div class="lesson-visual mb-4">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjUwIiB5PSI4MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxODAiIGZpbGw9IiNkZWUyZTYiIHJ4PSIxNSIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjE0MCIgcj0iMzAiIGZpbGw9IiMyOGE3NDUiLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIxMjAiIHI9IjE1IiBmaWxsPSIjMjhhNzQ1Ii8+PHJlY3QgeD0iMjMwIiB5PSIxNDAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0iIzI4YTc0NSIgcng9IjUiLz48cGF0aCBkPSJNIDIwMCAxNjAgUSAyMjAgMTcwIDIwMCAxODAiIHN0cm9rZT0iIzI4YTc0NSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTSAyMDAgMTMwIEwgMTk1IDEyNSBMIDIwNSAxMjUgWiIgZmlsbD0iIzI4YTc0NSIvPjx0ZXh0IHg9IjIwMCIgeT0iMjcwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMzNDNhNDAiPlRvaWxldCBGaXhlZDwvdGV4dD48L3N2Zz4=" class="img-fluid rounded" alt="Toilet Fixed">
+                    </div>
+                    <h6>🎯 Objective: Apply the correct fix based on your diagnosis</h6>
+                    
+                    <h6>🔧 Common Fixes:</h6>
+                    <div class="toilet-fixes mb-4">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="fix-method p-3 border rounded">
+                                    <h6>🔴 Flapper Replacement</h6>
+                                    <p class="small mb-2"><strong>When:</strong> Flapper is warped or cracked</p>
+                                    <p class="small mb-0"><strong>How:</strong> Unhook old, hook new flapper</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="fix-method p-3 border rounded">
+                                    <h6>🔗 Chain Adjustment</h6>
+                                    <p class="small mb-2"><strong>When:</strong> Too tight or too loose</p>
+                                    <p class="small mb-0"><strong>How:</strong> Adjust to have slight slack</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6>🔧 Repair Steps:</h6>
+                    <div class="repair-steps mb-4">
+                        <div class="step mb-3">
+                            <span class="step-number">1</span>
+                            <strong>Turn Off Water</strong> - Shut off valve behind toilet
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">2</span>
+                            <strong>Drain Tank</strong> - Flush to empty water
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">3</span>
+                            <strong>Make Repair</strong> - Replace flapper or adjust chain
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">4</span>
+                            <strong>Test Function</strong> - Turn water back on and test
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-mouse-pointer me-2"></i>Interactive Activity:</h6>
+                        <p class="mb-0">Virtual toilet repair simulator!</p>
+                    </div>
+                    
+                    <div class="toilet-repair-sim mb-4" id="toiletRepairSim">
+                        <div class="repair-workspace">
+                            <h6>Virtual Toilet Repair</h6>
+                            <div class="repair-tank" id="repairTank">
+                                <div class="old-flapper" id="oldFlapper">Old Flapper</div>
+                                <div class="repair-chain" id="repairChain">Chain</div>
+                                <div class="water-level" id="waterLevel">Water Level</div>
+                            </div>
+                            
+                            <div class="repair-tools mt-3">
+                                <button class="btn btn-warning btn-sm" onclick="turnOffWater()">1. Turn Off Water</button>
+                                <button class="btn btn-warning btn-sm" onclick="drainTank()">2. Drain Tank</button>
+                                <button class="btn btn-warning btn-sm" onclick="replaceFlapper()">3. Replace Flapper</button>
+                                <button class="btn btn-warning btn-sm" onclick="adjustChain()">4. Adjust Chain</button>
+                                <button class="btn btn-warning btn-sm" onclick="testToilet()">5. Test</button>
+                            </div>
+                            
+                            <div class="repair-feedback mt-2" id="repairFeedback"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 p-3 bg-primary text-white rounded">
+                        <h6>📌 Checkpoint Quiz:</h6>
+                        <p class="mb-2">How much slack should the flapper chain have?</p>
+                        <div class="quiz-options">
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('toilet-quiz-2', 'wrong', 'No slack means the flapper won\\'t seal properly.')">A) No slack (tight)</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('toilet-quiz-2', 'correct', 'Correct! Slight slack allows proper sealing while enabling lifting.')">B) Slight slack</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('toilet-quiz-2', 'wrong', 'Too much slack prevents the flapper from lifting.')">C) Lots of slack</button>
+                            <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('toilet-quiz-2', 'wrong', 'The chain needs some slack to function properly.')">D) No chain needed</button>
+                        </div>
+                        <div id="toilet-quiz-2" class="mt-2" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="completion-criteria mt-4">
+                        <h6>🎉 Course Completion Criteria:</h6>
+                        <ul class="list-unstyled">
+                            <li>✅ Complete virtual diagnosis</li>
+                            <li>✅ Pass both checkpoint quizzes</li>
+                            <li>✅ Successfully complete repair simulation</li>
+                        </ul>
+                        <div class="alert alert-success">
+                            <strong>🎁 Earn $10 SPANK Bucks and unlock:</strong> "Build a Storage Shelf" and "Patch a Hole in Drywall"!
+                        </div>
+                    </div>
+                `
+            }
+        ]
+    },
+    shelf: {
+        title: "Build a Storage Shelf",
+        level: "Intermediate",
+        duration: "50-70 minutes",
+        reward: "$10 SPANK Bucks",
+        lessons: [
+            {
+                title: "Plan and Measure",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjUwIiB5PSIxMDAiIHdpZHRoPSIzMDAiIGhlaWdodD0iMjAiIGZpbGw9IiM4ZTQ0MWQiLz48cmVjdCB4PSI1MCIgeT0iMTQwIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjOGU0NDFkIi8+PHJlY3QgeD0iNTAiIHk9IjE4MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIyMCIgZmlsbD0iIzhlNDQxZCIvPjxyZWN0IHg9IjQ1IiB5PSI5NSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjExMCIgZmlsbD0iIzhlNDQxZCIvPjxyZWN0IHg9IjM1NSIgeT0iOTUiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMTAiIGZpbGw9IiM4ZTQ0MWQiLz48bGluZSB4MT0iNTAiIHkxPSI3MCIgeDI9IjM1MCIgeTI9IjcwIiBzdHJva2U9IiNkYzI2MjYiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjIwMCIgeT0iNjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2RjMjYyNiI+MzAgaW5jaGVzPC90ZXh0Pjx0ZXh0IHg9IjIwMCIgeT0iMjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMzNDNhNDAiPlNpbXBsZSBTaGVsZiBEZXNpZ248L3RleHQ+PC9zdmc+",
+                content: `
+                    <div class="lesson-visual mb-4">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjUwIiB5PSIxMDAiIHdpZHRoPSIzMDAiIGhlaWdodD0iMjAiIGZpbGw9IiM4ZTQ0MWQiLz48cmVjdCB4PSI1MCIgeT0iMTQwIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjOGU0NDFkIi8+PHJlY3QgeD0iNTAiIHk9IjE4MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIyMCIgZmlsbD0iIzhlNDQxZCIvPjxyZWN0IHg9IjQ1IiB5PSI5NSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjExMCIgZmlsbD0iIzhlNDQxZCIvPjxyZWN0IHg9IjM1NSIgeT0iOTUiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMTAiIGZpbGw9IiM4ZTQ0MWQiLz48bGluZSB4MT0iNTAiIHkxPSI3MCIgeDI9IjM1MCIgeTI9IjcwIiBzdHJva2U9IiNkYzI2MjYiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjIwMCIgeT0iNjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2RjMjYyNiI+MzAgaW5jaGVzPC90ZXh0Pjx0ZXh0IHg9IjIwMCIgeT0iMjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMzNDNhNDAiPlNpbXBsZSBTaGVsZiBEZXNpZ248L3RleHQ+PC9zdmc+" class="img-fluid rounded" alt="Simple Shelf Design">
+                    </div>
+                    <h6>🎯 Objective: Plan dimensions and create a cut list for your storage shelf</h6>
+                    
+                    <h6>📐 Planning Your Shelf:</h6>
+                    <div class="shelf-planning mb-4">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="planning-step p-3 border rounded">
+                                    <h6>📏 Measure Space</h6>
+                                    <p class="small mb-0">Width, height, and depth available</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="planning-step p-3 border rounded">
+                                    <h6>🎯 Determine Use</h6>
+                                    <p class="small mb-0">Books, storage bins, or decorative items</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6>🪵 Basic Materials:</h6>
+                    <div class="materials-list mb-4">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="material-item p-3 border rounded text-center">
+                                    <div class="material-icon mb-2">📏</div>
+                                    <h6>Shelves</h6>
+                                    <p class="small mb-0">1x8 or 1x10 pine boards</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="material-item p-3 border rounded text-center">
+                                    <div class="material-icon mb-2">📐</div>
+                                    <h6>Sides</h6>
+                                    <p class="small mb-0">1x8 or 1x10 pine boards</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="material-item p-3 border rounded text-center">
+                                    <div class="material-icon mb-2">🔩</div>
+                                    <h6>Hardware</h6>
+                                    <p class="small mb-0">Wood screws, L-brackets</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-mouse-pointer me-2"></i>Interactive Activity:</h6>
+                        <p class="mb-0">Virtual shelf planner - design your shelf!</p>
+                    </div>
+                    
+                    <div class="shelf-planner-sim mb-4" id="shelfPlannerSim">
+                        <div class="planning-workspace">
+                            <h6>Virtual Shelf Planner</h6>
+                            <div class="shelf-designer" id="shelfDesigner">
+                                <div class="dimension-controls">
+                                    <label>Width: <input type="range" id="shelfWidth" min="20" max="48" value="30"> <span id="widthDisplay">30"</span></label>
+                                    <label>Height: <input type="range" id="shelfHeight" min="12" max="60" value="36"> <span id="heightDisplay">36"</span></label>
+                                    <label>Shelves: <input type="range" id="shelfCount" min="2" max="5" value="3"> <span id="countDisplay">3</span></label>
+                                </div>
+                                
+                                <div class="shelf-preview" id="shelfPreview">
+                                    <!-- Dynamic shelf preview will appear here -->
+                                </div>
+                            </div>
+                            
+                            <div class="cut-list mt-3" id="cutList">
+                                <h6>Cut List:</h6>
+                                <div id="cutListItems"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 p-3 bg-primary text-white rounded">
+                        <h6>📌 Checkpoint Quiz:</h6>
+                        <p class="mb-2">What measurement is most important when planning a shelf?</p>
+                        <div class="quiz-options">
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('shelf-quiz-1', 'wrong', 'Height is important but width determines if it fits the space.')">A) Height only</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('shelf-quiz-1', 'correct', 'Correct! The space width determines shelf dimensions and material needs.')">B) Available space width</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('shelf-quiz-1', 'wrong', 'Wood thickness affects construction but space width is primary.')">C) Wood thickness</button>
+                            <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('shelf-quiz-1', 'wrong', 'Screw length depends on wood thickness, not planning.')">D) Screw length</button>
+                        </div>
+                        <div id="shelf-quiz-1" class="mt-2" style="display: none;"></div>
+                    </div>
+                `
+            }
+        ]
+    },
     faucet: {
         title: "Fix a Leaky Faucet",
         level: "Beginner",
