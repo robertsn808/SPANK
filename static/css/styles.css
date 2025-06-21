@@ -44,9 +44,10 @@ body {
 }
 
 .navbar-premium.scrolled {
-    background: linear-gradient(135deg, rgba(30, 60, 114, 0.95) 0%, rgba(42, 82, 152, 0.95) 50%, rgba(30, 60, 114, 0.95) 100%) !important;
+    background: rgba(0, 0, 0, 0.7) !important;
     backdrop-filter: blur(15px);
-    box-shadow: 0 2px 20px rgba(30, 60, 114, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 }
 
 .navbar-brand {
