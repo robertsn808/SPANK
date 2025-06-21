@@ -110,8 +110,9 @@
                     <button class="btn btn-warning btn-lg px-4" onclick="scrollToCourses()">
                         <i class="fas fa-play me-2"></i>Start Learning
                     </button>
-                    <div class="points-display">
-                        <i class="fas fa-dollar-sign me-2"></i>Earn $5 SPANK Bucks
+                    <div class="points-display d-flex align-items-center">
+                        <img src="{{ url_for('static', filename='images/spank-buck-5.png') }}" alt="$5 SPANK Buck" style="height: 40px;" class="me-2">
+                        <span>Earn $5 SPANK Bucks</span>
                     </div>
                 </div>
             </div>
@@ -141,7 +142,7 @@
             </div>
             <div class="col-lg-4 text-center">
                 <div class="quiz-reward-badge">
-                    <i class="fas fa-dollar-sign fa-3x text-success mb-2"></i>
+                    <img src="{{ url_for('static', filename='images/spank-buck-5.png') }}" alt="$5 SPANK Buck" style="height: 80px;" class="mb-2">
                     <h4 class="text-dark">$5 SPANK Bucks</h4>
                     <small class="text-muted">Monthly Quiz Reward</small>
                 </div>
