@@ -106,6 +106,7 @@ The application follows a simple Flask MVC pattern with the following structure:
 - June 21, 2025. Updated website favicon and background wallpapers across pricing, contact, and SPANKKS SKOOL pages to use new SPANKKS logo with construction worker character, hammer, and wrench tools for consistent branding
 - June 21, 2025. Updated navigation bar logo and homepage about section image to use new SPANKKS logo featuring construction worker with tools, completing comprehensive brand identity update across all website elements
 - June 21, 2025. Enhanced SPANKKS SKOOL with comprehensive interactive Toolbelt Basics course featuring 3 lessons: Know Your Tools (drag-and-drop tool matching), Start with the Basics (toolbelt simulator with 6-slot limitation), and Keep Things Handy (toolbox organization activity) with visual step-by-step guides, interactive elements, checkpoint quizzes, and $5 SPANK Buck completion rewards
+- June 21, 2025. Expanded SPANKKS SKOOL with comprehensive course catalog: added interactive "Hang a Picture" course (anchor selection simulator, leveling activities), "Squeaky Door Fix" course (sound identification, hinge repair simulator), and full intermediate-level section including "Install a Smart Lock" ($10 SPANK Bucks), "Fix a Running Toilet", "Build a Storage Shelf", "Caulk a Bathtub Like a Pro", and "Install a Ceiling Light Fixture" with compatibility quizzes, step-by-step simulations, and progressive skill unlocking system
 
 ## User Preferences
 
