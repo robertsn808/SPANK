@@ -190,28 +190,30 @@
 {% block content %}
 <!-- Hero Section -->
 <section class="hero-section py-4">
-    <div class="container">
+    <div class="container-fluid">
         <div class="row align-items-center">
             <div class="col-lg-8">
-                <h1 class="display-5 fw-bold mb-3">
-                    🧠 Welcome to Spank School
-                </h1>
-                <p class="lead mb-3">
-                    Master DIY repairs with professional guidance from Hawaii's trusted handyman experts.
-                </p>
-                <div class="d-flex flex-wrap gap-3 align-items-center justify-content-center justify-content-lg-start">
-                    <button class="btn btn-warning btn-lg px-4" onclick="scrollToCourses()">
-                        <i class="fas fa-play me-2"></i>Start Learning
-                    </button>
-                    <div class="points-display d-flex align-items-center">
-                        <img src="{{ url_for('static', filename='images/spank-buck-5.png') }}" alt="$5 SPANK Buck" style="height: 60px;" class="me-3">
-                        <span>Earn $5 SPANK Bucks</span>
+                <div class="ps-3 ps-lg-5">
+                    <h1 class="display-5 fw-bold mb-3">
+                        🧠 Welcome to Spank School
+                    </h1>
+                    <p class="lead mb-3">
+                        Master DIY repairs with professional guidance from Hawaii's trusted handyman experts.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 align-items-center justify-content-center justify-content-lg-start">
+                        <button class="btn btn-warning btn-lg px-4" onclick="scrollToCourses()">
+                            <i class="fas fa-play me-2"></i>Start Learning
+                        </button>
+                        <div class="points-display d-flex align-items-center">
+                            <img src="{{ url_for('static', filename='images/spank-buck-5.png') }}" alt="$5 SPANK Buck" style="height: 60px;" class="me-3">
+                            <span>Earn $5 SPANK Bucks</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 text-center mt-4 mt-lg-0">
+            <div class="col-lg-4 text-end mt-4 mt-lg-0 p-0">
                 <img src="{{ url_for('static', filename='images/spank-school-character.png') }}" 
-                     alt="SPANK Mascot" class="img-fluid" style="max-height: 250px;">
+                     alt="SPANK Mascot" class="img-fluid" style="max-height: 350px; width: auto; margin-right: -15px;">
             </div>
         </div>
     </div>
