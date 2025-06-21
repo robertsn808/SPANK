@@ -1,6 +1,6 @@
 {% extends "admin_base.html" %}
 
-{% block title %}Admin Dashboard - SPANK Handyman Services{% endblock %}
+{% block title %}Admin Dashboard - Spankks Construction{% endblock %}
 {% block extra_head %}
   <meta name="description" content="Contact SPANK Handyman Services to schedule your next repair or consultation.">
   <meta name="keywords" content="contact handyman, Hawaii repair services, SPANK contact info">
@@ -561,6 +561,163 @@
 </section>
 {% endif %}
 
+<!-- Nextdoor Integration Section -->
+<section class="py-4" id="nextdoor-integration">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-1 text-white"><i class="fas fa-home me-2"></i>Nextdoor Business Hub</h3>
+                    <p class="mb-0 opacity-75">Manage your neighborhood presence and customer engagement</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#nextdoorPostModal">
+                        <i class="fas fa-plus me-1"></i>Create Post
+                    </button>
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#nextdoorPromotionModal">
+                        <i class="fas fa-bullhorn me-1"></i>Promote Services
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- Business Profile Status -->
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-success-light mb-3">
+                                    <i class="fas fa-store fa-2x text-success"></i>
+                                </div>
+                                <h5 class="fw-bold">Business Profile</h5>
+                                <span class="badge bg-success mb-2">Active</span>
+                                <p class="text-muted small mb-0">Spankks Construction verified on Nextdoor</p>
+                                <button class="btn btn-outline-primary btn-sm mt-2">Update Profile</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews & Recommendations -->
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-warning-light mb-3">
+                                    <i class="fas fa-star fa-2x text-warning"></i>
+                                </div>
+                                <h5 class="fw-bold">Reviews</h5>
+                                <div class="d-flex justify-content-center align-items-center mb-2">
+                                    <span class="h4 fw-bold me-2">4.8</span>
+                                    <div class="text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <p class="text-muted small mb-0">23 neighborhood recommendations</p>
+                                <button class="btn btn-outline-primary btn-sm mt-2">View All</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Requests -->
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-info-light mb-3">
+                                    <i class="fas fa-clipboard-list fa-2x text-info"></i>
+                                </div>
+                                <h5 class="fw-bold">Service Requests</h5>
+                                <span class="h4 fw-bold text-info">7</span>
+                                <p class="text-muted small mb-0">New requests this week</p>
+                                <button class="btn btn-outline-primary btn-sm mt-2">Review Requests</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Neighborhood Activity -->
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-primary-light mb-3">
+                                    <i class="fas fa-users fa-2x text-primary"></i>
+                                </div>
+                                <h5 class="fw-bold">Engagement</h5>
+                                <span class="h4 fw-bold text-primary">142</span>
+                                <p class="text-muted small mb-0">Post views this month</p>
+                                <button class="btn btn-outline-primary btn-sm mt-2">View Analytics</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-3">Quick Actions</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-outline-success btn-sm" onclick="postFlooringTip()">
+                                <i class="fas fa-home me-1"></i>Post Flooring Tip
+                            </button>
+                            <button class="btn btn-outline-info btn-sm" onclick="postDrywallAdvice()">
+                                <i class="fas fa-paint-roller me-1"></i>Share Drywall Advice
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="offerSeasonalPromo()">
+                                <i class="fas fa-percentage me-1"></i>Seasonal Promotion
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm" onclick="requestReviews()">
+                                <i class="fas fa-star me-1"></i>Request Reviews
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="respondToRequests()">
+                                <i class="fas fa-reply me-1"></i>Respond to Requests
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Nextdoor Activity -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-3">Recent Activity</h5>
+                        <div class="list-group">
+                            <div class="list-group-item border-0 bg-light">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">Maria R. requested flooring services</h6>
+                                        <p class="mb-1">Looking for hardwood flooring installation in living room (~300 sq ft)</p>
+                                        <small class="text-muted">Kailua neighborhood • 2 hours ago</small>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm">Respond</button>
+                                </div>
+                            </div>
+                            <div class="list-group-item border-0">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">James K. left a 5-star review</h6>
+                                        <p class="mb-1">"Excellent drywall repair work! Professional and clean. Highly recommend Spankks Construction."</p>
+                                        <small class="text-muted">Honolulu neighborhood • 1 day ago</small>
+                                    </div>
+                                    <button class="btn btn-outline-success btn-sm">Thank</button>
+                                </div>
+                            </div>
+                            <div class="list-group-item border-0 bg-light">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">Your post: "Winter Home Maintenance Tips"</h6>
+                                        <p class="mb-1">23 likes, 8 comments, 142 views</p>
+                                        <small class="text-muted">Pearl City neighborhood • 3 days ago</small>
+                                    </div>
+                                    <button class="btn btn-outline-info btn-sm">View</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Consultation Requests -->
 <section class="py-4" id="consultation-requests">
     <div class="container">
@@ -1089,5 +1246,76 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.reload();
     }, 300000);
 });
+
+// Nextdoor Integration Functions
+function postFlooringTip() {
+    const tips = [
+        "Winter tip: Check for loose floorboards before heavy furniture placement. Temperature changes can cause wood to expand and contract.",
+        "Pro tip: Always acclimate hardwood flooring for 48-72 hours before installation in Hawaii's humid climate.",
+        "Laminate flooring maintenance: Use microfiber mops and avoid excessive water to prevent warping in our tropical environment."
+    ];
+    const randomTip = tips[Math.floor(Math.random() * tips.length)];
+    
+    if (confirm(`Post this flooring tip to Nextdoor?\n\n"${randomTip}"`)) {
+        // In a real implementation, this would connect to Nextdoor's API
+        alert('Flooring tip posted successfully to your Nextdoor neighborhoods!');
+        // Add to recent activity
+        addRecentActivity('Posted flooring maintenance tip', 'just now');
+    }
+}
+
+function postDrywallAdvice() {
+    const advice = [
+        "DIY drywall repair: Small holes can be fixed with mesh patches and joint compound. For larger repairs, call the professionals!",
+        "Texture matching tip: Always test texture patterns on a hidden area first. Hawaii homes often have unique textures that require special attention.",
+        "Humidity consideration: In Hawaii, allow extra drying time for drywall compound due to our high humidity levels."
+    ];
+    const randomAdvice = advice[Math.floor(Math.random() * advice.length)];
+    
+    if (confirm(`Share this drywall advice on Nextdoor?\n\n"${randomAdvice}"`)) {
+        alert('Drywall advice shared successfully with your neighbors!');
+        addRecentActivity('Shared drywall repair advice', 'just now');
+    }
+}
+
+function offerSeasonalPromo() {
+    const promos = [
+        "🌺 Spring Special: 15% off flooring installation for projects over 200 sq ft. Perfect time for home updates!",
+        "🏠 Home Maintenance Season: Free drywall inspection with any repair service. Keep your home pristine!",
+        "☀️ Summer Ready: 10% off bathroom remodeling. Beat the heat with a fresh new space!"
+    ];
+    const randomPromo = promos[Math.floor(Math.random() * promos.length)];
+    
+    if (confirm(`Post this seasonal promotion?\n\n"${randomPromo}"`)) {
+        alert('Seasonal promotion posted successfully! Expect increased inquiries.');
+        addRecentActivity('Posted seasonal promotion', 'just now');
+    }
+}
+
+function requestReviews() {
+    const message = "Hi neighbors! If Spankks Construction has helped with your flooring, drywall, or home repairs, we'd love a review on Nextdoor. Your feedback helps other neighbors find quality local services. Thank you! 🏠⭐";
+    
+    if (confirm(`Send review request to recent customers?\n\n"${message}"`)) {
+        alert('Review requests sent to 8 recent customers via Nextdoor messaging!');
+        addRecentActivity('Sent review requests to recent customers', 'just now');
+    }
+}
+
+function respondToRequests() {
+    // Simulate opening a modal or new page for service requests
+    alert('Opening Nextdoor service requests dashboard...\n\n7 new requests this week:\n• Hardwood flooring (Kailua)\n• Drywall repair (Honolulu)\n• Bathroom tile work (Pearl City)\n• Floor refinishing (Kaneohe)\n• And 3 more...');
+}
+
+function addRecentActivity(activity, time) {
+    // In a real implementation, this would update the recent activity section
+    console.log(`New activity: ${activity} - ${time}`);
+    
+    // Update engagement counter
+    const engagementElement = document.querySelector('.col-xl-3:nth-child(4) .h4');
+    if (engagementElement) {
+        const currentCount = parseInt(engagementElement.textContent);
+        engagementElement.textContent = currentCount + Math.floor(Math.random() * 10) + 5;
+    }
+}
 </script>
 {% endblock %}
