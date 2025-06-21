@@ -1858,6 +1858,83 @@ function submitQuestion(sessionId) {
     }
 }
 
+// Interactive functions for course elements
+function showAnswer(quizId, answer) {
+    const element = document.getElementById(quizId);
+    if (element) {
+        element.innerHTML = `<div class="alert alert-light mt-2"><strong>Answer:</strong> ${answer}</div>`;
+        element.style.display = 'block';
+    }
+}
+
+function updateWaterLevel(value) {
+    const feedback = document.getElementById('waterLevelFeedback');
+    if (feedback) {
+        if (value < 4) {
+            feedback.innerHTML = '<span class="text-warning">Too low - toilet may not flush properly</span>';
+        } else if (value > 8) {
+            feedback.innerHTML = '<span class="text-danger">Too high - water will overflow into tube</span>';
+        } else {
+            feedback.innerHTML = '<span class="text-success">Perfect level: 1" below overflow tube</span>';
+        }
+    }
+}
+
+function animateSpread() {
+    const element = document.getElementById('spreadAnimation');
+    if (element) {
+        element.innerHTML = '<span class="text-success">Smooth, overlapping strokes - like spreading peanut butter!</span>';
+        setTimeout(() => {
+            element.innerHTML = 'Use smooth, overlapping strokes';
+        }, 3000);
+    }
+}
+
+function exploreFaucet() {
+    const element = document.getElementById('faucetExplore');
+    if (element) {
+        element.innerHTML = '<span class="text-success">Inside view: Handle → Cartridge → O-ring → Valve seat</span>';
+        setTimeout(() => {
+            element.innerHTML = 'Click to see inside view of faucet components';
+        }, 4000);
+    }
+}
+
+function watchVideo(videoId) {
+    if (videoId === 'toilet-repair') {
+        const videoModal = new bootstrap.Modal(document.getElementById('courseModal'));
+        document.getElementById('courseModalTitle').textContent = 'SPANK\'s Toilet Repair Video Guide';
+        document.getElementById('courseModalBody').innerHTML = `
+            <div class="text-center">
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-video me-2"></i>Professional Video Tutorial</h6>
+                    <p class="mb-2">Learn toilet repair with SPANK's expert demonstration</p>
+                    <p><strong>Coming Soon:</strong> Full video library with step-by-step repairs</p>
+                </div>
+                <div class="mb-3">
+                    <p>This video covers:</p>
+                    <ul class="text-start">
+                        <li>Toilet component identification</li>
+                        <li>Diagnostic techniques</li>
+                        <li>Flapper and fill valve replacement</li>
+                        <li>Water level adjustment</li>
+                    </ul>
+                </div>
+                <button class="btn btn-primary" onclick="window.open('tel:(808)599-0908')">
+                    Call SPANK for Professional Service
+                </button>
+            </div>
+        `;
+        document.getElementById('nextLessonBtn').textContent = 'Close';
+        document.getElementById('nextLessonBtn').onclick = () => {
+            bootstrap.Modal.getInstance(document.getElementById('courseModal')).hide();
+        };
+        videoModal.show();
+    } else {
+        alert('Video tutorial coming soon! SPANK is developing comprehensive video guides for all repairs.');
+    }
+}
+
 function submitProject() {
     alert('Project submission feature coming soon! You will be able to upload photos and descriptions for expert review.');
 }
