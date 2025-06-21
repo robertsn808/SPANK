@@ -193,7 +193,7 @@ class NotificationService:
                         <h3 style="color: #ff6b35; margin-top: 0;">How to Use Your SPANK Bucks:</h3>
                         <ul style="color: #555; line-height: 1.6;">
                             <li>Each SPANK Buck = $1 credit toward services</li>
-                            <li>Call us at (808) 599-0908 and mention your SPANK Bucks</li>
+                            <li>Call us at (808) 778-9132 and mention your SPANK Bucks</li>
                             <li>No expiration date - use them anytime!</li>
                             <li>Combine with other offers and discounts</li>
                         </ul>
@@ -207,7 +207,7 @@ class NotificationService:
                 <div class="footer">
                     <p><strong>SPANK Handyman Services</strong></p>
                     <p>Professional home repairs across O'ahu</p>
-                    <p>📞 (808) 599-0908 | 🌐 Licensed & Insured</p>
+                    <p>📞 (808) 778-9132 | 🌐 Licensed & Insured</p>
                     
                     <div class="social-icons">
                         <a href="#" title="Facebook">📘</a>

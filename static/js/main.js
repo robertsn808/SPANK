@@ -1218,7 +1218,7 @@ function formatDate(date) {
 console.log(`
 🔨 SPANK Handyman Services
 🏝️ Professional home repairs and improvements across O'ahu
-📞 Contact: (808) 599-0908
+📞 Contact: (808) 778-9132
 🌐 Licensed & Insured
 
 Built with ❤️ for the local community
