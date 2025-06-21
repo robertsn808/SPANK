@@ -100,6 +100,7 @@ The application follows a simple Flask MVC pattern with the following structure:
 - June 21, 2025. Implemented authentic Spankks Construction LLC pricing structure with real-world rates: drywall services ($155-$600), flooring installation ($3-$8/sq.ft), fence building ($35-$70/linear ft), general repairs ($90-$200), and home renovations ($2,500-$25,000) including Spankks Bucks integration and bundle discounts
 - June 21, 2025. Enhanced admin dashboard with comprehensive job opportunities section featuring lead tracking from Nextdoor, TaskRabbit, Thumbtack, referrals, and direct inquiries with interactive opportunity management and quick action tools
 - June 21, 2025. Rebranded "SPANK School" to "SPANKKS SKOOL" throughout website and implemented SPANKKS SKOOL 2.0 with professional course structure: Basics Everyone Should Know, Surface & Structure, Before You Renovate, and Fence & Exterior sections showcasing Spankks Construction expertise while guiding customers to professional services
+- June 21, 2025. Added comprehensive Smart Home Upgrades course to SPANKKS SKOOL featuring 4-lesson structure covering smart switches vs bulbs, renovation planning with Spankks, kitchen/bath smart fixtures, and bonus $85 smart switch install offer for renovation estimates
 
 ## User Preferences
 
