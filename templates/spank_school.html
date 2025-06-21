@@ -1123,39 +1123,168 @@ function nextLesson() {
     showLesson();
 }
 
-// Complete course
-function completeCourse() {
-    bootstrap.Modal.getInstance(document.getElementById('courseModal')).hide();
+// Enhanced course completion with SMS rewards
+function completeCourse(courseType = null) {
+    if (document.getElementById('courseModal')) {
+        bootstrap.Modal.getInstance(document.getElementById('courseModal')).hide();
+    }
     
     setTimeout(() => {
-        const email = prompt(`Congratulations! You've completed ${currentCourse.title}!\n\nEnter your email to receive $5 SPANK Bucks:`);
-        if (email && email.includes('@')) {
-            // Send actual SPANK Buck reward via API
-            fetch('/api/complete-course', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: email,
-                    course_name: currentCourse.title,
-                    student_name: email.split('@')[0] // Use email prefix as name
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(`Congratulations! $5 SPANK Bucks have been sent to ${email} for completing "${currentCourse.title}"`);
-                } else {
-                    alert(`Course completed! However, there was an issue sending your SPANK Bucks. Please contact us at (808) 778-9132.`);
-                }
-            })
-            .catch(error => {
-                console.error('Error sending SPANK Buck reward:', error);
-                alert(`Course completed! Your $5 SPANK Bucks will be processed manually. Contact us at (808) 778-9132 if you don't receive them within 24 hours.`);
-            });
-        }
+        // Enhanced completion popup
+        const completionModal = document.createElement('div');
+        completionModal.className = 'modal fade';
+        completionModal.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-body text-center p-5">
+                        <div class="celebration-animation mb-4">
+                            <i class="fas fa-trophy fa-4x text-warning mb-3" style="animation: bounce 1s ease infinite;"></i>
+                            <h3 class="text-success mb-3">Congratulations!</h3>
+                            <p class="lead">You've completed the ${courseType ? courseType.charAt(0).toUpperCase() + courseType.slice(1) : currentCourse?.title || 'DIY'} course!</p>
+                        </div>
+                        
+                        <div class="reward-section p-4 bg-light rounded mb-4">
+                            <h5 class="text-primary mb-3">
+                                <i class="fas fa-coins me-2"></i>Claim Your $5 SPANK Bucks
+                            </h5>
+                            <form id="rewardForm">
+                                <div class="mb-3">
+                                    <label for="studentName" class="form-label">Your Name</label>
+                                    <input type="text" class="form-control" id="studentName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="studentPhone" class="form-label">Phone Number (for SMS reward)</label>
+                                    <input type="tel" class="form-control" id="studentPhone" placeholder="(808) 555-0123" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="studentEmail" class="form-label">Email (optional)</label>
+                                    <input type="email" class="form-control" id="studentEmail">
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Your $5 SPANK Bucks will be sent via SMS, and our team will follow up to help with your project!
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="d-flex gap-2 justify-content-center">
+                            <button type="button" class="btn btn-outline-secondary" onclick="closeCompletionModal()">
+                                Maybe Later
+                            </button>
+                            <button type="button" class="btn btn-success btn-lg" onclick="submitCourseCompletion('${courseType}')">
+                                <i class="fas fa-gift me-2"></i>Claim Reward
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(completionModal);
+        const modal = new bootstrap.Modal(completionModal);
+        modal.show();
+        
+        // Add confetti effect
+        createCelebrationEffect();
+        
+        // Cleanup
+        completionModal.addEventListener('hidden.bs.modal', () => {
+            document.body.removeChild(completionModal);
+        });
+        
+        // Store modal reference for cleanup
+        window.currentCompletionModal = completionModal;
     }, 500);
+}
+
+function submitCourseCompletion(courseType) {
+    const name = document.getElementById('studentName').value;
+    const phone = document.getElementById('studentPhone').value;
+    const email = document.getElementById('studentEmail').value;
+    
+    if (!name || !phone) {
+        alert('Please enter your name and phone number to receive your SPANK Buck reward.');
+        return;
+    }
+    
+    const courseName = courseType ? `${courseType.charAt(0).toUpperCase() + courseType.slice(1)} Repair` : currentCourse?.title || 'DIY Course';
+    
+    // Show loading state
+    const submitBtn = event.target;
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending Reward...';
+    submitBtn.disabled = true;
+    
+    // Send SPANK Buck reward via API
+    fetch('/api/complete-course', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            student_name: name,
+            phone: phone,
+            email: email,
+            course_name: courseName
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Success message
+            document.querySelector('.modal-body').innerHTML = `
+                <div class="text-center p-4">
+                    <i class="fas fa-check-circle fa-4x text-success mb-3" style="animation: bounce 1s ease;"></i>
+                    <h3 class="text-success mb-3">Reward Sent!</h3>
+                    <p class="lead mb-4">$5 SPANK Bucks have been sent to ${phone}</p>
+                    <div class="alert alert-success">
+                        <i class="fas fa-phone me-2"></i>
+                        Our SPANK team will reach out soon to help with your project!
+                    </div>
+                    <button class="btn btn-primary" onclick="closeCompletionModal()">
+                        <i class="fas fa-thumbs-up me-2"></i>Awesome!
+                    </button>
+                </div>
+            `;
+        } else {
+            throw new Error(data.error || 'Failed to send reward');
+        }
+    })
+    .catch(error => {
+        console.error('Error sending SPANK Buck reward:', error);
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        alert('Course completed! However, there was an issue sending your SPANK Bucks. Please contact us at (808) 778-9132 and mention you completed the course.');
+    });
+}
+
+function closeCompletionModal() {
+    if (window.currentCompletionModal) {
+        bootstrap.Modal.getInstance(window.currentCompletionModal).hide();
+    }
+}
+
+function createCelebrationEffect() {
+    const colors = ['#ffc107', '#28a745', '#007bff', '#dc3545', '#6f42c1', '#fd7e14'];
+    
+    for (let i = 0; i < 30; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.cssText = `
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            top: -10px;
+            left: ${Math.random() * 100}vw;
+            border-radius: 50%;
+            animation: confettiFall ${2 + Math.random() * 2}s ease-out forwards;
+            pointer-events: none;
+            z-index: 9999;
+        `;
+        document.body.appendChild(confetti);
+        
+        setTimeout(() => confetti.remove(), 4000);
+    }
 }
 
 // Send SPANK Bucks reward
@@ -1165,12 +1294,55 @@ function sendSpankBucks(email, amount, reason) {
     return true;
 }
 
-// Interactive functions
+// Enhanced interactive functions
 function showAnswer(quizId, answer) {
     const element = document.getElementById(quizId);
     if (element) {
         element.innerHTML = `<div class="alert alert-light mt-2"><strong>Answer:</strong> ${answer}</div>`;
         element.style.display = 'block';
+    }
+}
+
+function showEnhancedAnswer(quizId, answer) {
+    const element = document.getElementById(quizId);
+    if (element) {
+        element.innerHTML = `
+            <div class="alert alert-light border-0 shadow-sm mt-3">
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-check-circle text-success fa-lg me-3 mt-1"></i>
+                    <div>
+                        <h6 class="mb-1 text-success">Great Question!</h6>
+                        <p class="mb-0">${answer}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        element.style.display = 'block';
+        element.style.animation = 'slideInUp 0.5s ease forwards';
+        
+        // Add confetti effect
+        createConfetti(element);
+    }
+}
+
+function createConfetti(container) {
+    for (let i = 0; i < 10; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.cssText = `
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: ${['#ffc107', '#28a745', '#007bff', '#dc3545'][Math.floor(Math.random() * 4)]};
+            top: 0;
+            left: ${Math.random() * 100}%;
+            border-radius: 50%;
+            animation: confettiFall 2s ease-out forwards;
+            pointer-events: none;
+        `;
+        container.style.position = 'relative';
+        container.appendChild(confetti);
+        
+        setTimeout(() => confetti.remove(), 2000);
     }
 }
 

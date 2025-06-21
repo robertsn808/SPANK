@@ -695,11 +695,12 @@ def complete_course():
         data = request.get_json()
         
         email = data.get('email')
+        phone = data.get('phone')
         course_name = data.get('course_name')
         student_name = data.get('student_name', 'Student')
         
-        if not email or not course_name:
-            return jsonify({'success': False, 'error': 'Email and course name are required'}), 400
+        if not phone or not course_name:
+            return jsonify({'success': False, 'error': 'Phone number and course name are required'}), 400
         
         # Send $5 SPANK Buck reward for course completion via SMS
         reward_sent = notification_service.send_spank_buck_reward(
