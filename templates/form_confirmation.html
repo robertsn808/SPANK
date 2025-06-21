@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Thank You - SPANK Handyman Services{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <h1 class="display-4 text-primary mb-4">Thank You!</h1>
+                    
+                    {% if form_type == 'contact' %}
+                        <h3 class="mb-4">Your Message Has Been Sent</h3>
+                        <p class="lead mb-4">
+                            Thank you for reaching out to SPANK Handyman Services. We've received your message 
+                            and will respond within 24 hours.
+                        </p>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>What happens next:</strong> Our team will review your message and contact you 
+                            at <strong>{{ customer_phone }}</strong> or <strong>{{ customer_email }}</strong> 
+                            with a personalized response.
+                        </div>
+                    {% elif form_type == 'consultation' %}
+                        <h3 class="mb-4">Your Consultation Request Has Been Submitted</h3>
+                        <p class="lead mb-4">
+                            Thank you for choosing SPANK Handyman Services for your {{ service_type }} project. 
+                            We've received your consultation request and will contact you within 24 hours.
+                        </p>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>What happens next:</strong> Our handyman specialists will reach out to 
+                            <strong>{{ customer_phone }}</strong> to schedule your consultation and discuss 
+                            your project details.
+                        </div>
+                    {% endif %}
+                    
+                    <div class="row mt-5">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-phone text-primary me-2"></i>
+                                        Need Immediate Help?
+                                    </h5>
+                                    <p class="card-text">Call us directly at:</p>
+                                    <a href="tel:+18087789132" class="btn btn-outline-primary">
+                                        (808) 778-9132
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-graduation-cap text-success me-2"></i>
+                                        Learn DIY Skills
+                                    </h5>
+                                    <p class="card-text">Earn SPANK Bucks while learning:</p>
+                                    <a href="{{ url_for('spank_school') }}" class="btn btn-outline-success">
+                                        Visit SPANK School
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        {% if form_type == 'contact' %}
+                            <a href="{{ url_for('contact') }}" class="btn btn-primary me-3">
+                                <i class="fas fa-envelope me-2"></i>Send Another Message
+                            </a>
+                        {% elif form_type == 'consultation' %}
+                            <a href="{{ url_for('consultation') }}" class="btn btn-primary me-3">
+                                <i class="fas fa-calendar me-2"></i>Book Another Consultation
+                            </a>
+                        {% endif %}
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-home me-2"></i>Return to Homepage
+                        </a>
+                    </div>
+                    
+                    {% if confirmation_id %}
+                        <div class="mt-4">
+                            <small class="text-muted">
+                                Reference ID: {{ confirmation_id }}
+                            </small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Additional Services Section -->
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tools me-2"></i>
+                        Other Ways We Can Help
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <i class="fas fa-wrench text-primary mb-2" style="font-size: 2rem;"></i>
+                                <h6>Emergency Repairs</h6>
+                                <p class="small">24/7 emergency handyman services for urgent repairs</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <i class="fas fa-paint-brush text-success mb-2" style="font-size: 2rem;"></i>
+                                <h6>Home Improvements</h6>
+                                <p class="small">Kitchen, bathroom, and general home renovation projects</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <i class="fas fa-certificate text-warning mb-2" style="font-size: 2rem;"></i>
+                                <h6>Licensed & Insured</h6>
+                                <p class="small">Professional, reliable service you can trust</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-refresh notification for mobile users
+if (window.innerWidth <= 768) {
+    setTimeout(function() {
+        if (confirm('Would you like to add our contact number to your phone?')) {
+            window.location.href = 'tel:+18087789132';
+        }
+    }, 3000);
+}
+
+// Confetti animation for successful submission
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple confetti effect
+    const confettiColors = ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1'];
+    
+    function createConfetti() {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'fixed';
+        confetti.style.width = '10px';
+        confetti.style.height = '10px';
+        confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = '-10px';
+        confetti.style.zIndex = '9999';
+        confetti.style.borderRadius = '50%';
+        confetti.style.pointerEvents = 'none';
+        
+        document.body.appendChild(confetti);
+        
+        const animation = confetti.animate([
+            { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+            { transform: 'translateY(100vh) rotate(360deg)', opacity: 0 }
+        ], {
+            duration: 3000,
+            easing: 'linear'
+        });
+        
+        animation.onfinish = () => confetti.remove();
+    }
+    
+    // Create confetti burst
+    for (let i = 0; i < 20; i++) {
+        setTimeout(createConfetti, i * 100);
+    }
+});
+</script>
+{% endblock %}

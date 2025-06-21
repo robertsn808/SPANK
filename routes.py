@@ -122,9 +122,14 @@ def consultation():
                 service_type=service
             )
             
-            flash('Thank you! Your consultation request has been submitted. We will contact you within 24 hours.', 'success')
             logging.info(f"New service request created with ID: {request_id}")
-            return redirect(url_for('consultation'))
+            return redirect(url_for('form_confirmation', 
+                                  form_type='consultation',
+                                  customer_name=name,
+                                  customer_phone=phone,
+                                  customer_email=email,
+                                  service_type=service,
+                                  confirmation_id=request_id))
 
         except Exception as e:
             logging.error(f"Error creating booking: {e}")
@@ -166,9 +171,13 @@ def contact():
                 email=email
             )
             
-            flash('Thank you! Your message has been sent. We will respond within 24 hours.', 'success')
             logging.info(f"New contact message created with ID: {message_id}")
-            return redirect(url_for('contact'))
+            return redirect(url_for('form_confirmation', 
+                                  form_type='contact',
+                                  customer_name=name,
+                                  customer_phone=phone,
+                                  customer_email=email,
+                                  confirmation_id=message_id))
 
         except Exception as e:
             logging.error(f"Error creating contact message: {e}")
@@ -741,6 +750,24 @@ def complete_course():
         logging.error(f"Error processing course completion: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/form-confirmation')
+def form_confirmation():
+    """Form confirmation page"""
+    form_type = request.args.get('form_type', 'contact')
+    customer_name = request.args.get('customer_name', '')
+    customer_phone = request.args.get('customer_phone', '')
+    customer_email = request.args.get('customer_email', '')
+    service_type = request.args.get('service_type', '')
+    confirmation_id = request.args.get('confirmation_id', '')
+    
+    return render_template('form_confirmation.html',
+                         form_type=form_type,
+                         customer_name=customer_name,
+                         customer_phone=customer_phone,
+                         customer_email=customer_email,
+                         service_type=service_type,
+                         confirmation_id=confirmation_id)
+
 @app.route('/twilio-config')
 def twilio_config():
     """Twilio SendGrid configuration page"""
@@ -812,6 +839,29 @@ def check_twilio_status():
         'integration_ready': twilio_configured and sendgrid_configured,
         'rewards_enabled': twilio_configured or sendgrid_configured
     })
+
+@app.route('/api/test-inquiry-alert', methods=['POST'])
+def test_inquiry_alert():
+    """Test the inquiry alert system manually"""
+    try:
+        data = request.get_json()
+        phone = data.get('phone', '+18084529779')
+        
+        # Test inquiry alert
+        alert_sent = notification_service.send_inquiry_alert(
+            inquiry_type="contact",
+            customer_name="Test Customer",
+            phone_number="+18085551234",
+            email="test@example.com"
+        )
+        
+        if alert_sent:
+            return jsonify({'success': True, 'message': f'Test alert sent to {phone}'})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to send alert - check Twilio credentials'})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/api/save-twilio-config', methods=['POST'])
 def save_twilio_config():

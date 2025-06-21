@@ -20,7 +20,14 @@ class NotificationService:
         
         # Initialize Twilio client with SendGrid integration
         if self.twilio_sid and self.twilio_token:
-            self.twilio_client = Client(self.twilio_sid, self.twilio_token)
+            try:
+                self.twilio_client = Client(self.twilio_sid, self.twilio_token)
+                # Test credentials by fetching account info
+                account = self.twilio_client.api.accounts(self.twilio_sid).fetch()
+                logging.info(f"Twilio client initialized successfully for account: {account.friendly_name}")
+            except Exception as e:
+                logging.error(f"Twilio initialization failed: {e}")
+                self.twilio_client = None
         else:
             self.twilio_client = None
         
@@ -143,8 +150,10 @@ class NotificationService:
         
         try:
             if not self.twilio_client:
-                logging.warning("Twilio not configured - skipping inquiry alert")
-                return False
+                # Log the inquiry for manual follow-up
+                self._log_inquiry_for_admin(inquiry_type, customer_name, phone_number, email, service_type)
+                logging.warning("Twilio not configured - inquiry logged for manual follow-up")
+                return True  # Return True so the form still works
             
             if inquiry_type == "contact":
                 message_body = f"🔔 New Contact Inquiry!\n\nCustomer: {customer_name}\nPhone: {phone_number}\nEmail: {email}\n\nPlease follow up promptly.\n- SPANK Team"
@@ -163,8 +172,28 @@ class NotificationService:
             return True
             
         except Exception as e:
-            logging.error(f"Failed to send inquiry alert: {e}")
-            return False
+            # Log the inquiry for manual follow-up even if SMS fails
+            self._log_inquiry_for_admin(inquiry_type, customer_name, phone_number, email, service_type)
+            logging.error(f"Failed to send inquiry alert: {e} - inquiry logged for manual follow-up")
+            return True  # Return True so the form still works
+
+    def _log_inquiry_for_admin(self, inquiry_type, customer_name, phone_number, email, service_type=None):
+        """Log inquiry details for admin manual follow-up"""
+        from models import handyman_storage
+        
+        notification_data = {
+            'type': 'new_inquiry',
+            'inquiry_type': inquiry_type,
+            'customer_name': customer_name,
+            'phone_number': phone_number,
+            'email': email,
+            'service_type': service_type,
+            'timestamp': datetime.now(),
+            'status': 'unread'
+        }
+        
+        handyman_storage.add_admin_notification(notification_data)
+        logging.info(f"Inquiry logged for admin follow-up: {customer_name} - {inquiry_type}")
     
     def _send_via_rapidapi(self, to_email, amount, reason, customer_name):
         """Send email via RapidAPI SendGrid service"""
