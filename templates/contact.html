@@ -96,6 +96,8 @@
             padding: 3rem;
             border-radius: 16px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            min-height: 600px;
+            width: 100%;
         }
         
         .contact-form-card h3 {
@@ -172,11 +174,28 @@
         }
         
         .contact-section .container {
-            max-width: 1400px;
+            max-width: 1200px;
         }
         
         .contact-section .row {
             align-items: start;
+            justify-content: center;
+        }
+        
+        .contact-section .col-xl-5 {
+            flex: 0 0 auto;
+            width: 45%;
+            min-width: 500px;
+            max-width: 650px;
+        }
+        
+        .contact-info-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-height: 600px;
         }
     }
     
@@ -206,13 +225,14 @@
 <!-- Contact Information -->
 <section class="py-5 contact-section" style="background: linear-gradient(rgba(248, 249, 250, 0.9), rgba(248, 249, 250, 0.9)), url('/static/images/spankks-logo-new.png'); background-size: contain; background-repeat: no-repeat; background-position: center; background-attachment: fixed;">
     <div class="container">
-        <div class="row g-4">
+        <div class="row g-5 justify-content-center">
             <!-- Contact Details -->
-            <div class="col-lg-6">
-                <h2 class="fw-bold mb-4">Get In Touch</h2>
-                <p class="lead text-muted mb-4">Ready to build or fix your home? We're here to help with all your construction and repair needs.</p>
-                
-                <div class="contact-info">
+            <div class="col-xl-5 col-lg-6">
+                <div class="contact-info-card">
+                    <h2 class="fw-bold mb-4">Get In Touch</h2>
+                    <p class="lead text-muted mb-4">Ready to build or fix your home? We're here to help with all your construction and repair needs.</p>
+                    
+                    <div class="contact-info">
                     <!-- Phone -->
                     <div class="contact-item d-flex align-items-center mb-4">
                         <div class="contact-icon">
@@ -282,7 +302,7 @@
             </div>
             
             <!-- Quick Contact Form -->
-            <div class="col-lg-6">
+            <div class="col-xl-5 col-lg-6">
                 <div class="card border-0 shadow contact-form-card">
                     <div class="card-body">
                         <h3 class="card-title">Send Us a Message</h3>
