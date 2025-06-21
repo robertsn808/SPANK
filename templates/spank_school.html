@@ -1,633 +1,481 @@
 {% extends "base.html" %}
 
-{% block title %}🧠 Spank School - Learn While You Fix | SPANK Handyman{% endblock %}
+{% block title %}🧠 Spank School - DIY Learning Hub{% endblock %}
+
+{% block head %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        color: white;
+        padding: 80px 0 60px;
+        margin-top: 76px;
+    }
+    
+    .course-card {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        height: 100%;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .difficulty-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 2;
+    }
+    
+    .progress-indicator {
+        height: 4px;
+        background: #e9ecef;
+        border-radius: 2px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #28a745, #20c997);
+        transition: width 0.3s ease;
+    }
+    
+    .course-stats {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #ff6b35, #f7931e);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        margin: 0 auto 20px;
+    }
+    
+    .video-badge {
+        background: #dc3545;
+        color: white;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 12px;
+        margin-left: 8px;
+    }
+    
+    .category-header {
+        background: linear-gradient(135deg, #343a40, #495057);
+        color: white;
+        border-radius: 10px 10px 0 0;
+        padding: 20px;
+        margin-bottom: 0;
+    }
+    
+    .category-content {
+        background: #f8f9fa;
+        border-radius: 0 0 10px 10px;
+        padding: 25px;
+    }
+    
+    .points-display {
+        background: linear-gradient(135deg, #ffc107, #ff8f00);
+        color: #212529;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: bold;
+        box-shadow: 0 2px 8px rgba(255,193,7,0.3);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section bg-gradient-primary text-white py-4">
+<section class="hero-section">
     <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">
+                    🧠 Welcome to Spank School
+                </h1>
+                <p class="lead mb-4">
+                    Master DIY repairs with professional guidance from Hawaii's trusted handyman experts. 
+                    Learn at your own pace with interactive courses, video tutorials, and hands-on challenges.
+                </p>
+                <div class="d-flex flex-wrap gap-3 align-items-center">
+                    <button class="btn btn-warning btn-lg px-4" onclick="scrollToCourses()">
+                        <i class="fas fa-play me-2"></i>Start Learning
+                    </button>
+                    <div class="points-display">
+                        <i class="fas fa-star me-2"></i>Spank Points: <span id="userPoints">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center">
+                <img src="{{ url_for('static', filename='images/spank_img.png') }}" 
+                     alt="SPANK Mascot" class="img-fluid" style="max-height: 300px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="feature-icon">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h5>Video Tutorials</h5>
+                <p class="text-muted">Step-by-step video guides with professional tips</p>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h5>Interactive Learning</h5>
+                <p class="text-muted">Quizzes, challenges, and hands-on practice</p>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h5>Safety First</h5>
+                <p class="text-muted">Professional safety guidance for every project</p>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="feature-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <h5>Earn Points</h5>
+                <p class="text-muted">Complete courses and earn Spank Points</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Course Categories -->
+<section class="py-5" id="courses">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Choose Your Learning Path</h2>
+            <p class="lead text-muted">From beginner basics to intermediate repairs</p>
+        </div>
+
+        <!-- Plumbing Courses -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="category-header">
+                    <h3 class="mb-0"><i class="fas fa-wrench me-3"></i>Plumbing Essentials</h3>
+                </div>
+                <div class="category-content">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100 position-relative">
+                                <span class="difficulty-badge badge bg-success">Beginner</span>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        Fix a Leaky Faucet
+                                        <span class="video-badge">VIDEO</span>
+                                    </h5>
+                                    <p class="course-stats mb-3">
+                                        <i class="fas fa-clock me-1"></i>8 min • 
+                                        <i class="fas fa-list-ol me-1"></i>3 lessons
+                                    </p>
+                                    <p class="card-text">Stop the drip and save your sanity. Learn to identify, disassemble, and fix common faucet problems.</p>
+                                    <div class="progress-indicator mb-3">
+                                        <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="startCourse('faucet')">
+                                        <i class="fas fa-play me-2"></i>Start Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100 position-relative">
+                                <span class="difficulty-badge badge bg-warning text-dark">Intermediate</span>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        Toilet Running Water Fix
+                                        <span class="video-badge">VIDEO</span>
+                                    </h5>
+                                    <p class="course-stats mb-3">
+                                        <i class="fas fa-clock me-1"></i>12 min • 
+                                        <i class="fas fa-list-ol me-1"></i>4 lessons
+                                    </p>
+                                    <p class="card-text">Master toilet repair with our comprehensive 4-step guide to stop running water.</p>
+                                    <div class="progress-indicator mb-3">
+                                        <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="startCourse('toilet')">
+                                        <i class="fas fa-play me-2"></i>Start Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100 position-relative">
+                                <span class="difficulty-badge badge bg-success">Beginner</span>
+                                <div class="card-body">
+                                    <h5 class="card-title">Unclog a Drain Safely</h5>
+                                    <p class="course-stats mb-3">
+                                        <i class="fas fa-clock me-1"></i>12 min • 
+                                        <i class="fas fa-list-ol me-1"></i>4 lessons
+                                    </p>
+                                    <p class="card-text">Three safe methods to unclog drains without chemicals or damage to your pipes.</p>
+                                    <div class="progress-indicator mb-3">
+                                        <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="startCourse('drain')">
+                                        <i class="fas fa-play me-2"></i>Start Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Electrical Courses -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="category-header">
+                    <h3 class="mb-0"><i class="fas fa-bolt me-3"></i>Electrical Safety</h3>
+                </div>
+                <div class="category-content">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100 position-relative">
+                                <span class="difficulty-badge badge bg-warning text-dark">Intermediate</span>
+                                <div class="card-body">
+                                    <h5 class="card-title">Replace an Outlet</h5>
+                                    <p class="course-stats mb-3">
+                                        <i class="fas fa-clock me-1"></i>10 min • 
+                                        <i class="fas fa-list-ol me-1"></i>3 lessons
+                                    </p>
+                                    <p class="card-text">Safely replace electrical outlets with proper power shutoff and wiring techniques.</p>
+                                    <div class="progress-indicator mb-3">
+                                        <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="startCourse('outlet')">
+                                        <i class="fas fa-play me-2"></i>Start Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100 position-relative">
+                                <span class="difficulty-badge badge bg-warning text-dark">Intermediate</span>
+                                <div class="card-body">
+                                    <h5 class="card-title">Install a Light Switch</h5>
+                                    <p class="course-stats mb-3">
+                                        <i class="fas fa-clock me-1"></i>7 min • 
+                                        <i class="fas fa-list-ol me-1"></i>2 lessons
+                                    </p>
+                                    <p class="card-text">Learn switch wiring basics and safe installation techniques.</p>
+                                    <div class="progress-indicator mb-3">
+                                        <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="startCourse('lightswitch')">
+                                        <i class="fas fa-play me-2"></i>Start Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100 position-relative">
+                                <span class="difficulty-badge badge bg-success">Beginner</span>
+                                <div class="card-body">
+                                    <h5 class="card-title">Circuit Breaker Basics</h5>
+                                    <p class="course-stats mb-3">
+                                        <i class="fas fa-clock me-1"></i>9 min • 
+                                        <i class="fas fa-list-ol me-1"></i>3 lessons
+                                    </p>
+                                    <p class="card-text">Understand your electrical panel and when to call professionals.</p>
+                                    <div class="progress-indicator mb-3">
+                                        <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="startCourse('breaker')">
+                                        <i class="fas fa-play me-2"></i>Start Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Improvement Courses -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="category-header">
+                    <h3 class="mb-0"><i class="fas fa-home me-3"></i>Home Improvement</h3>
+                </div>
+                <div class="category-content">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100 position-relative">
+                                <span class="difficulty-badge badge bg-success">Beginner</span>
+                                <div class="card-body">
+                                    <h5 class="card-title">Patch Drywall</h5>
+                                    <p class="course-stats mb-3">
+                                        <i class="fas fa-clock me-1"></i>15 min • 
+                                        <i class="fas fa-list-ol me-1"></i>4 lessons
+                                    </p>
+                                    <p class="card-text">Fix holes and damage in drywall with professional techniques.</p>
+                                    <div class="progress-indicator mb-3">
+                                        <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="startCourse('drywall')">
+                                        <i class="fas fa-play me-2"></i>Start Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100 position-relative">
+                                <span class="difficulty-badge badge bg-success">Beginner</span>
+                                <div class="card-body">
+                                    <h5 class="card-title">Touch-Up Paint</h5>
+                                    <p class="course-stats mb-3">
+                                        <i class="fas fa-clock me-1"></i>8 min • 
+                                        <i class="fas fa-list-ol me-1"></i>3 lessons
+                                    </p>
+                                    <p class="card-text">Color matching secrets and professional touch-up techniques.</p>
+                                    <div class="progress-indicator mb-3">
+                                        <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="startCourse('touchup')">
+                                        <i class="fas fa-play me-2"></i>Start Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100 position-relative">
+                                <span class="difficulty-badge badge bg-warning text-dark">Intermediate</span>
+                                <div class="card-body">
+                                    <h5 class="card-title">Smart Home Basics</h5>
+                                    <p class="course-stats mb-3">
+                                        <i class="fas fa-clock me-1"></i>45 min • 
+                                        <i class="fas fa-list-ol me-1"></i>4 lessons
+                                    </p>
+                                    <p class="card-text">DIY smart home upgrades you can actually do yourself.</p>
+                                    <div class="progress-indicator mb-3">
+                                        <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="startCourse('smarthome')">
+                                        <i class="fas fa-play me-2"></i>Start Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Tools Section -->
         <div class="row">
-            <div class="col-lg-8 mx-auto text-center">
-                <h1 class="display-5 fw-bold mb-3">🧠 Spank School</h1>
-                <p class="lead mb-3">Learn While You Fix - Master DIY skills with our interactive courses</p>
-                <div class="d-flex justify-content-center gap-2 flex-wrap">
-                    <span class="badge bg-warning text-dark px-3 py-2">Free Learning</span>
-                    <span class="badge bg-warning text-dark px-3 py-2">Expert Tips</span>
-                    <span class="badge bg-warning text-dark px-3 py-2">Earn Badges</span>
+            <div class="col-12">
+                <div class="category-header">
+                    <h3 class="mb-0"><i class="fas fa-tools me-3"></i>Interactive Learning Tools</h3>
+                </div>
+                <div class="category-content">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100">
+                                <div class="card-body text-center">
+                                    <div class="feature-icon mb-3">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                    <h5 class="card-title">Problem Solver</h5>
+                                    <p class="card-text">Step-by-step troubleshooting for common home issues</p>
+                                    <button class="btn btn-outline-primary w-100" onclick="startTroubleshooter()">
+                                        <i class="fas fa-cogs me-2"></i>Start Solver
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100">
+                                <div class="card-body text-center">
+                                    <div class="feature-icon mb-3">
+                                        <i class="fas fa-brain"></i>
+                                    </div>
+                                    <h5 class="card-title">Knowledge Quiz</h5>
+                                    <p class="card-text">Test your DIY knowledge and earn Spank Points</p>
+                                    <button class="btn btn-outline-primary w-100" onclick="startQuiz()">
+                                        <i class="fas fa-question-circle me-2"></i>Take Quiz
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100">
+                                <div class="card-body text-center">
+                                    <div class="feature-icon mb-3">
+                                        <i class="fas fa-video"></i>
+                                    </div>
+                                    <h5 class="card-title">Live Q&A</h5>
+                                    <p class="card-text">Join weekly live sessions with SPANK experts</p>
+                                    <button class="btn btn-outline-primary w-100" onclick="joinLiveSession()">
+                                        <i class="fas fa-users me-2"></i>Join Session
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-dark text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Need Professional Help?</h2>
+        <p class="lead mb-4">Some repairs are best left to the experts. SPANK is here when you need us.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="{{ url_for('consultation') }}" class="btn btn-warning btn-lg px-4">
+                <i class="fas fa-calendar-check me-2"></i>Book Free Consultation
+            </a>
+            <a href="tel:(808)599-0908" class="btn btn-outline-light btn-lg px-4">
+                <i class="fas fa-phone me-2"></i>Call (808) 599-0908
+            </a>
         </div>
     </div>
 </section>
-
-<!-- Navigation Tabs -->
-<section class="py-3 bg-light">
-    <div class="container">
-        <ul class="nav nav-pills nav-fill" id="spankSchoolTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="courses-tab" data-bs-toggle="pill" data-bs-target="#courses" type="button" role="tab">
-                    <i class="fas fa-graduation-cap me-2"></i>DIY Courses
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="troubleshooter-tab" data-bs-toggle="pill" data-bs-target="#troubleshooter" type="button" role="tab">
-                    <i class="fas fa-search me-2"></i>Troubleshooter
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tools-tab" data-bs-toggle="pill" data-bs-target="#tools" type="button" role="tab">
-                    <i class="fas fa-tools me-2"></i>Tool Time
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="webinars-tab" data-bs-toggle="pill" data-bs-target="#webinars" type="button" role="tab">
-                    <i class="fas fa-video me-2"></i>Live Q&A
-                </button>
-            </li>
-        </ul>
-    </div>
-</section>
-
-<div class="tab-content py-5" id="spankSchoolContent">
-    <!-- DIY Courses Tab -->
-    <div class="tab-pane fade show active" id="courses" role="tabpanel">
-        <div class="container">
-            <!-- Progress Dashboard -->
-            <div class="row mb-5">
-                <div class="col-lg-12">
-                    <div class="card border-0 bg-gradient-primary text-white">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <h4 class="mb-2">Your Learning Journey</h4>
-                                    <p class="mb-0">Complete courses to earn Spank Points and unlock service discounts!</p>
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    <div class="d-flex justify-content-center gap-3">
-                                        <div class="text-center">
-                                            <div class="badge bg-warning text-dark fs-6 px-3 py-2">0</div>
-                                            <small class="d-block mt-1">Spank Points</small>
-                                        </div>
-                                        <div class="text-center">
-                                            <div class="badge bg-warning text-dark fs-6 px-3 py-2">0</div>
-                                            <small class="d-block mt-1">Badges Earned</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Course Categories -->
-            <div class="row g-4">
-                <!-- Plumbing Courses -->
-                <div class="col-lg-6">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="mb-0"><i class="fas fa-wrench me-2"></i>Plumbing Basics</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="course-item mb-3 p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Fix a Leaky Faucet</h6>
-                                        <small class="text-muted">3 lessons • 8 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-success">Beginner</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('faucet')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <div class="course-item mb-3 p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Unclog a Drain (Without Melting Your Pipes)</h6>
-                                        <small class="text-muted">4 lessons • 12 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-success">Beginner</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('drain')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <div class="course-item p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Toilet Running Water Fix <i class="fas fa-video text-primary ms-1" title="Video Tutorial Available"></i></h6>
-                                        <small class="text-muted">4 lessons • 12 min • Interactive Video Guide</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-warning text-dark">Intermediate</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('toilet')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Electrical Courses -->
-                <div class="col-lg-6">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-header bg-warning text-dark">
-                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Electrical Safety</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="course-item mb-3 p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Replace an Outlet</h6>
-                                        <small class="text-muted">3 lessons • 10 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-warning text-dark">Intermediate</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('outlet')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <div class="course-item mb-3 p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Install a Light Switch</h6>
-                                        <small class="text-muted">2 lessons • 7 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-warning text-dark">Intermediate</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('lightswitch')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <div class="course-item p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Circuit Breaker Basics</h6>
-                                        <small class="text-muted">3 lessons • 9 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-success">Beginner</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('breaker')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Carpentry Courses -->
-                <div class="col-lg-6">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="mb-0"><i class="fas fa-hammer me-2"></i>Carpentry & Repairs</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="course-item mb-3 p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">How to Patch Drywall</h6>
-                                        <small class="text-muted">4 lessons • 15 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-success">Beginner</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('drywall')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <div class="course-item mb-3 p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Squeaky Door Fix</h6>
-                                        <small class="text-muted">2 lessons • 4 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-success">Beginner</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('door')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <div class="course-item p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Hang a Picture Properly</h6>
-                                        <small class="text-muted">3 lessons • 6 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-success">Beginner</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('picture')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- General Courses -->
-                <div class="col-lg-6">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-header bg-secondary text-white">
-                            <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Essential Skills</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="course-item mb-3 p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Toolbelt Basics</h6>
-                                        <small class="text-muted">1 lesson • 10 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-info">Foundational</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('toolbelt')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <div class="course-item p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Smart Home Upgrades</h6>
-                                        <small class="text-muted">4 lessons • 45-60 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-warning text-dark">Intermediate</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('smarthome')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Painting Courses -->
-                <div class="col-lg-6">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0"><i class="fas fa-paint-roller me-2"></i>Painting & Finishing</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="course-item mb-3 p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Touch-Up Paint Like a Pro</h6>
-                                        <small class="text-muted">3 lessons • 8 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-success">Beginner</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('touchup')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <div class="course-item mb-3 p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Caulking Basics</h6>
-                                        <small class="text-muted">2 lessons • 6 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-success">Beginner</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('caulking')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <div class="course-item p-3 bg-light rounded">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Remove Wallpaper</h6>
-                                        <small class="text-muted">4 lessons • 12 min</small>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-warning text-dark">Intermediate</span>
-                                        <button class="btn btn-sm btn-primary ms-2" onclick="startCourse('wallpaper')">Start</button>
-                                    </div>
-                                </div>
-                                <div class="progress mt-2" style="height: 4px;">
-                                    <div class="progress-bar" style="width: 0%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Achievement Badges -->
-            <div class="row mt-5">
-                <div class="col-12">
-                    <h4 class="mb-4">Achievement Badges</h4>
-                    <div class="row g-3">
-                        <div class="col-md-2 col-4 text-center">
-                            <div class="badge-item p-3 bg-light rounded">
-                                <i class="fas fa-tools fa-2x text-muted mb-2"></i>
-                                <small class="d-block">First Fix</small>
-                            </div>
-                        </div>
-                        <div class="col-md-2 col-4 text-center">
-                            <div class="badge-item p-3 bg-light rounded">
-                                <i class="fas fa-wrench fa-2x text-muted mb-2"></i>
-                                <small class="d-block">Plumber Pro</small>
-                            </div>
-                        </div>
-                        <div class="col-md-2 col-4 text-center">
-                            <div class="badge-item p-3 bg-light rounded">
-                                <i class="fas fa-bolt fa-2x text-muted mb-2"></i>
-                                <small class="d-block">Spark Master</small>
-                            </div>
-                        </div>
-                        <div class="col-md-2 col-4 text-center">
-                            <div class="badge-item p-3 bg-light rounded">
-                                <i class="fas fa-hammer fa-2x text-muted mb-2"></i>
-                                <small class="d-block">Wood Worker</small>
-                            </div>
-                        </div>
-                        <div class="col-md-2 col-4 text-center">
-                            <div class="badge-item p-3 bg-light rounded">
-                                <i class="fas fa-paint-roller fa-2x text-muted mb-2"></i>
-                                <small class="d-block">Paint Expert</small>
-                            </div>
-                        </div>
-                        <div class="col-md-2 col-4 text-center">
-                            <div class="badge-item p-3 bg-light rounded">
-                                <i class="fas fa-trophy fa-2x text-muted mb-2"></i>
-                                <small class="d-block">Weekend Warrior</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Troubleshooter Tab -->
-    <div class="tab-pane fade" id="troubleshooter" role="tabpanel">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <div class="text-center mb-5">
-                        <h3>Problem Solver Simulator</h3>
-                        <p class="lead text-muted">Walk through common household problems step-by-step</p>
-                    </div>
-
-                    <!-- Troubleshooter Interface -->
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-4">
-                            <div id="troubleshooter-content">
-                                <!-- Problem Categories -->
-                                <div id="problem-categories">
-                                    <h5 class="mb-4">What's your problem?</h5>
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <button class="btn btn-outline-primary w-100 p-3 text-start" onclick="startTroubleshooter('electrical')">
-                                                <i class="fas fa-bolt me-3"></i>
-                                                <div>
-                                                    <strong>Electrical Issues</strong>
-                                                    <br><small class="text-muted">Outlets, switches, lights not working</small>
-                                                </div>
-                                            </button>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <button class="btn btn-outline-primary w-100 p-3 text-start" onclick="startTroubleshooter('plumbing')">
-                                                <i class="fas fa-wrench me-3"></i>
-                                                <div>
-                                                    <strong>Plumbing Problems</strong>
-                                                    <br><small class="text-muted">Leaks, clogs, running water</small>
-                                                </div>
-                                            </button>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <button class="btn btn-outline-primary w-100 p-3 text-start" onclick="startTroubleshooter('hvac')">
-                                                <i class="fas fa-wind me-3"></i>
-                                                <div>
-                                                    <strong>HVAC Issues</strong>
-                                                    <br><small class="text-muted">Heating, cooling, ventilation</small>
-                                                </div>
-                                            </button>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <button class="btn btn-outline-primary w-100 p-3 text-start" onclick="startTroubleshooter('general')">
-                                                <i class="fas fa-tools me-3"></i>
-                                                <div>
-                                                    <strong>General Repairs</strong>
-                                                    <br><small class="text-muted">Doors, windows, walls, misc</small>
-                                                </div>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Dynamic troubleshooting content will be loaded here -->
-                                <div id="troubleshooter-steps" style="display: none;">
-                                    <!-- Content loaded by JavaScript -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Results will appear here -->
-                    <div id="troubleshooter-result" class="mt-4" style="display: none;">
-                        <!-- Results loaded by JavaScript -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tool Time Tab -->
-    <div class="tab-pane fade" id="tools" role="tabpanel">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h3>Know Your Gear</h3>
-                <p class="lead text-muted">Master the tools of the trade with expert guidance</p>
-            </div>
-
-            <!-- Tool Categories -->
-            <div class="row g-4 mb-5">
-                <div class="col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0"><i class="fas fa-hammer me-2"></i>Basic Hand Tools</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="tool-item mb-3 p-2 rounded border" onclick="showTool('screwdriver')">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-screwdriver fa-2x text-primary me-3"></i>
-                                    <div>
-                                        <h6 class="mb-1">Screwdrivers</h6>
-                                        <small class="text-muted">Phillips & Flathead basics</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tool-item mb-3 p-2 rounded border" onclick="showTool('hammer')">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-hammer fa-2x text-primary me-3"></i>
-                                    <div>
-                                        <h6 class="mb-1">Hammers</h6>
-                                        <small class="text-muted">Types and proper use</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tool-item p-2 rounded border" onclick="showTool('level')">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-ruler fa-2x text-primary me-3"></i>
-                                    <div>
-                                        <h6 class="mb-1">Level</h6>
-                                        <small class="text-muted">Getting things straight</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-header bg-warning text-dark">
-                            <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Electrical Tools</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="tool-item mb-3 p-2 rounded border" onclick="showTool('multimeter')">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-tachometer-alt fa-2x text-warning me-3"></i>
-                                    <div>
-                                        <h6 class="mb-1">Multimeter</h6>
-                                        <small class="text-muted">Electrical testing basics</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tool-item mb-3 p-2 rounded border" onclick="showTool('wirestrippper')">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-cut fa-2x text-warning me-3"></i>
-                                    <div>
-                                        <h6 class="mb-1">Wire Strippers</h6>
-                                        <small class="text-muted">Safe wire handling</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tool-item p-2 rounded border" onclick="showTool('voltdetector')">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-search fa-2x text-warning me-3"></i>
-                                    <div>
-                                        <h6 class="mb-1">Voltage Detector</h6>
-                                        <small class="text-muted">Safety first testing</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="mb-0"><i class="fas fa-wrench me-2"></i>Plumbing Tools</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="tool-item mb-3 p-2 rounded border" onclick="showTool('plunger')">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-toilet fa-2x text-info me-3"></i>
-                                    <div>
-                                        <h6 class="mb-1">Plungers</h6>
-                                        <small class="text-muted">Types and techniques</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tool-item mb-3 p-2 rounded border" onclick="showTool('pipewrench')">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-wrench fa-2x text-info me-3"></i>
-                                    <div>
-                                        <h6 class="mb-1">Pipe Wrench</h6>
-                                        <small class="text-muted">Proper grip and use</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tool-item p-2 rounded border" onclick="showTool('snakeauger')">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-redo fa-2x text-info me-3"></i>
-                                    <div>
-                                        <h6 class="mb-1">Drain Snake</h6>
-                                        <small class="text-muted">Unclog like a pro</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tool Quiz Section -->
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <div class="card border-0 bg-light">
-                        <div class="card-body text-center p-4">
-                            <h5 class="mb-3">🎯 Tool Challenge</h5>
-                            <p class="mb-4">Not sure what tool you need? Take our quick quiz!</p>
-                            <button class="btn btn-primary btn-lg" onclick="startToolQuiz()">
-                                <i class="fas fa-question-circle me-2"></i>What Tool Do I Need?
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Course Modal -->
 <div class="modal fade" id="courseModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="courseModalTitle">Course Title</h5>
+                <h5 class="modal-title" id="courseModalTitle">Course Lesson</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="courseModalBody">
-                <!-- Course content loaded here -->
+                <!-- Course content will be loaded here -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -637,248 +485,64 @@
     </div>
 </div>
 
-<!-- Tool Modal -->
-<div class="modal fade" id="toolModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="toolModalTitle">Tool Guide</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="toolModalBody">
-                <!-- Tool content loaded here -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a href="#" class="btn btn-primary" id="buyToolBtn" target="_blank">Shop for This Tool</a>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-// Course data and functionality
+// Course data structure
 const courses = {
     faucet: {
-        title: "Fix That Leaky Faucet (Without Flooding Your Kitchen)",
+        title: "Fix a Leaky Faucet",
         level: "Beginner",
-        duration: "20-30 minutes",
-        lessons: [
-            { 
-                title: "What's Leaking, Exactly?", 
-                duration: "5 min", 
-                content: `
-                    <h6>Learn the parts:</h6>
-                    <ul>
-                        <li><strong>Handle</strong> - Where you turn the water on/off</li>
-                        <li><strong>Cartridge</strong> - The internal valve mechanism</li>
-                        <li><strong>Aerator</strong> - Screen at the spout tip</li>
-                        <li><strong>Washer</strong> - Rubber seal inside the faucet</li>
-                    </ul>
-                    <div class="alert alert-info">
-                        <strong>Quick Test:</strong> Which part is causing the drip? Look for water coming from the spout vs. base.
-                    </div>
-                `
-            },
-            { 
-                title: "Tools & Supplies You'll Need", 
-                duration: "5 min", 
-                content: `
-                    <h6>Essential Tools:</h6>
-                    <ul>
-                        <li>✅ Adjustable wrench</li>
-                        <li>✅ Screwdriver</li>
-                        <li>✅ Replacement cartridge or washers</li>
-                        <li>✅ Plumber's tape (Teflon)</li>
-                        <li>✅ Clean cloth</li>
-                    </ul>
-                    <h6>Optional but Helpful:</h6>
-                    <ul>
-                        <li>🪣 Bucket</li>
-                        <li>🔦 Flashlight</li>
-                    </ul>
-                `
-            },
-            { 
-                title: "Turn Off That Water (Seriously, Do It First)", 
-                duration: "3 min", 
-                content: `
-                    <div class="alert alert-warning">
-                        <strong>⚠️ CRITICAL STEP:</strong> Always turn off water before starting!
-                    </div>
-                    <ol>
-                        <li>Find shutoff valves under the sink</li>
-                        <li>Turn clockwise to close</li>
-                        <li>Test the faucet - no water should come out</li>
-                        <li>If no local shutoffs, use main water valve</li>
-                    </ol>
-                `
-            },
-            { 
-                title: "The Fix", 
-                duration: "10 min", 
-                content: `
-                    <h6>Step-by-step repair:</h6>
-                    <ol>
-                        <li><strong>Remove handle</strong> - Unscrew or pop off decorative cap</li>
-                        <li><strong>Access cartridge</strong> - Remove packing nut with wrench</li>
-                        <li><strong>Pull out old cartridge</strong> - Note orientation!</li>
-                        <li><strong>Install new cartridge</strong> - Match exact position</li>
-                        <li><strong>Reassemble</strong> - Reverse the steps</li>
-                        <li><strong>Test</strong> - Turn water back on and check for leaks</li>
-                    </ol>
-                    <div class="alert alert-success">
-                        <strong>Pro Tip:</strong> Take photos during disassembly for reference!
-                    </div>
-                `
-            },
-            { 
-                title: "Prevent Future Leaks", 
-                duration: "2 min", 
-                content: `
-                    <h6>Maintenance Tips:</h6>
-                    <ul>
-                        <li>Clean aerator monthly</li>
-                        <li>Don't over-tighten handles</li>
-                        <li>Replace washers annually</li>
-                        <li>Check for mineral buildup</li>
-                    </ul>
-                    <h6>Signs to replace the whole fixture:</h6>
-                    <ul>
-                        <li>Multiple repairs needed</li>
-                        <li>Frequent cartridge failures</li>
-                        <li>Visible corrosion or damage</li>
-                    </ul>
-                `
-            }
-        ],
-        quiz: {
-            question: "Your faucet is dripping, but your sink also fills slowly. What's likely the issue?",
-            options: [
-                "Faucet cartridge",
-                "Clogged aerator", 
-                "Bad plumbing",
-                "You're cursed"
-            ],
-            correct: 1,
-            explanation: "A clogged aerator can cause both slow filling AND dripping by creating back-pressure in the system."
-        }
-    },
-    drain: {
-        title: "Unclog a Drain (Without Melting Your Pipes)",
-        level: "Beginner", 
-        duration: "15 minutes",
+        duration: "8 minutes",
         lessons: [
             {
-                title: "Common Causes of Clogs",
+                title: "Know Your Faucet",
                 duration: "3 min",
                 content: `
-                    <h6>What's Usually Blocking Your Drain:</h6>
-                    <ul>
-                        <li><strong>Hair</strong> - #1 bathroom culprit</li>
-                        <li><strong>Soap scum</strong> - Builds up over time</li>
-                        <li><strong>Food particles</strong> - Kitchen sink enemy</li>
-                        <li><strong>Grease</strong> - Hardens and traps debris</li>
-                    </ul>
-                    <div class="alert alert-info">
-                        Prevention is easier than fixing! Use drain screens and avoid pouring grease down drains.
-                    </div>
-                `
-            },
-            {
-                title: "Start With the Plunger",
-                duration: "5 min", 
-                content: `
-                    <h6>Proper Plunging Technique:</h6>
+                    <h6>🎯 Goal: Identify faucet type and leak source</h6>
+                    <h6>🛠️ Steps:</h6>
                     <ol>
-                        <li><strong>Cover overflow holes</strong> with a rag (bathroom sinks)</li>
-                        <li><strong>Create a seal</strong> around the drain</li>
-                        <li><strong>Plunge vertically</strong> with strong, rapid motions</li>
-                        <li><strong>Pull up quickly</strong> to break the clog loose</li>
-                    </ol>
-                    <div class="alert alert-warning">
-                        Use a cup plunger for sinks, not a toilet plunger!
-                    </div>
-                `
-            },
-            {
-                title: "Snake It Gently",
-                duration: "4 min",
-                content: `
-                    <h6>Using a Drain Snake or Zip Tool:</h6>
-                    <ol>
-                        <li><strong>Feed slowly</strong> - Don't force it</li>
-                        <li><strong>Rotate as you go</strong> - Catches hair and debris</li>
-                        <li><strong>Feel for resistance</strong> - That's your clog</li>
-                        <li><strong>Pull out slowly</strong> - Don't look too close! 🤢</li>
-                    </ol>
-                    <p><strong>Pro Tip:</strong> Disposable zip tools work great for hair clogs and cost under $5.</p>
-                `
-            },
-            {
-                title: "DIY Drain Bomb",
-                duration: "3 min",
-                content: `
-                    <h6>Natural Chemical-Free Solution:</h6>
-                    <ol>
-                        <li><strong>Pour ½ cup baking soda</strong> down the drain</li>
-                        <li><strong>Add 1 cup vinegar</strong> (it will fizz!)</li>
-                        <li><strong>Cover the drain</strong> with a plug or rag</li>
-                        <li><strong>Wait 10 minutes</strong> for the reaction</li>
-                        <li><strong>Flush with hot water</strong> (not boiling for PVC!)</li>
+                        <li><strong>Determine faucet type:</strong> compression, cartridge, ball, or ceramic disk</li>
+                        <li><strong>Check where the leak comes from:</strong> spout, base, or handle</li>
                     </ol>
                     <div class="alert alert-success">
-                        This method is safe for all pipe types and actually cleans as it unclogs.
+                        <strong>✅ Pro Tip:</strong> Cartridge faucets are most common and easy to fix.
+                    </div>
+                    <div class="mt-3 p-3 bg-primary text-white rounded">
+                        <h6>📌 Quick Quiz:</h6>
+                        <p class="mb-2">Which type of faucet uses rubber washers?</p>
+                        <button class="btn btn-warning btn-sm" onclick="showAnswer('faucet-quiz-1', 'Compression faucets use rubber washers that wear out over time.')">Show Answer</button>
+                        <div id="faucet-quiz-1" class="mt-2" style="display: none;"></div>
                     </div>
                 `
-            }
-        ],
-        quiz: {
-            question: "True or False: Pouring boiling water into a PVC drain is always safe.",
-            options: ["True", "False"],
-            correct: 1,
-            explanation: "False! Boiling water can warp plastic PVC pipes. Use hot (not boiling) water instead."
-        }
-    },
-    toolbelt: {
-        title: "Toolbelt Basics: What Every Homeowner Needs",
-        level: "Foundational",
-        duration: "10 minutes", 
-        lessons: [
+            },
             {
-                title: "Top 10 Essential Tools",
-                duration: "10 min",
+                title: "Disassemble & Inspect",
+                duration: "3 min",
                 content: `
-                    <h6>Your Must-Have Tool Kit:</h6>
+                    <h6>🎯 Goal: Open up the faucet safely and locate the worn-out part</h6>
+                    <h6>🛠️ Steps:</h6>
                     <ol>
-                        <li><strong>Adjustable Wrench</strong> - Fits multiple nut sizes</li>
-                        <li><strong>Screwdriver Set</strong> - Phillips + Flathead varieties</li>
-                        <li><strong>Claw Hammer</strong> - For nails and light demolition</li>
-                        <li><strong>Tape Measure</strong> - 25-foot minimum</li>
-                        <li><strong>Utility Knife</strong> - Retractable blade</li>
-                        <li><strong>Cordless Drill</strong> - Game changer for speed</li>
-                        <li><strong>Stud Finder</strong> - Essential for wall work</li>
-                        <li><strong>Pliers</strong> - Needle nose + slip joint</li>
-                        <li><strong>Level</strong> - 2-foot length is perfect</li>
-                        <li><strong>Headlamp or Work Light</strong> - Hands-free lighting</li>
+                        <li><strong>Shut off water supply</strong></li>
+                        <li><strong>Plug drain with rag or stopper</strong></li>
+                        <li><strong>Remove handle and cartridge or washer</strong></li>
                     </ol>
-                    
-                    <h6>Extra Credit Tools:</h6>
-                    <ul>
-                        <li>Zip ties (fix everything temporarily)</li>
-                        <li>Painter's tape (clean lines, no residue)</li>
-                        <li>Allen wrench set (furniture assembly)</li>
-                        <li>Safety goggles (Spank-approved!)</li>
-                    </ul>
-                    
-                    <div class="alert alert-warning">
-                        <strong>🚨 Pro Tip:</strong> If it comes in a plastic toolbox for $14.99 at checkout, run away!
+                    <div class="alert alert-success">
+                        <strong>✅ Pro Tip:</strong> Take the part to the hardware store to match replacement.
                     </div>
-                    
-                    <div class="mt-4 p-3 bg-primary text-white rounded">
-                        <h6>🧠 Challenge:</h6>
-                        <p class="mb-2">Upload a pic of your current tool kit!</p>
-                        <p class="mb-0">Missing more than 3 of the top 10? That's a "Tool Emergency" 🚨</p>
+                `
+            },
+            {
+                title: "Replace & Reassemble",
+                duration: "2 min",
+                content: `
+                    <h6>🎯 Goal: Install the new component and confirm it's leak-free</h6>
+                    <h6>🛠️ Steps:</h6>
+                    <ol>
+                        <li><strong>Insert new cartridge or washer</strong></li>
+                        <li><strong>Tighten gently and reassemble</strong></li>
+                        <li><strong>Turn water back on and test</strong></li>
+                    </ol>
+                    <div class="alert alert-success">
+                        <strong>✅ Pro Tip:</strong> A small dab of plumber's grease helps with longevity.
                     </div>
                 `
             }
@@ -908,12 +572,6 @@ const courses = {
                     <div class="alert alert-success">
                         <strong>✅ Pro Tip:</strong> A worn flapper or misaligned float is often the culprit.
                     </div>
-                    <div class="mt-3 p-3 bg-primary text-white rounded">
-                        <h6>📌 Quick Quiz:</h6>
-                        <p class="mb-2">What prevents water from constantly flowing into the bowl?</p>
-                        <button class="btn btn-warning btn-sm" onclick="showAnswer('toilet-quiz-1', 'The flapper! It acts as a seal at the bottom of the tank.')">Show Answer</button>
-                        <div id="toilet-quiz-1" class="mt-2" style="display: none;"></div>
-                    </div>
                 `
             },
             {
@@ -930,16 +588,10 @@ const courses = {
                     <div class="alert alert-success">
                         <strong>✅ Pro Tip:</strong> Listen for hissing = fill valve problem
                     </div>
-                    <div class="mt-3 p-3 bg-primary text-white rounded">
-                        <h6>📌 Quick Quiz:</h6>
-                        <p class="mb-2">What does colored water in the bowl mean?</p>
-                        <button class="btn btn-warning btn-sm" onclick="showAnswer('toilet-quiz-2', 'The flapper is not sealing properly! Water is leaking from tank to bowl.')">Show Answer</button>
-                        <div id="toilet-quiz-2" class="mt-2" style="display: none;"></div>
-                    </div>
                 `
             },
             {
-                title: "Replace the Flapper or Fill Valve",
+                title: "Replace Parts",
                 duration: "4 min",
                 content: `
                     <h6>🎯 Goal: Perform a quick hardware swap</h6>
@@ -952,16 +604,10 @@ const courses = {
                     <div class="alert alert-success">
                         <strong>✅ Pro Tip:</strong> Don't overtighten plastic components.
                     </div>
-                    <div class="mt-3 p-3 bg-primary text-white rounded">
-                        <h6>📌 Quick Quiz:</h6>
-                        <p class="mb-2">Which part seals the tank from the bowl?</p>
-                        <button class="btn btn-warning btn-sm" onclick="showAnswer('toilet-quiz-3', 'The flapper! It creates a watertight seal at the bottom of the tank.')">Show Answer</button>
-                        <div id="toilet-quiz-3" class="mt-2" style="display: none;"></div>
-                    </div>
                 `
             },
             {
-                title: "Fine-Tune the Water Level",
+                title: "Fine-Tune Water Level",
                 duration: "2 min",
                 content: `
                     <h6>🎯 Goal: Prevent wasteful overfilling</h6>
@@ -973,1045 +619,134 @@ const courses = {
                     <div class="alert alert-success">
                         <strong>✅ Pro Tip:</strong> Re-test flush performance 3-5 times.
                     </div>
-                    <div class="mt-3 p-3 bg-info text-white rounded">
-                        <h6>📌 Interactive Element:</h6>
-                        <p class="mb-2">Water Level Adjuster</p>
-                        <div class="d-flex align-items-center gap-3">
-                            <span>Low</span>
-                            <input type="range" class="form-range" id="waterLevel" min="1" max="10" value="7" onchange="updateWaterLevel(this.value)">
-                            <span>High</span>
-                        </div>
-                        <div id="waterLevelFeedback" class="mt-2">Perfect level: 1" below overflow tube</div>
-                    </div>
                 `
-            }
-        ],
-        quiz: {
-            question: "True or False: Adjusting the float can stop most minor toilet runs.",
-            options: ["True", "False"],
-            correct: 0,
-            explanation: "True! Many toilet running issues are caused by incorrect water levels, which can be fixed by adjusting the float mechanism."
-        }
-    },
-    outlet: {
-        title: "Replace an Outlet",
-        level: "Intermediate",
-        duration: "10 minutes",
-        lessons: [
-            {
-                title: "Shut Off Power Like a Pro",
-                duration: "3 min",
-                content: `
-                    <h6>Critical Safety Steps:</h6>
-                    <ol>
-                        <li><strong>Find the right breaker</strong> - Test outlets to identify circuit</li>
-                        <li><strong>Turn off breaker</strong> - Switch to OFF position</li>
-                        <li><strong>Test with voltage tester</strong> - NEVER skip this step</li>
-                        <li><strong>Test the tester</strong> - Verify it works on known live outlet</li>
-                    </ol>
-                    <div class="alert alert-danger">
-                        <strong>⚠️ SAFETY FIRST:</strong> Always use a voltage tester before touching any wires!
-                    </div>
-                `
-            },
-            {
-                title: "Remove & Inspect the Old Outlet",
-                duration: "4 min",
-                content: `
-                    <h6>Removal Process:</h6>
-                    <ol>
-                        <li><strong>Remove outlet cover</strong> - Unscrew faceplate</li>
-                        <li><strong>Unscrew outlet</strong> - Pull from wall box</li>
-                        <li><strong>Take photos</strong> - Document wire connections</li>
-                        <li><strong>Disconnect wires</strong> - Unscrew terminals carefully</li>
-                    </ol>
-                    <h6>Wire Identification:</h6>
-                    <ul>
-                        <li><strong>Black wire:</strong> Hot (carries power)</li>
-                        <li><strong>White wire:</strong> Neutral (return path)</li>
-                        <li><strong>Green/bare wire:</strong> Ground (safety)</li>
-                    </ul>
-                `
-            },
-            {
-                title: "Wire and Test the New Outlet",
-                duration: "3 min",
-                content: `
-                    <h6>Installation Steps:</h6>
-                    <ol>
-                        <li><strong>Connect ground wire first</strong> - Green screw terminal</li>
-                        <li><strong>Connect white to silver</strong> - Neutral wire</li>
-                        <li><strong>Connect black to brass</strong> - Hot wire</li>
-                        <li><strong>Fold wires into box</strong> - Don't pinch</li>
-                        <li><strong>Screw outlet to box</strong> - Mount securely</li>
-                        <li><strong>Attach faceplate</strong> - Final step</li>
-                    </ol>
-                    <div class="alert alert-success">
-                        <strong>Testing:</strong> Turn breaker on, test with voltage tester, then plug in a lamp to verify.
-                    </div>
-                `
-            }
-        ],
-        quiz: {
-            question: "Which tool should you always use before touching wires?",
-            options: ["Screwdriver", "Voltage tester", "Wire strippers", "Pliers"],
-            correct: 1,
-            explanation: "A voltage tester is essential to verify power is off before working with electrical wires. This prevents dangerous shocks."
-        }
-    },
-    lightswitch: {
-        title: "Install a Light Switch",
-        level: "Intermediate", 
-        duration: "7 minutes",
-        lessons: [
-            {
-                title: "Switch Wiring: The Basics",
-                duration: "4 min",
-                content: `
-                    <h6>Understanding Switch Wiring:</h6>
-                    <ul>
-                        <li><strong>Single-pole switch:</strong> Controls one light from one location</li>
-                        <li><strong>Two black wires:</strong> Both are "hot" (power in and out)</li>
-                        <li><strong>Ground wire:</strong> Connect to green screw</li>
-                        <li><strong>No neutral needed:</strong> White wires stay connected together</li>
-                    </ul>
-                    <div class="alert alert-warning">
-                        <strong>Important:</strong> Turn off power at breaker and test before starting!
-                    </div>
-                `
-            },
-            {
-                title: "Install + Test a New Switch",
-                duration: "3 min",
-                content: `
-                    <h6>Installation Process:</h6>
-                    <ol>
-                        <li><strong>Remove old switch</strong> - Take photo first</li>
-                        <li><strong>Connect ground wire</strong> - Green screw on switch</li>
-                        <li><strong>Connect black wires</strong> - Either screw (doesn't matter which)</li>
-                        <li><strong>Secure switch in box</strong> - Don't pinch wires</li>
-                        <li><strong>Install cover plate</strong> - Final touch</li>
-                    </ol>
-                    <p><strong>Testing:</strong> Turn power back on and test switch operation. Light should turn on/off smoothly.</p>
-                `
-            }
-        ]
-    },
-    breaker: {
-        title: "Circuit Breaker Basics",
-        level: "Beginner",
-        duration: "9 minutes", 
-        lessons: [
-            {
-                title: "What's in the Panel?",
-                duration: "3 min",
-                content: `
-                    <h6>Understanding Your Electrical Panel:</h6>
-                    <ul>
-                        <li><strong>Main breaker:</strong> Controls power to entire house</li>
-                        <li><strong>Individual breakers:</strong> Control specific circuits</li>
-                        <li><strong>Labels:</strong> Should identify what each controls</li>
-                        <li><strong>Amperage:</strong> 15A or 20A for most household circuits</li>
-                    </ul>
-                    <p><strong>Safety note:</strong> Never touch the main lines at the top of the panel.</p>
-                `
-            },
-            {
-                title: "Reset a Tripped Breaker",
-                duration: "3 min",
-                content: `
-                    <h6>How to Reset:</h6>
-                    <ol>
-                        <li><strong>Find the tripped breaker</strong> - Will be in middle position</li>
-                        <li><strong>Turn fully OFF first</strong> - Push to OFF position</li>
-                        <li><strong>Then turn ON</strong> - Should click firmly into place</li>
-                        <li><strong>Test the circuit</strong> - Check outlets/lights</li>
-                    </ol>
-                    <div class="alert alert-warning">
-                        <strong>If it trips again immediately:</strong> You have a serious electrical problem. Call SPANK!
-                    </div>
-                `
-            },
-            {
-                title: "When to Call an Electrician",
-                duration: "3 min",
-                content: `
-                    <h6>Call SPANK immediately if:</h6>
-                    <ul>
-                        <li><strong>Breaker keeps tripping</strong> - Underlying electrical issue</li>
-                        <li><strong>Burning smell</strong> - Fire hazard</li>
-                        <li><strong>Sparks from panel</strong> - Serious danger</li>
-                        <li><strong>Hot breaker or panel</strong> - Overloaded circuit</li>
-                        <li><strong>Multiple circuits out</strong> - May be main breaker issue</li>
-                    </ul>
-                    <p><strong>Remember:</strong> Electrical work can be dangerous. When in doubt, call the professionals!</p>
-                `
-            }
-        ]
-    },
-    smarthome: {
-        title: "Smart Home Upgrades You Can Actually Do Yourself", 
-        level: "Intermediate",
-        duration: "45-60 minutes",
-        lessons: [
-            {
-                title: "Intro to Smart Home Basics",
-                duration: "10 min",
-                content: `
-                    <h6>Getting Started with Smart Home:</h6>
-                    <ul>
-                        <li><strong>WiFi is essential</strong> - Strong signal where you're installing</li>
-                        <li><strong>Start simple</strong> - Begin with plugs and bulbs</li>
-                        <li><strong>Choose an ecosystem</strong> - Google, Alexa, or Apple</li>
-                        <li><strong>Read compatibility</strong> - Not all devices work together</li>
-                    </ul>
-                    <p><strong>Pro Tip:</strong> Start with one room to test your setup before expanding.</p>
-                `
-            },
-            {
-                title: "Install Smart Bulbs & Plugs",
-                duration: "15 min",
-                content: `
-                    <h6>Smart Bulbs:</h6>
-                    <ol>
-                        <li>Replace regular bulb with smart bulb</li>
-                        <li>Download manufacturer's app</li>
-                        <li>Follow setup wizard in app</li>
-                        <li>Connect to WiFi network</li>
-                        <li>Test controls and features</li>
-                    </ol>
-                    
-                    <h6>Smart Plugs:</h6>
-                    <ol>
-                        <li>Plug into wall outlet</li>
-                        <li>Download app and create account</li>
-                        <li>Add device in app</li>
-                        <li>Set up schedules and automation</li>
-                    </ol>
-                `
-            },
-            {
-                title: "Doorbells & Cameras",
-                duration: "15 min",
-                content: `
-                    <h6>Battery-Powered Video Doorbell:</h6>
-                    <ol>
-                        <li><strong>Choose location</strong> - Good WiFi signal area</li>
-                        <li><strong>Mount bracket</strong> - Use screws or adhesive</li>
-                        <li><strong>Install battery</strong> - Charge fully first</li>
-                        <li><strong>Setup app</strong> - Follow manufacturer instructions</li>
-                        <li><strong>Test features</strong> - Motion, recording, two-way audio</li>
-                    </ol>
-                    <p><strong>Features to test:</strong> Motion alerts, video quality, app notifications</p>
-                `
-            },
-            {
-                title: "Thermostats Made Easy (Optional Wiring)",
-                duration: "15 min",
-                content: `
-                    <h6>Before You Start:</h6>
-                    <div class="alert alert-warning">
-                        <strong>⚠️ Warning:</strong> This involves electrical wiring! Take photos before disconnecting anything.
-                    </div>
-                    
-                    <h6>Basic Installation:</h6>
-                    <ol>
-                        <li><strong>Turn off power</strong> - At breaker and HVAC unit</li>
-                        <li><strong>Remove old thermostat</strong> - Label all wires</li>
-                        <li><strong>Install new baseplate</strong> - Level it properly</li>
-                        <li><strong>Connect wires</strong> - Follow color coding</li>
-                        <li><strong>Attach thermostat</strong> - Test all functions</li>
-                    </ol>
-                    
-                    <p><strong>When to call SPANK:</strong> More than 4 wires, no C-wire, or uncertainty about connections</p>
-                `
-            }
-        ],
-        quiz: {
-            question: "Which smart upgrade requires electrical wiring knowledge?",
-            options: ["Smart plug", "Smart bulb", "Thermostat", "None"],
-            correct: 2,
-            explanation: "Smart thermostats typically require connecting to your home's electrical system and HVAC wiring."
-        }
-    },
-    touchup: {
-        title: "Touch-Up Paint Like a Pro",
-        level: "Beginner",
-        duration: "8 minutes",
-        lessons: [
-            {
-                title: "Color Matching Secrets",
-                duration: "3 min",
-                content: `
-                    <h6>Getting the Perfect Match:</h6>
-                    <ul>
-                        <li><strong>Save paint codes</strong> - Keep records from original paint job</li>
-                        <li><strong>Bring a sample</strong> - Cut small piece from hidden area</li>
-                        <li><strong>Natural lighting</strong> - Check color match in daylight</li>
-                        <li><strong>Test first</strong> - Apply to hidden area before touch-up</li>
-                    </ul>
-                    <p><strong>Pro Tip:</strong> Paint looks different as it dries. Wait for full cure before judging color match.</p>
-                `
-            },
-            {
-                title: "Prep the Wall (No Dust!)",
-                duration: "3 min",
-                content: `
-                    <h6>Surface Preparation:</h6>
-                    <ol>
-                        <li><strong>Clean the area</strong> - Remove dirt, grease, crayon marks</li>
-                        <li><strong>Sand lightly</strong> - 220-grit for glossy surfaces</li>
-                        <li><strong>Fill holes</strong> - Use spackling compound for nail holes</li>
-                        <li><strong>Prime if needed</strong> - Raw drywall or stain coverage</li>
-                    </ol>
-                    <div class="alert alert-info">
-                        <strong>When to prime:</strong> New drywall, dramatic color changes, or covering stains.
-                    </div>
-                `
-            },
-            {
-                title: "Touch-Up Without Texture Woes",
-                duration: "2 min",
-                content: `
-                    <h6>Application Technique:</h6>
-                    <ul>
-                        <li><strong>Use small brush</strong> - Artist brush for tiny areas</li>
-                        <li><strong>Feather edges</strong> - Blend into surrounding paint</li>
-                        <li><strong>Thin coats</strong> - Multiple light coats vs one thick coat</li>
-                        <li><strong>Match texture</strong> - Dab don't brush on textured walls</li>
-                    </ul>
-                    <p><strong>Success tip:</strong> Work quickly while paint is wet to blend seamlessly.</p>
-                `
-            }
-        ]
-    },
-    caulking: {
-        title: "Caulking Basics", 
-        level: "Beginner",
-        duration: "6 minutes",
-        lessons: [
-            {
-                title: "Prep & Tape the Area",
-                duration: "3 min",
-                content: `
-                    <h6>Preparation Steps:</h6>
-                    <ol>
-                        <li><strong>Remove old caulk</strong> - Use caulk removal tool</li>
-                        <li><strong>Clean thoroughly</strong> - Remove all residue and mildew</li>
-                        <li><strong>Dry completely</strong> - Wait 24 hours after cleaning</li>
-                        <li><strong>Apply painter's tape</strong> - 1/8" from each side of gap</li>
-                    </ol>
-                    <p><strong>Pro Tip:</strong> Use high-quality tape and remove while caulk is still wet.</p>
-                `
-            },
-            {
-                title: "Apply + Smooth for a Clean Seal",
-                duration: "3 min",
-                content: `
-                    <h6>Application Technique:</h6>
-                    <ol>
-                        <li><strong>Cut tube tip</strong> - 45-degree angle, small opening</li>
-                        <li><strong>Apply steady bead</strong> - Keep gun moving at consistent speed</li>
-                        <li><strong>Smooth immediately</strong> - Use finger or tool</li>
-                        <li><strong>Remove tape</strong> - Pull at 45-degree angle while wet</li>
-                    </ol>
-                    <div class="alert alert-success">
-                        <strong>Perfect bead:</strong> Should be concave, not convex, for best water sealing.
-                    </div>
-                `
-            }
-        ]
-    },
-    wallpaper: {
-        title: "Remove Wallpaper",
-        level: "Intermediate", 
-        duration: "12 minutes",
-        lessons: [
-            {
-                title: "Prep and Protect Your Space",
-                duration: "3 min",
-                content: `
-                    <h6>Room Preparation:</h6>
-                    <ul>
-                        <li><strong>Remove furniture</strong> - Or cover with plastic</li>
-                        <li><strong>Cover floors</strong> - Use plastic sheeting and tape</li>
-                        <li><strong>Turn off electricity</strong> - Remove outlet covers safely</li>
-                        <li><strong>Score the wallpaper</strong> - Use scoring tool for better penetration</li>
-                    </ul>
-                    <p><strong>Safety note:</strong> Wear gloves and eye protection when using removal solutions.</p>
-                `
-            },
-            {
-                title: "Soften the Adhesive",
-                duration: "3 min", 
-                content: `
-                    <h6>Removal Methods:</h6>
-                    <ul>
-                        <li><strong>Steamer method:</strong> Rent or buy wallpaper steamer</li>
-                        <li><strong>Solution method:</strong> Mix hot water with wallpaper remover</li>
-                        <li><strong>Fabric softener trick:</strong> Mix 1:1 with hot water</li>
-                        <li><strong>Apply liberally:</strong> Let solution penetrate 15 minutes</li>
-                    </ul>
-                    <p><strong>Pro Tip:</strong> Work in sections. Don't let areas dry out completely.</p>
-                `
-            },
-            {
-                title: "Remove + Scrape Safely",
-                duration: "4 min",
-                content: `
-                    <h6>Removal Technique:</h6>
-                    <ol>
-                        <li><strong>Start at seam</strong> - Use putty knife to lift edge</li>
-                        <li><strong>Pull at low angle</strong> - Keep close to wall surface</li>
-                        <li><strong>Scrape stubborn areas</strong> - Use plastic scraper, not metal</li>
-                        <li><strong>Re-wet as needed</strong> - Don't let adhesive dry</li>
-                    </ol>
-                    <div class="alert alert-warning">
-                        <strong>Be gentle:</strong> Aggressive scraping can damage drywall underneath.
-                    </div>
-                `
-            },
-            {
-                title: "Clean Residue for Paint-Ready Walls",
-                duration: "2 min",
-                content: `
-                    <h6>Final Cleanup:</h6>
-                    <ol>
-                        <li><strong>Remove all adhesive</strong> - Use adhesive remover solution</li>
-                        <li><strong>Wash walls</strong> - Clean with TSP or degreaser</li>
-                        <li><strong>Rinse thoroughly</strong> - Remove all cleaning residue</li>
-                        <li><strong>Let dry completely</strong> - 24-48 hours before painting</li>
-                    </ol>
-                    <p><strong>Final step:</strong> Prime walls before painting for best results.</p>
-                `
-            }
-        ]
-    },
-    drywall: {
-        title: "Patch Drywall",
-        level: "Beginner",
-        duration: "15 minutes",
-        lessons: [
-            {
-                title: "Assess the Damage",
-                duration: "4 min",
-                content: `
-                    <h6>🎯 Goal: Know if it's a simple patch or a full repair</h6>
-                    <h6>🛠️ Steps:</h6>
-                    <ul>
-                        <li><strong>Small = nail/screw hole</strong> - Pinky-sized or smaller</li>
-                        <li><strong>Medium = anchor holes</strong> - Quarter-sized holes</li>
-                        <li><strong>Large = cut out section</strong> - Fist-sized damage</li>
-                    </ul>
-                    <div class="mt-3 p-3 bg-primary text-white rounded">
-                        <h6>📌 Quick Quiz:</h6>
-                        <p class="mb-2">What size hole needs mesh tape?</p>
-                        <button class="btn btn-warning btn-sm" onclick="showAnswer('drywall-quiz-1', 'Medium to large holes (quarter-sized and bigger) need mesh tape for proper reinforcement.')">Show Answer</button>
-                        <div id="drywall-quiz-1" class="mt-2" style="display: none;"></div>
-                    </div>
-                `
-            },
-            {
-                title: "Prep & Patch",
-                duration: "4 min",
-                content: `
-                    <h6>🎯 Goal: Apply spackle or compound properly</h6>
-                    <h6>🛠️ Steps:</h6>
-                    <ol>
-                        <li><strong>Clean area</strong> - Remove loose debris</li>
-                        <li><strong>Apply compound in layers</strong> - Build up gradually</li>
-                    </ol>
-                    <div class="alert alert-success">
-                        <strong>✅ Pro Tip:</strong> Use a putty knife at a shallow angle
-                    </div>
-                    <div class="mt-3 p-3 bg-info text-white rounded">
-                        <h6>📌 Interactive Element:</h6>
-                        <p class="mb-2">Drag-and-spread animation</p>
-                        <div class="text-center">
-                            <div class="btn btn-warning" onclick="animateSpread()">Try Spreading Motion</div>
-                            <div id="spreadAnimation" class="mt-2">Use smooth, overlapping strokes</div>
-                        </div>
-                    </div>
-                `
-            },
-            {
-                title: "Sand Smooth",
-                duration: "4 min",
-                content: `
-                    <h6>🎯 Goal: Blend it seamlessly</h6>
-                    <h6>🛠️ Steps:</h6>
-                    <ol>
-                        <li><strong>Wait for drying</strong> - Usually overnight</li>
-                        <li><strong>Sand lightly with 120-150 grit</strong></li>
-                    </ol>
-                    <div class="alert alert-success">
-                        <strong>✅ Pro Tip:</strong> Use a sanding sponge for curves
-                    </div>
-                    <div class="mt-3 p-3 bg-primary text-white rounded">
-                        <h6>📌 Quick Quiz:</h6>
-                        <p class="mb-2">Why wait overnight before sanding?</p>
-                        <button class="btn btn-warning btn-sm" onclick="showAnswer('drywall-quiz-2', 'Compound needs to fully cure/dry or it will tear and create rough patches when sanded.')">Show Answer</button>
-                        <div id="drywall-quiz-2" class="mt-2" style="display: none;"></div>
-                    </div>
-                `
-            },
-            {
-                title: "Prime + Paint",
-                duration: "3 min",
-                content: `
-                    <h6>🎯 Goal: Match your wall's finish</h6>
-                    <h6>🛠️ Steps:</h6>
-                    <ol>
-                        <li><strong>Prime first</strong> - Seals the compound</li>
-                        <li><strong>Use leftover wall paint or get a color match</strong></li>
-                    </ol>
-                    <div class="alert alert-success">
-                        <strong>✅ Pro Tip:</strong> Feather out brush strokes past the patch
-                    </div>
-                `
-            }
-        ],
-        quiz: {
-            question: "What's the most important step before painting a drywall patch?",
-            options: ["Sanding", "Priming", "Cleaning", "Measuring"],
-            correct: 1,
-            explanation: "Priming seals the compound and prevents the patch from showing through the paint."
-        }
-    }
-};
-
-const troubleshooterData = {
-    electrical: {
-        title: "Electrical Problem Solver",
-        steps: [
-            {
-                question: "Is the entire house without power?",
-                yes: { next: "checkBreaker" },
-                no: { next: "specificArea" }
-            },
-            {
-                id: "checkBreaker",
-                question: "Check your main circuit breaker. Is it tripped?",
-                yes: { result: "diy", solution: "Reset the main breaker by switching it fully off, then on. If it trips again immediately, call Spank!" },
-                no: { result: "call", solution: "This could be a utility issue. Check with neighbors and contact your electric company." }
-            },
-            {
-                id: "specificArea",
-                question: "Is it just one outlet or switch not working?",
-                yes: { next: "checkGFCI" },
-                no: { next: "checkRoomBreaker" }
             }
         ]
     }
 };
 
-const toolGuides = {
-    screwdriver: {
-        title: "Screwdrivers - The Essential Tool",
-        content: `
-            <h6>Types of Screwdrivers:</h6>
-            <ul>
-                <li><strong>Phillips Head</strong> - Cross-shaped tip for Phillips screws</li>
-                <li><strong>Flathead</strong> - Single blade for slotted screws</li>
-                <li><strong>Robertson (Square)</strong> - Square tip, less common but secure</li>
-            </ul>
-            <h6>Pro Tips:</h6>
-            <ul>
-                <li>Match the screwdriver size to the screw head</li>
-                <li>Apply downward pressure while turning</li>
-                <li>Use magnetic tips to hold screws</li>
-            </ul>
-            <h6>Safety:</h6>
-            <p>Always check that electrical power is off before working on switches or outlets.</p>
-        `,
-        buyLink: "https://www.homedepot.com/b/Tools-Hand-Tools-Screwdrivers/N-5yc1vZc28q"
-    },
-    multimeter: {
-        title: "Multimeter - Your Electrical Detective",
-        content: `
-            <h6>What It Does:</h6>
-            <p>Measures voltage, current, and resistance in electrical circuits.</p>
-            <h6>Basic Steps:</h6>
-            <ol>
-                <li>Set to voltage (V) mode</li>
-                <li>Insert black probe to COM port</li>
-                <li>Insert red probe to V port</li>
-                <li>Touch probes to test points</li>
-            </ol>
-            <h6>Safety First:</h6>
-            <p class="text-danger">Always turn off power at the breaker before testing. Never touch bare probes while circuit is live.</p>
-        `,
-        buyLink: "https://www.homedepot.com/b/Tools-Electrical-Tools-Electrical-Testers-Multimeters/N-5yc1vZc26c"
-    }
-};
+// JavaScript functionality
+let currentCourse = null;
+let currentLesson = 0;
+let userPoints = parseInt(localStorage.getItem('spankPoints') || '0');
 
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('userPoints').textContent = userPoints;
+});
+
+// Smooth scroll to courses
+function scrollToCourses() {
+    document.getElementById('courses').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Start a course
 function startCourse(courseId) {
-    const course = courses[courseId];
-    if (!course) return;
-    
-    document.getElementById('courseModalTitle').textContent = course.title;
-    document.getElementById('courseModalBody').innerHTML = `
-        <div class="course-lesson">
-            <h6>${course.lessons[0].title}</h6>
-            <p class="text-muted mb-3">Duration: ${course.lessons[0].duration}</p>
-            <div class="lesson-content">
-                <p>${course.lessons[0].content}</p>
-                <div class="alert alert-info">
-                    <i class="fas fa-lightbulb me-2"></i>
-                    Complete this lesson to earn 10 Spank Points!
-                </div>
-            </div>
-        </div>
-    `;
-    
-    new bootstrap.Modal(document.getElementById('courseModal')).show();
-}
-
-function startTroubleshooter(category) {
-    const data = troubleshooterData[category];
-    if (!data) return;
-    
-    document.getElementById('problem-categories').style.display = 'none';
-    document.getElementById('troubleshooter-steps').style.display = 'block';
-    
-    document.getElementById('troubleshooter-steps').innerHTML = `
-        <h5>${data.title}</h5>
-        <div class="troubleshooter-step">
-            <p class="lead">${data.steps[0].question}</p>
-            <div class="d-flex gap-3">
-                <button class="btn btn-success" onclick="handleTroubleshooterAnswer('${category}', 0, 'yes')">Yes</button>
-                <button class="btn btn-danger" onclick="handleTroubleshooterAnswer('${category}', 0, 'no')">No</button>
-            </div>
-        </div>
-    `;
-}
-
-function handleTroubleshooterAnswer(category, stepIndex, answer) {
-    const data = troubleshooterData[category];
-    const currentStep = data.steps[stepIndex];
-    const nextAction = currentStep[answer];
-    
-    if (nextAction.result) {
-        showTroubleshooterResult(nextAction);
-    } else if (nextAction.next) {
-        const nextStep = data.steps.find(s => s.id === nextAction.next);
-        if (nextStep) {
-            document.getElementById('troubleshooter-steps').innerHTML = `
-                <h5>${data.title}</h5>
-                <div class="troubleshooter-step">
-                    <p class="lead">${nextStep.question}</p>
-                    <div class="d-flex gap-3">
-                        <button class="btn btn-success" onclick="handleTroubleshooterAnswer('${category}', ${data.steps.indexOf(nextStep)}, 'yes')">Yes</button>
-                        <button class="btn btn-danger" onclick="handleTroubleshooterAnswer('${category}', ${data.steps.indexOf(nextStep)}, 'no')">No</button>
-                    </div>
-                </div>
-            `;
-        }
-    }
-}
-
-function showTroubleshooterResult(result) {
-    const resultDiv = document.getElementById('troubleshooter-result');
-    resultDiv.style.display = 'block';
-    
-    if (result.result === 'diy') {
-        resultDiv.innerHTML = `
-            <div class="card border-success">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="fas fa-wrench me-2"></i>DIY Solution</h5>
-                </div>
-                <div class="card-body">
-                    <p>${result.solution}</p>
-                    <button class="btn btn-primary" onclick="resetTroubleshooter()">Try Another Problem</button>
-                </div>
-            </div>
-        `;
-    } else {
-        resultDiv.innerHTML = `
-            <div class="card border-warning">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0"><i class="fas fa-phone me-2"></i>Call the Professionals</h5>
-                </div>
-                <div class="card-body">
-                    <p>${result.solution}</p>
-                    <div class="d-flex gap-3">
-                        <a href="tel:8085990908" class="btn btn-warning">Call SPANK Now</a>
-                        <button class="btn btn-outline-primary" onclick="resetTroubleshooter()">Try Another Problem</button>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-}
-
-function resetTroubleshooter() {
-    document.getElementById('problem-categories').style.display = 'block';
-    document.getElementById('troubleshooter-steps').style.display = 'none';
-    document.getElementById('troubleshooter-result').style.display = 'none';
-}
-
-function showTool(toolId) {
-    const tool = toolGuides[toolId];
-    if (!tool) return;
-    
-    document.getElementById('toolModalTitle').textContent = tool.title;
-    document.getElementById('toolModalBody').innerHTML = tool.content;
-    document.getElementById('buyToolBtn').href = tool.buyLink;
-    
-    new bootstrap.Modal(document.getElementById('toolModal')).show();
-}
-
-function startQuiz(quizId) {
-    let quizData;
-    
-    if (quizId === 'leak-or-clog') {
-        quizData = courses.faucet.quiz;
-    } else if (quizId === 'drain-safety') {
-        quizData = courses.drain.quiz;
-    } else if (quizId === 'smart-wiring') {
-        quizData = courses.smarthome.quiz;
-    } else {
-        alert('Quiz coming soon! This will test your knowledge on the selected topic.');
+    currentCourse = courses[courseId];
+    if (!currentCourse) {
+        alert('Course content coming soon! SPANK is developing comprehensive guides for all repairs.');
         return;
     }
     
-    // Create quiz modal content
-    const quizModal = new bootstrap.Modal(document.getElementById('courseModal'));
-    document.getElementById('courseModalTitle').textContent = 'Quick Knowledge Check';
+    currentLesson = 0;
+    showLesson();
+}
+
+// Show current lesson
+function showLesson() {
+    if (!currentCourse || currentLesson >= currentCourse.lessons.length) return;
     
-    let optionsHtml = '';
-    quizData.options.forEach((option, index) => {
-        optionsHtml += `
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" name="quizAnswer" id="option${index}" value="${index}">
-                <label class="form-check-label" for="option${index}">
-                    ${option}
-                </label>
-            </div>
-        `;
-    });
+    const lesson = currentCourse.lessons[currentLesson];
+    const modal = new bootstrap.Modal(document.getElementById('courseModal'));
     
-    document.getElementById('courseModalBody').innerHTML = `
-        <div class="quiz-content">
-            <h6 class="mb-3">${quizData.question}</h6>
-            ${optionsHtml}
-            <div id="quiz-result" class="mt-3" style="display: none;"></div>
-        </div>
+    document.getElementById('courseModalTitle').innerHTML = `
+        ${currentCourse.title} - Lesson ${currentLesson + 1}
+        <small class="text-muted d-block">${lesson.title} (${lesson.duration})</small>
     `;
     
-    document.getElementById('nextLessonBtn').textContent = 'Submit Answer';
-    document.getElementById('nextLessonBtn').onclick = () => checkQuizAnswer(quizData);
+    document.getElementById('courseModalBody').innerHTML = lesson.content;
     
-    quizModal.show();
-}
-
-function checkQuizAnswer(quizData) {
-    const selectedAnswer = document.querySelector('input[name="quizAnswer"]:checked');
-    
-    if (!selectedAnswer) {
-        alert('Please select an answer first!');
-        return;
-    }
-    
-    const answerIndex = parseInt(selectedAnswer.value);
-    const resultDiv = document.getElementById('quiz-result');
-    
-    if (answerIndex === quizData.correct) {
-        resultDiv.innerHTML = `
-            <div class="alert alert-success">
-                <h6>Correct!</h6>
-                <p class="mb-0">${quizData.explanation}</p>
-                <div class="mt-2">
-                    <strong>+5 Spank Points earned!</strong>
-                </div>
-            </div>
-        `;
-        updateSpankPoints(5);
+    // Update next button
+    const nextBtn = document.getElementById('nextLessonBtn');
+    if (currentLesson < currentCourse.lessons.length - 1) {
+        nextBtn.textContent = 'Next Lesson';
+        nextBtn.onclick = nextLesson;
     } else {
-        resultDiv.innerHTML = `
-            <div class="alert alert-warning">
-                <h6>Not quite right!</h6>
-                <p class="mb-2">The correct answer is: <strong>${quizData.options[quizData.correct]}</strong></p>
-                <p class="mb-0">${quizData.explanation}</p>
-            </div>
-        `;
+        nextBtn.textContent = 'Complete Course';
+        nextBtn.onclick = completeCourse;
     }
     
-    resultDiv.style.display = 'block';
-    document.getElementById('nextLessonBtn').textContent = 'Try Another Quiz';
-    document.getElementById('nextLessonBtn').onclick = () => {
-        bootstrap.Modal.getInstance(document.getElementById('courseModal')).hide();
-    };
+    modal.show();
 }
 
-function updateSpankPoints(points) {
-    const currentPoints = localStorage.getItem('spankPoints') || 0;
-    const newPoints = parseInt(currentPoints) + points;
-    localStorage.setItem('spankPoints', newPoints);
-    
-    // Update display
-    const pointsDisplay = document.querySelector('.badge.bg-warning.text-dark');
-    if (pointsDisplay) {
-        pointsDisplay.textContent = newPoints;
-    }
+// Next lesson
+function nextLesson() {
+    currentLesson++;
+    showLesson();
 }
 
-function startToolQuiz() {
-    const questions = [
-        {
-            question: "You need to hang a heavy mirror. What tool helps you find wall studs?",
-            options: ["Level", "Stud Finder", "Tape Measure", "Drill"],
-            correct: 1,
-            explanation: "A stud finder locates wooden studs behind drywall for secure mounting."
-        },
-        {
-            question: "Which tool is best for removing a stuck screw?",
-            options: ["Hammer", "Pliers", "Penetrating Oil + Screwdriver", "Level"],
-            correct: 2,
-            explanation: "Penetrating oil loosens rust and corrosion, making screws easier to remove."
-        }
-    ];
+// Complete course
+function completeCourse() {
+    updatePoints(10);
+    bootstrap.Modal.getInstance(document.getElementById('courseModal')).hide();
     
-    const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
-    
-    const quizModal = new bootstrap.Modal(document.getElementById('courseModal'));
-    document.getElementById('courseModalTitle').textContent = 'Tool Challenge Quiz';
-    
-    let optionsHtml = '';
-    randomQuestion.options.forEach((option, index) => {
-        optionsHtml += `
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" name="toolQuizAnswer" id="toolOption${index}" value="${index}">
-                <label class="form-check-label" for="toolOption${index}">
-                    ${option}
-                </label>
-            </div>
-        `;
-    });
-    
-    document.getElementById('courseModalBody').innerHTML = `
-        <div class="quiz-content">
-            <h6 class="mb-3">${randomQuestion.question}</h6>
-            ${optionsHtml}
-            <div id="tool-quiz-result" class="mt-3" style="display: none;"></div>
-        </div>
-    `;
-    
-    document.getElementById('nextLessonBtn').textContent = 'Submit Answer';
-    document.getElementById('nextLessonBtn').onclick = () => checkToolQuizAnswer(randomQuestion);
-    
-    quizModal.show();
+    setTimeout(() => {
+        alert(`Congratulations! You've completed ${currentCourse.title} and earned 10 Spank Points!`);
+    }, 500);
 }
 
-function checkToolQuizAnswer(questionData) {
-    const selectedAnswer = document.querySelector('input[name="toolQuizAnswer"]:checked');
-    
-    if (!selectedAnswer) {
-        alert('Please select an answer first!');
-        return;
-    }
-    
-    const answerIndex = parseInt(selectedAnswer.value);
-    const resultDiv = document.getElementById('tool-quiz-result');
-    
-    if (answerIndex === questionData.correct) {
-        resultDiv.innerHTML = `
-            <div class="alert alert-success">
-                <h6>Excellent!</h6>
-                <p class="mb-0">${questionData.explanation}</p>
-                <div class="mt-2">
-                    <strong>+3 Spank Points earned!</strong>
-                </div>
-            </div>
-        `;
-        updateSpankPoints(3);
-    } else {
-        resultDiv.innerHTML = `
-            <div class="alert alert-info">
-                <h6>Good try!</h6>
-                <p class="mb-2">The correct answer is: <strong>${questionData.options[questionData.correct]}</strong></p>
-                <p class="mb-0">${questionData.explanation}</p>
-            </div>
-        `;
-    }
-    
-    resultDiv.style.display = 'block';
-    document.getElementById('nextLessonBtn').textContent = 'Try Another Question';
-    document.getElementById('nextLessonBtn').onclick = () => startToolQuiz();
+// Update points
+function updatePoints(points) {
+    userPoints += points;
+    localStorage.setItem('spankPoints', userPoints.toString());
+    document.getElementById('userPoints').textContent = userPoints;
 }
 
-// Webinar and interactive functions
-function joinWebinar(sessionId) {
-    alert('Joining live session... In a real implementation, this would connect to a video platform like Zoom or custom streaming solution.');
-}
-
-function registerWebinar(sessionId) {
-    alert('Registration successful! You will receive a calendar invite and reminder email.');
-    updateSpankPoints(2);
-}
-
-function submitQuestion(sessionId) {
-    const question = prompt('What would you like to ask our SPANK experts?');
-    if (question) {
-        alert('Question submitted! It will be answered during the live session.');
-        updateSpankPoints(1);
-    }
-}
-
-// Interactive functions for course elements
+// Interactive functions
 function showAnswer(quizId, answer) {
     const element = document.getElementById(quizId);
     if (element) {
         element.innerHTML = `<div class="alert alert-light mt-2"><strong>Answer:</strong> ${answer}</div>`;
         element.style.display = 'block';
-    }
-}
-
-function updateWaterLevel(value) {
-    const feedback = document.getElementById('waterLevelFeedback');
-    if (feedback) {
-        if (value < 4) {
-            feedback.innerHTML = '<span class="text-warning">Too low - toilet may not flush properly</span>';
-        } else if (value > 8) {
-            feedback.innerHTML = '<span class="text-danger">Too high - water will overflow into tube</span>';
-        } else {
-            feedback.innerHTML = '<span class="text-success">Perfect level: 1" below overflow tube</span>';
-        }
-    }
-}
-
-function animateSpread() {
-    const element = document.getElementById('spreadAnimation');
-    if (element) {
-        element.innerHTML = '<span class="text-success">Smooth, overlapping strokes - like spreading peanut butter!</span>';
-        setTimeout(() => {
-            element.innerHTML = 'Use smooth, overlapping strokes';
-        }, 3000);
-    }
-}
-
-function exploreFaucet() {
-    const element = document.getElementById('faucetExplore');
-    if (element) {
-        element.innerHTML = '<span class="text-success">Inside view: Handle → Cartridge → O-ring → Valve seat</span>';
-        setTimeout(() => {
-            element.innerHTML = 'Click to see inside view of faucet components';
-        }, 4000);
+        updatePoints(2);
     }
 }
 
 function watchVideo(videoId) {
-    if (videoId === 'toilet-repair') {
-        const videoModal = new bootstrap.Modal(document.getElementById('courseModal'));
-        document.getElementById('courseModalTitle').textContent = 'SPANK\'s Toilet Repair Video Guide';
-        document.getElementById('courseModalBody').innerHTML = `
-            <div class="text-center">
-                <div class="alert alert-info">
-                    <h6><i class="fas fa-video me-2"></i>Professional Video Tutorial</h6>
-                    <p class="mb-2">Learn toilet repair with SPANK's expert demonstration</p>
-                    <p><strong>Coming Soon:</strong> Full video library with step-by-step repairs</p>
-                </div>
-                <div class="mb-3">
-                    <p>This video covers:</p>
-                    <ul class="text-start">
-                        <li>Toilet component identification</li>
-                        <li>Diagnostic techniques</li>
-                        <li>Flapper and fill valve replacement</li>
-                        <li>Water level adjustment</li>
-                    </ul>
-                </div>
-                <button class="btn btn-primary" onclick="window.open('tel:(808)599-0908')">
-                    Call SPANK for Professional Service
-                </button>
+    const modal = new bootstrap.Modal(document.getElementById('courseModal'));
+    document.getElementById('courseModalTitle').textContent = 'SPANK Video Tutorial';
+    document.getElementById('courseModalBody').innerHTML = `
+        <div class="text-center">
+            <div class="alert alert-info">
+                <h6><i class="fas fa-video me-2"></i>Professional Video Tutorial</h6>
+                <p class="mb-2">Learn with SPANK's expert demonstration</p>
+                <p><strong>Coming Soon:</strong> Full video library with step-by-step repairs</p>
             </div>
-        `;
-        document.getElementById('nextLessonBtn').textContent = 'Close';
-        document.getElementById('nextLessonBtn').onclick = () => {
-            bootstrap.Modal.getInstance(document.getElementById('courseModal')).hide();
-        };
-        videoModal.show();
-    } else {
-        alert('Video tutorial coming soon! SPANK is developing comprehensive video guides for all repairs.');
-    }
+            <div class="mb-3">
+                <p>This video covers professional techniques and safety tips.</p>
+            </div>
+            <button class="btn btn-primary" onclick="window.open('tel:(808)599-0908')">
+                Call SPANK for Professional Service
+            </button>
+        </div>
+    `;
+    document.getElementById('nextLessonBtn').textContent = 'Close';
+    document.getElementById('nextLessonBtn').onclick = () => {
+        bootstrap.Modal.getInstance(document.getElementById('courseModal')).hide();
+    };
+    modal.show();
 }
 
-function submitProject() {
-    alert('Project submission feature coming soon! You will be able to upload photos and descriptions for expert review.');
+function startTroubleshooter() {
+    alert('Interactive Problem Solver coming soon! This will guide you through diagnosing common home issues step-by-step.');
 }
 
-function uploadProjectPhoto() {
-    alert('Photo upload feature coming soon! This will allow you to submit project images for live expert feedback.');
+function startQuiz() {
+    alert('Knowledge Quiz coming soon! Test your DIY skills and earn more Spank Points.');
 }
 
-function askExpertQuestion() {
-    window.location.href = '/contact';
+function joinLiveSession() {
+    alert('Live Q&A sessions coming soon! Join weekly sessions with SPANK experts to get your questions answered.');
 }
-
-function scheduleConsult() {
-    window.location.href = '/consultation';
-}
-
-function playVideo(videoId) {
-    alert('Video player coming soon! This will show embedded short-form instructional videos.');
-}
-
-function openChecklist(checklistId) {
-    alert('Interactive checklist coming soon! This will provide step-by-step printable guides.');
-}
-
-function openARDemo(demoId) {
-    if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-        alert('AR Demo coming soon! This will use your camera to overlay 3D instructions on real objects.');
-    } else {
-        alert('AR features require a compatible device with camera access.');
-    }
-}
-
-function requestARAccess() {
-    alert('AR Measurement tool coming soon! This will help you measure spaces and mark locations using your phone camera.');
-}
-
-// Initialize points on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const savedPoints = localStorage.getItem('spankPoints') || 0;
-    const pointsDisplay = document.querySelector('.badge.bg-warning.text-dark');
-    if (pointsDisplay) {
-        pointsDisplay.textContent = savedPoints;
-    }
-});
 </script>
-
-<style>
-.course-item:hover {
-    background-color: #e9ecef !important;
-    cursor: pointer;
-}
-
-.tool-item:hover {
-    background-color: #f8f9fa !important;
-    cursor: pointer;
-    border-color: #007bff !important;
-}
-
-.badge-item {
-    transition: all 0.3s ease;
-}
-
-.badge-item:hover {
-    transform: scale(1.05);
-}
-
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-}
-
-.troubleshooter-step {
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-</style>
 {% endblock %}
