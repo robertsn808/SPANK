@@ -16,3 +16,6 @@ flask-dance
 flask-login
 oauthlib
 pyjwt
+requests
+sendgrid
+twilio

@@ -1036,9 +1036,30 @@ function completeCourse() {
     setTimeout(() => {
         const email = prompt(`Congratulations! You've completed ${currentCourse.title}!\n\nEnter your email to receive $5 SPANK Bucks:`);
         if (email && email.includes('@')) {
-            alert(`Thank you! Your $5 SPANK Bucks will be emailed to ${email} within 24 hours.`);
-            // In a real implementation, this would send the email
-            console.log(`Send $5 SPANK Bucks to: ${email} for completing: ${currentCourse.title}`);
+            // Send actual SPANK Buck reward via API
+            fetch('/api/complete-course', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    course_name: currentCourse.title,
+                    student_name: email.split('@')[0] // Use email prefix as name
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Congratulations! $5 SPANK Bucks have been sent to ${email} for completing "${currentCourse.title}"`);
+                } else {
+                    alert(`Course completed! However, there was an issue sending your SPANK Bucks. Please contact us at (808) 599-0908.`);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending SPANK Buck reward:', error);
+                alert(`Course completed! Your $5 SPANK Bucks will be processed manually. Contact us at (808) 599-0908 if you don't receive them within 24 hours.`);
+            });
         }
     }, 500);
 }

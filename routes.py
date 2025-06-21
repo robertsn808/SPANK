@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for, session, flash, j
 from app import app
 from models import HandymanStorage
 from ai_service import ai_service
+from notification_service import notification_service
 from datetime import datetime, timedelta
 import pytz
 import logging
@@ -643,3 +644,125 @@ def assign_staff_to_appointment(appointment_id):
         flash("Error assigning staff to appointment.", "error")
 
     return redirect(url_for("admin_dashboard"))
+
+@app.route('/api/send-spank-bucks', methods=['POST'])
+def send_spank_bucks():
+    """API endpoint to send SPANK Buck rewards"""
+    try:
+        data = request.get_json()
+        
+        email = data.get('email')
+        amount = data.get('amount', 5)
+        reason = data.get('reason', 'completing a course')
+        name = data.get('name', 'Valued Customer')
+        phone = data.get('phone')
+        
+        if not email:
+            return jsonify({'success': False, 'error': 'Email is required'}), 400
+        
+        # Send email notification
+        email_sent = notification_service.send_spank_buck_email(
+            to_email=email,
+            amount=amount,
+            reason=reason,
+            customer_name=name
+        )
+        
+        # Send SMS if phone number provided
+        sms_sent = False
+        if phone:
+            sms_sent = notification_service.send_spank_buck_sms(
+                to_phone=phone,
+                amount=amount,
+                reason=reason,
+                customer_name=name
+            )
+        
+        logging.info(f"SPANK Buck reward processed: ${amount} to {email} for {reason}")
+        
+        return jsonify({
+            'success': True,
+            'email_sent': email_sent,
+            'sms_sent': sms_sent,
+            'message': f'${amount} SPANK Bucks sent to {email}'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error sending SPANK Bucks: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/complete-course', methods=['POST'])
+def complete_course():
+    """Handle course completion and send SPANK Buck reward"""
+    try:
+        data = request.get_json()
+        
+        email = data.get('email')
+        course_name = data.get('course_name')
+        student_name = data.get('student_name', 'Student')
+        
+        if not email or not course_name:
+            return jsonify({'success': False, 'error': 'Email and course name are required'}), 400
+        
+        # Send $5 SPANK Buck reward for course completion
+        reward_sent = notification_service.send_spank_buck_email(
+            to_email=email,
+            amount=5,
+            reason=f'completing the "{course_name}" course at SPANK School',
+            customer_name=student_name
+        )
+        
+        logging.info(f"Course completion reward sent: {email} completed {course_name}")
+        
+        return jsonify({
+            'success': True,
+            'reward_sent': reward_sent,
+            'message': f'Congratulations! $5 SPANK Bucks sent to {email}'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error processing course completion: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/process-referral', methods=['POST'])
+def process_referral():
+    """Handle referral and send SPANK Buck reward"""
+    try:
+        data = request.get_json()
+        
+        referrer_email = data.get('referrer_email')
+        referred_email = data.get('referred_email')
+        referrer_name = data.get('referrer_name', 'Valued Customer')
+        
+        if not referrer_email or not referred_email:
+            return jsonify({'success': False, 'error': 'Both emails are required'}), 400
+        
+        # Send $25 SPANK Buck reward for successful referral
+        reward_sent = notification_service.send_spank_buck_email(
+            to_email=referrer_email,
+            amount=25,
+            reason=f'referring {referred_email} to SPANK services',
+            customer_name=referrer_name
+        )
+        
+        # Store referral record
+        referral_data = {
+            'referrer_code': referrer_email,
+            'referred_email': referred_email,
+            'status': 'completed',
+            'reward_amount': 25
+        }
+        
+        handyman_storage.add_referral(referral_data)
+        
+        logging.info(f"Referral reward sent: {referrer_email} referred {referred_email}")
+        
+        return jsonify({
+            'success': True,
+            'reward_sent': reward_sent,
+            'message': f'$25 SPANK Bucks sent to {referrer_email} for successful referral'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error processing referral: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
