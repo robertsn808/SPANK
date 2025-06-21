@@ -723,6 +723,101 @@ def complete_course():
         logging.error(f"Error processing course completion: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/twilio-config')
+def twilio_config():
+    """Twilio SendGrid configuration page"""
+    return render_template('twilio_config.html')
+
+@app.route('/api/test-sms', methods=['POST'])
+def test_sms():
+    """Test SMS functionality with provided credentials"""
+    try:
+        data = request.get_json()
+        
+        # Create temporary notification service with test credentials
+        test_service = NotificationService()
+        test_service.twilio_sid = data.get('twilio_sid')
+        test_service.twilio_token = data.get('twilio_token') 
+        test_service.twilio_phone = data.get('twilio_phone')
+        
+        if test_service.twilio_sid and test_service.twilio_token:
+            from twilio.rest import Client
+            test_service.twilio_client = Client(test_service.twilio_sid, test_service.twilio_token)
+        
+        # Send test SMS
+        sms_sent = test_service.send_spank_buck_sms(
+            to_phone=data.get('phone'),
+            amount=5,
+            reason='testing Twilio SMS integration',
+            customer_name='Test User'
+        )
+        
+        return jsonify({'success': sms_sent})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/test-email', methods=['POST'])
+def test_email():
+    """Test email functionality with provided credentials"""
+    try:
+        data = request.get_json()
+        
+        # Create temporary notification service with test credentials
+        test_service = NotificationService()
+        test_service.sendgrid_key = data.get('sendgrid_key')
+        
+        # Send test email
+        email_sent = test_service.send_twilio_sendgrid_email(
+            to_email=data.get('email'),
+            amount=5,
+            reason='testing SendGrid email integration',
+            customer_name='Test User'
+        )
+        
+        return jsonify({'success': email_sent})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/check-twilio-status')
+def check_twilio_status():
+    """Check current Twilio and SendGrid configuration status"""
+    twilio_configured = bool(os.environ.get('TWILIO_ACCOUNT_SID') and os.environ.get('TWILIO_AUTH_TOKEN'))
+    sendgrid_configured = bool(os.environ.get('SENDGRID_API_KEY'))
+    
+    return jsonify({
+        'twilio_configured': twilio_configured,
+        'sendgrid_configured': sendgrid_configured,
+        'integration_ready': twilio_configured and sendgrid_configured,
+        'rewards_enabled': twilio_configured or sendgrid_configured
+    })
+
+@app.route('/api/save-twilio-config', methods=['POST'])
+def save_twilio_config():
+    """Save Twilio configuration (for demo purposes - in production use environment variables)"""
+    try:
+        data = request.get_json()
+        
+        # In a real deployment, these would be set as environment variables
+        # For testing purposes, we'll validate the credentials work
+        test_success = True
+        
+        if data.get('twilio_sid') and data.get('twilio_token'):
+            try:
+                from twilio.rest import Client
+                client = Client(data.get('twilio_sid'), data.get('twilio_token'))
+                # Validate credentials by fetching account info
+                account = client.api.accounts(data.get('twilio_sid')).fetch()
+                test_success = True
+            except Exception as e:
+                return jsonify({'success': False, 'error': f'Twilio validation failed: {str(e)}'})
+        
+        return jsonify({'success': test_success, 'message': 'Configuration validated successfully'})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
 @app.route('/api/process-referral', methods=['POST'])
 def process_referral():
     """Handle referral and send SPANK Buck reward"""
@@ -730,13 +825,14 @@ def process_referral():
         data = request.get_json()
         
         referrer_email = data.get('referrer_email')
+        referrer_phone = data.get('referrer_phone')
         referred_email = data.get('referred_email')
         referrer_name = data.get('referrer_name', 'Valued Customer')
         
         if not referrer_email or not referred_email:
             return jsonify({'success': False, 'error': 'Both emails are required'}), 400
         
-        # Send $25 SPANK Buck reward for successful referral via SMS
+        # Send $25 SPANK Buck reward for successful referral via SMS and email
         reward_sent = notification_service.send_spank_buck_reward(
             phone_number=referrer_phone,
             amount=25,

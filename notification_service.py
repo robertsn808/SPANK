@@ -15,13 +15,24 @@ class NotificationService:
         self.twilio_sid = os.environ.get('TWILIO_ACCOUNT_SID')
         self.twilio_token = os.environ.get('TWILIO_AUTH_TOKEN')
         self.twilio_phone = os.environ.get('TWILIO_PHONE_NUMBER')
-        self.from_email = "noreply@spankhandyman.com"
+        self.from_email = "spank808@gmail.com"
+        
+        # Initialize Twilio client with SendGrid integration
+        if self.twilio_sid and self.twilio_token:
+            self.twilio_client = Client(self.twilio_sid, self.twilio_token)
+        else:
+            self.twilio_client = None
         
     def send_spank_buck_reward(self, phone_number, amount, reason, customer_name=None, email=None):
-        """Send SPANK Buck reward via SMS only and notify admin"""
+        """Send SPANK Buck reward via SMS and email through Twilio SendGrid integration"""
         try:
             # Send SMS notification
             sms_sent = self.send_spank_buck_sms(phone_number, amount, reason, customer_name)
+            
+            # Send email if available through Twilio SendGrid integration
+            email_sent = False
+            if email and self.sendgrid_key:
+                email_sent = self.send_twilio_sendgrid_email(email, amount, reason, customer_name)
             
             # Log the reward
             self._log_reward(email or phone_number, amount, reason, customer_name)
@@ -29,19 +40,81 @@ class NotificationService:
             # Notify admin of reward sent
             self._notify_admin_of_reward(phone_number, amount, reason, customer_name, email)
             
-            return sms_sent
+            return sms_sent or email_sent
         except Exception as e:
             logging.error(f"Failed to send SPANK Buck reward: {e}")
             return False
     
+    def send_twilio_sendgrid_email(self, to_email, amount, reason, customer_name=None):
+        """Send SPANK Buck reward email via Twilio SendGrid integration"""
+        try:
+            if not self.sendgrid_key:
+                logging.warning("SendGrid not configured - skipping email")
+                return False
+                
+            sg = SendGridAPIClient(self.sendgrid_key)
+            
+            # Create email content
+            subject = f"🎉 You've Earned ${amount} SPANK Bucks!"
+            
+            if "referral" in reason.lower():
+                html_content = f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #007bff, #28a745); padding: 30px; border-radius: 15px; color: white;">
+                    <h1 style="text-align: center; margin-bottom: 30px;">🎉 SPANK Buck Reward!</h1>
+                    <div style="background: rgba(255,255,255,0.9); padding: 30px; border-radius: 10px; color: #333; text-align: center;">
+                        <h2 style="color: #007bff; margin-bottom: 20px;">Congratulations {customer_name or 'there'}!</h2>
+                        <p style="font-size: 18px; margin-bottom: 20px;">You've earned <strong style="color: #28a745; font-size: 24px;">${amount} SPANK Bucks</strong> for {reason}.</p>
+                        <p style="margin-bottom: 20px;">Our SPANK team will reach out to your referred guest soon to help them with their home improvement needs!</p>
+                        <p style="margin-bottom: 30px;">Use your SPANK Bucks on your next service and save money while getting quality work done!</p>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                            <p style="margin: 0; font-weight: bold; color: #007bff;">Contact SPANK Team:</p>
+                            <p style="margin: 5px 0;">📞 (808) 778-9132</p>
+                            <p style="margin: 5px 0;">📧 spank808@gmail.com</p>
+                        </div>
+                        <p style="font-size: 14px; color: #666; margin-top: 20px;">Thank you for choosing SPANK Handyman Services!</p>
+                    </div>
+                </div>
+                """
+            else:
+                html_content = f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #007bff, #28a745); padding: 30px; border-radius: 15px; color: white;">
+                    <h1 style="text-align: center; margin-bottom: 30px;">🎉 SPANK Buck Reward!</h1>
+                    <div style="background: rgba(255,255,255,0.9); padding: 30px; border-radius: 10px; color: #333; text-align: center;">
+                        <h2 style="color: #007bff; margin-bottom: 20px;">Congratulations {customer_name or 'there'}!</h2>
+                        <p style="font-size: 18px; margin-bottom: 20px;">You've earned <strong style="color: #28a745; font-size: 24px;">${amount} SPANK Bucks</strong> for {reason}.</p>
+                        <p style="margin-bottom: 20px;">A SPANK team member will follow up to see how we can help with your next project!</p>
+                        <p style="margin-bottom: 30px;">Use your SPANK Bucks on any service and get quality work done for less!</p>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                            <p style="margin: 0; font-weight: bold; color: #007bff;">Contact SPANK Team:</p>
+                            <p style="margin: 5px 0;">📞 (808) 778-9132</p>
+                            <p style="margin: 5px 0;">📧 spank808@gmail.com</p>
+                        </div>
+                        <p style="font-size: 14px; color: #666; margin-top: 20px;">Thank you for choosing SPANK Handyman Services!</p>
+                    </div>
+                </div>
+                """
+            
+            message = Mail(
+                from_email=Email(self.from_email),
+                to_emails=To(to_email),
+                subject=subject,
+                html_content=Content("text/html", html_content)
+            )
+            
+            response = sg.send(message)
+            logging.info(f"SendGrid email sent successfully to {to_email}: {response.status_code}")
+            return True
+            
+        except Exception as e:
+            logging.error(f"Failed to send SendGrid email: {e}")
+            return False
+
     def send_spank_buck_sms(self, to_phone, amount, reason, customer_name=None):
         """Send SPANK Buck reward SMS via Twilio"""
         try:
-            if not all([self.twilio_sid, self.twilio_token, self.twilio_phone]):
+            if not self.twilio_client:
                 logging.warning("Twilio not configured - skipping SMS")
                 return False
-                
-            client = Client(self.twilio_sid, self.twilio_token)
             
             if "referral" in reason.lower():
                 message_body = f"🎉 Congratulations {customer_name or 'there'}! You've earned ${amount} SPANK Bucks for {reason}. Our SPANK team will reach out to your referred guest soon. Use your SPANK Bucks on your next service! - SPANK Team"
@@ -50,7 +123,7 @@ class NotificationService:
             else:
                 message_body = f"🎉 Congratulations {customer_name or 'there'}! You've earned ${amount} SPANK Bucks for {reason}. Our SPANK team will be in touch soon. Use your SPANK Bucks on your next service! - SPANK Team"
             
-            message = client.messages.create(
+            message = self.twilio_client.messages.create(
                 body=message_body,
                 from_=self.twilio_phone,
                 to=to_phone
