@@ -720,6 +720,108 @@
 <script>
 // Course data structure
 const courses = {
+    toolbelt: {
+        title: "Toolbelt Basics",
+        level: "Beginner",
+        lessons: [
+            {
+                title: "Essential Hand Tools",
+                image: "/static/images/toolbelt-basics.png",
+                content: `
+                    <div class="lesson-visual mb-4">
+                        <img src="/static/images/toolbelt-basics.png" class="img-fluid rounded" alt="Essential Hand Tools">
+                    </div>
+                    <h6>🎯 Goal: Know the 10 must-have tools for any homeowner</h6>
+                    <h6>🛠️ Essential Tools:</h6>
+                    <ol>
+                        <li><strong>Hammer</strong> - For driving nails and general demolition</li>
+                        <li><strong>Screwdrivers</strong> - Phillips and flat head in multiple sizes</li>
+                        <li><strong>Pliers</strong> - Needle nose and standard for gripping</li>
+                        <li><strong>Tape Measure</strong> - 25ft minimum for accurate measurements</li>
+                        <li><strong>Level</strong> - Ensure everything hangs straight</li>
+                    </ol>
+                    <div class="alert alert-success">
+                        <strong>✅ Pro Tip:</strong> Quality tools last longer and work better. Invest in basics first.
+                    </div>
+                    <div class="mt-3 p-3 bg-primary text-white rounded">
+                        <h6>📌 Quick Quiz:</h6>
+                        <p class="mb-2">What's the most important measurement tool for home projects?</p>
+                        <div class="quiz-options">
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-1', 'wrong', 'Rulers are too short for most home projects.')">A) Ruler</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-1', 'correct', 'Correct! A 25ft tape measure handles most home measurements.')">B) Tape measure</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-1', 'wrong', 'Calipers are for precision work, not general home use.')">C) Calipers</button>
+                            <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('tool-quiz-1', 'wrong', 'Yardsticks are rigid and limited in length.')">D) Yardstick</button>
+                        </div>
+                        <div id="tool-quiz-1" class="mt-2" style="display: none;"></div>
+                    </div>
+                `
+            },
+            {
+                title: "Power Tool Safety",
+                image: "/static/images/toolbelt-basics-2.png",
+                content: `
+                    <div class="lesson-visual mb-4">
+                        <img src="/static/images/toolbelt-basics-2.png" class="img-fluid rounded" alt="Power Tool Safety">
+                    </div>
+                    <h6>🎯 Goal: Use power tools safely and effectively</h6>
+                    <h6>⚡ Safety First:</h6>
+                    <ol>
+                        <li><strong>Always wear safety glasses</strong> - Protect your eyes from debris</li>
+                        <li><strong>Check the cord</strong> - Look for damage before plugging in</li>
+                        <li><strong>Secure your workpiece</strong> - Clamp materials before cutting</li>
+                        <li><strong>Keep tools clean</strong> - Remove sawdust and debris regularly</li>
+                        <li><strong>Store properly</strong> - Keep in dry location away from children</li>
+                    </ol>
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Safety Warning:</strong> Never remove safety guards or bypass safety features.
+                    </div>
+                    <div class="mt-3 p-3 bg-primary text-white rounded">
+                        <h6>📌 Quick Quiz:</h6>
+                        <p class="mb-2">What should you always wear when using power tools?</p>
+                        <div class="quiz-options">
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-2', 'correct', 'Correct! Safety glasses protect your eyes from flying debris.')">A) Safety glasses</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-2', 'wrong', 'Gloves can get caught in moving parts of power tools.')">B) Thick gloves</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-2', 'wrong', 'Jewelry can catch on tools and cause injury.')">C) Jewelry</button>
+                            <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('tool-quiz-2', 'wrong', 'Loose clothing can get caught in machinery.')">D) Loose clothing</button>
+                        </div>
+                        <div id="tool-quiz-2" class="mt-2" style="display: none;"></div>
+                    </div>
+                `
+            },
+            {
+                title: "Organizing Your Toolkit",
+                image: "/static/images/toolbelt-basics-3.png",
+                content: `
+                    <div class="lesson-visual mb-4">
+                        <img src="/static/images/toolbelt-basics-3.png" class="img-fluid rounded" alt="Organizing Your Toolkit">
+                    </div>
+                    <h6>🎯 Goal: Keep tools organized and easily accessible</h6>
+                    <h6>📦 Organization Tips:</h6>
+                    <ol>
+                        <li><strong>Tool belt basics</strong> - Hammer, tape measure, screwdrivers, level</li>
+                        <li><strong>Toolbox essentials</strong> - Group similar tools together</li>
+                        <li><strong>Label everything</strong> - Quick identification saves time</li>
+                        <li><strong>Clean after use</strong> - Prevent rust and extend tool life</li>
+                        <li><strong>Regular maintenance</strong> - Sharpen, oil, and calibrate tools</li>
+                    </ol>
+                    <div class="alert alert-success">
+                        <strong>✅ Pro Tip:</strong> A well-organized toolkit makes every job faster and easier.
+                    </div>
+                    <div class="mt-3 p-3 bg-primary text-white rounded">
+                        <h6>📌 Quick Quiz:</h6>
+                        <p class="mb-2">What's the best way to prevent tool rust?</p>
+                        <div class="quiz-options">
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-3', 'wrong', 'WD-40 displaces moisture but isn\\'t the best long-term solution.')">A) Spray with WD-40</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-3', 'correct', 'Correct! Clean, dry storage prevents rust formation.')">B) Keep clean and dry</button>
+                            <button class="btn btn-warning btn-sm me-2" onclick="showQuizAnswer('tool-quiz-3', 'wrong', 'Oil attracts dirt and dust in storage.')">C) Cover in oil</button>
+                            <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('tool-quiz-3', 'wrong', 'Leaving tools outside exposes them to moisture.')">D) Leave outside</button>
+                        </div>
+                        <div id="tool-quiz-3" class="mt-2" style="display: none;"></div>
+                    </div>
+                `
+            }
+        ]
+    },
     faucet: {
         title: "Fix a Leaky Faucet",
         level: "Beginner",
