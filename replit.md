@@ -82,6 +82,8 @@ The application follows a simple Flask MVC pattern with the following structure:
 ## Changelog
 
 - June 18, 2025. Initial setup
+- June 19, 2025. Transformed to handyman business with AI lead generator
+- June 21, 2025. Integrated SPANK logo and completed branding
 
 ## User Preferences
 
