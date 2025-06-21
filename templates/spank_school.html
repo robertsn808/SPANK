@@ -599,6 +599,50 @@
                         
                         <div class="col-lg-4 col-md-6 mb-4">
                             <div class="card course-card h-100 position-relative">
+                                <span class="difficulty-badge badge bg-success">Beginner</span>
+                                <div class="card-body">
+                                    <h5 class="card-title">Installing a Doggy Door</h5>
+                                    <p class="course-stats mb-3">
+                                        <i class="fas fa-clock me-1"></i>25 min • 
+                                        <i class="fas fa-list-ol me-1"></i>3 lessons
+                                    </p>
+                                    <p class="card-text">Give your pet freedom with proper doggy door installation. Includes sizing, tools, and step-by-step guidance.</p>
+                                    <div class="mb-3">
+                                        <span class="reward-badge">
+                                            <i class="fas fa-dollar-sign me-1"></i>Earn $5 SPANK Bucks
+                                        </span>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="startCourse('doggyDoor')">
+                                        <i class="fas fa-play me-2"></i>Start Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100 position-relative">
+                                <span class="difficulty-badge badge bg-success">Beginner</span>
+                                <div class="card-body">
+                                    <h5 class="card-title">Choosing the Right Anchor</h5>
+                                    <p class="course-stats mb-3">
+                                        <i class="fas fa-clock me-1"></i>15 min • 
+                                        <i class="fas fa-list-ol me-1"></i>2 lessons
+                                    </p>
+                                    <p class="card-text">Master wall anchors for hanging pictures securely. Learn wall types, weight limits, and anchor selection.</p>
+                                    <div class="mb-3">
+                                        <span class="reward-badge">
+                                            <i class="fas fa-dollar-sign me-1"></i>Earn $5 SPANK Bucks
+                                        </span>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="startCourse('anchors')">
+                                        <i class="fas fa-play me-2"></i>Start Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card course-card h-100 position-relative">
                                 <span class="difficulty-badge badge bg-info">Renovation</span>
                                 <div class="card-body">
                                     <h5 class="card-title">
@@ -3037,6 +3081,286 @@ const courses = {
                             <button class="btn btn-warning btn-sm" onclick="showQuizAnswer('drywall-quiz-1', 'wrong', 'Screw pops just need re-screwing and touch-up.')">D) Screw pop</button>
                         </div>
                         <div id="drywall-quiz-1" class="mt-2" style="display: none;"></div>
+                    </div>
+                `
+            }
+        ]
+    },
+    doggyDoor: {
+        title: "Installing a Doggy Door",
+        level: "Beginner",
+        duration: "25 minutes",
+        reward: "$5 SPANK Bucks",
+        lessons: [
+            {
+                title: "Choosing the Right Door",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjEwMCIgeT0iNzAiIHdpZHRoPSIyMDAiIGhlaWdodD0iMTYwIiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkZGQiIHN0cm9rZS13aWR0aD0iMyIvPjxyZWN0IHg9IjEzMCIgeT0iMTIwIiB3aWR0aD0iMTQwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjNjZjY2ZmIiByeD0iMTAiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNTAiIHI9IjIwIiBmaWxsPSIjZmZjYzQyIi8+PHRleHQgeD0iMjAwIiB5PSIxNTciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzMzMyI+8J+QlTwvdGV4dD48dGV4dCB4PSIyMDAiIHk9IjI2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMzQzYTQwIj5Eb2dneSBEb29yIFNlbGVjdGlvbjwvdGV4dD48L3N2Zz4=",
+                content: `
+                    <div class="lesson-visual mb-4">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjEwMCIgeT0iNzAiIHdpZHRoPSIyMDAiIGhlaWdodD0iMTYwIiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkZGQiIHN0cm9rZS13aWR0aD0iMyIvPjxyZWN0IHg9IjEzMCIgeT0iMTIwIiB3aWR0aD0iMTQwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjNjZjY2ZmIiByeD0iMTAiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNTAiIHI9IjIwIiBmaWxsPSIjZmZjYzQyIi8+PHRleHQgeD0iMjAwIiB5PSIxNTciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzMzMyI+8J+QlTwvdGV4dD48dGV4dCB4PSIyMDAiIHk9IjI2MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMzQzYTQwIj5Eb2dneSBEb29yIFNlbGVjdGlvbjwvdGV4dD48L3N2Zz4=" class="img-fluid rounded" alt="Doggy Door Selection">
+                    </div>
+                    <h6>🎯 Objective: Choose the perfect doggy door for your pet and home</h6>
+                    
+                    <h6>🐕 Benefits of Installing a Doggy Door:</h6>
+                    <div class="benefits-list mb-4">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="benefit-card p-3 border rounded">
+                                    <h6>⏰ Convenience</h6>
+                                    <p class="small mb-0">Your dog can go outside when needed - perfect for busy owners</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="benefit-card p-3 border rounded">
+                                    <h6>🗽 Independence</h6>
+                                    <p class="small mb-0">Encourages exploration and self-reliance</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="benefit-card p-3 border rounded">
+                                    <h6>🏠 Less Mess</h6>
+                                    <p class="small mb-0">Reduces indoor accidents, keeps home clean</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="benefit-card p-3 border rounded">
+                                    <h6>🏃 Exercise</h6>
+                                    <p class="small mb-0">Provides outdoor play opportunities</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6>📏 Size Selection Guide:</h6>
+                    <div class="sizing-guide mb-4">
+                        <p class="fw-bold">Step 1: Measure Your Pet</p>
+                        <ul class="list-unstyled ms-3">
+                            <li>• Height: Floor to top of shoulders</li>
+                            <li>• Width: Widest part when standing</li>
+                            <li>• Add 2-3 inches for comfort</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-exclamation-triangle me-2"></i>Professional Tip:</h6>
+                        <p class="mb-0">For wall installations or complex door modifications, consider contacting Spankks Construction. We ensure proper weatherproofing and structural integrity.</p>
+                    </div>
+                `
+            },
+            {
+                title: "Tools and Preparation",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjUwIiB5PSI1MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2RkZCIgc3Ryb2tlLXdpZHRoPSIyIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIyMCIgZmlsbD0iI2ZmNjk5NCIvPjx0ZXh0IHg9IjEwMCIgeT0iMTA3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IndoaXRlIj7wn5OBPC90ZXh0PjxyZWN0IHg9IjE0MCIgeT0iODAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0iIzMzNzNkYyIgcng9IjUiLz48dGV4dCB4PSIxNjAiIHk9IjEwNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSJ3aGl0ZSI+8J+UqzwvdGV4dD48Y2lyY2xlIGN4PSIyMjAiIGN5PSIxMDAiIHI9IjIwIiBmaWxsPSIjMTBiOTgxIi8+PHRleHQgeD0iMjIwIiB5PSIxMDciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0id2hpdGUiPvCfkqsqIC90ZXh0PjxyZWN0IHg9IjI2MCIgeT0iODAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0iI2ZiN2MzYyIgcng9IjUiLz48dGV4dCB4PSIyODAiIHk9IjEwNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSJ3aGl0ZSI+8J+UjDwvdGV4dD48dGV4dCB4PSIyMDAiIHk9IjI3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMzQzYTQwIj5Eb2dneSBEb29yIFRvb2xzPC90ZXh0Pjwvc3ZnPg==",
+                content: `
+                    <div class="lesson-visual mb-4">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjUwIiB5PSI1MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2RkZCIgc3Ryb2tlLXdpZHRoPSIyIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIyMCIgZmlsbD0iI2ZmNjk5NCIvPjx0ZXh0IHg9IjEwMCIgeT0iMTA3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IndoaXRlIj7wn5OBPC90ZXh0PjxyZWN0IHg9IjE0MCIgeT0iODAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0iIzMzNzNkYyIgcng9IjUiLz48dGV4dCB4PSIxNjAiIHk9IjEwNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSJ3aGl0ZSI+8J+UqzwvdGV4dD48Y2lyY2xlIGN4PSIyMjAiIGN5PSIxMDAiIHI9IjIwIiBmaWxsPSIjMTBiOTgxIi8+PHRleHQgeD0iMjIwIiB5PSIxMDciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0id2hpdGUiPvCfkqsqIC90ZXh0PjxyZWN0IHg9IjI2MCIgeT0iODAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0iI2ZiN2MzYyIgcng9IjUiLz48dGV4dCB4PSIyODAiIHk9IjEwNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSJ3aGl0ZSI+8J+UjDwvdGV4dD48dGV4dCB4PSIyMDAiIHk9IjI3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMzQzYTQwIj5Eb2dneSBEb29yIFRvb2xzPC90ZXh0Pjwvc3ZnPg==" class="img-fluid rounded" alt="Doggy Door Tools">
+                    </div>
+                    <h6>🎯 Objective: Gather tools and prepare for installation</h6>
+                    
+                    <h6>🧰 Required Tools:</h6>
+                    <div class="tool-checklist mb-4">
+                        <div class="checklist-item mb-3">
+                            <input type="checkbox" id="ddtool1" class="form-check-input me-2">
+                            <label for="ddtool1" class="fw-bold">Measuring Tape</label>
+                            <p class="small text-muted mb-0">For pet and installation space measurements</p>
+                        </div>
+                        <div class="checklist-item mb-3">
+                            <input type="checkbox" id="ddtool2" class="form-check-input me-2">
+                            <label for="ddtool2" class="fw-bold">Pencil</label>
+                            <p class="small text-muted mb-0">For marking the door during measuring</p>
+                        </div>
+                        <div class="checklist-item mb-3">
+                            <input type="checkbox" id="ddtool3" class="form-check-input me-2">
+                            <label for="ddtool3" class="fw-bold">Drill & Bits</label>
+                            <p class="small text-muted mb-0">For cutting holes and pilot holes</p>
+                        </div>
+                        <div class="checklist-item mb-3">
+                            <input type="checkbox" id="ddtool4" class="form-check-input me-2">
+                            <label for="ddtool4" class="fw-bold">Utility Knife</label>
+                            <p class="small text-muted mb-0">For trimming and cutting material</p>
+                        </div>
+                        <div class="checklist-item mb-3">
+                            <input type="checkbox" id="ddtool5" class="form-check-input me-2">
+                            <label for="ddtool5" class="fw-bold">Level</label>
+                            <p class="small text-muted mb-0">Ensures door is installed straight</p>
+                        </div>
+                        <div class="checklist-item mb-3">
+                            <input type="checkbox" id="ddtool6" class="form-check-input me-2">
+                            <label for="ddtool6" class="fw-bold">Screws & Screwdriver</label>
+                            <p class="small text-muted mb-0">To secure the door frame</p>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-hard-hat me-2"></i>Safety First:</h6>
+                        <p class="mb-0">Always wear safety glasses when drilling. For exterior doors or structural concerns, consult Spankks Construction for professional guidance.</p>
+                    </div>
+                `
+            },
+            {
+                title: "Installation Process",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjEwMCIgeT0iNTAiIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkZGQiIHN0cm9rZS13aWR0aD0iMyIvPjxyZWN0IHg9IjE1MCIgeT0iMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjNjZjY2ZmIiByeD0iMTAiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlPSIjMzM3M2RjIi8+PGNpcmNsZSBjeD0iMjAwIiBjeT0iMTQwIiByPSIxNSIgZmlsbD0iIzI4YTc0NSIvPjx0ZXh0IHg9IjIwMCIgeT0iMTQ3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IndoaXRlIj7inJM8L3RleHQ+PHRleHQgeD0iMjAwIiB5PSIyNzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzM0M2E0MCI+SW5zdGFsbGVkIERvZ2d5IERvb3I8L3RleHQ+PC9zdmc+",
+                content: `
+                    <div class="lesson-visual mb-4">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjEwMCIgeT0iNTAiIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkZGQiIHN0cm9rZS13aWR0aD0iMyIvPjxyZWN0IHg9IjE1MCIgeT0iMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjNjZjY2ZmIiByeD0iMTAiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlPSIjMzM3M2RjIi8+PGNpcmNsZSBjeD0iMjAwIiBjeT0iMTQwIiByPSIxNSIgZmlsbD0iIzI4YTc0NSIvPjx0ZXh0IHg9IjIwMCIgeT0iMTQ3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IndoaXRlIj7inJM8L3RleHQ+PHRleHQgeD0iMjAwIiB5PSIyNzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzM0M2E0MCI+SW5zdGFsbGVkIERvZ2d5IERvb3I8L3RleHQ+PC9zdmc+" class="img-fluid rounded" alt="Installed Doggy Door">
+                    </div>
+                    <h6>🎯 Objective: Complete the installation step-by-step</h6>
+                    
+                    <h6>📝 Step-by-Step Installation:</h6>
+                    <div class="installation-steps mb-4">
+                        <div class="step mb-3">
+                            <span class="step-number">1</span>
+                            <strong>Mark the Location</strong> - Use measuring tape and pencil to mark door opening at dog's shoulder height
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">2</span>
+                            <strong>Drill Pilot Holes</strong> - Drill pilot holes at corners of marked area for easier cutting
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">3</span>
+                            <strong>Cut the Opening</strong> - Use utility knife or jigsaw to carefully cut out the marked opening
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">4</span>
+                            <strong>Install Frame</strong> - Insert door frame, check with level, and secure with screws
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">5</span>
+                            <strong>Weatherproofing</strong> - Add weather stripping around edges to prevent drafts
+                        </div>
+                        <div class="step mb-3">
+                            <span class="step-number">6</span>
+                            <strong>Attach Flap & Test</strong> - Install flap according to manufacturer instructions and test operation
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-check-circle me-2"></i>Success!</h6>
+                        <p class="mb-0">Your pet now has the freedom they deserve! Remember to check the door periodically for wear and replace parts as needed. For any installation concerns, Spankks Construction is here to help.</p>
+                    </div>
+                `
+            }
+        ]
+    },
+    anchors: {
+        title: "Choosing the Right Anchor",
+        level: "Beginner",
+        duration: "15 minutes",
+        reward: "$5 SPANK Bucks",
+        lessons: [
+            {
+                title: "Understanding Wall Types",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjUwIiB5PSI1MCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2RkZCIgc3Ryb2tlLXdpZHRoPSIyIi8+PHJlY3QgeD0iMTcwIiB5PSI1MCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNlNWU3ZWIiIHN0cm9rZT0iI2RkZCIgc3Ryb2tlLXdpZHRoPSIyIi8+PHJlY3QgeD0iMjkwIiB5PSI1MCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNkYzJhMjYiIHN0cm9rZT0iI2RkZCIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iMTAwIiB5PSIyNzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzM0M2E0MCI+RHJ5d2FsbDwvdGV4dD48dGV4dCB4PSIyMjAiIHk9IjI3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMzQzYTQwIj5Db25jcmV0ZTwvdGV4dD48dGV4dCB4PSIzNDAiIHk9IjI3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMzQzYTQwIj5CcmljazwvdGV4dD48L3N2Zz4=",
+                content: `
+                    <div class="lesson-visual mb-4">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjUwIiB5PSI1MCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2RkZCIgc3Ryb2tlLXdpZHRoPSIyIi8+PHJlY3QgeD0iMTcwIiB5PSI1MCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNlNWU3ZWIiIHN0cm9rZT0iI2RkZCIgc3Ryb2tlLXdpZHRoPSIyIi8+PHJlY3QgeD0iMjkwIiB5PSI1MCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNkYzJhMjYiIHN0cm9rZT0iI2RkZCIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iMTAwIiB5PSIyNzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzM0M2E0MCI+RHJ5d2FsbDwvdGV4dD48dGV4dCB4PSIyMjAiIHk9IjI3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMzQzYTQwIj5Db25jcmV0ZTwvdGV4dD48dGV4dCB4PSIzNDAiIHk9IjI3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMzQzYTQwIj5CcmljazwvdGV4dD48L3N2Zz4=" class="img-fluid rounded" alt="Wall Types">
+                    </div>
+                    <h6>🎯 Objective: Identify your wall type to choose the right anchor</h6>
+                    
+                    <h6>🏠 Common Wall Types in Homes:</h6>
+                    <div class="wall-types mb-4">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="wall-type-card p-3 border rounded text-center">
+                                    <h6>🪟 Drywall</h6>
+                                    <p class="small mb-2"><strong>Most common in modern homes</strong></p>
+                                    <ul class="small text-start">
+                                        <li>Lightweight pictures: Simple hooks</li>
+                                        <li>Medium weight: Plastic anchors</li>
+                                        <li>Heavy pictures: Toggle bolts</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="wall-type-card p-3 border rounded text-center">
+                                    <h6>🏗️ Concrete</h6>
+                                    <p class="small mb-2"><strong>Dense, requires robust solution</strong></p>
+                                    <ul class="small text-start">
+                                        <li>Use masonry anchors</li>
+                                        <li>Concrete screws (up to 150 lbs)</li>
+                                        <li>Hammer drill required</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="wall-type-card p-3 border rounded text-center">
+                                    <h6>🧱 Brick</h6>
+                                    <p class="small mb-2"><strong>Specialized anchors needed</strong></p>
+                                    <ul class="small text-start">
+                                        <li>Target mortar joints</li>
+                                        <li>Masonry drill bit essential</li>
+                                        <li>Toggle or masonry anchors</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-exclamation-triangle me-2"></i>Pro Tip:</h6>
+                        <p class="mb-0">When in doubt about your wall type or anchor choice, especially for valuable artwork, contact Spankks Construction for professional assessment and installation.</p>
+                    </div>
+                `
+            },
+            {
+                title: "Weight Categories & Anchor Selection",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjUwIiB5PSI4MCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkZGQiIHN0cm9rZS13aWR0aD0iMiIvPjxyZWN0IHg9IjE2MCIgeT0iNjAiIHdpZHRoPSI4MCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2RkZCIgc3Ryb2tlLXdpZHRoPSIyIi8+PHJlY3QgeD0iMjcwIiB5PSI0MCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjE0MCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZGRkIiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSI5MCIgeT0iMjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiMzNDNhNDAiPkxpZ2h0ICgmbHQ7NSBsYnMpPC90ZXh0Pjx0ZXh0IHg9IjIwMCIgeT0iMjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiMzNDNhNDAiPk1lZGl1bSAoNS0yMCBsYnMpPC90ZXh0Pjx0ZXh0IHg9IjMxMCIgeT0iMjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiMzNDNhNDAiPkhlYXZ5ICgyMCsgbGJzKTwvdGV4dD48dGV4dCB4PSIyMDAiIHk9IjI1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMzQzYTQwIj5QaWN0dXJlIFdlaWdodCBDYXRlZ29yaWVzPC90ZXh0Pjwvc3ZnPg==",
+                content: `
+                    <div class="lesson-visual mb-4">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y4ZjlmYSIvPjxyZWN0IHg9IjUwIiB5PSI4MCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjZmZmIiBzdHJva2U9IiNkZGQiIHN0cm9rZS13aWR0aD0iMiIvPjxyZWN0IHg9IjE2MCIgeT0iNjAiIHdpZHRoPSI4MCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2RkZCIgc3Ryb2tlLXdpZHRoPSIyIi8+PHJlY3QgeD0iMjcwIiB5PSI0MCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjE0MCIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjZGRkIiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSI5MCIgeT0iMjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiMzNDNhNDAiPkxpZ2h0ICgmbHQ7NSBsYnMpPC90ZXh0Pjx0ZXh0IHg9IjIwMCIgeT0iMjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiMzNDNhNDAiPk1lZGl1bSAoNS0yMCBsYnMpPC90ZXh0Pjx0ZXh0IHg9IjMxMCIgeT0iMjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiMzNDNhNDAiPkhlYXZ5ICgyMCsgbGJzKTwvdGV4dD48dGV4dCB4PSIyMDAiIHk9IjI1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMzQzYTQwIj5QaWN0dXJlIFdlaWdodCBDYXRlZ29yaWVzPC90ZXh0Pjwvc3ZnPg==" class="img-fluid rounded" alt="Picture Weight Categories">
+                    </div>
+                    <h6>🎯 Objective: Match anchor type to picture weight for secure hanging</h6>
+                    
+                    <h6>⚖️ Weight Categories & Anchor Selection:</h6>
+                    <div class="weight-categories mb-4">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="weight-card p-3 border rounded">
+                                    <h6 class="text-success">📸 Lightweight (Under 5 lbs)</h6>
+                                    <p class="small mb-2"><strong>Examples:</strong> Small photos, certificates</p>
+                                    <div class="anchor-options">
+                                        <p class="small mb-1"><strong>Best anchors:</strong></p>
+                                        <ul class="small">
+                                            <li>Picture hooks</li>
+                                            <li>Finishing nails</li>
+                                            <li>Adhesive hooks</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="weight-card p-3 border rounded">
+                                    <h6 class="text-warning">🖼️ Medium (5-20 lbs)</h6>
+                                    <p class="small mb-2"><strong>Examples:</strong> Framed prints, mirrors</p>
+                                    <div class="anchor-options">
+                                        <p class="small mb-1"><strong>Best anchors:</strong></p>
+                                        <ul class="small">
+                                            <li>Plastic wall anchors</li>
+                                            <li>Self-drilling anchors</li>
+                                            <li>Molly bolts</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="weight-card p-3 border rounded">
+                                    <h6 class="text-danger">🏛️ Heavy (20+ lbs)</h6>
+                                    <p class="small mb-2"><strong>Examples:</strong> Large artwork, shelves</p>
+                                    <div class="anchor-options">
+                                        <p class="small mb-1"><strong>Best anchors:</strong></p>
+                                        <ul class="small">
+                                            <li>Toggle bolts</li>
+                                            <li>Metal anchors</li>
+                                            <li>Wall studs (preferred)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-lightbulb me-2"></i>Professional Tip:</h6>
+                        <p class="mb-0">Always use a level when hanging pictures and check manufacturer weight limits. For valuable or heavy artwork installation, Spankks Construction offers professional picture hanging services.</p>
                     </div>
                 `
             }
