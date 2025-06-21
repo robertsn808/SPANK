@@ -1,0 +1,247 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Project Tracking - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<!-- Project Tracking Header -->
+<section class="py-4 bg-gradient-primary">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="text-white fw-bold mb-2">
+                            <i class="fas fa-tasks me-3"></i>Project Tracking
+                        </h1>
+                        <p class="text-white-50 mb-0">Monitor project timelines and status</p>
+                    </div>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Project Overview Stats -->
+<section class="py-4">
+    <div class="container">
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-circle bg-primary-light mb-3">
+                            <i class="fas fa-play-circle fa-2x text-primary"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark">{{ active_projects|length }}</h3>
+                        <p class="text-muted mb-0">Active Projects</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-circle bg-warning-light mb-3">
+                            <i class="fas fa-clock fa-2x text-warning"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark">{{ pending_projects|length }}</h3>
+                        <p class="text-muted mb-0">Pending</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-circle bg-success-light mb-3">
+                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark">{{ completed_projects|length }}</h3>
+                        <p class="text-muted mb-0">Completed</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-circle bg-info-light mb-3">
+                            <i class="fas fa-dollar-sign fa-2x text-info"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark">${{ "%.0f"|format(total_active_value) }}</h3>
+                        <p class="text-muted mb-0">Active Value</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Deadlines Alert -->
+{% if upcoming_deadlines %}
+<section class="py-3">
+    <div class="container">
+        <div class="alert alert-warning border-0 shadow-sm">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">Upcoming Deadlines</h5>
+                    <p class="mb-0">{{ upcoming_deadlines|length }} project(s) due within the next 7 days</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Active Projects -->
+<section class="py-4">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-white">
+                <h3 class="mb-0"><i class="fas fa-play-circle me-2 text-primary"></i>Active Projects</h3>
+            </div>
+            <div class="card-body p-0">
+                {% if active_projects %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Project ID</th>
+                                <th>Customer</th>
+                                <th>Service</th>
+                                <th>Budget</th>
+                                <th>Timeline</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in active_projects %}
+                            <tr>
+                                <td class="fw-bold">#{{ project.id }}</td>
+                                <td>
+                                    <div>{{ project.name }}</div>
+                                    <small class="text-muted">{{ project.email }}</small>
+                                </td>
+                                <td>{{ project.service }}</td>
+                                <td>
+                                    {% if project.budget_range %}
+                                    <span class="badge bg-success">{{ project.budget_range }}</span>
+                                    {% else %}
+                                    <span class="text-muted">TBD</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if project.preferred_date %}
+                                    <div>{{ project.preferred_date }}</div>
+                                    {% if project.preferred_time %}
+                                    <small class="text-muted">{{ project.preferred_time }}</small>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="text-muted">TBD</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ project.status.title() }}</span>
+                                </td>
+                                <td>
+                                    {% set priority = project.priority or 'medium' %}
+                                    {% if priority == 'high' %}
+                                    <span class="badge bg-danger">High</span>
+                                    {% elif priority == 'medium' %}
+                                    <span class="badge bg-warning">Medium</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Low</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('update_booking', booking_id=project.id) }}" class="btn btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('complete_booking', booking_id=project.id) }}" class="btn btn-outline-success">
+                                            <i class="fas fa-check"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Active Projects</h4>
+                    <p class="text-muted">All projects are either pending or completed.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pending Projects -->
+<section class="py-4">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-white">
+                <h3 class="mb-0"><i class="fas fa-clock me-2 text-warning"></i>Pending Projects</h3>
+            </div>
+            <div class="card-body p-0">
+                {% if pending_projects %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Project ID</th>
+                                <th>Customer</th>
+                                <th>Service</th>
+                                <th>Requested Date</th>
+                                <th>Budget Range</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in pending_projects %}
+                            <tr>
+                                <td class="fw-bold">#{{ project.id }}</td>
+                                <td>
+                                    <div>{{ project.name }}</div>
+                                    <small class="text-muted">{{ project.email }}</small>
+                                </td>
+                                <td>{{ project.service }}</td>
+                                <td>{{ project.preferred_date or 'Flexible' }}</td>
+                                <td>{{ project.budget_range or 'TBD' }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <form method="POST" action="{{ url_for('update_booking', booking_id=project.id) }}" class="d-inline">
+                                            <input type="hidden" name="status" value="confirmed">
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-check me-1"></i>Confirm
+                                            </button>
+                                        </form>
+                                        <a href="mailto:{{ project.email }}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-envelope"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Pending Projects</h4>
+                    <p class="text-muted">All consultation requests have been processed.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

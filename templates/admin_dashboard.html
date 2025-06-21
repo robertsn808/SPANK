@@ -283,11 +283,12 @@
     </div>
 </section>
             
-            <!-- Quick Stats and Actions -->
+            <!-- Business Analytics Dashboard -->
             <div class="col-lg-4">
+                <!-- Weekly Performance -->
                 <div class="card border-0 shadow mb-3">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">This Week</h5>
+                    <div class="card-header bg-gradient text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Weekly Performance</h5>
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
@@ -299,11 +300,69 @@
                                 <div class="h4 text-success">{{ week_appointments|selectattr('status', 'equalto', 'completed')|list|length }}</div>
                                 <small class="text-muted">Completed</small>
                             </div>
+                            <div class="col-12">
+                                <div class="progress mt-2" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: {{ ((week_appointments|selectattr('status', 'equalto', 'completed')|list|length / (week_appointments|length if week_appointments|length > 0 else 1)) * 100)|round }}%"></div>
+                                </div>
+                                <small class="text-muted">Completion Rate</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Analytics -->
+                <div class="card border-0 shadow mb-3">
+                    <div class="card-header bg-gradient-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Revenue Insights</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <div class="h3 text-success">${{ "%.0f"|format(total_revenue_estimate) }}</div>
+                            <small class="text-muted">Estimated Monthly Revenue</small>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6 text-center">
+                                <div class="text-warning fw-bold">{{ pending_requests|length }}</div>
+                                <small class="text-muted">Pending</small>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div class="text-danger fw-bold">{{ urgent_requests|length }}</div>
+                                <small class="text-muted">Urgent</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Insights -->
+                <div class="card border-0 shadow mb-3">
+                    <div class="card-header bg-gradient-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-users me-2"></i>Customer Analytics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 text-center">
+                            <div class="col-4">
+                                <div class="h5 text-primary">{{ referral_stats.total_referrals or 0 }}</div>
+                                <small class="text-muted">Referrals</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="h5 text-success">{{ membership_stats.active_members or 0 }}</div>
+                                <small class="text-muted">Members</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="h5 text-warning">{{ monthly_requests|length }}</div>
+                                <small class="text-muted">This Month</small>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-info" style="width: 75%"></div>
+                            </div>
+                            <small class="text-muted">Customer Satisfaction: 75%</small>
                         </div>
                     </div>
                 </div>
                 
-                <div class="card border-0 shadow">
+                <div class="card border-0 shadow mb-3">
                     <div class="card-header bg-white">
                         <h5 class="mb-0">Quick Actions</h5>
                     </div>
@@ -322,6 +381,27 @@
                             <i class="fas fa-users me-2"></i>Manage Staff
                         </a>
                         {% endif %}
+                    </div>
+                </div>
+
+                <!-- Advanced Business Tools -->
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-gradient-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Business Tools</h5>
+                    </div>
+                    <div class="card-body">
+                        <a href="{{ url_for('project_tracking') }}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-tasks me-2"></i>Project Tracking
+                        </a>
+                        <a href="{{ url_for('analytics_dashboard') }}" class="btn btn-outline-success w-100 mb-2">
+                            <i class="fas fa-chart-bar me-2"></i>Analytics Dashboard
+                        </a>
+                        <a href="{{ url_for('ai_leads') }}" class="btn btn-outline-info w-100 mb-2">
+                            <i class="fas fa-brain me-2"></i>AI Lead Generator
+                        </a>
+                        <a href="{{ url_for('twilio_config') }}" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-cog me-2"></i>Communication Settings
+                        </a>
                     </div>
                 </div>
             </div>

@@ -303,6 +303,26 @@ def admin_dashboard():
         if start_of_week <= appointment_date < start_of_week + timedelta(days=7):
             week_appointments.append(appointment)
 
+    # Business Analytics
+    total_revenue_estimate = sum([
+        float(req.budget_range.split('-')[0].replace('$', '').replace(',', '')) 
+        if req.budget_range and '-' in req.budget_range 
+        else 500.0 
+        for req in service_requests if req.status == 'completed'
+    ])
+    
+    # Customer satisfaction metrics
+    pending_requests = [req for req in service_requests if req.status == 'pending']
+    urgent_requests = [req for req in service_requests if getattr(req, 'priority', 'medium') == 'high']
+    
+    # Monthly trends
+    current_month = hawaii_now.month
+    monthly_requests = [req for req in service_requests if datetime.strptime(req.preferred_date or hawaii_now.strftime('%Y-%m-%d'), '%Y-%m-%d').month == current_month]
+    
+    # Lead source analysis
+    referral_stats = handyman_storage.get_referral_stats()
+    membership_stats = handyman_storage.get_membership_stats()
+
     return render_template('admin_dashboard.html', 
                          bookings=service_requests,
                          service_requests=service_requests, 
@@ -313,7 +333,14 @@ def admin_dashboard():
                          staff_logins=staff_logins,
                          today=hawaii_now.strftime('%Y-%m-%d'),
                          user_role=session.get('user_role', 'admin'),
-                         user_name=session.get('user_name', 'Admin'))
+                         user_name=session.get('user_name', 'Admin'),
+                         # Business analytics
+                         total_revenue_estimate=total_revenue_estimate,
+                         pending_requests=pending_requests,
+                         urgent_requests=urgent_requests,
+                         monthly_requests=monthly_requests,
+                         referral_stats=referral_stats,
+                         membership_stats=membership_stats)
 
 @app.route('/admin/logout')
 def admin_logout():
@@ -932,3 +959,117 @@ def process_referral():
     except Exception as e:
         logging.error(f"Error processing referral: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/admin/project-tracking')
+def project_tracking():
+    """Project timeline and tracking dashboard"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access project tracking.', 'error')
+        return redirect(url_for('admin_login'))
+
+    service_requests = handyman_storage.get_all_service_requests()
+    
+    # Organize projects by status
+    active_projects = [req for req in service_requests if req.status in ['confirmed', 'in_progress']]
+    pending_projects = [req for req in service_requests if req.status == 'pending']
+    completed_projects = [req for req in service_requests if req.status == 'completed']
+    
+    # Calculate project metrics
+    total_active_value = sum([
+        float(req.budget_range.split('-')[0].replace('$', '').replace(',', '')) 
+        if req.budget_range and '-' in req.budget_range 
+        else 750.0 
+        for req in active_projects
+    ])
+    
+    # Timeline analysis
+    hawaii_now = get_hawaii_time()
+    upcoming_deadlines = []
+    for project in active_projects:
+        if project.preferred_date:
+            project_date = datetime.strptime(project.preferred_date, '%Y-%m-%d')
+            days_until = (project_date - hawaii_now.replace(tzinfo=None)).days
+            if days_until <= 7:  # Projects due within a week
+                upcoming_deadlines.append({
+                    'project': project,
+                    'days_until': days_until
+                })
+    
+    return render_template('admin/project_tracking.html',
+                         active_projects=active_projects,
+                         pending_projects=pending_projects,
+                         completed_projects=completed_projects,
+                         total_active_value=total_active_value,
+                         upcoming_deadlines=upcoming_deadlines)
+
+@app.route('/admin/analytics-dashboard')
+def analytics_dashboard():
+    """Business analytics and performance metrics dashboard"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access analytics.', 'error')
+        return redirect(url_for('admin_login'))
+
+    service_requests = handyman_storage.get_all_service_requests()
+    contact_messages = handyman_storage.get_all_contact_messages()
+    referrals = handyman_storage.get_all_referrals()
+    memberships = handyman_storage.get_all_memberships()
+
+    # Lead source analysis
+    lead_sources = {}
+    for request in service_requests:
+        source = getattr(request, 'lead_source', 'Direct Website')
+        lead_sources[source] = lead_sources.get(source, 0) + 1
+
+    # Conversion funnel analysis
+    total_inquiries = len(contact_messages) + len(service_requests)
+    consultation_requests = len(service_requests)
+    completed_jobs = len([req for req in service_requests if req.status == 'completed'])
+    
+    conversion_rate = (completed_jobs / total_inquiries * 100) if total_inquiries > 0 else 0
+    
+    # Revenue analytics
+    total_revenue = sum([
+        float(req.budget_range.split('-')[0].replace('$', '').replace(',', '')) 
+        if req.budget_range and '-' in req.budget_range 
+        else 750.0 
+        for req in service_requests if req.status == 'completed'
+    ])
+
+    # Service type popularity
+    service_popularity = {}
+    for request in service_requests:
+        service = request.service
+        service_popularity[service] = service_popularity.get(service, 0) + 1
+
+    # Monthly performance trends
+    hawaii_now = get_hawaii_time()
+    monthly_trends = []
+    for i in range(6):
+        month_date = hawaii_now - timedelta(days=30 * i)
+        month_requests = [
+            req for req in service_requests 
+            if req.preferred_date and datetime.strptime(req.preferred_date, '%Y-%m-%d').month == month_date.month
+        ]
+        monthly_trends.append({
+            'month': month_date.strftime('%B'),
+            'requests': len(month_requests),
+            'completed': len([req for req in month_requests if req.status == 'completed']),
+            'revenue': sum([
+                float(req.budget_range.split('-')[0].replace('$', '').replace(',', '')) 
+                if req.budget_range and '-' in req.budget_range 
+                else 750.0 
+                for req in month_requests if req.status == 'completed'
+            ])
+        })
+
+    return render_template('admin/analytics_dashboard.html',
+                         lead_sources=lead_sources,
+                         conversion_rate=conversion_rate,
+                         total_revenue=total_revenue,
+                         service_popularity=service_popularity,
+                         monthly_trends=monthly_trends,
+                         total_inquiries=total_inquiries,
+                         consultation_requests=consultation_requests,
+                         completed_jobs=completed_jobs,
+                         referrals=referrals,
+                         memberships=memberships)
