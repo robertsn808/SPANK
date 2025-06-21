@@ -4521,5 +4521,153 @@ function updateWiringFeedback(message) {
         </div>
     `;
 }
+
+// Smart Switches Course Functions
+function initVoltageTestSimulator() {
+    let powerState = true; // Start with power on for safety demonstration
+    updateVoltageDisplay();
+}
+
+function testVoltage(state) {
+    const readingElement = document.getElementById('voltageReading');
+    const feedbackElement = document.getElementById('voltageFeedback');
+    
+    if (state === 'on') {
+        readingElement.textContent = '120V';
+        readingElement.style.color = '#dc2626';
+        feedbackElement.innerHTML = `
+            <div class="alert alert-danger">
+                <strong>⚡ DANGER!</strong> Live voltage detected! Turn off breaker first.
+            </div>
+        `;
+    } else {
+        readingElement.textContent = '0V';
+        readingElement.style.color = '#28a745';
+        feedbackElement.innerHTML = `
+            <div class="alert alert-success">
+                <strong>✅ SAFE!</strong> No voltage detected. Safe to work.
+            </div>
+        `;
+    }
+}
+
+function resetVoltageTest() {
+    document.getElementById('voltageReading').textContent = '0V';
+    document.getElementById('voltageReading').style.color = '#28a745';
+    document.getElementById('voltageFeedback').innerHTML = '';
+}
+
+// Wire Matching for Smart Switches
+let wireConnections = { live: null, neutral: null, ground: null };
+
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.dataset.wire);
+}
+
+function dropWire(ev) {
+    ev.preventDefault();
+    const wireType = ev.dataTransfer.getData("text");
+    const terminal = ev.target.closest('.terminal').dataset.terminal;
+    
+    wireConnections[terminal] = wireType;
+    
+    const dropZone = ev.target.closest('.terminal').querySelector('.drop-zone');
+    dropZone.textContent = wireType + ' wire';
+    dropZone.style.backgroundColor = getWireColor(wireType);
+}
+
+function getWireColor(wireType) {
+    switch(wireType) {
+        case 'black': return '#000';
+        case 'white': return '#fff';
+        case 'green': return '#28a745';
+        default: return '#ccc';
+    }
+}
+
+function checkWireConnections() {
+    const feedback = document.getElementById('wireFeedback');
+    let correct = 0;
+    let total = 3;
+    
+    if (wireConnections.live === 'black') correct++;
+    if (wireConnections.neutral === 'white') correct++;
+    if (wireConnections.ground === 'green') correct++;
+    
+    if (correct === total) {
+        feedback.innerHTML = `
+            <div class="alert alert-success">
+                <strong>Perfect!</strong> All wires connected correctly. Ready to install!
+            </div>
+        `;
+    } else {
+        feedback.innerHTML = `
+            <div class="alert alert-warning">
+                <strong>${correct}/${total} correct.</strong> Check: Black→Live, White→Neutral, Green→Ground
+            </div>
+        `;
+    }
+}
+
+function resetWireMatching() {
+    wireConnections = { live: null, neutral: null, ground: null };
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+        zone.textContent = '';
+        zone.style.backgroundColor = '';
+    });
+    document.getElementById('wireFeedback').innerHTML = '';
+}
+
+// Installation Simulator
+let installationStep = 0;
+const installSteps = ['step1', 'step2', 'step3', 'step4'];
+
+function completeStep(stepNum) {
+    if (stepNum === installationStep + 1) {
+        const stepElement = document.getElementById('step' + stepNum);
+        stepElement.style.backgroundColor = '#28a745';
+        stepElement.style.color = 'white';
+        stepElement.querySelector('button').textContent = '✓ Done';
+        stepElement.querySelector('button').disabled = true;
+        
+        installationStep = stepNum;
+        
+        // Enable next step if available
+        if (stepNum < 4) {
+            const nextStep = document.getElementById('step' + (stepNum + 1));
+            nextStep.querySelector('button').disabled = false;
+        }
+        
+        updateInstallFeedback(stepNum);
+    }
+}
+
+function updateInstallFeedback(step) {
+    const feedback = document.getElementById('installFeedback');
+    const messages = {
+        1: 'Great! Wire connections are secure.',
+        2: 'Excellent! Wires properly folded into box.',
+        3: 'Perfect! Switch mounted securely.',
+        4: 'Success! Smart switch installation complete!'
+    };
+    
+    feedback.innerHTML = `
+        <div class="alert alert-success">
+            <small>${messages[step]}</small>
+        </div>
+    `;
+    
+    if (step === 4) {
+        feedback.innerHTML += `
+            <div class="alert alert-info mt-2">
+                <small><strong>Next:</strong> Download the app and connect to WiFi!</small>
+            </div>
+        `;
+    }
+}
 </script>
 {% endblock %}
