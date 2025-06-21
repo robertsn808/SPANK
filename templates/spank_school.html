@@ -93,16 +93,15 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section">
+<section class="hero-section py-4">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-8">
-                <h1 class="display-4 fw-bold mb-4">
+                <h1 class="display-5 fw-bold mb-3">
                     🧠 Welcome to Spank School
                 </h1>
-                <p class="lead mb-4">
-                    Master DIY repairs with professional guidance from Hawaii's trusted handyman experts. 
-                    Learn at your own pace with interactive courses, video tutorials, and hands-on challenges.
+                <p class="lead mb-3">
+                    Master DIY repairs with professional guidance from Hawaii's trusted handyman experts.
                 </p>
                 <div class="d-flex flex-wrap gap-3 align-items-center">
                     <button class="btn btn-warning btn-lg px-4" onclick="scrollToCourses()">
@@ -115,7 +114,7 @@
             </div>
             <div class="col-lg-4 text-center">
                 <img src="{{ url_for('static', filename='images/spank-school-character.png') }}" 
-                     alt="SPANK Mascot" class="img-fluid" style="max-height: 300px;">
+                     alt="SPANK Mascot" class="img-fluid" style="max-height: 250px;">
             </div>
         </div>
     </div>
