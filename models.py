@@ -62,6 +62,7 @@ class HandymanStorage:
         self.leads = []
         self.referrals = []
         self.memberships = []
+        self.admin_notifications = []
     
     def add_service_request(self, request_data):
         request = ServiceRequest(**request_data)
@@ -198,6 +199,24 @@ class HandymanStorage:
             'monthly_revenue': sum(revenue_by_plan.values()),
             'revenue_by_plan': revenue_by_plan
         }
+    
+    def add_admin_notification(self, notification_data):
+        """Add admin notification for SPANK Buck rewards"""
+        notification = AdminNotification(**notification_data)
+        self.admin_notifications.append(notification)
+        return notification.id
+    
+    def get_admin_notifications(self):
+        """Get all admin notifications"""
+        return sorted(self.admin_notifications, key=lambda x: x.timestamp, reverse=True)
+    
+    def mark_notification_read(self, notification_id):
+        """Mark notification as read"""
+        for notification in self.admin_notifications:
+            if notification.id == notification_id:
+                notification.status = 'read'
+                return True
+        return False
 
 class Admin:
     def __init__(self, username, password_hash):

@@ -17,18 +17,21 @@ class NotificationService:
         self.twilio_phone = os.environ.get('TWILIO_PHONE_NUMBER')
         self.from_email = "noreply@spankhandyman.com"
         
-    def send_spank_buck_email(self, to_email, amount, reason, customer_name=None):
-        """Send SPANK Buck reward email using available service"""
+    def send_spank_buck_reward(self, phone_number, amount, reason, customer_name=None, email=None):
+        """Send SPANK Buck reward via SMS only and notify admin"""
         try:
-            if self.rapidapi_key:
-                return self._send_via_rapidapi(to_email, amount, reason, customer_name)
-            elif self.sendgrid_key:
-                return self._send_via_sendgrid(to_email, amount, reason, customer_name)
-            else:
-                logging.warning("No email service configured - logging reward instead")
-                return self._log_reward(to_email, amount, reason, customer_name)
+            # Send SMS notification
+            sms_sent = self.send_spank_buck_sms(phone_number, amount, reason, customer_name)
+            
+            # Log the reward
+            self._log_reward(email or phone_number, amount, reason, customer_name)
+            
+            # Notify admin of reward sent
+            self._notify_admin_of_reward(phone_number, amount, reason, customer_name, email)
+            
+            return sms_sent
         except Exception as e:
-            logging.error(f"Failed to send SPANK Buck email: {e}")
+            logging.error(f"Failed to send SPANK Buck reward: {e}")
             return False
     
     def send_spank_buck_sms(self, to_phone, amount, reason, customer_name=None):
@@ -225,10 +228,10 @@ class NotificationService:
         </html>
         """
     
-    def _log_reward(self, to_email, amount, reason, customer_name):
+    def _log_reward(self, to_contact, amount, reason, customer_name):
         """Log reward when no email service is available"""
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        log_message = f"[{timestamp}] SPANK Buck Reward: ${amount} to {to_email} ({customer_name}) for {reason}"
+        log_message = f"[{timestamp}] SPANK Buck Reward: ${amount} to {to_contact} ({customer_name}) for {reason}"
         logging.info(log_message)
         
         # Store in a simple log file for manual processing
@@ -239,6 +242,30 @@ class NotificationService:
             logging.error(f"Failed to write reward log: {e}")
         
         return True
+    
+    def _notify_admin_of_reward(self, phone_number, amount, reason, customer_name, email):
+        """Add reward notification to admin panel"""
+        from models import HandymanStorage
+        storage = HandymanStorage()
+        
+        # Create admin notification
+        notification_data = {
+            'type': 'spank_buck_reward',
+            'customer_name': customer_name or 'Unknown Customer',
+            'phone_number': phone_number,
+            'email': email,
+            'amount': amount,
+            'reason': reason,
+            'timestamp': datetime.now(),
+            'status': 'sent'
+        }
+        
+        # Add to storage
+        try:
+            storage.add_admin_notification(notification_data)
+            logging.info(f"Admin notified of ${amount} SPANK Buck reward to {customer_name}")
+        except Exception as e:
+            logging.error(f"Failed to notify admin of reward: {e}")
 
 # Global notification service instance
 notification_service = NotificationService()
