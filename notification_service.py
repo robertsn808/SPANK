@@ -12,9 +12,10 @@ class NotificationService:
     def __init__(self):
         self.rapidapi_key = os.environ.get('RAPIDAPI_KEY')
         self.sendgrid_key = os.environ.get('SENDGRID_API_KEY')
-        self.twilio_sid = os.environ.get('TWILIO_ACCOUNT_SID')
-        self.twilio_token = os.environ.get('TWILIO_AUTH_TOKEN')
-        self.twilio_phone = os.environ.get('TWILIO_PHONE_NUMBER')
+        # Use provided Twilio credentials as fallback
+        self.twilio_sid = os.environ.get('TWILIO_ACCOUNT_SID') or "US56bbfe10c643f708191c41349097faa4"
+        self.twilio_token = os.environ.get('TWILIO_AUTH_TOKEN') or "4cd27b48274be507ac9163775722ad8e"
+        self.twilio_phone = os.environ.get('TWILIO_PHONE_NUMBER') or "+18778102726"
         self.from_email = "spank808@gmail.com"
         
         # Initialize Twilio client with SendGrid integration
