@@ -1073,3 +1073,150 @@ def analytics_dashboard():
                          completed_jobs=completed_jobs,
                          referrals=referrals,
                          memberships=memberships)
+
+@app.route('/admin/customer-feedback')
+def customer_feedback():
+    """Customer satisfaction and feedback management"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access customer feedback.', 'error')
+        return redirect(url_for('admin_login'))
+
+    service_requests = handyman_storage.get_all_service_requests()
+    contact_messages = handyman_storage.get_all_contact_messages()
+    
+    # Recently completed jobs needing follow-up
+    hawaii_now = get_hawaii_time()
+    recent_completions = []
+    follow_up_needed = []
+    
+    for request in service_requests:
+        if request.status == 'completed' and request.preferred_date:
+            completion_date = datetime.strptime(request.preferred_date, '%Y-%m-%d')
+            days_since = (hawaii_now.replace(tzinfo=None) - completion_date).days
+            
+            if days_since <= 7:  # Completed within last week
+                recent_completions.append({
+                    'request': request,
+                    'days_since': days_since
+                })
+            elif 7 < days_since <= 30:  # Needs satisfaction follow-up
+                follow_up_needed.append({
+                    'request': request,
+                    'days_since': days_since
+                })
+
+    # Customer communication priorities
+    urgent_messages = [msg for msg in contact_messages if msg.status == 'unread' and 
+                      hasattr(msg, 'priority_score') and msg.priority_score >= 7]
+    
+    # Calculate satisfaction metrics
+    total_completed = len([req for req in service_requests if req.status == 'completed'])
+    
+    return render_template('admin/customer_feedback.html',
+                         recent_completions=recent_completions,
+                         follow_up_needed=follow_up_needed,
+                         urgent_messages=urgent_messages,
+                         total_completed=total_completed,
+                         contact_messages=contact_messages)
+
+@app.route('/admin/send-followup/<int:request_id>', methods=['POST'])
+def send_followup(request_id):
+    """Send automated follow-up message to customer"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        service_requests = handyman_storage.get_all_service_requests()
+        request_obj = next((req for req in service_requests if req.id == request_id), None)
+        
+        if not request_obj:
+            flash('Service request not found.', 'error')
+            return redirect(url_for('customer_feedback'))
+        
+        # Send follow-up notification
+        follow_up_message = f"""
+        Thank you for choosing SPANKKS Construction for your {request_obj.service} project!
+        
+        We hope you're satisfied with our work. Your feedback helps us improve our services.
+        
+        As a token of appreciation, here's $5 SPANK Bucks for completing our quick satisfaction survey!
+        
+        Rate your experience: [Survey Link]
+        
+        Need additional work? Contact us for a 10% returning customer discount!
+        
+        Best regards,
+        SPANKKS Construction Team
+        """
+        
+        # Send via notification service
+        notification_service.send_inquiry_alert(
+            'Follow-up', 
+            request_obj.name, 
+            request_obj.phone, 
+            request_obj.email, 
+            f"Satisfaction follow-up for {request_obj.service}"
+        )
+        
+        # Send SPANK Buck reward
+        notification_service.send_spank_buck_reward(
+            request_obj.phone, 
+            5, 
+            "Customer satisfaction survey completion", 
+            request_obj.name, 
+            request_obj.email
+        )
+        
+        flash(f'Follow-up sent to {request_obj.name} with $5 SPANK Buck reward!', 'success')
+        
+    except Exception as e:
+        logging.error(f"Error sending follow-up: {e}")
+        flash('Error sending follow-up message.', 'error')
+    
+    return redirect(url_for('customer_feedback'))
+
+@app.route('/admin/bulk-communications')
+def bulk_communications():
+    """Bulk customer communication management"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access bulk communications.', 'error')
+        return redirect(url_for('admin_login'))
+
+    service_requests = handyman_storage.get_all_service_requests()
+    memberships = handyman_storage.get_all_memberships()
+    referrals = handyman_storage.get_all_referrals()
+    
+    # Segment customers for targeted campaigns
+    recent_customers = [req for req in service_requests if req.status == 'completed']
+    pending_customers = [req for req in service_requests if req.status == 'pending']
+    repeat_customers = []  # Would track based on email matching
+    
+    # SPANK Buck campaigns
+    seasonal_promotions = [
+        {
+            'name': 'Summer Home Prep',
+            'description': 'Get ready for summer with deck repairs and outdoor projects',
+            'reward': 15,
+            'target': 'recent_customers'
+        },
+        {
+            'name': 'Holiday Home Safety',
+            'description': 'Electrical safety checks and holiday lighting installation',
+            'reward': 20,
+            'target': 'all_customers'
+        },
+        {
+            'name': 'Spring Cleaning Specials',
+            'description': 'Pressure washing, fence maintenance, and exterior touch-ups',
+            'reward': 10,
+            'target': 'members'
+        }
+    ]
+    
+    return render_template('admin/bulk_communications.html',
+                         recent_customers=recent_customers,
+                         pending_customers=pending_customers,
+                         repeat_customers=repeat_customers,
+                         seasonal_promotions=seasonal_promotions,
+                         memberships=memberships,
+                         referrals=referrals)
