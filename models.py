@@ -1,6 +1,12 @@
 
 import uuid
 from datetime import datetime
+import pytz
+
+def get_hawaii_time():
+    """Get current time in Hawaii timezone"""
+    hawaii_tz = pytz.timezone('Pacific/Honolulu')
+    return datetime.now(hawaii_tz)
 
 class ContactMessage:
     def __init__(self, name, email, phone=None, subject=None, message=None):
@@ -116,6 +122,82 @@ class HandymanStorage:
     
     def get_high_priority_leads(self):
         return [lead for lead in self.leads if lead.ai_score > 7 or lead.interest_level == 'high']
+    
+    # Referral management methods
+    def add_referral(self, referral_data):
+        referral = Referral(
+            referrer_code=referral_data['referrer_code'],
+            referred_email=referral_data['referred_email'],
+            status=referral_data.get('status', 'pending'),
+            reward_amount=referral_data.get('reward_amount', 25)
+        )
+        self.referrals.append(referral)
+        return referral.id
+    
+    def get_all_referrals(self):
+        return self.referrals
+    
+    def get_referrals_by_code(self, referrer_code):
+        return [ref for ref in self.referrals if ref.referrer_code == referrer_code]
+    
+    def update_referral_status(self, referral_id, status):
+        for referral in self.referrals:
+            if referral.id == referral_id:
+                referral.status = status
+                if status == 'completed':
+                    referral.completed_date = get_hawaii_time()
+                return True
+        return False
+    
+    # Membership management methods
+    def add_membership(self, membership_data):
+        membership = Membership(
+            customer_email=membership_data['customer_email'],
+            plan_type=membership_data['plan_type'],
+            status=membership_data.get('status', 'active')
+        )
+        self.memberships.append(membership)
+        return membership.id
+    
+    def get_all_memberships(self):
+        return self.memberships
+    
+    def get_membership_by_email(self, email):
+        for membership in self.memberships:
+            if membership.customer_email == email:
+                return membership
+        return None
+    
+    def update_membership_status(self, membership_id, status):
+        for membership in self.memberships:
+            if membership.id == membership_id:
+                membership.status = status
+                return True
+        return False
+    
+    def get_referral_stats(self):
+        total_referrals = len(self.referrals)
+        completed_referrals = len([r for r in self.referrals if r.status == 'completed'])
+        total_rewards = sum(r.reward_amount for r in self.referrals if r.status == 'rewarded')
+        return {
+            'total': total_referrals,
+            'completed': completed_referrals,
+            'pending': total_referrals - completed_referrals,
+            'total_rewards': total_rewards
+        }
+    
+    def get_membership_stats(self):
+        active_memberships = len([m for m in self.memberships if m.status == 'active'])
+        revenue_by_plan = {}
+        for membership in self.memberships:
+            if membership.status == 'active':
+                revenue_by_plan[membership.plan_type] = revenue_by_plan.get(membership.plan_type, 0) + membership.monthly_fee
+        
+        return {
+            'active_members': active_memberships,
+            'monthly_revenue': sum(revenue_by_plan.values()),
+            'revenue_by_plan': revenue_by_plan
+        }
 
 class Admin:
     def __init__(self, username, password_hash):
