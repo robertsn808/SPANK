@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Help & FAQ - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h1>Help & FAQ</h1>
+            <p class="lead">Find answers to common questions about our services and processes.</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-tools"></i> Services</h5>
+                </div>
+                <div class="card-body">
+                    <h6>What services do you offer?</h6>
+                    <p>We provide comprehensive handyman services including drywall repair, flooring installation, general repairs, plumbing fixes, electrical work, and home improvements.</p>
+                    
+                    <h6>Do you offer emergency services?</h6>
+                    <p>Yes, we provide emergency repair services for urgent issues. Contact us at (808) 778-9132 for immediate assistance.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-calendar-alt"></i> Scheduling</h5>
+                </div>
+                <div class="card-body">
+                    <h6>How do I schedule a service?</h6>
+                    <p>You can schedule through our contact form, call us directly at (808) 778-9132, or email spank808@gmail.com.</p>
+                    
+                    <h6>What are your business hours?</h6>
+                    <p>Monday-Friday: 7:00 AM - 5:00 PM<br>
+                    Saturday: 8:00 AM - 3:00 PM<br>
+                    Sunday: Closed</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-dollar-sign"></i> Pricing</h5>
+                </div>
+                <div class="card-body">
+                    <h6>How much do your services cost?</h6>
+                    <p>Our rates vary by service type. General handyman work starts at $90/hour. Check our <a href="{{ url_for('pricing') }}">pricing page</a> for detailed rates.</p>
+                    
+                    <h6>Do you provide free estimates?</h6>
+                    <p>Yes, we provide free estimates for most projects. Contact us to schedule an assessment.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-shield-alt"></i> Insurance & Licensing</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Are you licensed and insured?</h6>
+                    <p>Yes, SPANKKS Construction is fully licensed and insured for your protection and peace of mind.</p>
+                    
+                    <h6>What areas do you serve?</h6>
+                    <p>We proudly serve all of O'ahu, including Honolulu, Pearl City, Kailua, and surrounding communities.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h5>Still have questions?</h5>
+                    <p>Contact us directly for personalized assistance.</p>
+                    <a href="{{ url_for('contact') }}" class="btn btn-light">Contact Us</a>
+                    <a href="tel:8087789132" class="btn btn-outline-light ms-2">Call (808) 778-9132</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

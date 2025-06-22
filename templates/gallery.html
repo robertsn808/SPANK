@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Project Gallery - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h1>Project Gallery</h1>
+            <p class="lead">Showcasing our quality craftsmanship across O'ahu</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Drywall Repair & Finishing</h5>
+                    <p class="card-text">Professional drywall patching, texturing, and painting services.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Flooring Installation</h5>
+                    <p class="card-text">Quality flooring installations including laminate, vinyl, and tile.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Home Repairs</h5>
+                    <p class="card-text">General handyman services and home maintenance solutions.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Fence Installation</h5>
+                    <p class="card-text">Custom fencing solutions for residential and commercial properties.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Bathroom Renovations</h5>
+                    <p class="card-text">Complete bathroom remodeling and fixture installations.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Kitchen Updates</h5>
+                    <p class="card-text">Kitchen improvements including cabinet work and countertop installation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h5>Ready to Start Your Project?</h5>
+                    <p>Contact us today for a free consultation and estimate.</p>
+                    <a href="{{ url_for('contact') }}" class="btn btn-light">Get Free Estimate</a>
+                    <a href="tel:8087789132" class="btn btn-outline-light ms-2">Call (808) 778-9132</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -9,6 +9,8 @@ class BusinessIntelligence:
 
     def __init__(self):
         self.hawaii_tz = pytz.timezone('Pacific/Honolulu')
+        import logging
+        self.logger = logging.getLogger(__name__)
 
     def generate_market_insights(self, storage):
         """Analyze market trends and competitive positioning"""

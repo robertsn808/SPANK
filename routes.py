@@ -479,6 +479,27 @@ def ai_leads():
                          high_value_leads=high_value_leads,
                          urgent_requests=urgent_requests)
 
+@app.route('/admin/')
+def admin_index():
+    """Admin portal homepage - redirect to dashboard"""
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/analytics')
+def admin_analytics():
+    """Admin analytics dashboard"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access analytics.', 'error')
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from analytics_manager import AnalyticsManager
+        analytics_manager = AnalyticsManager()
+        analytics_data = analytics_manager.get_comprehensive_analytics(handyman_storage)
+        return render_template('admin/analytics.html', analytics=analytics_data)
+    except Exception as e:
+        flash(f'Analytics temporarily unavailable: {str(e)}', 'warning')
+        return redirect(url_for('admin_dashboard'))
+
 @app.route('/admin/dashboard')
 def admin_dashboard():
     """Admin dashboard showing all bookings, contact messages, and weekly calendar"""
