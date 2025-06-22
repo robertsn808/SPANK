@@ -7,38 +7,66 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
 <style>
 .scheduler-container {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #f8f9fa;
     min-height: 100vh;
     padding: 2rem 0;
 }
 
 .scheduler-card {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    backdrop-filter: blur(10px);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .calendar-header {
-    background: linear-gradient(45deg, #2c3e50, #34495e);
+    background: linear-gradient(135deg, #28a745, #20c997);
     color: white;
-    padding: 1.5rem;
-    border-radius: 15px 15px 0 0;
+    padding: 2rem;
+    border-radius: 12px 12px 0 0;
     text-align: center;
+    border-bottom: 3px solid rgba(255,255,255,0.2);
 }
 
 .fc-toolbar-title {
     font-size: 1.8rem !important;
-    font-weight: 600;
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
 }
 
 .fc-button-primary {
-    background: #3498db !important;
-    border-color: #3498db !important;
+    background: #28a745 !important;
+    border-color: #28a745 !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    padding: 8px 16px !important;
 }
 
 .fc-button-primary:hover {
-    background: #2980b9 !important;
+    background: #218838 !important;
+    border-color: #1e7e34 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.fc-button-primary:not(:disabled):active {
+    background: #1e7e34 !important;
+    border-color: #1c7430 !important;
+}
+
+.fc-toolbar {
+    margin-bottom: 1.5rem !important;
+    padding: 0 1rem;
+}
+
+.fc-daygrid-event {
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    margin: 1px 2px !important;
+}
+
+.fc-event-title {
+    font-size: 0.85rem !important;
 }
 
 .job-scheduled {
@@ -63,25 +91,35 @@
 }
 
 .stats-card {
-    background: linear-gradient(45deg, #ff6b6b, #feca57);
+    background: linear-gradient(135deg, #28a745, #20c997);
     color: white;
-    border-radius: 10px;
-    padding: 1rem;
+    border-radius: 12px;
+    padding: 1.5rem;
     text-align: center;
     margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
 }
 
 .stats-number {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: bold;
     display: block;
+    margin-bottom: 0.5rem;
 }
 
 .quick-actions {
-    background: #f8f9fa;
-    border-radius: 10px;
+    background: white;
+    border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .quick-action-btn {
@@ -92,10 +130,102 @@
 
 .staff-availability {
     background: white;
-    border-radius: 10px;
-    padding: 1rem;
+    border-radius: 12px;
+    padding: 1.5rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.staff-availability h6 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.staff-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin: 0.25rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.staff-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.staff-active {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    margin: 0.25rem;
+    display: inline-block;
+}
+
+/* Main calendar container improvements */
+.fc {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.fc-view-harness {
+    padding: 1rem;
+}
+
+.fc-col-header-cell {
+    background: #f8f9fa;
+    border-color: #e9ecef;
+    font-weight: 600;
+    color: #495057;
+}
+
+.fc-daygrid-day {
+    transition: background-color 0.2s ease;
+}
+
+.fc-daygrid-day:hover {
+    background-color: #f8f9fa;
+}
+
+.fc-today {
+    background-color: rgba(40, 167, 69, 0.1) !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .scheduler-container {
+        padding: 1rem 0;
+    }
+    
+    .calendar-header {
+        padding: 1.5rem 1rem;
+    }
+    
+    .stats-card {
+        margin-bottom: 0.75rem;
+    }
+    
+    .quick-actions {
+        padding: 1rem;
+    }
+    
+    .staff-availability {
+        padding: 1rem;
+    }
 }
 
 .staff-badge {
