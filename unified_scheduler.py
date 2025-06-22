@@ -71,14 +71,22 @@ class UnifiedScheduler:
         """Create new appointment with standardized IDs and data structure"""
         hawaii_now = datetime.now(self.hawaii_tz)
         
-        # Generate IDs if not provided
-        client_id = appointment_data.get('client_id') or self.generate_client_id()
+        # Check for existing client by email/phone to maintain project continuity
+        existing_client_id = self._find_existing_client(
+            appointment_data.get('client_email'),
+            appointment_data.get('client_phone'),
+            appointment_data['client_name']
+        )
+        
+        # Use existing client ID or generate new one
+        client_id = existing_client_id or appointment_data.get('client_id') or self.generate_client_id()
         job_id = appointment_data.get('job_id') or self.generate_job_id()
         
         appointment = {
             'appointment_id': str(uuid.uuid4()),
             'client_id': client_id,
             'job_id': job_id,
+            'project_name': appointment_data.get('project_name', f"{appointment_data['service_type']} Project"),
             'client_name': appointment_data['client_name'],
             'client_phone': appointment_data.get('client_phone', ''),
             'client_email': appointment_data.get('client_email', ''),
@@ -100,7 +108,10 @@ class UnifiedScheduler:
             'materials_needed': appointment_data.get('materials_needed', []),
             'special_instructions': appointment_data.get('special_instructions', ''),
             'customer_portal_access': True,
-            'staff_portal_access': True
+            'staff_portal_access': True,
+            'is_returning_client': existing_client_id is not None,
+            'project_phase': appointment_data.get('project_phase', 'initial'),
+            'related_jobs': []  # Will be populated with other jobs for this client
         }
         
         # Save appointment
@@ -108,7 +119,10 @@ class UnifiedScheduler:
         appointments.append(appointment)
         self._save_appointments(appointments)
         
-        logging.info(f"Created unified appointment: {client_id}/{job_id}")
+        # Update related jobs for client continuity
+        self._update_client_project_history(client_id, job_id)
+        
+        logging.info(f"Created unified appointment: {client_id}/{job_id} {'(returning client)' if existing_client_id else '(new client)'}")
         return appointment
     
     def get_appointment_by_ids(self, client_id: str, job_id: str) -> Optional[Dict]:
@@ -314,6 +328,127 @@ class UnifiedScheduler:
         """Save appointments to JSON file"""
         with open(self.appointments_file, 'w') as f:
             json.dump(appointments, f, indent=2, default=str)
+    
+    def _find_existing_client(self, email: str, phone: str, name: str) -> Optional[str]:
+        """Find existing client by email, phone, or name to maintain project continuity"""
+        if not email and not phone:
+            return None
+            
+        appointments = self._load_appointments()
+        
+        # Search by email first (most reliable)
+        if email:
+            for appointment in appointments:
+                if appointment.get('client_email', '').lower() == email.lower():
+                    return appointment['client_id']
+        
+        # Search by phone number
+        if phone:
+            for appointment in appointments:
+                if appointment.get('client_phone', '') == phone:
+                    return appointment['client_id']
+        
+        # Search by name (less reliable, only for exact matches)
+        for appointment in appointments:
+            if appointment.get('client_name', '').lower() == name.lower():
+                return appointment['client_id']
+        
+        return None
+    
+    def _update_client_project_history(self, client_id: str, new_job_id: str):
+        """Update related jobs for client project continuity"""
+        appointments = self._load_appointments()
+        client_jobs = []
+        
+        # Find all jobs for this client
+        for appointment in appointments:
+            if appointment['client_id'] == client_id:
+                client_jobs.append({
+                    'job_id': appointment['job_id'],
+                    'project_name': appointment.get('project_name', 'Unnamed Project'),
+                    'service_type': appointment['service_type'],
+                    'status': appointment['status'],
+                    'scheduled_date': appointment['scheduled_date']
+                })
+        
+        # Update related_jobs for all appointments of this client
+        for appointment in appointments:
+            if appointment['client_id'] == client_id:
+                appointment['related_jobs'] = [job for job in client_jobs if job['job_id'] != appointment['job_id']]
+        
+        self._save_appointments(appointments)
+    
+    def get_client_project_history(self, client_id: str) -> List[Dict]:
+        """Get complete project history for a client"""
+        appointments = self._load_appointments()
+        client_projects = []
+        
+        for appointment in appointments:
+            if appointment['client_id'] == client_id:
+                project = {
+                    'job_id': appointment['job_id'],
+                    'project_name': appointment.get('project_name', 'Unnamed Project'),
+                    'service_type': appointment['service_type'],
+                    'status': appointment['status'],
+                    'scheduled_date': appointment['scheduled_date'],
+                    'scheduled_time': appointment.get('scheduled_time', ''),
+                    'created_at': appointment['created_at'],
+                    'notes': appointment.get('notes', ''),
+                    'quote_id': appointment.get('quote_id'),
+                    'project_phase': appointment.get('project_phase', 'initial')
+                }
+                client_projects.append(project)
+        
+        # Sort by creation date (newest first)
+        client_projects.sort(key=lambda x: x['created_at'], reverse=True)
+        return client_projects
+    
+    def get_clients_with_multiple_projects(self) -> List[Dict]:
+        """Get clients who have multiple projects for better management"""
+        appointments = self._load_appointments()
+        client_project_count = {}
+        client_info = {}
+        
+        # Count projects per client
+        for appointment in appointments:
+            client_id = appointment['client_id']
+            if client_id not in client_project_count:
+                client_project_count[client_id] = 0
+                client_info[client_id] = {
+                    'client_id': client_id,
+                    'client_name': appointment['client_name'],
+                    'client_email': appointment.get('client_email', ''),
+                    'client_phone': appointment.get('client_phone', ''),
+                    'projects': []
+                }
+            
+            client_project_count[client_id] += 1
+            client_info[client_id]['projects'].append({
+                'job_id': appointment['job_id'],
+                'project_name': appointment.get('project_name', 'Unnamed Project'),
+                'service_type': appointment['service_type'],
+                'status': appointment['status'],
+                'scheduled_date': appointment['scheduled_date']
+            })
+        
+        # Return only clients with multiple projects
+        multi_project_clients = []
+        for client_id, count in client_project_count.items():
+            if count > 1:
+                client_data = client_info[client_id]
+                client_data['project_count'] = count
+                client_data['total_value'] = self._calculate_client_total_value(client_id)
+                multi_project_clients.append(client_data)
+        
+        # Sort by project count (most projects first)
+        multi_project_clients.sort(key=lambda x: x['project_count'], reverse=True)
+        return multi_project_clients
+    
+    def _calculate_client_total_value(self, client_id: str) -> float:
+        """Calculate total project value for a client (placeholder for future quote integration)"""
+        # This would integrate with the quote system to calculate actual values
+        # For now, return 0 as placeholder
+        return 0.0
 
 # Global instance
 unified_scheduler = UnifiedScheduler()

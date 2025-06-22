@@ -3255,3 +3255,95 @@ def get_unified_calendar_events():
     except Exception as e:
         logging.error(f"Error getting unified calendar events: {e}")
         return jsonify({'error': 'Failed to load calendar events'}), 500
+
+# ===============================
+# MULTI-PROJECT CLIENT MANAGEMENT
+# ===============================
+
+@app.route('/admin/multi_project_clients')
+def admin_multi_project_clients():
+    """Admin view for managing clients with multiple projects"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get clients with multiple projects
+        multi_project_clients = unified_scheduler.get_clients_with_multiple_projects()
+        
+        return render_template('admin/multi_project_clients.html',
+                             clients=multi_project_clients)
+        
+    except Exception as e:
+        logging.error(f"Error loading multi-project clients: {e}")
+        flash('Error loading client data.', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/client/<client_id>/projects')
+def admin_client_project_history(client_id):
+    """View detailed project history for a specific client"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get client project history
+        project_history = unified_scheduler.get_client_project_history(client_id)
+        
+        if not project_history:
+            flash('No projects found for this client.', 'warning')
+            return redirect(url_for('admin_multi_project_clients'))
+        
+        # Get client basic info from first project
+        client_info = {
+            'client_id': client_id,
+            'client_name': project_history[0].get('client_name', 'Unknown'),
+            'project_count': len(project_history)
+        }
+        
+        return render_template('admin/client_project_history.html',
+                             client=client_info,
+                             projects=project_history)
+        
+    except Exception as e:
+        logging.error(f"Error loading client project history: {e}")
+        flash('Error loading project history.', 'error')
+        return redirect(url_for('admin_multi_project_clients'))
+
+@app.route('/api/client/<client_id>/project_history')
+def get_client_project_history_api(client_id):
+    """API endpoint to get client project history"""
+    if not session.get('portal_authenticated'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    # Verify client can access this data
+    session_client_id = session.get('client_id')
+    if session_client_id != client_id and session.get('access_level') != 'staff':
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        # Get project history for this client
+        project_history = unified_scheduler.get_client_project_history(client_id)
+        
+        # Format for API response
+        formatted_projects = []
+        for project in project_history:
+            formatted_projects.append({
+                'job_id': project['job_id'],
+                'project_name': project['project_name'],
+                'service_type': project['service_type'],
+                'status': project['status'],
+                'scheduled_date': project['scheduled_date'],
+                'scheduled_time': project['scheduled_time'],
+                'created_at': project['created_at'],
+                'notes': project['notes'],
+                'project_phase': project['project_phase']
+            })
+        
+        return jsonify({
+            'client_id': client_id,
+            'projects': formatted_projects,
+            'total_projects': len(formatted_projects)
+        })
+        
+    except Exception as e:
+        logging.error(f"Error getting client project history: {e}")
+        return jsonify({'error': 'Failed to load project history'}), 500
