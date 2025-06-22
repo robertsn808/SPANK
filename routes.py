@@ -1180,7 +1180,7 @@ def api_real_time_metrics():
     """API endpoint for real-time metrics"""
     try:
         from analytics_manager import analytics_manager
-        metrics = analytics_manager.get_real_time_metrics(handyman_storage)
+        metrics = analytics_manager.get_real_time_metrics(storage_service)
         return jsonify(metrics)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -1190,7 +1190,7 @@ def api_performance_alerts():
     """API endpoint for performance alerts"""
     try:
         from analytics_manager import analytics_manager
-        alerts = analytics_manager.get_performance_alerts(handyman_storage)
+        alerts = analytics_manager.get_performance_alerts(storage_service)
         return jsonify(alerts)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -1200,7 +1200,7 @@ def api_executive_summary():
     """API endpoint for executive summary"""
     try:
         from analytics_manager import analytics_manager
-        summary = analytics_manager.get_executive_summary(handyman_storage)
+        summary = analytics_manager.get_executive_summary(storage_service)
         return jsonify(summary)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
