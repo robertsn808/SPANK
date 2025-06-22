@@ -321,7 +321,7 @@
 {% endif %}
 
 <script>
-// Authentic dashboard functions only
+// Authentic dashboard functions with auto-refresh
 function viewMessage(messageId) {
     // In real implementation, show message details
     alert('Viewing message ID: ' + messageId);
@@ -346,6 +346,17 @@ function markNotificationComplete(notificationId) {
     fetch('/admin/notifications/' + notificationId + '/complete', { method: 'POST' })
         .then(() => location.reload());
 }
+
+// Auto-refresh dashboard every 60 seconds to show new quotes, invoices, and notifications
+function refreshDashboard() {
+    location.reload();
+}
+
+// Initialize auto-refresh
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh every 60 seconds
+    setInterval(refreshDashboard, 60000);
+});
 </script>
 
 {% endblock %}
