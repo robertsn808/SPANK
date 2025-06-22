@@ -23,6 +23,10 @@
     {% block head %}{% endblock %}
 </head>
 <body class="admin-body">
+    <!-- Include Enhanced UX Components -->
+    {% include 'enhanced_ux_components.html' %}
+    {% include 'medium_priority_enhancements.html' %}
+    {% include 'notification_system.html' %}
     <!-- Admin Header with Navigation -->
     <header class="admin-header bg-primary text-white py-3 shadow-sm">
         <div class="container">
