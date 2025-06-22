@@ -1,0 +1,576 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Client Messaging Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+.messaging-card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.messaging-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.client-list-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.client-list-item:hover {
+    background-color: #f8f9fa;
+}
+
+.client-list-item:last-child {
+    border-bottom: none;
+}
+
+.reminder-stat {
+    text-align: center;
+    padding: 20px;
+}
+
+.communication-item {
+    border-left: 4px solid #007bff;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f8f9fa;
+    border-radius: 0 5px 5px 0;
+}
+
+.communication-item.email {
+    border-left-color: #28a745;
+}
+
+.communication-item.sms {
+    border-left-color: #ffc107;
+}
+
+.communication-item.both {
+    border-left-color: #6f42c1;
+}
+
+.message-compose {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .col-lg-4, .col-lg-8 {
+        margin-bottom: 20px;
+    }
+    
+    .messaging-card {
+        margin-bottom: 15px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-comments"></i> Client Messaging</h2>
+                <div>
+                    <button class="btn btn-primary" onclick="processReminders()">
+                        <i class="fas fa-sync"></i> Process Reminders
+                    </button>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reminder Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card messaging-card">
+                <div class="card-body reminder-stat">
+                    <h5 class="card-title text-primary">Scheduled</h5>
+                    <h3 class="mb-0">{{ reminder_stats.total_scheduled }}</h3>
+                    <small class="text-muted">Total reminders</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card messaging-card">
+                <div class="card-body reminder-stat">
+                    <h5 class="card-title text-success">Sent Today</h5>
+                    <h3 class="mb-0">{{ reminder_stats.sent_today }}</h3>
+                    <small class="text-muted">Notifications sent</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card messaging-card">
+                <div class="card-body reminder-stat">
+                    <h5 class="card-title text-warning">Pending</h5>
+                    <h3 class="mb-0">{{ reminder_stats.pending }}</h3>
+                    <small class="text-muted">Awaiting delivery</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card messaging-card">
+                <div class="card-body reminder-stat">
+                    <h5 class="card-title text-danger">Failed</h5>
+                    <h3 class="mb-0">{{ reminder_stats.failed }}</h3>
+                    <small class="text-muted">Need attention</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Client List and Compose Message -->
+        <div class="col-lg-4">
+            <div class="card messaging-card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-users"></i> Select Client</h6>
+                </div>
+                <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                    {% if contacts %}
+                        {% for contact in contacts %}
+                        <div class="client-list-item" onclick="selectClient('{{ contact.id }}', '{{ contact.name }}', '{{ contact.email or '' }}', '{{ contact.phone or '' }}')">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ contact.name }}</h6>
+                                    {% if contact.email %}
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-envelope"></i> {{ contact.email }}
+                                        </small>
+                                    {% endif %}
+                                    {% if contact.phone %}
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-phone"></i> {{ contact.phone }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted">{{ contact.project_count or 1 }} project(s)</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center p-4 text-muted">
+                            <i class="fas fa-users fa-3x mb-3"></i>
+                            <p>No clients found</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Compose Message -->
+            <div class="card messaging-card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-paper-plane"></i> Send Message</h6>
+                </div>
+                <div class="card-body">
+                    <form id="messageForm">
+                        <input type="hidden" id="selectedClientId" name="client_id">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Selected Client</label>
+                            <div id="selectedClientInfo" class="alert alert-info" style="display: none;">
+                                <strong id="selectedClientName"></strong><br>
+                                <small id="selectedClientDetails"></small>
+                            </div>
+                            <div id="noClientSelected" class="alert alert-warning">
+                                Please select a client from the list above
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Message Type</label>
+                            <select class="form-select" id="messageType" name="message_type" required>
+                                <option value="">Select delivery method</option>
+                                <option value="email">Email Only</option>
+                                <option value="sms">SMS Only</option>
+                                <option value="both">Email + SMS</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="subjectGroup" style="display: none;">
+                            <label for="subject" class="form-label">Subject (Email)</label>
+                            <input type="text" class="form-control" id="subject" name="subject" placeholder="Message from SPANKKS Construction">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required placeholder="Type your message here..."></textarea>
+                            <div class="form-text">
+                                <span id="messageCounter">0</span> characters
+                                <span id="smsWarning" class="text-warning" style="display: none;">
+                                    (SMS limit: 160 characters)
+                                </span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100" disabled id="sendButton">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Communications -->
+        <div class="col-lg-8">
+            <div class="card messaging-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0"><i class="fas fa-history"></i> Recent Communications</h6>
+                    <button class="btn btn-sm btn-outline-primary" onclick="refreshCommunications()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="communicationHistory">
+                        {% if recent_communications %}
+                            {% for comm in recent_communications %}
+                            <div class="communication-item {{ comm.message_type }}">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-0">{{ comm.client_name }}</h6>
+                                    <small class="text-muted">{{ comm.sent_date[:19] | replace('T', ' ') }}</small>
+                                </div>
+                                
+                                {% if comm.subject %}
+                                <div class="mb-2">
+                                    <strong>{{ comm.subject }}</strong>
+                                </div>
+                                {% endif %}
+                                
+                                <p class="mb-2">{{ comm.message[:150] }}{% if comm.message|length > 150 %}...{% endif %}</p>
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge bg-primary">{{ comm.message_type.upper() }}</span>
+                                        {% if comm.results.email == 'sent' %}
+                                            <span class="badge bg-success">Email Sent</span>
+                                        {% elif comm.results.email == 'failed' %}
+                                            <span class="badge bg-danger">Email Failed</span>
+                                        {% endif %}
+                                        {% if comm.results.sms == 'sent' %}
+                                            <span class="badge bg-success">SMS Sent</span>
+                                        {% elif comm.results.sms == 'failed' %}
+                                            <span class="badge bg-danger">SMS Failed</span>
+                                        {% endif %}
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-info" onclick="showCommunicationHistory('{{ comm.client_id }}', '{{ comm.client_name }}')">
+                                        View History
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center p-4 text-muted">
+                                <i class="fas fa-comments fa-3x mb-3"></i>
+                                <p>No recent communications</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Communication History Modal -->
+<div class="modal fade" id="historyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Communication History</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="historyContent">
+                    <!-- History will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedClient = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Message type change handler
+    document.getElementById('messageType').addEventListener('change', function() {
+        const messageType = this.value;
+        const subjectGroup = document.getElementById('subjectGroup');
+        const smsWarning = document.getElementById('smsWarning');
+        
+        if (messageType === 'email' || messageType === 'both') {
+            subjectGroup.style.display = 'block';
+        } else {
+            subjectGroup.style.display = 'none';
+        }
+        
+        if (messageType === 'sms' || messageType === 'both') {
+            smsWarning.style.display = 'inline';
+        } else {
+            smsWarning.style.display = 'none';
+        }
+        
+        updateSendButton();
+    });
+    
+    // Message counter
+    document.getElementById('message').addEventListener('input', function() {
+        const counter = document.getElementById('messageCounter');
+        counter.textContent = this.value.length;
+        
+        const smsWarning = document.getElementById('smsWarning');
+        const messageType = document.getElementById('messageType').value;
+        
+        if ((messageType === 'sms' || messageType === 'both') && this.value.length > 160) {
+            smsWarning.style.color = '#dc3545';
+            smsWarning.textContent = '(SMS messages over 160 characters may be split)';
+        } else {
+            smsWarning.style.color = '#ffc107';
+            smsWarning.textContent = '(SMS limit: 160 characters)';
+        }
+        
+        updateSendButton();
+    });
+    
+    // Form submission
+    document.getElementById('messageForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        sendMessage();
+    });
+});
+
+function selectClient(clientId, clientName, clientEmail, clientPhone) {
+    selectedClient = {
+        id: clientId,
+        name: clientName,
+        email: clientEmail,
+        phone: clientPhone
+    };
+    
+    document.getElementById('selectedClientId').value = clientId;
+    document.getElementById('selectedClientName').textContent = clientName;
+    
+    let details = [];
+    if (clientEmail) details.push(`Email: ${clientEmail}`);
+    if (clientPhone) details.push(`Phone: ${clientPhone}`);
+    
+    document.getElementById('selectedClientDetails').innerHTML = details.join('<br>');
+    
+    document.getElementById('selectedClientInfo').style.display = 'block';
+    document.getElementById('noClientSelected').style.display = 'none';
+    
+    updateSendButton();
+}
+
+function updateSendButton() {
+    const sendButton = document.getElementById('sendButton');
+    const hasClient = selectedClient !== null;
+    const hasMessageType = document.getElementById('messageType').value !== '';
+    const hasMessage = document.getElementById('message').value.trim() !== '';
+    
+    sendButton.disabled = !(hasClient && hasMessageType && hasMessage);
+}
+
+function sendMessage() {
+    const formData = new FormData(document.getElementById('messageForm'));
+    const data = {
+        client_id: formData.get('client_id'),
+        message_type: formData.get('message_type'),
+        subject: formData.get('subject'),
+        message: formData.get('message')
+    };
+    
+    // Show loading toast
+    const loadingToast = window.toast ? 
+        window.toast.loading('Sending message...') : null;
+    
+    fetch('/api/messaging/send-client-message', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Hide loading toast
+        if (loadingToast && bootstrap.Toast.getInstance(loadingToast)) {
+            bootstrap.Toast.getInstance(loadingToast).hide();
+        }
+        
+        if (data.success) {
+            // Show success toast
+            if (window.toast) {
+                window.toast.success(`Message sent to ${selectedClient.name}`, {
+                    title: 'Message Delivered',
+                    details: `Delivery: ${Object.entries(data.results).map(([method, status]) => `${method.toUpperCase()}: ${status}`).join(', ')}`
+                });
+            } else {
+                alert(`Message sent successfully to ${selectedClient.name}`);
+            }
+            
+            // Clear form
+            document.getElementById('messageForm').reset();
+            document.getElementById('selectedClientInfo').style.display = 'none';
+            document.getElementById('noClientSelected').style.display = 'block';
+            selectedClient = null;
+            updateSendButton();
+            
+            // Refresh communications
+            refreshCommunications();
+            
+        } else {
+            // Show error toast
+            if (window.toast) {
+                window.toast.error(data.error || 'Failed to send message');
+            } else {
+                alert('Error: ' + (data.error || 'Failed to send message'));
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error sending message:', error);
+        
+        // Hide loading toast
+        if (loadingToast && bootstrap.Toast.getInstance(loadingToast)) {
+            bootstrap.Toast.getInstance(loadingToast).hide();
+        }
+        
+        // Show error toast
+        if (window.toast) {
+            window.toast.error('Network error occurred. Please try again.');
+        } else {
+            alert('Network error occurred. Please try again.');
+        }
+    });
+}
+
+function processReminders() {
+    // Show loading toast
+    const loadingToast = window.toast ? 
+        window.toast.loading('Processing pending reminders...') : null;
+    
+    fetch('/api/reminders/process', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Hide loading toast
+        if (loadingToast && bootstrap.Toast.getInstance(loadingToast)) {
+            bootstrap.Toast.getInstance(loadingToast).hide();
+        }
+        
+        if (data.success) {
+            // Show success toast
+            if (window.toast) {
+                window.toast.success(`Processed ${data.processed_count} reminders`, {
+                    title: 'Reminders Processed',
+                    details: `Pending: ${data.statistics.pending}, Failed: ${data.statistics.failed}`
+                });
+            } else {
+                alert(`Successfully processed ${data.processed_count} reminders`);
+            }
+            
+            // Refresh page to update statistics
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+            
+        } else {
+            // Show error toast
+            if (window.toast) {
+                window.toast.error(data.error || 'Failed to process reminders');
+            } else {
+                alert('Error: ' + (data.error || 'Failed to process reminders'));
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error processing reminders:', error);
+        
+        // Hide loading toast
+        if (loadingToast && bootstrap.Toast.getInstance(loadingToast)) {
+            bootstrap.Toast.getInstance(loadingToast).hide();
+        }
+        
+        // Show error toast
+        if (window.toast) {
+            window.toast.error('Network error occurred. Please try again.');
+        } else {
+            alert('Network error occurred. Please try again.');
+        }
+    });
+}
+
+function showCommunicationHistory(clientId, clientName) {
+    document.querySelector('#historyModal .modal-title').textContent = `Communication History - ${clientName}`;
+    
+    fetch(`/api/messaging/communication-history/${clientId}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let historyHtml = '';
+            
+            if (data.communications.length > 0) {
+                data.communications.forEach(comm => {
+                    historyHtml += `
+                        <div class="communication-item ${comm.message_type} mb-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                ${comm.subject ? `<h6 class="mb-0">${comm.subject}</h6>` : '<h6 class="mb-0">Message</h6>'}
+                                <small class="text-muted">${comm.sent_date.substring(0, 19).replace('T', ' ')}</small>
+                            </div>
+                            <p class="mb-2">${comm.message}</p>
+                            <div>
+                                <span class="badge bg-primary">${comm.message_type.toUpperCase()}</span>
+                                ${comm.results.email === 'sent' ? '<span class="badge bg-success">Email Sent</span>' : ''}
+                                ${comm.results.email === 'failed' ? '<span class="badge bg-danger">Email Failed</span>' : ''}
+                                ${comm.results.sms === 'sent' ? '<span class="badge bg-success">SMS Sent</span>' : ''}
+                                ${comm.results.sms === 'failed' ? '<span class="badge bg-danger">SMS Failed</span>' : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                historyHtml = `
+                    <div class="text-center p-4 text-muted">
+                        <i class="fas fa-comments fa-3x mb-3"></i>
+                        <p>No communication history found</p>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('historyContent').innerHTML = historyHtml;
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('historyModal'));
+            modal.show();
+        }
+    })
+    .catch(error => {
+        console.error('Error loading history:', error);
+        if (window.toast) {
+            window.toast.error('Failed to load communication history');
+        }
+    });
+}
+
+function refreshCommunications() {
+    window.location.reload();
+}
+</script>
+{% endblock %}

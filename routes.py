@@ -2583,6 +2583,243 @@ def convert_quote_to_invoice():
         logging.error(f"Error converting quote to invoice: {e}")
         return jsonify({'error': f'Failed to convert quote: {str(e)}'}), 500
 
+@app.route('/api/reminders/process', methods=['POST'])
+def process_reminders():
+    """Process all pending reminders"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from reminder_service import ReminderService
+        reminder_service = ReminderService()
+        
+        processed = reminder_service.process_pending_reminders()
+        stats = reminder_service.get_reminder_statistics()
+        
+        return jsonify({
+            'success': True,
+            'processed_count': len(processed),
+            'processed_reminders': processed,
+            'statistics': stats
+        })
+        
+    except Exception as e:
+        logging.error(f"Error processing reminders: {e}")
+        return jsonify({'error': f'Failed to process reminders: {str(e)}'}), 500
+
+@app.route('/api/reminders/schedule/appointment', methods=['POST'])
+def schedule_appointment_reminder():
+    """Schedule reminders for an appointment"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from reminder_service import ReminderService
+        reminder_service = ReminderService()
+        
+        appointment_data = request.get_json()
+        
+        success = reminder_service.schedule_appointment_reminder(appointment_data)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': f'Reminders scheduled for appointment {appointment_data.get("id")}'
+            })
+        else:
+            return jsonify({'error': 'Failed to schedule reminders'}), 500
+            
+    except Exception as e:
+        logging.error(f"Error scheduling appointment reminder: {e}")
+        return jsonify({'error': f'Failed to schedule reminder: {str(e)}'}), 500
+
+@app.route('/api/reminders/schedule/invoice', methods=['POST'])
+def schedule_invoice_reminder():
+    """Schedule reminders for an invoice"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from reminder_service import ReminderService
+        reminder_service = ReminderService()
+        
+        invoice_data = request.get_json()
+        
+        success = reminder_service.schedule_invoice_reminder(invoice_data)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': f'Payment reminders scheduled for invoice {invoice_data.get("id")}'
+            })
+        else:
+            return jsonify({'error': 'Failed to schedule reminders'}), 500
+            
+    except Exception as e:
+        logging.error(f"Error scheduling invoice reminder: {e}")
+        return jsonify({'error': f'Failed to schedule reminder: {str(e)}'}), 500
+
+@app.route('/api/messaging/send-client-message', methods=['POST'])
+def send_client_message():
+    """Send message to client via email or SMS"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        client_id = data.get('client_id')
+        message_type = data.get('message_type')  # email, sms, both
+        subject = data.get('subject', '')
+        message = data.get('message')
+        
+        if not all([client_id, message_type, message]):
+            return jsonify({'error': 'Missing required fields'}), 400
+        
+        # Load client data
+        contacts = []
+        if os.path.exists('data/contacts.json'):
+            with open('data/contacts.json', 'r') as f:
+                contacts = json.load(f)
+        
+        client = None
+        for contact in contacts:
+            if contact['id'] == client_id:
+                client = contact
+                break
+        
+        if not client:
+            return jsonify({'error': 'Client not found'}), 404
+        
+        # Send message
+        from notification_service import NotificationService
+        notification_service = NotificationService()
+        
+        results = {}
+        
+        if message_type in ['email', 'both'] and client.get('email'):
+            email_success = notification_service.send_email(
+                client['email'], 
+                subject or 'Message from SPANKKS Construction',
+                message
+            )
+            results['email'] = 'sent' if email_success else 'failed'
+        
+        if message_type in ['sms', 'both'] and client.get('phone'):
+            sms_success = notification_service.send_sms(
+                client['phone'], 
+                message
+            )
+            results['sms'] = 'sent' if sms_success else 'failed'
+        
+        # Log the communication
+        communication_log = {
+            'id': f"msg_{int(datetime.now().timestamp())}",
+            'client_id': client_id,
+            'client_name': client['name'],
+            'message_type': message_type,
+            'subject': subject,
+            'message': message,
+            'sent_date': datetime.now().isoformat(),
+            'sent_by': 'Admin',
+            'results': results
+        }
+        
+        # Save communication log
+        os.makedirs('data', exist_ok=True)
+        communications = []
+        if os.path.exists('data/communications.json'):
+            with open('data/communications.json', 'r') as f:
+                communications = json.load(f)
+        
+        communications.append(communication_log)
+        
+        with open('data/communications.json', 'w') as f:
+            json.dump(communications, f, indent=2)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Message sent to {client["name"]}',
+            'results': results,
+            'communication_id': communication_log['id']
+        })
+        
+    except Exception as e:
+        logging.error(f"Error sending client message: {e}")
+        return jsonify({'error': f'Failed to send message: {str(e)}'}), 500
+
+@app.route('/api/messaging/communication-history/<client_id>')
+def get_communication_history(client_id):
+    """Get communication history for a client"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        communications = []
+        if os.path.exists('data/communications.json'):
+            with open('data/communications.json', 'r') as f:
+                all_communications = json.load(f)
+                communications = [c for c in all_communications if c.get('client_id') == client_id]
+        
+        # Sort by date, most recent first
+        communications.sort(key=lambda x: x.get('sent_date', ''), reverse=True)
+        
+        return jsonify({
+            'success': True,
+            'communications': communications,
+            'total': len(communications)
+        })
+        
+    except Exception as e:
+        logging.error(f"Error getting communication history: {e}")
+        return jsonify({'error': f'Failed to get history: {str(e)}'}), 500
+
+@app.route('/admin/client-messaging')
+def client_messaging_dashboard():
+    """Client messaging and communication dashboard"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get all clients
+        contacts = []
+        if os.path.exists('data/contacts.json'):
+            with open('data/contacts.json', 'r') as f:
+                contacts = json.load(f)
+        
+        # Get recent communications
+        recent_communications = []
+        if os.path.exists('data/communications.json'):
+            with open('data/communications.json', 'r') as f:
+                all_communications = json.load(f)
+                recent_communications = sorted(
+                    all_communications, 
+                    key=lambda x: x.get('sent_date', ''), 
+                    reverse=True
+                )[:10]  # Last 10 communications
+        
+        # Get reminder statistics
+        try:
+            from reminder_service import ReminderService
+            reminder_service = ReminderService()
+            reminder_stats = reminder_service.get_reminder_statistics()
+        except:
+            reminder_stats = {
+                'total_scheduled': 0,
+                'sent_today': 0,
+                'pending': 0,
+                'failed': 0
+            }
+        
+        return render_template('admin/client_messaging.html',
+                             contacts=contacts,
+                             recent_communications=recent_communications,
+                             reminder_stats=reminder_stats)
+        
+    except Exception as e:
+        logging.error(f"Error loading client messaging dashboard: {e}")
+        flash('Error loading messaging dashboard.', 'error')
+        return redirect(url_for('admin_dashboard'))
+
 @app.route('/api/invoices')
 def api_invoices():
     """API endpoint to get all invoices with payment status"""
