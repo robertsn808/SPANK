@@ -1,0 +1,318 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Business Hours Configuration{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3">Business Hours Configuration</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('unified_scheduler_dashboard') }}">Scheduler</a></li>
+                        <li class="breadcrumb-item active">Business Hours</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Configure Working Hours</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('update_business_hours') }}">
+                        <div class="row">
+                            <!-- Monday through Friday -->
+                            {% for day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] %}
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   id="{{ day }}_enabled" name="{{ day }}_enabled"
+                                                   {{ 'checked' if business_hours[day]['enabled'] else '' }}>
+                                            <label class="form-check-label fw-bold" for="{{ day }}_enabled">
+                                                {{ day.title() }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <label class="form-label">Start Time</label>
+                                                <input type="time" class="form-control" 
+                                                       name="{{ day }}_start" 
+                                                       value="{{ business_hours[day]['start'] }}">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label">End Time</label>
+                                                <input type="time" class="form-control" 
+                                                       name="{{ day }}_end" 
+                                                       value="{{ business_hours[day]['end'] }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row">
+                            <!-- Weekend Days -->
+                            {% for day in ['saturday', 'sunday'] %}
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-light">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   id="{{ day }}_enabled" name="{{ day }}_enabled"
+                                                   {{ 'checked' if business_hours[day]['enabled'] else '' }}>
+                                            <label class="form-check-label fw-bold" for="{{ day }}_enabled">
+                                                {{ day.title() }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <label class="form-label">Start Time</label>
+                                                <input type="time" class="form-control" 
+                                                       name="{{ day }}_start" 
+                                                       value="{{ business_hours[day]['start'] }}">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label">End Time</label>
+                                                <input type="time" class="form-control" 
+                                                       name="{{ day }}_end" 
+                                                       value="{{ business_hours[day]['end'] }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Lunch Break Settings -->
+                        <div class="row">
+                            <div class="col-md-8 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-warning text-dark">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   id="lunch_enabled" name="lunch_enabled"
+                                                   {{ 'checked' if business_hours['lunch_break']['enabled'] else '' }}>
+                                            <label class="form-check-label fw-bold" for="lunch_enabled">
+                                                <i class="fas fa-utensils me-2"></i>Lunch Break
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <label class="form-label">Start Time</label>
+                                                <input type="time" class="form-control" 
+                                                       name="lunch_start" 
+                                                       value="{{ business_hours['lunch_break']['start'] }}">
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="form-label">End Time</label>
+                                                <input type="time" class="form-control" 
+                                                       name="lunch_end" 
+                                                       value="{{ business_hours['lunch_break']['end'] }}">
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="form-label">Buffer Between Jobs (minutes)</label>
+                                                <input type="number" class="form-control" 
+                                                       name="buffer_minutes" min="15" max="60" step="15"
+                                                       value="{{ business_hours['buffer_minutes'] }}">
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                No appointments will be scheduled during lunch break hours.
+                                                Buffer time prevents back-to-back appointments.
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Current Settings Summary -->
+                            <div class="col-md-4 mb-4">
+                                <div class="card bg-light">
+                                    <div class="card-header">
+                                        <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Current Settings</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Timezone:</strong> {{ business_hours['timezone'] }}</p>
+                                        <p><strong>Buffer Time:</strong> {{ business_hours['buffer_minutes'] }} minutes</p>
+                                        <p><strong>Working Days:</strong></p>
+                                        <ul class="list-unstyled">
+                                            {% for day_name, day_data in business_hours.items() %}
+                                                {% if day_name not in ['lunch_break', 'timezone', 'buffer_minutes'] %}
+                                                    <li>
+                                                        {% if day_data['enabled'] %}
+                                                            <i class="fas fa-check text-success"></i>
+                                                        {% else %}
+                                                            <i class="fas fa-times text-danger"></i>
+                                                        {% endif %}
+                                                        {{ day_name.title() }}
+                                                        {% if day_data['enabled'] %}
+                                                            ({{ day_data['start'] }} - {{ day_data['end'] }})
+                                                        {% endif %}
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-save me-2"></i>Save Business Hours
+                                    </button>
+                                    <a href="{{ url_for('unified_scheduler_dashboard') }}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>Back to Scheduler
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Test Section -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Test Appointment Time</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <form id="testTimeForm">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Test Date</label>
+                                        <input type="date" class="form-control" id="testDate" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Test Time</label>
+                                        <input type="time" class="form-control" id="testTime" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Duration (minutes)</label>
+                                        <select class="form-control" id="testDuration">
+                                            <option value="60">1 hour</option>
+                                            <option value="120" selected>2 hours</option>
+                                            <option value="180">3 hours</option>
+                                            <option value="240">4 hours</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-info mt-3">
+                                    <i class="fas fa-check-circle me-2"></i>Test Time Slot
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-4">
+                            <div id="testResults" class="alert d-none" role="alert"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('testTimeForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const date = document.getElementById('testDate').value;
+    const time = document.getElementById('testTime').value;
+    const duration = document.getElementById('testDuration').value;
+    const resultsDiv = document.getElementById('testResults');
+    
+    if (!date || !time) {
+        resultsDiv.className = 'alert alert-warning';
+        resultsDiv.textContent = 'Please enter both date and time.';
+        resultsDiv.classList.remove('d-none');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/scheduler/validate-time', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                date: date,
+                time: time,
+                duration: parseInt(duration)
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.valid) {
+            resultsDiv.className = 'alert alert-success';
+            resultsDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>' + result.reason;
+        } else {
+            resultsDiv.className = 'alert alert-danger';
+            let message = '<i class="fas fa-times-circle me-2"></i>' + result.reason;
+            
+            if (result.suggestions && result.suggestions.length > 0) {
+                message += '<br><strong>Available times:</strong> ' + result.suggestions.join(', ');
+            }
+            
+            if (result.conflicts && result.conflicts.length > 0) {
+                message += '<br><strong>Conflicts with:</strong><ul>';
+                result.conflicts.forEach(conflict => {
+                    message += '<li>' + conflict.client_name + ' (' + conflict.service_type + ') at ' + conflict.time + '</li>';
+                });
+                message += '</ul>';
+            }
+            
+            resultsDiv.innerHTML = message;
+        }
+        
+        resultsDiv.classList.remove('d-none');
+        
+    } catch (error) {
+        resultsDiv.className = 'alert alert-danger';
+        resultsDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Error testing time: ' + error.message;
+        resultsDiv.classList.remove('d-none');
+    }
+});
+
+// Set default test date to tomorrow
+document.addEventListener('DOMContentLoaded', function() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('testDate').value = tomorrow.toISOString().split('T')[0];
+    document.getElementById('testTime').value = '09:00';
+});
+</script>
+{% endblock %}

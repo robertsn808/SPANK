@@ -3537,6 +3537,123 @@ def get_unified_calendar_events():
         logging.error(f"Error getting unified calendar events: {e}")
         return jsonify({'error': 'Failed to load calendar events'}), 500
 
+@app.route('/admin/scheduler/business-hours')
+def business_hours_management():
+    """Business hours configuration"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    business_hours = unified_scheduler.get_business_hours()
+    return render_template('admin/business_hours.html', business_hours=business_hours)
+
+@app.route('/admin/scheduler/business-hours/update', methods=['POST'])
+def update_business_hours():
+    """Update business hours configuration"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        # Get form data and build hours configuration
+        hours_data = {
+            'monday': {
+                'start': request.form.get('monday_start', '07:00'),
+                'end': request.form.get('monday_end', '17:00'),
+                'enabled': request.form.get('monday_enabled') == 'on'
+            },
+            'tuesday': {
+                'start': request.form.get('tuesday_start', '07:00'),
+                'end': request.form.get('tuesday_end', '17:00'),
+                'enabled': request.form.get('tuesday_enabled') == 'on'
+            },
+            'wednesday': {
+                'start': request.form.get('wednesday_start', '07:00'),
+                'end': request.form.get('wednesday_end', '17:00'),
+                'enabled': request.form.get('wednesday_enabled') == 'on'
+            },
+            'thursday': {
+                'start': request.form.get('thursday_start', '07:00'),
+                'end': request.form.get('thursday_end', '17:00'),
+                'enabled': request.form.get('thursday_enabled') == 'on'
+            },
+            'friday': {
+                'start': request.form.get('friday_start', '07:00'),
+                'end': request.form.get('friday_end', '17:00'),
+                'enabled': request.form.get('friday_enabled') == 'on'
+            },
+            'saturday': {
+                'start': request.form.get('saturday_start', '08:00'),
+                'end': request.form.get('saturday_end', '15:00'),
+                'enabled': request.form.get('saturday_enabled') == 'on'
+            },
+            'sunday': {
+                'start': request.form.get('sunday_start', '08:00'),
+                'end': request.form.get('sunday_end', '15:00'),
+                'enabled': request.form.get('sunday_enabled') == 'on'
+            },
+            'lunch_break': {
+                'start': request.form.get('lunch_start', '12:00'),
+                'end': request.form.get('lunch_end', '13:00'),
+                'enabled': request.form.get('lunch_enabled') == 'on'
+            },
+            'timezone': 'Pacific/Honolulu',
+            'buffer_minutes': int(request.form.get('buffer_minutes', 30))
+        }
+        
+        success = unified_scheduler.update_business_hours(hours_data)
+        
+        if success:
+            flash('Business hours updated successfully!', 'success')
+        else:
+            flash('Error updating business hours.', 'error')
+            
+        return redirect(url_for('business_hours_management'))
+        
+    except Exception as e:
+        logging.error(f"Error updating business hours: {e}")
+        flash('Error updating business hours.', 'error')
+        return redirect(url_for('business_hours_management'))
+
+@app.route('/api/scheduler/validate-time', methods=['POST'])
+def validate_appointment_time():
+    """API endpoint to validate appointment time for conflicts and business hours"""
+    try:
+        data = request.get_json()
+        date_str = data.get('date')
+        time_str = data.get('time')
+        duration = int(data.get('duration', 120))
+        exclude_id = data.get('exclude_appointment_id')
+        
+        validation = unified_scheduler.validate_appointment_time(
+            date_str, time_str, duration, exclude_id
+        )
+        
+        return jsonify(validation)
+        
+    except Exception as e:
+        logging.error(f"Error validating appointment time: {e}")
+        return jsonify({
+            'valid': False,
+            'reason': f'Validation error: {str(e)}',
+            'type': 'system_error'
+        }), 500
+
+@app.route('/api/scheduler/available-times/<date>')
+def get_available_times(date):
+    """Get available appointment times for a specific date"""
+    try:
+        duration = int(request.args.get('duration', 120))
+        available_times = unified_scheduler._get_available_times(date, duration)
+        
+        return jsonify({
+            'date': date,
+            'available_times': available_times,
+            'business_hours': unified_scheduler.get_business_hours()
+        })
+        
+    except Exception as e:
+        logging.error(f"Error getting available times: {e}")
+        return jsonify({'error': str(e)}), 500
+
 # ===============================
 # MULTI-PROJECT CLIENT MANAGEMENT
 # ===============================

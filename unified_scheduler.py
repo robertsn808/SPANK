@@ -18,6 +18,21 @@ class UnifiedScheduler:
         self.appointments_file = 'data/unified_appointments.json'
         self.client_sequence_file = 'data/client_sequence.json'
         self.job_sequence_file = 'data/job_sequence.json'
+        self.business_hours_file = 'data/business_hours.json'
+        
+        # Default business hours
+        self.default_business_hours = {
+            'monday': {'start': '07:00', 'end': '17:00', 'enabled': True},
+            'tuesday': {'start': '07:00', 'end': '17:00', 'enabled': True},
+            'wednesday': {'start': '07:00', 'end': '17:00', 'enabled': True},
+            'thursday': {'start': '07:00', 'end': '17:00', 'enabled': True},
+            'friday': {'start': '07:00', 'end': '17:00', 'enabled': True},
+            'saturday': {'start': '08:00', 'end': '15:00', 'enabled': True},
+            'sunday': {'start': '08:00', 'end': '15:00', 'enabled': False},
+            'lunch_break': {'start': '12:00', 'end': '13:00', 'enabled': True},
+            'timezone': 'Pacific/Honolulu',
+            'buffer_minutes': 30  # Buffer time between appointments
+        }
         
         # Initialize data files
         self._ensure_data_files()
@@ -40,6 +55,11 @@ class UnifiedScheduler:
         if not os.path.exists(self.job_sequence_file):
             with open(self.job_sequence_file, 'w') as f:
                 json.dump({'next_id': 1, 'prefix': 'JOB'}, f, indent=2)
+        
+        # Initialize business hours file
+        if not os.path.exists(self.business_hours_file):
+            with open(self.business_hours_file, 'w') as f:
+                json.dump(self.default_business_hours, f, indent=2)
     
     def generate_client_id(self) -> str:
         """Generate standardized client ID: CLI001, CLI002, etc."""
@@ -273,6 +293,239 @@ class UnifiedScheduler:
         
         logging.info(f"Migrated {migrated_count} legacy appointments")
         return migrated_count
+    
+    def get_business_hours(self) -> Dict:
+        """Get current business hours configuration"""
+        try:
+            with open(self.business_hours_file, 'r') as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return self.default_business_hours
+    
+    def update_business_hours(self, hours_data: Dict) -> bool:
+        """Update business hours configuration"""
+        try:
+            with open(self.business_hours_file, 'w') as f:
+                json.dump(hours_data, f, indent=2)
+            logging.info("Business hours updated successfully")
+            return True
+        except Exception as e:
+            logging.error(f"Failed to update business hours: {e}")
+            return False
+    
+    def is_within_business_hours(self, date_str: str, time_str: str) -> Dict:
+        """Check if appointment time is within business hours"""
+        try:
+            business_hours = self.get_business_hours()
+            
+            # Parse the date and get day of week
+            appointment_date = datetime.strptime(date_str, '%Y-%m-%d')
+            day_name = appointment_date.strftime('%A').lower()
+            
+            # Check if business is open on this day
+            day_config = business_hours.get(day_name, {})
+            if not day_config.get('enabled', False):
+                return {
+                    'valid': False,
+                    'reason': f'Business is closed on {day_name.title()}s',
+                    'suggested_times': self._get_next_available_day(date_str)
+                }
+            
+            # Parse appointment time
+            appointment_time = datetime.strptime(time_str, '%H:%M').time()
+            start_time = datetime.strptime(day_config['start'], '%H:%M').time()
+            end_time = datetime.strptime(day_config['end'], '%H:%M').time()
+            
+            # Check if within business hours
+            if not (start_time <= appointment_time <= end_time):
+                return {
+                    'valid': False,
+                    'reason': f'Outside business hours. {day_name.title()} hours: {day_config["start"]} - {day_config["end"]}',
+                    'business_hours': day_config,
+                    'suggested_times': self._get_available_times(date_str)
+                }
+            
+            # Check lunch break if enabled
+            if business_hours.get('lunch_break', {}).get('enabled', False):
+                lunch_start = datetime.strptime(business_hours['lunch_break']['start'], '%H:%M').time()
+                lunch_end = datetime.strptime(business_hours['lunch_break']['end'], '%H:%M').time()
+                
+                if lunch_start <= appointment_time <= lunch_end:
+                    return {
+                        'valid': False,
+                        'reason': f'During lunch break ({business_hours["lunch_break"]["start"]} - {business_hours["lunch_break"]["end"]})',
+                        'suggested_times': self._get_available_times(date_str)
+                    }
+            
+            return {'valid': True, 'reason': 'Within business hours'}
+            
+        except Exception as e:
+            logging.error(f"Error checking business hours: {e}")
+            return {'valid': False, 'reason': 'Error validating business hours'}
+    
+    def check_scheduling_conflicts(self, date_str: str, time_str: str, duration_minutes: int, exclude_appointment_id: str = None) -> Dict:
+        """Check for scheduling conflicts with existing appointments"""
+        try:
+            business_hours = self.get_business_hours()
+            buffer_minutes = business_hours.get('buffer_minutes', 30)
+            
+            # Parse new appointment time
+            new_start = datetime.strptime(f"{date_str} {time_str}", '%Y-%m-%d %H:%M')
+            new_end = new_start + timedelta(minutes=duration_minutes)
+            
+            # Get all appointments for the date
+            existing_appointments = self.get_appointments_by_date_range(date_str, date_str)
+            
+            conflicts = []
+            for apt in existing_appointments:
+                # Skip if this is the same appointment (for updates)
+                if exclude_appointment_id and apt['appointment_id'] == exclude_appointment_id:
+                    continue
+                
+                # Skip cancelled appointments
+                if apt.get('status') == 'cancelled':
+                    continue
+                
+                # Parse existing appointment time
+                existing_start = datetime.strptime(f"{apt['scheduled_date']} {apt['scheduled_time']}", '%Y-%m-%d %H:%M')
+                existing_end = existing_start + timedelta(minutes=apt.get('estimated_duration', 120))
+                
+                # Add buffer time
+                existing_start_with_buffer = existing_start - timedelta(minutes=buffer_minutes)
+                existing_end_with_buffer = existing_end + timedelta(minutes=buffer_minutes)
+                
+                # Check for overlap
+                if (new_start < existing_end_with_buffer and new_end > existing_start_with_buffer):
+                    conflicts.append({
+                        'appointment_id': apt['appointment_id'],
+                        'client_name': apt['client_name'],
+                        'service_type': apt['service_type'],
+                        'time': apt['scheduled_time'],
+                        'duration': apt.get('estimated_duration', 120),
+                        'conflict_type': 'time_overlap'
+                    })
+            
+            if conflicts:
+                return {
+                    'has_conflicts': True,
+                    'conflicts': conflicts,
+                    'suggested_times': self._get_available_times(date_str, duration_minutes),
+                    'message': f'Found {len(conflicts)} scheduling conflict(s)'
+                }
+            
+            return {
+                'has_conflicts': False,
+                'message': 'No scheduling conflicts found'
+            }
+            
+        except Exception as e:
+            logging.error(f"Error checking scheduling conflicts: {e}")
+            return {
+                'has_conflicts': True,
+                'message': f'Error checking conflicts: {str(e)}'
+            }
+    
+    def _get_available_times(self, date_str: str, duration_minutes: int = 120) -> List[str]:
+        """Get list of available appointment times for a given date"""
+        try:
+            business_hours = self.get_business_hours()
+            
+            # Get day configuration
+            appointment_date = datetime.strptime(date_str, '%Y-%m-%d')
+            day_name = appointment_date.strftime('%A').lower()
+            day_config = business_hours.get(day_name, {})
+            
+            if not day_config.get('enabled', False):
+                return []
+            
+            # Generate time slots
+            start_time = datetime.strptime(day_config['start'], '%H:%M').time()
+            end_time = datetime.strptime(day_config['end'], '%H:%M').time()
+            
+            available_times = []
+            current_time = datetime.combine(appointment_date.date(), start_time)
+            end_datetime = datetime.combine(appointment_date.date(), end_time)
+            
+            while current_time + timedelta(minutes=duration_minutes) <= end_datetime:
+                time_str = current_time.strftime('%H:%M')
+                
+                # Check if this time conflicts with existing appointments
+                conflict_check = self.check_scheduling_conflicts(date_str, time_str, duration_minutes)
+                if not conflict_check['has_conflicts']:
+                    # Check lunch break
+                    if business_hours.get('lunch_break', {}).get('enabled', False):
+                        lunch_start = datetime.strptime(business_hours['lunch_break']['start'], '%H:%M').time()
+                        lunch_end = datetime.strptime(business_hours['lunch_break']['end'], '%H:%M').time()
+                        
+                        if not (lunch_start <= current_time.time() <= lunch_end):
+                            available_times.append(time_str)
+                    else:
+                        available_times.append(time_str)
+                
+                # Move to next 30-minute slot
+                current_time += timedelta(minutes=30)
+            
+            return available_times[:10]  # Limit to 10 suggestions
+            
+        except Exception as e:
+            logging.error(f"Error getting available times: {e}")
+            return []
+    
+    def _get_next_available_day(self, date_str: str) -> List[Dict]:
+        """Find next available business days"""
+        try:
+            business_hours = self.get_business_hours()
+            current_date = datetime.strptime(date_str, '%Y-%m-%d')
+            available_days = []
+            
+            for i in range(1, 8):  # Check next 7 days
+                next_date = current_date + timedelta(days=i)
+                day_name = next_date.strftime('%A').lower()
+                day_config = business_hours.get(day_name, {})
+                
+                if day_config.get('enabled', False):
+                    available_days.append({
+                        'date': next_date.strftime('%Y-%m-%d'),
+                        'day_name': day_name.title(),
+                        'hours': f"{day_config['start']} - {day_config['end']}"
+                    })
+                
+                if len(available_days) >= 3:  # Limit to 3 suggestions
+                    break
+            
+            return available_days
+            
+        except Exception as e:
+            logging.error(f"Error getting next available days: {e}")
+            return []
+    
+    def validate_appointment_time(self, date_str: str, time_str: str, duration_minutes: int = 120, exclude_appointment_id: str = None) -> Dict:
+        """Comprehensive validation of appointment time"""
+        # Check business hours
+        hours_check = self.is_within_business_hours(date_str, time_str)
+        if not hours_check['valid']:
+            return {
+                'valid': False,
+                'reason': hours_check['reason'],
+                'type': 'business_hours',
+                'suggestions': hours_check.get('suggested_times', [])
+            }
+        
+        # Check conflicts
+        conflict_check = self.check_scheduling_conflicts(date_str, time_str, duration_minutes, exclude_appointment_id)
+        if conflict_check['has_conflicts']:
+            return {
+                'valid': False,
+                'reason': conflict_check['message'],
+                'type': 'scheduling_conflict',
+                'conflicts': conflict_check['conflicts'],
+                'suggestions': conflict_check.get('suggested_times', [])
+            }
+        
+        return {
+            'valid': True,
+            'reason': 'Appointment time is available'
+        }
     
     def get_calendar_events(self, start_date: str = None, end_date: str = None) -> List[Dict]:
         """Get appointments formatted for calendar display"""
