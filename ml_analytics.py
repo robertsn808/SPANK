@@ -20,11 +20,11 @@ class MLAnalytics:
         monthly_demand = defaultdict(lambda: defaultdict(int))
         
         for request in service_requests:
-            if hasattr(request, 'preferred_date') and request.preferred_date:
+            if isinstance(request, dict) and request.get('preferred_date'):
                 try:
-                    date = datetime.strptime(request.preferred_date, '%Y-%m-%d')
+                    date = datetime.strptime(request['preferred_date'], '%Y-%m-%d')
                     month = date.month
-                    service = request.service
+                    service = request.get('service', 'General Handyman')
                     monthly_demand[month][service] += 1
                 except:
                     continue
@@ -254,12 +254,16 @@ class MLAnalytics:
         
         # Crew requirement analysis
         avg_daily_hours = sum([w['estimated_hours'] for w in daily_workload.values()]) / len(daily_workload) if daily_workload else 0
-        recommended_crew_size = math.ceil(avg_daily_hours / 8)
+        recommended_crew_size = max(1, math.ceil(avg_daily_hours / 8)) if avg_daily_hours > 0 else 1
+        
+        # Calculate efficiency score with zero-division protection
+        total_crew_hours = recommended_crew_size * 8
+        efficiency_score = min(100, (avg_daily_hours / total_crew_hours) * 100) if total_crew_hours > 0 else 0
         
         optimization_insights['crew_requirements'] = {
             'recommended_size': recommended_crew_size,
             'current_utilization': f"{avg_daily_hours:.1f} hours/day",
-            'efficiency_score': min(100, (avg_daily_hours / (recommended_crew_size * 8)) * 100)
+            'efficiency_score': efficiency_score
         }
         
         return optimization_insights

@@ -1170,7 +1170,7 @@ def api_comprehensive_analytics():
     """API endpoint for comprehensive analytics data"""
     try:
         from analytics_manager import analytics_manager
-        analytics_data = analytics_manager.get_comprehensive_analytics(handyman_storage)
+        analytics_data = analytics_manager.get_comprehensive_analytics(storage_service)
         return jsonify(analytics_data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
