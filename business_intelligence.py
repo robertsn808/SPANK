@@ -261,81 +261,90 @@ class BusinessIntelligence:
         return roi_analysis
     
     def calculate_business_health_score(self, storage):
-        """AI-powered business health scoring with predictive insights"""
-        from analytics_service import analytics_service
+        """Business health scoring based on actual database data only"""
         
-        business_report = analytics_service.generate_business_report(storage)
-        market_insights = self.generate_market_insights(storage)
-        efficiency_metrics = self.analyze_operational_efficiency(storage)
+        # Get actual data from storage
+        service_requests = storage.get_all_service_requests()
+        contact_messages = storage.get_all_contact_messages()
+        contacts = storage.get_all_contacts()
+        quotes = storage.get_all_quotes()
+        invoices = storage.get_all_invoices()
+        jobs = storage.get_all_jobs()
         
-        # Health scoring components
-        financial_health = 0
-        operational_health = 0
-        customer_health = 0
-        growth_health = 0
+        # Health scoring components based on real data
+        request_health = 0
+        response_health = 0
+        contact_health = 0
+        system_health = 0
         
-        # Financial Health (0-25 points)
-        revenue = business_report.get('revenue', {}).get('total_revenue', 0)
-        if revenue > 50000:
-            financial_health += 25
-        elif revenue > 30000:
-            financial_health += 20
-        elif revenue > 15000:
-            financial_health += 15
+        # Request Management Health (0-25 points)
+        total_requests = len(service_requests)
+        pending_requests = len([r for r in service_requests if hasattr(r, 'status') and r.status == 'pending'])
+        
+        if total_requests == 0:
+            request_health = 10  # New business, neutral score
+        elif pending_requests / total_requests < 0.3:
+            request_health = 25  # Good response rate
+        elif pending_requests / total_requests < 0.5:
+            request_health = 20
+        elif pending_requests / total_requests < 0.7:
+            request_health = 15
         else:
-            financial_health += max(5, revenue / 3000)
+            request_health = 10
         
-        # Operational Health (0-25 points)
-        capacity_util = efficiency_metrics.get('capacity_utilization', 0)
-        avg_completion = efficiency_metrics.get('avg_completion_time', 30)
+        # Response Management Health (0-25 points)
+        total_messages = len(contact_messages)
+        unread_messages = len([m for m in contact_messages if hasattr(m, 'status') and m.status == 'unread'])
         
-        if capacity_util > 80 and avg_completion < 14:
-            operational_health += 25
-        elif capacity_util > 60 and avg_completion < 21:
-            operational_health += 20
-        elif capacity_util > 40:
-            operational_health += 15
+        if total_messages == 0:
+            response_health = 15  # No messages yet
+        elif unread_messages / total_messages < 0.2:
+            response_health = 25  # Very responsive
+        elif unread_messages / total_messages < 0.4:
+            response_health = 20
+        elif unread_messages / total_messages < 0.6:
+            response_health = 15
         else:
-            operational_health += 10
+            response_health = 10
         
-        # Customer Health (0-25 points)
-        conversion_rate = business_report.get('revenue', {}).get('quote_conversion_rate', 0)
-        customer_count = business_report.get('customers', {}).get('total_customers', 0)
+        # Contact Management Health (0-25 points)
+        total_contacts = len(contacts)
+        active_quotes = len([q for q in quotes if hasattr(q, 'status') and q.status == 'pending'])
         
-        if conversion_rate > 70 and customer_count > 100:
-            customer_health += 25
-        elif conversion_rate > 50 and customer_count > 50:
-            customer_health += 20
-        elif conversion_rate > 30:
-            customer_health += 15
+        if total_contacts > 20:
+            contact_health = 25
+        elif total_contacts > 10:
+            contact_health = 20
+        elif total_contacts > 5:
+            contact_health = 15
         else:
-            customer_health += 10
+            contact_health = max(5, total_contacts * 2)
         
-        # Growth Health (0-25 points)
-        monthly_growth = business_report.get('growth', {}).get('monthly_revenue_growth', 0)
-        market_opportunities = len(market_insights.get('market_opportunities', []))
+        # System Utilization Health (0-25 points)
+        active_jobs = len([j for j in jobs if hasattr(j, 'status') and j.status in ['scheduled', 'in_progress']])
+        completed_jobs = len([j for j in jobs if hasattr(j, 'status') and j.status == 'completed'])
         
-        if monthly_growth > 15 and market_opportunities > 3:
-            growth_health += 25
-        elif monthly_growth > 5 and market_opportunities > 1:
-            growth_health += 20
-        elif monthly_growth > 0:
-            growth_health += 15
+        if active_jobs + completed_jobs > 15:
+            system_health = 25
+        elif active_jobs + completed_jobs > 8:
+            system_health = 20
+        elif active_jobs + completed_jobs > 3:
+            system_health = 15
         else:
-            growth_health += 5
+            system_health = max(5, (active_jobs + completed_jobs) * 3)
         
-        total_score = financial_health + operational_health + customer_health + growth_health
+        total_score = request_health + response_health + contact_health + system_health
         
-        # Determine health level and recommendations
-        if total_score >= 85:
+        # Determine health level based on actual business operations
+        if total_score >= 80:
             health_level = "Excellent"
             health_color = "success"
             alert_level = "info"
-        elif total_score >= 70:
+        elif total_score >= 65:
             health_level = "Good"
             health_color = "info"
             alert_level = "warning"
-        elif total_score >= 50:
+        elif total_score >= 45:
             health_level = "Fair"
             health_color = "warning"
             alert_level = "warning"
@@ -350,53 +359,77 @@ class BusinessIntelligence:
             'health_color': health_color,
             'alert_level': alert_level,
             'component_scores': {
-                'financial': financial_health,
-                'operational': operational_health,
-                'customer': customer_health,
-                'growth': growth_health
+                'request_management': request_health,
+                'response_management': response_health,
+                'contact_management': contact_health,
+                'system_utilization': system_health
+            },
+            'data_summary': {
+                'total_requests': total_requests,
+                'pending_requests': pending_requests,
+                'total_messages': total_messages,
+                'unread_messages': unread_messages,
+                'total_contacts': total_contacts,
+                'active_jobs': active_jobs,
+                'completed_jobs': completed_jobs
             },
             'next_review_date': (datetime.now(self.hawaii_tz) + timedelta(days=7)).strftime('%Y-%m-%d'),
-            'critical_actions': self.get_critical_actions(total_score, {
-                'financial': financial_health,
-                'operational': operational_health, 
-                'customer': customer_health,
-                'growth': growth_health
-            })
+            'critical_actions': self.get_critical_actions_real(total_score, {
+                'request_management': request_health,
+                'response_management': response_health,
+                'contact_management': contact_health,
+                'system_utilization': system_health
+            }, service_requests, contact_messages, contacts)
         }
     
-    def get_critical_actions(self, total_score, component_scores):
-        """Generate critical actions based on health score"""
+    def get_critical_actions_real(self, total_score, component_scores, service_requests, contact_messages, contacts):
+        """Generate critical actions based on actual business data"""
         actions = []
         
-        if component_scores['financial'] < 15:
+        pending_count = len([r for r in service_requests if hasattr(r, 'status') and r.status == 'pending'])
+        unread_count = len([m for m in contact_messages if hasattr(m, 'status') and m.status == 'unread'])
+        
+        if component_scores['request_management'] < 15 and pending_count > 0:
             actions.append({
                 'priority': 'High',
-                'action': 'Focus on revenue generation - increase pricing or expand services',
-                'impact': 'Financial stability'
+                'action': f'Address {pending_count} pending service request{"s" if pending_count != 1 else ""}',
+                'impact': 'Customer satisfaction and revenue'
             })
         
-        if component_scores['operational'] < 15:
+        if component_scores['response_management'] < 15 and unread_count > 0:
             actions.append({
                 'priority': 'High', 
-                'action': 'Improve operational efficiency - reduce job completion times',
-                'impact': 'Customer satisfaction'
+                'action': f'Respond to {unread_count} unread message{"s" if unread_count != 1 else ""}',
+                'impact': 'Customer communication'
             })
         
-        if component_scores['customer'] < 15:
+        if component_scores['contact_management'] < 15:
             actions.append({
                 'priority': 'Medium',
-                'action': 'Enhance customer acquisition and retention strategies',
-                'impact': 'Business growth'
+                'action': 'Build customer database through marketing and referrals',
+                'impact': 'Business growth foundation'
             })
         
-        if component_scores['growth'] < 15:
+        if component_scores['system_utilization'] < 15:
             actions.append({
                 'priority': 'Medium',
-                'action': 'Explore new market opportunities and service expansion',
-                'impact': 'Long-term sustainability'
+                'action': 'Create more quotes and schedule jobs to utilize system capacity',
+                'impact': 'Revenue generation'
+            })
+        
+        # If no specific issues, provide growth actions
+        if not actions and total_score > 70:
+            actions.append({
+                'priority': 'Low',
+                'action': 'Continue excellent work - consider advanced features and automation',
+                'impact': 'Business optimization'
             })
         
         return actions[:3]  # Return top 3 critical actions
+    
+    def get_critical_actions(self, total_score, component_scores):
+        """Legacy method - redirects to real data version"""
+        return self.get_critical_actions_real(total_score, component_scores, [], [], [])
 
     def generate_executive_briefing(self, storage):
         """Generate comprehensive executive briefing document"""

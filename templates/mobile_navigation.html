@@ -37,13 +37,13 @@
                     </div>
                     <div class="col-4">
                         <div class="mobile-stat-item">
-                            <div class="fw-bold text-success">23</div>
-                            <small class="text-muted">Active</small>
+                            <div class="fw-bold text-success">{{ contact_messages|length }}</div>
+                            <small class="text-muted">Messages</small>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="mobile-stat-item">
-                            <div class="fw-bold text-warning">8</div>
+                            <div class="fw-bold text-warning">{{ pending_requests|length if pending_requests else 0 }}</div>
                             <small class="text-muted">Pending</small>
                         </div>
                     </div>

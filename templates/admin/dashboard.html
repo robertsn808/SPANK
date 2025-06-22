@@ -241,18 +241,20 @@
     <div class="container">
         <!-- Enhanced Performance Stats -->
         <div class="row mb-5">
+            {% if pending_requests or urgent_requests %}
+            <!-- Actual database metrics -->
             <div class="col-xl-2 col-lg-3 col-md-6 mb-4">
                 <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-primary text-white">
                     <div class="card-body text-center p-4">
                         <div class="icon-circle bg-light mb-3">
-                            <i class="fas fa-dollar-sign fa-2x text-primary"></i>
+                            <i class="fas fa-clipboard-list fa-2x text-primary"></i>
                         </div>
-                        <h3 class="fw-bold mb-1 counter" data-target="47500">$0</h3>
-                        <p class="mb-0 opacity-85">Monthly Revenue</p>
+                        <h3 class="fw-bold mb-1">{{ bookings|length }}</h3>
+                        <p class="mb-0 opacity-85">Total Requests</p>
                         <div class="progress mt-2" style="height: 4px;">
-                            <div class="progress-bar bg-light" style="width: 78%"></div>
+                            <div class="progress-bar bg-light" style="width: {{ (bookings|length / 20 * 100)|int }}%"></div>
                         </div>
-                        <small class="opacity-75">+15% from last month</small>
+                        <small class="opacity-75">Service requests</small>
                     </div>
                 </div>
             </div>
@@ -263,12 +265,12 @@
                         <div class="icon-circle bg-light mb-3">
                             <i class="fas fa-handshake fa-2x text-success"></i>
                         </div>
-                        <h3 class="fw-bold mb-1 counter" data-target="23">0</h3>
-                        <p class="mb-0 opacity-85">Active Jobs</p>
+                        <h3 class="fw-bold mb-1">{{ pending_requests|length }}</h3>
+                        <p class="mb-0 opacity-85">Pending Requests</p>
                         <div class="progress mt-2" style="height: 4px;">
-                            <div class="progress-bar bg-light" style="width: 85%"></div>
+                            <div class="progress-bar bg-light" style="width: {{ (pending_requests|length / 10 * 100)|int }}%"></div>
                         </div>
-                        <small class="opacity-75">12 scheduled this week</small>
+                        <small class="opacity-75">Need attention</small>
                     </div>
                 </div>
             </div>
@@ -277,14 +279,14 @@
                 <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-warning text-white">
                     <div class="card-body text-center p-4">
                         <div class="icon-circle bg-light mb-3">
-                            <i class="fas fa-file-invoice-dollar fa-2x text-warning"></i>
+                            <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
                         </div>
-                        <h3 class="fw-bold mb-1 counter" data-target="8">0</h3>
-                        <p class="mb-0 opacity-85">Pending Quotes</p>
+                        <h3 class="fw-bold mb-1">{{ urgent_requests|length }}</h3>
+                        <p class="mb-0 opacity-85">Urgent Requests</p>
                         <div class="progress mt-2" style="height: 4px;">
-                            <div class="progress-bar bg-light" style="width: 65%"></div>
+                            <div class="progress-bar bg-light" style="width: {{ (urgent_requests|length / 5 * 100)|int }}%"></div>
                         </div>
-                        <small class="opacity-75">$18,500 potential</small>
+                        <small class="opacity-75">High priority</small>
                     </div>
                 </div>
             </div>
@@ -293,14 +295,14 @@
                 <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-info text-white">
                     <div class="card-body text-center p-4">
                         <div class="icon-circle bg-light mb-3">
-                            <i class="fas fa-users fa-2x text-info"></i>
+                            <i class="fas fa-envelope fa-2x text-info"></i>
                         </div>
-                        <h3 class="fw-bold mb-1 counter" data-target="156">0</h3>
-                        <p class="mb-0 opacity-85">Total Clients</p>
+                        <h3 class="fw-bold mb-1">{{ contact_messages|length }}</h3>
+                        <p class="mb-0 opacity-85">Contact Messages</p>
                         <div class="progress mt-2" style="height: 4px;">
-                            <div class="progress-bar bg-light" style="width: 92%"></div>
+                            <div class="progress-bar bg-light" style="width: {{ (contact_messages|length / 15 * 100)|int }}%"></div>
                         </div>
-                        <small class="opacity-75">8 new this month</small>
+                        <small class="opacity-75">Customer inquiries</small>
                     </div>
                 </div>
             </div>
@@ -309,14 +311,14 @@
                 <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-purple text-white">
                     <div class="card-body text-center p-4">
                         <div class="icon-circle bg-light mb-3">
-                            <i class="fas fa-star fa-2x text-purple"></i>
+                            <i class="fas fa-users fa-2x text-purple"></i>
                         </div>
-                        <h3 class="fw-bold mb-1">4.9</h3>
-                        <p class="mb-0 opacity-85">Avg Rating</p>
+                        <h3 class="fw-bold mb-1">{{ staff_members|length }}</h3>
+                        <p class="mb-0 opacity-85">Staff Members</p>
                         <div class="progress mt-2" style="height: 4px;">
-                            <div class="progress-bar bg-light" style="width: 98%"></div>
+                            <div class="progress-bar bg-light" style="width: {{ (staff_members|length / 5 * 100)|int }}%"></div>
                         </div>
-                        <small class="opacity-75">Based on 47 reviews</small>
+                        <small class="opacity-75">Team size</small>
                     </div>
                 </div>
             </div>
@@ -325,17 +327,27 @@
                 <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-orange text-white">
                     <div class="card-body text-center p-4">
                         <div class="icon-circle bg-light mb-3">
-                            <i class="fas fa-chart-line fa-2x text-orange"></i>
+                            <i class="fas fa-bell fa-2x text-orange"></i>
                         </div>
-                        <h3 class="fw-bold mb-1 counter" data-target="87">0</h3>
-                        <p class="mb-0 opacity-85">Efficiency %</p>
+                        <h3 class="fw-bold mb-1">{{ admin_notifications|length }}</h3>
+                        <p class="mb-0 opacity-85">Notifications</p>
                         <div class="progress mt-2" style="height: 4px;">
-                            <div class="progress-bar bg-light" style="width: 87%"></div>
+                            <div class="progress-bar bg-light" style="width: {{ (admin_notifications|length / 8 * 100)|int }}%"></div>
                         </div>
-                        <small class="opacity-75">Above industry avg</small>
+                        <small class="opacity-75">Unread alerts</small>
                     </div>
                 </div>
             </div>
+            {% else %}
+            <!-- No data state -->
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle fa-2x mb-2"></i>
+                    <h4>Dashboard Data</h4>
+                    <p class="mb-0">Statistics will appear here as you receive consultation requests and manage your business.</p>
+                </div>
+            </div>
+            {% endif %}
         </div>
 
         <!-- Quick Action Dashboard -->
@@ -596,104 +608,63 @@
             </div>
         </div>
 
-        <!-- Business Intelligence Dashboard -->
+        <!-- Real Business Data Summary -->
+        {% if bookings or contact_messages %}
         <div class="row mb-5">
             <div class="col-lg-8">
                 <div class="card border-0 shadow-lg">
                     <div class="card-header bg-gradient-primary text-white">
                         <h4 class="mb-0 fw-bold">
-                            <i class="fas fa-brain me-2"></i>AI Business Intelligence
+                            <i class="fas fa-chart-line me-2"></i>Business Overview
                         </h4>
                     </div>
                     <div class="card-body p-4">
-                        <!-- Business Health Score -->
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <div class="d-flex align-items-center">
-                                    <div class="me-3">
-                                        <div class="progress-ring mobile-progress-ring">
-                                            <svg class="progress-ring-svg" width="80" height="80">
-                                                <circle class="progress-ring-circle"></circle>
-                                                <circle class="progress-ring-fill" style="stroke-dashoffset: 56;"></circle>
-                                            </svg>
-                                            <div class="position-absolute top-50 start-50 translate-middle">
-                                                <strong class="text-success">87</strong>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h5 class="mb-1">Business Health Score</h5>
-                                        <span class="badge bg-success">Excellent</span>
-                                        <p class="text-muted small mb-0 mt-1">Above industry average</p>
-                                    </div>
+                                <h6 class="fw-bold mb-3">Service Request Analysis</h6>
+                                {% if bookings %}
+                                <div class="mb-3">
+                                    <span class="fw-semibold">Total Requests:</span> {{ bookings|length }}
                                 </div>
+                                <div class="mb-3">
+                                    <span class="fw-semibold">Pending:</span> {{ pending_requests|length }}
+                                </div>
+                                <div class="mb-3">
+                                    <span class="fw-semibold">High Priority:</span> {{ urgent_requests|length }}
+                                </div>
+                                {% else %}
+                                <p class="text-muted">No service requests yet</p>
+                                {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <div class="row g-2">
-                                    <div class="col-6">
-                                        <div class="text-center p-2 border rounded">
-                                            <div class="text-primary fw-bold">23/25</div>
-                                            <small class="text-muted">Financial</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="text-center p-2 border rounded">
-                                            <div class="text-success fw-bold">22/25</div>
-                                            <small class="text-muted">Operations</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="text-center p-2 border rounded">
-                                            <div class="text-info fw-bold">21/25</div>
-                                            <small class="text-muted">Customer</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="text-center p-2 border rounded">
-                                            <div class="text-warning fw-bold">21/25</div>
-                                            <small class="text-muted">Growth</small>
-                                        </div>
-                                    </div>
+                                <h6 class="fw-bold mb-3">Communication Overview</h6>
+                                {% if contact_messages %}
+                                <div class="mb-3">
+                                    <span class="fw-semibold">Contact Messages:</span> {{ contact_messages|length }}
                                 </div>
+                                {% if admin_notifications %}
+                                <div class="mb-3">
+                                    <span class="fw-semibold">Admin Notifications:</span> {{ admin_notifications|length }}
+                                </div>
+                                {% endif %}
+                                {% else %}
+                                <p class="text-muted">No messages received yet</p>
+                                {% endif %}
                             </div>
                         </div>
 
-                        <!-- AI Recommendations -->
+                        {% if bookings %}
                         <div class="alert alert-info border-0">
                             <h6 class="fw-bold mb-2">
-                                <i class="fas fa-lightbulb me-2"></i>AI Recommendations
+                                <i class="fas fa-info-circle me-2"></i>Current Status
                             </h6>
-                            <ul class="mb-0 ps-3">
-                                <li><strong>Expand Kitchen Renovation Services</strong> - High demand with 25% growth potential</li>
-                                <li><strong>Implement Digital Workflow</strong> - Could improve efficiency by 20-30%</li>
-                                <li><strong>Focus on Customer Retention</strong> - Increase repeat business opportunities</li>
-                            </ul>
+                            <p class="mb-0">
+                                You have {{ pending_requests|length }} pending consultation{{ 's' if pending_requests|length != 1 else '' }}
+                                {% if urgent_requests %} and {{ urgent_requests|length }} high priority item{{ 's' if urgent_requests|length != 1 else '' }}{% endif %} 
+                                that need{{ '' if pending_requests|length == 1 and not urgent_requests else '' }} attention.
+                            </p>
                         </div>
-
-                        <!-- Market Insights -->
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <div class="text-center p-3 bg-light rounded">
-                                    <i class="fas fa-trending-up fa-2x text-success mb-2"></i>
-                                    <h6 class="fw-bold">Market Position</h6>
-                                    <p class="text-muted small mb-0">Strong competitive position with 87% customer satisfaction</p>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="text-center p-3 bg-light rounded">
-                                    <i class="fas fa-bullseye fa-2x text-primary mb-2"></i>
-                                    <h6 class="fw-bold">Top Opportunity</h6>
-                                    <p class="text-muted small mb-0">Kitchen renovations show 40% higher profit margins</p>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="text-center p-3 bg-light rounded">
-                                    <i class="fas fa-clock fa-2x text-warning mb-2"></i>
-                                    <h6 class="fw-bold">Efficiency Target</h6>
-                                    <p class="text-muted small mb-0">Reduce job completion time by 3 days for optimal flow</p>
-                                </div>
-                            </div>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -702,59 +673,44 @@
                 <div class="card border-0 shadow-lg h-100">
                     <div class="card-header bg-gradient-success text-white">
                         <h5 class="mb-0 fw-bold">
-                            <i class="fas fa-chart-line me-2"></i>Performance Metrics
+                            <i class="fas fa-tools me-2"></i>Quick Stats
                         </h5>
                     </div>
                     <div class="card-body p-4">
+                        {% if staff_members %}
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-semibold">Quote Conversion</span>
-                                <span class="badge bg-success">72%</span>
+                                <span class="fw-semibold">Active Staff</span>
+                                <span class="badge bg-success">{{ staff_members|length }}</span>
                             </div>
                             <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-success" style="width: 72%"></div>
+                                <div class="progress-bar bg-success" style="width: {{ (staff_members|length / 5 * 100)|int }}%"></div>
                             </div>
                         </div>
+                        {% endif %}
 
+                        {% if week_appointments %}
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-semibold">Job Completion Rate</span>
-                                <span class="badge bg-primary">94%</span>
+                                <span class="fw-semibold">This Week's Schedule</span>
+                                <span class="badge bg-primary">{{ week_appointments|length }}</span>
                             </div>
                             <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-primary" style="width: 94%"></div>
+                                <div class="progress-bar bg-primary" style="width: {{ (week_appointments|length / 10 * 100)|int }}%"></div>
                             </div>
                         </div>
-
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-semibold">Customer Retention</span>
-                                <span class="badge bg-info">68%</span>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-info" style="width: 68%"></div>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-semibold">Revenue Growth</span>
-                                <span class="badge bg-warning">+15%</span>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-warning" style="width: 85%"></div>
-                            </div>
-                        </div>
+                        {% endif %}
 
                         <div class="text-center mt-4">
-                            <a href="/admin/analytics" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-chart-bar me-2"></i>View Detailed Analytics
+                            <a href="/admin/crm" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-users me-2"></i>Manage CRM
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        {% endif %}
 
         {% if bookings %}
         <!-- Enhanced Quick Actions -->
