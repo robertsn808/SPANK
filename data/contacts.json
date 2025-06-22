@@ -1,28 +1,11 @@
 [
   {
     "id": 1,
-    "name": "Test Customer",
-    "email": "test.customer@tempmail.com",
-    "phone": "(808) 555-1234",
-    "address": "",
-    "notes": "Created via API for job 12345",
-    "tags": [
-      "api_generated"
-    ],
-    "created_date": "2025-06-21",
-    "job_history": [],
-    "total_spent": 0.0,
-    "last_contact": null,
-    "preferred_contact": "email",
-    "status": "active"
-  },
-  {
-    "id": 2,
     "name": "Jessica Houtz",
     "email": "jessica.houtz@tempmail.com",
     "phone": "(808) 555-0123",
     "address": "",
-    "notes": "Created via API for job 23456",
+    "notes": "Created via API",
     "tags": [
       "api_generated"
     ],

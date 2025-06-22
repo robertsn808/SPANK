@@ -502,6 +502,7 @@ class HandymanStorage:
         """Save contacts to JSON file"""
         try:
             import os
+            import json
             os.makedirs('data', exist_ok=True)
             
             contacts_data = []
