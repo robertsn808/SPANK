@@ -1076,6 +1076,33 @@ def update_client_info(client_id, job_id):
         logging.error(f"Error updating client info: {e}")
         return jsonify({'error': 'Failed to update client information'}), 500
 
+@app.route('/api/client/<client_id>/<job_id>/info')
+def get_client_info(client_id, job_id):
+    """Get current client information"""
+    if not session.get('portal_authenticated'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    # Allow both staff and client access to read info
+    if (session.get('client_id') != client_id or session.get('job_id') != job_id):
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        # Get fresh client data from auth_service
+        client_data = auth_service.find_client(client_id, job_id)
+        
+        if client_data:
+            return jsonify({
+                'success': True,
+                'client': client_data,
+                'message': 'Client information retrieved successfully'
+            })
+        else:
+            return jsonify({'error': 'Client not found'}), 404
+            
+    except Exception as e:
+        logging.error(f"Error getting client info: {e}")
+        return jsonify({'error': 'Failed to retrieve client information'}), 500
+
 @app.route('/admin/integrated-analytics')
 def integrated_analytics():
     """Comprehensive integrated analytics dashboard"""
