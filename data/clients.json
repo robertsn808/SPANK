@@ -1,0 +1,35 @@
+[
+  {
+    "clientId": "ABC123",
+    "jobId": "23456",
+    "name": "Jessica Houtz",
+    "phone": "(808) 555-0123",
+    "email": "jessica@example.com",
+    "address": "123 Aloha Street, Honolulu, HI 96813",
+    "jobDescription": "Kitchen renovation and flooring installation",
+    "status": "active",
+    "created": "2025-06-22"
+  },
+  {
+    "clientId": "SPK001",
+    "jobId": "30078",
+    "name": "Mike Rodriguez",
+    "phone": "(808) 555-0456",
+    "email": "mike@example.com",
+    "address": "456 Mahalo Avenue, Honolulu, HI 96815",
+    "jobDescription": "Bathroom remodel and drywall repair",
+    "status": "active",
+    "created": "2025-06-22"
+  },
+  {
+    "clientId": "CLI001",
+    "jobId": "JOB001",
+    "name": "Sarah Johnson",
+    "phone": "(808) 555-0789",
+    "email": "sarah@example.com",
+    "address": "789 Pineapple Drive, Honolulu, HI 96814",
+    "jobDescription": "Fence installation and general repairs",
+    "status": "active",
+    "created": "2025-06-22"
+  }
+]
