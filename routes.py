@@ -915,6 +915,29 @@ def project_tracking():
                          total_active_value=total_active_value,
                          upcoming_deadlines=upcoming_deadlines)
 
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_file, abort
+from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
+import os
+import json
+import uuid
+from datetime import datetime, timedelta
+import pytz
+from models import Contact, Job, Quote, Invoice
+from pdf_service import PDFService
+from upload_service import upload_service
+from notification_service import notification_service
+from analytics_service import analytics_service
+from performance_monitor import performance_monitor
+from business_intelligence import business_intelligence
+from ml_analytics import ml_analytics
+from ai_service import ai_service
+from auth_service import auth_service
+import logging
+
+# Get the app instance
+from app import app
+
 @app.route('/admin/business-intelligence')
 def business_intelligence_dashboard():
     """Comprehensive business intelligence and strategic insights"""
