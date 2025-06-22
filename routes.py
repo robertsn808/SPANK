@@ -916,75 +916,34 @@ def project_tracking():
 
 @app.route('/admin/analytics-dashboard')
 def analytics_dashboard():
-    """Business analytics and performance metrics dashboard"""
+    """Enhanced business analytics with comprehensive CRM insights"""
     if not session.get('admin_logged_in'):
         flash('Please log in to access analytics.', 'error')
         return redirect(url_for('admin_login'))
 
+    from analytics_service import analytics_service
+    
+    # Generate comprehensive business analytics
+    business_report = analytics_service.generate_business_report(handyman_storage)
+    performance_alerts = analytics_service.get_performance_alerts(handyman_storage)
+    
+    # Legacy data for backward compatibility
     service_requests = handyman_storage.get_all_service_requests()
     contact_messages = handyman_storage.get_all_contact_messages()
-    referrals = handyman_storage.get_all_referrals()
-    memberships = handyman_storage.get_all_memberships()
-
-    # Lead source analysis
-    lead_sources = {}
-    for request in service_requests:
-        source = getattr(request, 'lead_source', 'Direct Website')
-        lead_sources[source] = lead_sources.get(source, 0) + 1
-
-    # Conversion funnel analysis
+    
+    # Basic metrics for simple display
     total_inquiries = len(contact_messages) + len(service_requests)
     consultation_requests = len(service_requests)
     completed_jobs = len([req for req in service_requests if req.status == 'completed'])
-    
-    conversion_rate = (completed_jobs / total_inquiries * 100) if total_inquiries > 0 else 0
-    
-    # Revenue analytics
-    total_revenue = sum([
-        float(req.budget_range.split('-')[0].replace('$', '').replace(',', '')) 
-        if req.budget_range and '-' in req.budget_range 
-        else 750.0 
-        for req in service_requests if req.status == 'completed'
-    ])
 
-    # Service type popularity
-    service_popularity = {}
-    for request in service_requests:
-        service = request.service
-        service_popularity[service] = service_popularity.get(service, 0) + 1
-
-    # Monthly performance trends
-    hawaii_now = get_hawaii_time()
-    monthly_trends = []
-    for i in range(6):
-        month_date = hawaii_now - timedelta(days=30 * i)
-        month_requests = [
-            req for req in service_requests 
-            if req.preferred_date and datetime.strptime(req.preferred_date, '%Y-%m-%d').month == month_date.month
-        ]
-        monthly_trends.append({
-            'month': month_date.strftime('%B'),
-            'requests': len(month_requests),
-            'completed': len([req for req in month_requests if req.status == 'completed']),
-            'revenue': sum([
-                float(req.budget_range.split('-')[0].replace('$', '').replace(',', '')) 
-                if req.budget_range and '-' in req.budget_range 
-                else 750.0 
-                for req in month_requests if req.status == 'completed'
-            ])
-        })
-
-    return render_template('admin/analytics_dashboard.html',
-                         lead_sources=lead_sources,
-                         conversion_rate=conversion_rate,
-                         total_revenue=total_revenue,
-                         service_popularity=service_popularity,
-                         monthly_trends=monthly_trends,
+    return render_template('admin/enhanced_analytics.html',
+                         # Enhanced analytics
+                         business_report=business_report,
+                         performance_alerts=performance_alerts,
+                         # Legacy compatibility
                          total_inquiries=total_inquiries,
                          consultation_requests=consultation_requests,
-                         completed_jobs=completed_jobs,
-                         referrals=referrals,
-                         memberships=memberships)
+                         completed_jobs=completed_jobs)
 
 @app.route('/admin/customer-feedback')
 def customer_feedback():
