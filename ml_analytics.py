@@ -13,8 +13,8 @@ class MLAnalytics:
     
     def predict_seasonal_demand(self, storage):
         """Predict seasonal demand patterns for construction services"""
-        service_requests = storage.get_all_service_requests()
-        quotes = storage.get_all_quotes()
+        service_requests = storage.load_data('service_requests.json')
+        quotes = storage.load_data('quotes.json')
         
         # Analyze seasonal patterns
         monthly_demand = defaultdict(lambda: defaultdict(int))
