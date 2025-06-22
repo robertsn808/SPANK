@@ -2123,7 +2123,8 @@ def portal_login():
         flash(f'Welcome back! Staff access granted for Job #{job_id}', 'success')
         return redirect(url_for('staff_portal', job_id=job_id))
     else:
-        flash(f'Welcome {client_data.get("name", "User")}! Client portal access granted.', 'success')
+        name = client_data.get("name", "User") if client_data else "User"
+        flash(f'Welcome {name}! Client portal access granted.', 'success')
         return redirect(url_for('client_portal', client_id=client_id, job_id=job_id))
 
 @app.route('/portal/<client_id>/<job_id>')

@@ -104,7 +104,7 @@ class AuthService:
     def is_staff_member(self, client_id: str, job_id: str) -> bool:
         """Check if the client ID/job ID combination belongs to a staff member"""
         client = self.find_client(client_id, job_id)
-        return client and client.get('isStaff', False)
+        return bool(client and client.get('isStaff', False))
 
 # Global authentication service instance
 auth_service = AuthService()
