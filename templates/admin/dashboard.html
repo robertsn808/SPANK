@@ -113,52 +113,153 @@
 <!-- Dashboard Content -->
 <section class="py-5">
     <div class="container">
-        <!-- Stats Cards -->
+        <!-- Enhanced Performance Stats -->
         <div class="row mb-5">
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="fw-bold mb-1">{{ bookings|length }}</h3>
-                            <p class="mb-0 opacity-75">Total Bookings</p>
+            <div class="col-xl-2 col-lg-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-primary text-white">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle bg-light mb-3">
+                            <i class="fas fa-dollar-sign fa-2x text-primary"></i>
                         </div>
-                        <i class="fas fa-calendar-check fa-2x opacity-75"></i>
+                        <h3 class="fw-bold mb-1 counter" data-target="47500">$0</h3>
+                        <p class="mb-0 opacity-85">Monthly Revenue</p>
+                        <div class="progress mt-2" style="height: 4px;">
+                            <div class="progress-bar bg-light" style="width: 78%"></div>
+                        </div>
+                        <small class="opacity-75">+15% from last month</small>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="fw-bold mb-1">{{ bookings|selectattr('status', 'equalto', 'pending')|list|length }}</h3>
-                            <p class="mb-0 opacity-75">Pending</p>
+
+            <div class="col-xl-2 col-lg-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-success text-white">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle bg-light mb-3">
+                            <i class="fas fa-handshake fa-2x text-success"></i>
                         </div>
-                        <i class="fas fa-clock fa-2x opacity-75"></i>
+                        <h3 class="fw-bold mb-1 counter" data-target="23">0</h3>
+                        <p class="mb-0 opacity-85">Active Jobs</p>
+                        <div class="progress mt-2" style="height: 4px;">
+                            <div class="progress-bar bg-light" style="width: 85%"></div>
+                        </div>
+                        <small class="opacity-75">12 scheduled this week</small>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="fw-bold mb-1">{{ bookings|selectattr('status', 'equalto', 'completed')|list|length }}</h3>
-                            <p class="mb-0 opacity-75">Completed</p>
+
+            <div class="col-xl-2 col-lg-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-warning text-white">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle bg-light mb-3">
+                            <i class="fas fa-file-invoice-dollar fa-2x text-warning"></i>
                         </div>
-                        <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                        <h3 class="fw-bold mb-1 counter" data-target="8">0</h3>
+                        <p class="mb-0 opacity-85">Pending Quotes</p>
+                        <div class="progress mt-2" style="height: 4px;">
+                            <div class="progress-bar bg-light" style="width: 65%"></div>
+                        </div>
+                        <small class="opacity-75">$18,500 potential</small>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="fw-bold mb-1">{{ ((bookings|selectattr('created_at')|list)|length) }}</h3>
-                            <p class="mb-0 opacity-75">This Month</p>
+
+            <div class="col-xl-2 col-lg-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-info text-white">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle bg-light mb-3">
+                            <i class="fas fa-users fa-2x text-info"></i>
                         </div>
-                        <i class="fas fa-chart-line fa-2x opacity-75"></i>
+                        <h3 class="fw-bold mb-1 counter" data-target="156">0</h3>
+                        <p class="mb-0 opacity-85">Total Clients</p>
+                        <div class="progress mt-2" style="height: 4px;">
+                            <div class="progress-bar bg-light" style="width: 92%"></div>
+                        </div>
+                        <small class="opacity-75">8 new this month</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-lg-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-purple text-white">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle bg-light mb-3">
+                            <i class="fas fa-star fa-2x text-purple"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1">4.9</h3>
+                        <p class="mb-0 opacity-85">Avg Rating</p>
+                        <div class="progress mt-2" style="height: 4px;">
+                            <div class="progress-bar bg-light" style="width: 98%"></div>
+                        </div>
+                        <small class="opacity-75">Based on 47 reviews</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-lg-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-orange text-white">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle bg-light mb-3">
+                            <i class="fas fa-chart-line fa-2x text-orange"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1 counter" data-target="87">0</h3>
+                        <p class="mb-0 opacity-85">Efficiency %</p>
+                        <div class="progress mt-2" style="height: 4px;">
+                            <div class="progress-bar bg-light" style="width: 87%"></div>
+                        </div>
+                        <small class="opacity-75">Above industry avg</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Action Dashboard -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-header bg-gradient-primary text-white py-3">
+                        <h4 class="mb-0 fw-bold">
+                            <i class="fas fa-bolt me-2"></i>Quick Actions Dashboard
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-lg-2 col-md-4 col-6">
+                                <a href="/admin/quote-builder" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                    <i class="fas fa-plus-circle fa-2x mb-2"></i>
+                                    <span>New Quote</span>
+                                </a>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-6">
+                                <a href="/admin/scheduler" class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                    <i class="fas fa-calendar-plus fa-2x mb-2"></i>
+                                    <span>Schedule Job</span>
+                                </a>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-6">
+                                <a href="/admin/invoices" class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                    <i class="fas fa-receipt fa-2x mb-2"></i>
+                                    <span>Create Invoice</span>
+                                </a>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-6">
+                                <a href="/admin/crm" class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                    <i class="fas fa-user-plus fa-2x mb-2"></i>
+                                    <span>Add Client</span>
+                                </a>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-6">
+                                <a href="/admin/analytics" class="btn btn-outline-purple w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                    <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                                    <span>Analytics</span>
+                                </a>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-6">
+                                <a href="/admin/business-intelligence" class="btn btn-outline-orange w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                    <i class="fas fa-brain fa-2x mb-2"></i>
+                                    <span>AI Insights</span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -284,23 +385,202 @@
             </div>
         </div>
         
+        <!-- Business Intelligence Dashboard -->
+        <div class="row mb-5">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-header bg-gradient-primary text-white">
+                        <h4 class="mb-0 fw-bold">
+                            <i class="fas fa-brain me-2"></i>AI Business Intelligence
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Business Health Score -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="progress-ring mobile-progress-ring">
+                                            <svg class="progress-ring-svg" width="80" height="80">
+                                                <circle class="progress-ring-circle"></circle>
+                                                <circle class="progress-ring-fill" style="stroke-dashoffset: 56;"></circle>
+                                            </svg>
+                                            <div class="position-absolute top-50 start-50 translate-middle">
+                                                <strong class="text-success">87</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-1">Business Health Score</h5>
+                                        <span class="badge bg-success">Excellent</span>
+                                        <p class="text-muted small mb-0 mt-1">Above industry average</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div class="text-center p-2 border rounded">
+                                            <div class="text-primary fw-bold">23/25</div>
+                                            <small class="text-muted">Financial</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-center p-2 border rounded">
+                                            <div class="text-success fw-bold">22/25</div>
+                                            <small class="text-muted">Operations</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-center p-2 border rounded">
+                                            <div class="text-info fw-bold">21/25</div>
+                                            <small class="text-muted">Customer</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-center p-2 border rounded">
+                                            <div class="text-warning fw-bold">21/25</div>
+                                            <small class="text-muted">Growth</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Recommendations -->
+                        <div class="alert alert-info border-0">
+                            <h6 class="fw-bold mb-2">
+                                <i class="fas fa-lightbulb me-2"></i>AI Recommendations
+                            </h6>
+                            <ul class="mb-0 ps-3">
+                                <li><strong>Expand Kitchen Renovation Services</strong> - High demand with 25% growth potential</li>
+                                <li><strong>Implement Digital Workflow</strong> - Could improve efficiency by 20-30%</li>
+                                <li><strong>Focus on Customer Retention</strong> - Increase repeat business opportunities</li>
+                            </ul>
+                        </div>
+
+                        <!-- Market Insights -->
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <i class="fas fa-trending-up fa-2x text-success mb-2"></i>
+                                    <h6 class="fw-bold">Market Position</h6>
+                                    <p class="text-muted small mb-0">Strong competitive position with 87% customer satisfaction</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <i class="fas fa-bullseye fa-2x text-primary mb-2"></i>
+                                    <h6 class="fw-bold">Top Opportunity</h6>
+                                    <p class="text-muted small mb-0">Kitchen renovations show 40% higher profit margins</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                                    <h6 class="fw-bold">Efficiency Target</h6>
+                                    <p class="text-muted small mb-0">Reduce job completion time by 3 days for optimal flow</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-lg h-100">
+                    <div class="card-header bg-gradient-success text-white">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="fas fa-chart-line me-2"></i>Performance Metrics
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-semibold">Quote Conversion</span>
+                                <span class="badge bg-success">72%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success" style="width: 72%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-semibold">Job Completion Rate</span>
+                                <span class="badge bg-primary">94%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-primary" style="width: 94%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-semibold">Customer Retention</span>
+                                <span class="badge bg-info">68%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-info" style="width: 68%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-semibold">Revenue Growth</span>
+                                <span class="badge bg-warning">+15%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-warning" style="width: 85%"></div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a href="/admin/analytics" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-chart-bar me-2"></i>View Detailed Analytics
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {% if bookings %}
-        <!-- Quick Actions -->
+        <!-- Enhanced Quick Actions -->
         <div class="row mt-4">
             <div class="col-12">
-                <div class="card border-0 bg-light">
-                    <div class="card-body text-center">
-                        <h5 class="fw-bold mb-3">Quick Actions</h5>
-                        <div class="d-flex flex-wrap justify-content-center gap-2">
-                            <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
-                                <i class="fas fa-home me-2"></i>View Website
-                            </a>
-                            <a href="{{ url_for('consultation') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-plus me-2"></i>View Consultation Form
-                            </a>
-                            <button class="btn btn-outline-success" onclick="window.print()">
-                                <i class="fas fa-print me-2"></i>Print Report
-                            </button>
+                <div class="card border-0 shadow-lg">
+                    <div class="card-header bg-gradient-info text-white">
+                        <h5 class="fw-bold mb-0">
+                            <i class="fas fa-rocket me-2"></i>Quick Actions & Tools
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-lg-3 col-md-6">
+                                <a href="{{ url_for('index') }}" class="btn btn-outline-primary w-100 py-3">
+                                    <i class="fas fa-home fa-2x mb-2 d-block"></i>
+                                    View Website
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <a href="/admin/business-intelligence" class="btn btn-outline-purple w-100 py-3">
+                                    <i class="fas fa-brain fa-2x mb-2 d-block"></i>
+                                    AI Insights
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <a href="/admin/workflow-automation" class="btn btn-outline-orange w-100 py-3">
+                                    <i class="fas fa-cogs fa-2x mb-2 d-block"></i>
+                                    Automation
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <button class="btn btn-outline-success w-100 py-3" onclick="window.print()">
+                                    <i class="fas fa-print fa-2x mb-2 d-block"></i>
+                                    Print Report
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

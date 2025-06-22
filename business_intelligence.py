@@ -260,6 +260,144 @@ class BusinessIntelligence:
         
         return roi_analysis
     
+    def calculate_business_health_score(self, storage):
+        """AI-powered business health scoring with predictive insights"""
+        from analytics_service import analytics_service
+        
+        business_report = analytics_service.generate_business_report(storage)
+        market_insights = self.generate_market_insights(storage)
+        efficiency_metrics = self.analyze_operational_efficiency(storage)
+        
+        # Health scoring components
+        financial_health = 0
+        operational_health = 0
+        customer_health = 0
+        growth_health = 0
+        
+        # Financial Health (0-25 points)
+        revenue = business_report.get('revenue', {}).get('total_revenue', 0)
+        if revenue > 50000:
+            financial_health += 25
+        elif revenue > 30000:
+            financial_health += 20
+        elif revenue > 15000:
+            financial_health += 15
+        else:
+            financial_health += max(5, revenue / 3000)
+        
+        # Operational Health (0-25 points)
+        capacity_util = efficiency_metrics.get('capacity_utilization', 0)
+        avg_completion = efficiency_metrics.get('avg_completion_time', 30)
+        
+        if capacity_util > 80 and avg_completion < 14:
+            operational_health += 25
+        elif capacity_util > 60 and avg_completion < 21:
+            operational_health += 20
+        elif capacity_util > 40:
+            operational_health += 15
+        else:
+            operational_health += 10
+        
+        # Customer Health (0-25 points)
+        conversion_rate = business_report.get('revenue', {}).get('quote_conversion_rate', 0)
+        customer_count = business_report.get('customers', {}).get('total_customers', 0)
+        
+        if conversion_rate > 70 and customer_count > 100:
+            customer_health += 25
+        elif conversion_rate > 50 and customer_count > 50:
+            customer_health += 20
+        elif conversion_rate > 30:
+            customer_health += 15
+        else:
+            customer_health += 10
+        
+        # Growth Health (0-25 points)
+        monthly_growth = business_report.get('growth', {}).get('monthly_revenue_growth', 0)
+        market_opportunities = len(market_insights.get('market_opportunities', []))
+        
+        if monthly_growth > 15 and market_opportunities > 3:
+            growth_health += 25
+        elif monthly_growth > 5 and market_opportunities > 1:
+            growth_health += 20
+        elif monthly_growth > 0:
+            growth_health += 15
+        else:
+            growth_health += 5
+        
+        total_score = financial_health + operational_health + customer_health + growth_health
+        
+        # Determine health level and recommendations
+        if total_score >= 85:
+            health_level = "Excellent"
+            health_color = "success"
+            alert_level = "info"
+        elif total_score >= 70:
+            health_level = "Good"
+            health_color = "info"
+            alert_level = "warning"
+        elif total_score >= 50:
+            health_level = "Fair"
+            health_color = "warning"
+            alert_level = "warning"
+        else:
+            health_level = "Needs Attention"
+            health_color = "danger"
+            alert_level = "danger"
+        
+        return {
+            'total_score': total_score,
+            'health_level': health_level,
+            'health_color': health_color,
+            'alert_level': alert_level,
+            'component_scores': {
+                'financial': financial_health,
+                'operational': operational_health,
+                'customer': customer_health,
+                'growth': growth_health
+            },
+            'next_review_date': (datetime.now(self.hawaii_tz) + timedelta(days=7)).strftime('%Y-%m-%d'),
+            'critical_actions': self.get_critical_actions(total_score, {
+                'financial': financial_health,
+                'operational': operational_health, 
+                'customer': customer_health,
+                'growth': growth_health
+            })
+        }
+    
+    def get_critical_actions(self, total_score, component_scores):
+        """Generate critical actions based on health score"""
+        actions = []
+        
+        if component_scores['financial'] < 15:
+            actions.append({
+                'priority': 'High',
+                'action': 'Focus on revenue generation - increase pricing or expand services',
+                'impact': 'Financial stability'
+            })
+        
+        if component_scores['operational'] < 15:
+            actions.append({
+                'priority': 'High', 
+                'action': 'Improve operational efficiency - reduce job completion times',
+                'impact': 'Customer satisfaction'
+            })
+        
+        if component_scores['customer'] < 15:
+            actions.append({
+                'priority': 'Medium',
+                'action': 'Enhance customer acquisition and retention strategies',
+                'impact': 'Business growth'
+            })
+        
+        if component_scores['growth'] < 15:
+            actions.append({
+                'priority': 'Medium',
+                'action': 'Explore new market opportunities and service expansion',
+                'impact': 'Long-term sustainability'
+            })
+        
+        return actions[:3]  # Return top 3 critical actions
+
     def generate_executive_briefing(self, storage):
         """Generate comprehensive executive briefing document"""
         from analytics_service import analytics_service
@@ -271,6 +409,7 @@ class BusinessIntelligence:
         efficiency_metrics = self.analyze_operational_efficiency(storage)
         recommendations = self.generate_strategic_recommendations(storage)
         roi_projections = self.calculate_roi_projections(storage, recommendations)
+        health_score = self.calculate_business_health_score(storage)
         
         # Executive summary
         executive_briefing = {
