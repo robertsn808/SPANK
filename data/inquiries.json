@@ -1,0 +1,54 @@
+[
+  {
+    "inquiry_id": "INQ001",
+    "name": "Sarah Chen",
+    "email": "sarah.chen@email.com",
+    "phone": "(808) 555-0123",
+    "service_type": "Kitchen Renovation",
+    "description": "Looking to remodel kitchen cabinets and install new countertops",
+    "preferred_date": "2025-06-25",
+    "status": "received",
+    "created_date": "2025-06-22T10:30:00",
+    "budget_range": "$5000-$10000",
+    "address": "1234 Kalanianaole Hwy, Honolulu, HI 96821"
+  },
+  {
+    "inquiry_id": "INQ002", 
+    "name": "Michael Torres",
+    "email": "m.torres@gmail.com",
+    "phone": "(808) 555-0456",
+    "service_type": "Fence Installation",
+    "description": "Need 50 ft privacy fence for backyard, wood or vinyl",
+    "preferred_date": "2025-06-28",
+    "status": "review",
+    "created_date": "2025-06-21T14:15:00",
+    "budget_range": "$2500-$5000",
+    "address": "789 Kamehameha Hwy, Pearl City, HI 96782"
+  },
+  {
+    "inquiry_id": "INQ003",
+    "name": "Lisa Park",
+    "email": "lisa.park.hi@yahoo.com", 
+    "phone": "(808) 555-0789",
+    "service_type": "Bathroom Repair",
+    "description": "Leaky shower, tile replacement, and ventilation fan installation",
+    "preferred_date": "2025-06-24",
+    "status": "tentative",
+    "created_date": "2025-06-20T16:45:00",
+    "budget_range": "$1500-$3000",
+    "address": "456 Waialae Ave, Honolulu, HI 96816"
+  },
+  {
+    "inquiry_id": "INQ004",
+    "name": "Robert Kim",
+    "email": "rkim.oahu@hotmail.com",
+    "phone": "(808) 555-0321",
+    "service_type": "Electrical Work",
+    "description": "Install ceiling fans in 3 bedrooms and upgrade electrical panel",
+    "preferred_date": "2025-07-02",
+    "status": "quoted",
+    "created_date": "2025-06-19T09:20:00",
+    "budget_range": "$2000-$4000",
+    "address": "321 Keeaumoku St, Honolulu, HI 96814"
+  }
+]

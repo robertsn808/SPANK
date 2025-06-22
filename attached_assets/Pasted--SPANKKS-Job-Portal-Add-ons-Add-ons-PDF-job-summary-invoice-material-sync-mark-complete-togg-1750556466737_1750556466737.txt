@@ -1,0 +1,67 @@
+// SPANKKS Job Portal Add-ons
+// Add-ons: PDF job summary, invoice material sync, mark complete toggle
+
+const fs = require('fs');
+const PDFDocument = require('pdfkit');
+const path = require('path');
+
+// 1. Generate Job Summary PDF (checklist, notes, materials)
+app.get('/job/:jobId/summary-pdf', (req, res) => {
+  const jobId = req.params.jobId;
+  const jobDataPath = './data/jobData.json';
+  const jobData = JSON.parse(fs.readFileSync(jobDataPath, 'utf8'));
+  const data = jobData[jobId];
+
+  if (!data) return res.status(404).send('Job not found');
+
+  const doc = new PDFDocument();
+  const filename = `Job_${jobId}_Summary.pdf`;
+  res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+  res.setHeader('Content-Type', 'application/pdf');
+  doc.pipe(res);
+
+  doc.fontSize(20).text(`SPANKKS Job Summary: ${jobId}`, { align: 'center' });
+  doc.moveDown();
+
+  doc.fontSize(14).text('✅ Checklist:');
+  data.checklist?.forEach(item => {
+    doc.text(`- [${item.done ? 'X' : ' '}] ${item.label}`);
+  });
+
+  doc.moveDown().text('🧰 Materials Used:');
+  data.materials?.forEach(m => {
+    doc.text(`- ${m.qty} ${m.unit} ${m.item} @ $${m.cost}`);
+  });
+
+  doc.moveDown().text('🗒️ Notes:');
+  doc.text(data.notes || 'None');
+
+  doc.end();
+});
+
+// 2. Sync Materials into Invoice
+// When generating invoice, add optional pull from jobData materials
+function getMaterialsSubtotal(materials) {
+  return materials.reduce((sum, m) => sum + m.qty * m.cost, 0);
+}
+
+// inside POST /generate-invoice
+// Optional: check for req.body.useJobMaterials === 'true'
+// const jobId = req.body.jobId;
+// const jobMaterials = jobData[jobId]?.materials || [];
+// const subtotal = getMaterialsSubtotal(jobMaterials);
+// Generate invoice PDF using that subtotal
+
+// 3. Mark Job Complete Toggle
+// Save to jobData.json
+app.post('/job/:jobId/complete', (req, res) => {
+  const jobId = req.params.jobId;
+  const jobDataPath = './data/jobData.json';
+  const jobData = JSON.parse(fs.readFileSync(jobDataPath, 'utf8'));
+
+  if (!jobData[jobId]) jobData[jobId] = {};
+  jobData[jobId].complete = req.body.complete === 'on';
+
+  fs.writeFileSync(jobDataPath, JSON.stringify(jobData, null, 2));
+  res.redirect(`/job/${jobId}`);
+});

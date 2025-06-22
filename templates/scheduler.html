@@ -1,0 +1,376 @@
+{% extends "base.html" %}
+
+{% block title %}Scheduler & Calendar - SPANKKS Construction{% endblock %}
+
+{% block extra_head %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+<style>
+.scheduler-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.scheduler-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+}
+
+.calendar-header {
+    background: linear-gradient(45deg, #2c3e50, #34495e);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 15px 15px 0 0;
+    text-align: center;
+}
+
+.fc-toolbar-title {
+    font-size: 1.8rem !important;
+    font-weight: 600;
+}
+
+.fc-button-primary {
+    background: #3498db !important;
+    border-color: #3498db !important;
+}
+
+.fc-button-primary:hover {
+    background: #2980b9 !important;
+}
+
+.job-scheduled {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+}
+
+.job-pending {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+}
+
+.job-completed {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+.inquiry-tentative {
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+    opacity: 0.7;
+}
+
+.stats-card {
+    background: linear-gradient(45deg, #ff6b6b, #feca57);
+    color: white;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.stats-number {
+    font-size: 2rem;
+    font-weight: bold;
+    display: block;
+}
+
+.quick-actions {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.quick-action-btn {
+    margin: 0.25rem;
+    border-radius: 25px;
+    padding: 0.5rem 1.5rem;
+}
+
+.staff-availability {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.staff-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    margin: 0.25rem;
+}
+
+.staff-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.staff-busy {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.view-toggle {
+    margin-bottom: 1rem;
+}
+
+.view-toggle .btn {
+    border-radius: 25px;
+    margin: 0 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .scheduler-container {
+        padding: 1rem;
+    }
+    
+    .calendar-header {
+        padding: 1rem;
+    }
+    
+    .stats-card {
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="scheduler-container">
+    <div class="container-fluid">
+        
+        <!-- Header -->
+        <div class="calendar-header">
+            <h1><i class="fas fa-calendar-alt"></i> Scheduler & Calendar</h1>
+            <p class="mb-0">Manage jobs, inquiries, and staff scheduling</p>
+        </div>
+
+        <div class="row mt-4">
+            
+            <!-- Left Sidebar -->
+            <div class="col-lg-3">
+                
+                <!-- Quick Stats -->
+                <div class="stats-card">
+                    <span class="stats-number">{{ jobs|length }}</span>
+                    <small>Active Jobs</small>
+                </div>
+                
+                <div class="stats-card">
+                    <span class="stats-number">{{ inquiries|selectattr('status', 'equalto', 'received')|list|length }}</span>
+                    <small>New Inquiries</small>
+                </div>
+                
+                <div class="stats-card">
+                    <span class="stats-number">{{ staff|selectattr('status', 'equalto', 'active')|list|length }}</span>
+                    <small>Available Staff</small>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h6><i class="fas fa-bolt"></i> Quick Actions</h6>
+                    <a href="{{ url_for('inquiry_management') }}" class="btn btn-primary quick-action-btn btn-sm">
+                        <i class="fas fa-inbox"></i> Manage Inquiries
+                    </a>
+                    <a href="{{ url_for('staff_management') }}" class="btn btn-success quick-action-btn btn-sm">
+                        <i class="fas fa-users"></i> Staff Management
+                    </a>
+                    <a href="{{ url_for('create_job') }}" class="btn btn-warning quick-action-btn btn-sm">
+                        <i class="fas fa-plus"></i> Create Job
+                    </a>
+                    <a href="{{ url_for('quote_builder') }}" class="btn btn-info quick-action-btn btn-sm">
+                        <i class="fas fa-file-invoice"></i> New Quote
+                    </a>
+                </div>
+
+                <!-- Staff Availability -->
+                <div class="staff-availability">
+                    <h6><i class="fas fa-user-check"></i> Staff Status</h6>
+                    {% for member in staff %}
+                        {% if member.status == 'active' %}
+                            {% set today = moment().format('dddd').lower() %}
+                            {% if member.availability[today] %}
+                                <span class="staff-badge staff-active">
+                                    <i class="fas fa-check-circle"></i> {{ member.name }}
+                                </span>
+                            {% else %}
+                                <span class="staff-badge staff-busy">
+                                    <i class="fas fa-times-circle"></i> {{ member.name }}
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <!-- Legend -->
+                <div class="staff-availability">
+                    <h6><i class="fas fa-info-circle"></i> Calendar Legend</h6>
+                    <div class="mb-2">
+                        <span class="badge" style="background: #28a745;">Completed Jobs</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="badge" style="background: #007bff;">Scheduled Jobs</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="badge" style="background: #ffc107; color: #000;">Tentative Inquiries</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Main Calendar -->
+            <div class="col-lg-9">
+                <div class="scheduler-card">
+                    
+                    <!-- View Toggle -->
+                    <div class="view-toggle p-3 border-bottom">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary" onclick="calendar.changeView('dayGridMonth')">
+                                <i class="fas fa-calendar"></i> Month
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" onclick="calendar.changeView('timeGridWeek')">
+                                <i class="fas fa-calendar-week"></i> Week
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" onclick="calendar.changeView('timeGridDay')">
+                                <i class="fas fa-calendar-day"></i> Day
+                            </button>
+                        </div>
+                        
+                        <div class="float-end">
+                            <button class="btn btn-success" onclick="showAddEventModal()">
+                                <i class="fas fa-plus"></i> Add Event
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Calendar Container -->
+                    <div id="calendar" style="padding: 2rem;"></div>
+                    
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Add Event Modal -->
+<div class="modal fade" id="addEventModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Calendar Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('create_job') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Event Type</label>
+                        <select class="form-select" name="event_type" required>
+                            <option value="job">Scheduled Job</option>
+                            <option value="inquiry">Tentative Inquiry</option>
+                            <option value="appointment">Consultation</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control" name="scheduled_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Time</label>
+                        <input type="time" class="form-control" name="scheduled_time" value="09:00">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Assign Staff</label>
+                        <select class="form-select" name="assigned_staff">
+                            <option value="">Select Staff Member</option>
+                            {% for member in staff %}
+                                {% if member.status == 'active' %}
+                                    <option value="{{ member.staff_id }}">{{ member.name }} - {{ member.role }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+let calendar;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: ''
+        },
+        height: 'auto',
+        events: '/api/calendar/events',
+        eventClick: function(info) {
+            if (info.event.url) {
+                window.open(info.event.url, '_blank');
+                info.jsEvent.preventDefault();
+            }
+        },
+        dateClick: function(info) {
+            // Pre-fill modal with clicked date
+            document.querySelector('[name="scheduled_date"]').value = info.dateStr;
+            showAddEventModal();
+        },
+        eventDidMount: function(info) {
+            // Add custom styling based on event type
+            if (info.event.classNames.includes('job-completed')) {
+                info.el.style.textDecoration = 'line-through';
+            }
+            if (info.event.classNames.includes('inquiry-tentative')) {
+                info.el.style.fontStyle = 'italic';
+            }
+        }
+    });
+    
+    calendar.render();
+    
+    // Auto-refresh calendar every 5 minutes
+    setInterval(function() {
+        calendar.refetchEvents();
+    }, 300000);
+});
+
+function showAddEventModal() {
+    new bootstrap.Modal(document.getElementById('addEventModal')).show();
+}
+
+// Quick date navigation
+function goToToday() {
+    calendar.today();
+}
+
+function goToDate(date) {
+    calendar.gotoDate(date);
+}
+</script>
+{% endblock %}

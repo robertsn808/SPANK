@@ -1,4 +1,5 @@
 import os
+import json
 import logging
 from datetime import datetime, timedelta
 from flask import render_template, request, redirect, url_for, session, flash, jsonify
@@ -2310,3 +2311,376 @@ def get_job_notes(job_id):
         })
     
     return jsonify({'notes': [], 'count': 0})
+
+# ===============================
+# SCHEDULER & CALENDAR SYSTEM
+# ===============================
+
+@app.route('/admin/scheduler')
+def scheduler_dashboard():
+    """Comprehensive scheduler with daily/weekly/monthly views"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    # Load data from JSON files
+    with open('data/inquiries.json', 'r') as f:
+        inquiries = json.load(f)
+    
+    with open('data/staff.json', 'r') as f:
+        staff = json.load(f)
+    
+    # Get CRM jobs
+    all_jobs = handyman_storage.get_all_jobs()
+    
+    return render_template('scheduler.html', 
+                         inquiries=inquiries,
+                         staff=staff,
+                         jobs=all_jobs)
+
+@app.route('/admin/inquiries')
+def inquiry_management():
+    """Inquiry management dashboard with CRM workflow"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    with open('data/inquiries.json', 'r') as f:
+        inquiries = json.load(f)
+    
+    # Sort by status priority and date
+    status_priority = {'received': 1, 'review': 2, 'tentative': 3, 'quoted': 4, 'booked': 5}
+    inquiries.sort(key=lambda x: (status_priority.get(x['status'], 99), x['created_date']))
+    
+    return render_template('inquiry_management.html', inquiries=inquiries)
+
+@app.route('/admin/inquiry/<inquiry_id>/status', methods=['POST'])
+def update_inquiry_status(inquiry_id):
+    """Update inquiry status in workflow"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    new_status = request.form.get('status')
+    notes = request.form.get('notes', '')
+    
+    with open('data/inquiries.json', 'r') as f:
+        inquiries = json.load(f)
+    
+    # Find and update inquiry
+    for inquiry in inquiries:
+        if inquiry['inquiry_id'] == inquiry_id:
+            inquiry['status'] = new_status
+            inquiry['last_updated'] = get_hawaii_time().isoformat()
+            if notes:
+                if 'notes' not in inquiry:
+                    inquiry['notes'] = []
+                inquiry['notes'].append({
+                    'note': notes,
+                    'timestamp': get_hawaii_time().isoformat(),
+                    'user': 'Admin'
+                })
+            break
+    
+    # Save back to file
+    with open('data/inquiries.json', 'w') as f:
+        json.dump(inquiries, f, indent=2)
+    
+    flash(f'Inquiry {inquiry_id} status updated to {new_status}', 'success')
+    return redirect(url_for('inquiry_management'))
+
+@app.route('/admin/inquiry/<inquiry_id>/convert-quote', methods=['POST'])
+def convert_inquiry_to_quote(inquiry_id):
+    """Convert inquiry to quote in CRM system"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    with open('data/inquiries.json', 'r') as f:
+        inquiries = json.load(f)
+    
+    # Find inquiry
+    inquiry = next((i for i in inquiries if i['inquiry_id'] == inquiry_id), None)
+    if not inquiry:
+        flash('Inquiry not found', 'error')
+        return redirect(url_for('inquiry_management'))
+    
+    # Create contact in CRM if doesn't exist
+    existing_contacts = handyman_storage.get_all_contacts()
+    contact = next((c for c in existing_contacts if c['email'] == inquiry['email']), None)
+    
+    if not contact:
+        contact_data = {
+            'name': inquiry['name'],
+            'email': inquiry['email'],
+            'phone': inquiry['phone'],
+            'address': inquiry.get('address', ''),
+            'notes': f"Converted from inquiry {inquiry_id}",
+            'tags': ['inquiry_conversion']
+        }
+        contact_id = handyman_storage.add_contact(contact_data)
+    else:
+        contact_id = contact['contact_id']
+    
+    # Create quote with inquiry details
+    quote_data = {
+        'contact_id': contact_id,
+        'service_type': inquiry['service_type'],
+        'items': [{
+            'description': inquiry['description'],
+            'quantity': 1,
+            'unit_price': 0,  # To be filled by admin
+            'unit': 'project'
+        }],
+        'total_amount': 0,  # To be calculated
+        'valid_until': (get_hawaii_time() + timedelta(days=30)).strftime('%Y-%m-%d'),
+        'notes': f"Generated from inquiry {inquiry_id}",
+        'inquiry_id': inquiry_id
+    }
+    
+    quote_id = handyman_storage.add_quote(quote_data)
+    
+    # Update inquiry status
+    for inq in inquiries:
+        if inq['inquiry_id'] == inquiry_id:
+            inq['status'] = 'quoted'
+            inq['quote_id'] = quote_id
+            inq['last_updated'] = get_hawaii_time().isoformat()
+            break
+    
+    with open('data/inquiries.json', 'w') as f:
+        json.dump(inquiries, f, indent=2)
+    
+    flash(f'Inquiry converted to quote {quote_id}', 'success')
+    return redirect(url_for('quote_detail', quote_id=quote_id))
+
+@app.route('/admin/inquiry/<inquiry_id>/schedule', methods=['POST'])
+def schedule_inquiry_tentative(inquiry_id):
+    """Place inquiry as tentative hold on calendar"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    tentative_date = request.form.get('tentative_date')
+    tentative_time = request.form.get('tentative_time', '09:00')
+    
+    with open('data/inquiries.json', 'r') as f:
+        inquiries = json.load(f)
+    
+    # Update inquiry with tentative scheduling
+    for inquiry in inquiries:
+        if inquiry['inquiry_id'] == inquiry_id:
+            inquiry['status'] = 'tentative'
+            inquiry['tentative_date'] = tentative_date
+            inquiry['tentative_time'] = tentative_time
+            inquiry['last_updated'] = get_hawaii_time().isoformat()
+            break
+    
+    with open('data/inquiries.json', 'w') as f:
+        json.dump(inquiries, f, indent=2)
+    
+    flash(f'Inquiry {inquiry_id} placed as tentative on {tentative_date}', 'success')
+    return redirect(url_for('scheduler_dashboard'))
+
+# ===============================
+# STAFF MANAGEMENT SYSTEM
+# ===============================
+
+@app.route('/admin/staff')
+def staff_management():
+    """Staff management dashboard"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    with open('data/staff.json', 'r') as f:
+        staff = json.load(f)
+    
+    # Get job assignments
+    all_jobs = handyman_storage.get_all_jobs()
+    
+    return render_template('staff_management.html', staff=staff, jobs=all_jobs)
+
+@app.route('/admin/staff/add', methods=['POST'])
+def add_staff_member():
+    """Add new staff member"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    with open('data/staff.json', 'r') as f:
+        staff = json.load(f)
+    
+    # Generate new staff ID
+    existing_ids = [int(s['staff_id'][3:]) for s in staff]
+    new_id = max(existing_ids) + 1 if existing_ids else 1
+    
+    new_staff = {
+        'staff_id': f'STF{new_id:03d}',
+        'name': request.form.get('name'),
+        'role': request.form.get('role'),
+        'phone': request.form.get('phone'),
+        'email': request.form.get('email'),
+        'pin': request.form.get('pin'),
+        'status': 'active',
+        'hire_date': get_hawaii_time().strftime('%Y-%m-%d'),
+        'skills': request.form.get('skills', '').split(','),
+        'hourly_rate': float(request.form.get('hourly_rate', 20)),
+        'assigned_jobs': [],
+        'availability': {
+            'monday': 'monday' in request.form,
+            'tuesday': 'tuesday' in request.form,
+            'wednesday': 'wednesday' in request.form,
+            'thursday': 'thursday' in request.form,
+            'friday': 'friday' in request.form,
+            'saturday': 'saturday' in request.form,
+            'sunday': 'sunday' in request.form
+        }
+    }
+    
+    staff.append(new_staff)
+    
+    with open('data/staff.json', 'w') as f:
+        json.dump(staff, f, indent=2)
+    
+    flash(f'Staff member {new_staff["name"]} added successfully', 'success')
+    return redirect(url_for('staff_management'))
+
+@app.route('/admin/staff/<staff_id>/assign', methods=['POST'])
+def assign_staff_to_job(staff_id):
+    """Assign staff member to job"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    job_id = request.form.get('job_id')
+    
+    with open('data/staff.json', 'r') as f:
+        staff = json.load(f)
+    
+    # Add job to staff assignments
+    for member in staff:
+        if member['staff_id'] == staff_id:
+            if job_id not in member['assigned_jobs']:
+                member['assigned_jobs'].append(job_id)
+            break
+    
+    with open('data/staff.json', 'w') as f:
+        json.dump(staff, f, indent=2)
+    
+    # Update job with assigned staff
+    all_jobs = handyman_storage.get_all_jobs()
+    for job in all_jobs:
+        if job.get('job_id') == job_id:
+            if 'assigned_staff' not in job:
+                job['assigned_staff'] = []
+            if staff_id not in job['assigned_staff']:
+                job['assigned_staff'].append(staff_id)
+                handyman_storage.add_job_note(job_id, f'Staff {staff_id} assigned to job')
+            break
+    
+    flash(f'Staff {staff_id} assigned to job {job_id}', 'success')
+    return redirect(url_for('staff_management'))
+
+@app.route('/staff/<staff_id>/portal')
+def staff_member_portal(staff_id):
+    """Individual staff member portal"""
+    # Basic authentication check (could be enhanced)
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    with open('data/staff.json', 'r') as f:
+        staff = json.load(f)
+    
+    staff_member = next((s for s in staff if s['staff_id'] == staff_id), None)
+    if not staff_member:
+        flash('Staff member not found', 'error')
+        return redirect(url_for('staff_management'))
+    
+    # Get assigned jobs
+    all_jobs = handyman_storage.get_all_jobs()
+    assigned_jobs = [job for job in all_jobs if job.get('job_id') in staff_member['assigned_jobs']]
+    
+    return render_template('staff_portal_individual.html', 
+                         staff=staff_member, 
+                         assigned_jobs=assigned_jobs)
+
+@app.route('/staff/<staff_id>/checkin/<job_id>', methods=['POST'])
+def staff_checkin(staff_id, job_id):
+    """Staff check-in to job site"""
+    timestamp = get_hawaii_time().isoformat()
+    
+    # Log check-in
+    checkin_data = {
+        'staff_id': staff_id,
+        'job_id': job_id,
+        'checkin_time': timestamp,
+        'location': request.form.get('location', 'Job Site')
+    }
+    
+    # Add note to job
+    handyman_storage.add_job_note(job_id, f'Staff {staff_id} checked in at {timestamp}')
+    
+    flash('Successfully checked in to job site', 'success')
+    return redirect(url_for('staff_member_portal', staff_id=staff_id))
+
+# ===============================
+# CALENDAR API ENDPOINTS
+# ===============================
+
+@app.route('/api/calendar/events')
+def get_calendar_events():
+    """Get calendar events for scheduler"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    start_date = request.args.get('start')
+    end_date = request.args.get('end')
+    
+    events = []
+    
+    # Add confirmed jobs
+    all_jobs = handyman_storage.get_all_jobs()
+    for job in all_jobs:
+        if job.get('scheduled_date'):
+            events.append({
+                'id': f"job_{job['job_id']}",
+                'title': f"Job: {job.get('service_type', 'Service')}",
+                'start': job['scheduled_date'],
+                'className': f"job-{job.get('status', 'scheduled')}",
+                'backgroundColor': '#28a745' if job.get('status') == 'completed' else '#007bff',
+                'borderColor': '#28a745' if job.get('status') == 'completed' else '#007bff',
+                'url': f"/crm/job/{job['job_id']}"
+            })
+    
+    # Add tentative inquiries
+    with open('data/inquiries.json', 'r') as f:
+        inquiries = json.load(f)
+    
+    for inquiry in inquiries:
+        if inquiry['status'] == 'tentative' and inquiry.get('tentative_date'):
+            events.append({
+                'id': f"inquiry_{inquiry['inquiry_id']}",
+                'title': f"Tentative: {inquiry['service_type']}",
+                'start': inquiry['tentative_date'],
+                'className': 'inquiry-tentative',
+                'backgroundColor': '#ffc107',
+                'borderColor': '#ffc107',
+                'opacity': 0.7,
+                'url': f"/admin/inquiries"
+            })
+    
+    return jsonify(events)
+
+@app.route('/api/staff/availability')
+def get_staff_availability():
+    """Get staff availability for scheduling"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    with open('data/staff.json', 'r') as f:
+        staff = json.load(f)
+    
+    availability = {}
+    for member in staff:
+        if member['status'] == 'active':
+            availability[member['staff_id']] = {
+                'name': member['name'],
+                'role': member['role'],
+                'availability': member['availability'],
+                'assigned_jobs': member['assigned_jobs']
+            }
+    
+    return jsonify(availability)
