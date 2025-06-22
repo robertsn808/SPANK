@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block title %}Business Intelligence - SPANKKS Construction{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bi-dashboard {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .bi-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .strategic-metric {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .opportunity-card {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .recommendation-card {
+        border-left: 5px solid;
+        background: #f8f9fa;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-radius: 0 10px 10px 0;
+    }
+    
+    .high-priority { border-left-color: #dc3545; }
+    .medium-priority { border-left-color: #ffc107; }
+    .low-priority { border-left-color: #28a745; }
+    
+    .roi-indicator {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        margin: 0 auto;
+    }
+    
+    .roi-excellent { background: #28a745; }
+    .roi-good { background: #17a2b8; }
+    .roi-fair { background: #ffc107; }
+    .roi-poor { background: #dc3545; }
+    
+    .intelligence-header {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .market-insight {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        color: #333;
+    }
+    
+    .strategic-timeline {
+        background: #fff;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .timeline-item {
+        border-left: 3px solid #007bff;
+        padding-left: 1rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        width: 12px;
+        height: 12px;
+        background: #007bff;
+        border-radius: 50%;
+        position: absolute;
+        left: -7px;
+        top: 0.5rem;
+    }
+    
+    .kpi-ring {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 8px solid #e9ecef;
+        position: relative;
+        margin: 0 auto 1rem;
+    }
+    
+    .performance-gauge {
+        background: conic-gradient(#28a745 0deg, #28a745 calc(var(--percentage) * 3.6deg), #e9ecef calc(var(--percentage) * 3.6deg));
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bi-dashboard">
+    <div class="container-fluid">
+        <!-- Intelligence Header -->
+        <div class="intelligence-header">
+            <h1 class="mb-3">Business Intelligence Center</h1>
+            <p class="lead mb-1">Strategic insights and data-driven recommendations for SPANKKS Construction</p>
+            <small class="opacity-75">Generated: {{ executive_briefing.briefing_date }}</small>
+        </div>
+
+        <!-- Executive KPI Overview -->
+        <div class="row mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="strategic-metric">
+                    <div class="h2 mb-1">${{ "{:,.0f}".format(executive_briefing.kpi_summary.total_revenue) }}</div>
+                    <div class="small">Total Revenue</div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="strategic-metric">
+                    <div class="h2 mb-1">{{ executive_briefing.kpi_summary.conversion_rate }}%</div>
+                    <div class="small">Conversion Rate</div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="strategic-metric">
+                    <div class="h2 mb-1">${{ "{:,.0f}".format(executive_briefing.kpi_summary.pipeline_value) }}</div>
+                    <div class="small">Pipeline Value</div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="strategic-metric">
+                    <div class="h2 mb-1">{{ executive_briefing.kpi_summary.customer_count }}</div>
+                    <div class="small">Total Customers</div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="strategic-metric">
+                    <div class="h2 mb-1">{{ executive_briefing.kpi_summary.operational_efficiency|round }}%</div>
+                    <div class="small">Efficiency</div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="strategic-metric">
+                    <div class="h2 mb-1">{{ executive_briefing.strategic_insights.competitive_position }}</div>
+                    <div class="small">Market Position</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Opportunities -->
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <div class="bi-card">
+                    <h4 class="mb-3"><i class="fas fa-bullseye me-2"></i>Market Opportunities</h4>
+                    {% if market_insights.market_opportunities %}
+                        {% for opportunity in market_insights.market_opportunities %}
+                        <div class="opportunity-card">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">{{ opportunity.service }}</h6>
+                                    <p class="mb-1">{{ opportunity.demand_level }} demand, {{ opportunity.pricing_flexibility.lower() }} pricing flexibility</p>
+                                    <small>Average Price: ${{ "{:,.0f}".format(opportunity.avg_price) }}</small>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <div class="h4 mb-0">{{ opportunity.opportunity_score }}</div>
+                                    <small>Opportunity Score</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-search fa-2x mb-2"></i>
+                            <p>Market analysis requires additional quote data</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="bi-card">
+                    <h5 class="mb-3"><i class="fas fa-chart-pie me-2"></i>Market Position</h5>
+                    <div class="market-insight">
+                        <h6>Competitive Standing</h6>
+                        <p class="mb-1"><strong>{{ executive_briefing.strategic_insights.competitive_position }}</strong> market position</p>
+                        <small>Based on conversion rates and customer retention</small>
+                    </div>
+                    
+                    <div class="market-insight">
+                        <h6>Growth Trajectory</h6>
+                        <p class="mb-1"><strong>{{ executive_briefing.strategic_insights.growth_trajectory }}</strong> business trend</p>
+                        <small>Revenue and customer acquisition patterns</small>
+                    </div>
+                    
+                    <div class="market-insight">
+                        <h6>Operational Status</h6>
+                        <p class="mb-1"><strong>{{ executive_briefing.strategic_insights.operational_status }}</strong> efficiency level</p>
+                        <small>Capacity utilization and performance metrics</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategic Recommendations -->
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <div class="bi-card">
+                    <h4 class="mb-3"><i class="fas fa-lightbulb me-2"></i>Strategic Recommendations</h4>
+                    {% for rec in strategic_recommendations %}
+                    <div class="recommendation-card {{ rec.priority.lower() }}-priority">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="mb-1">{{ rec.title }}</h6>
+                                <span class="badge bg-{{ 'danger' if rec.priority == 'High' else 'warning' if rec.priority == 'Medium' else 'success' }}">
+                                    {{ rec.priority }} Priority
+                                </span>
+                            </div>
+                            <span class="badge bg-secondary">{{ rec.category }}</span>
+                        </div>
+                        
+                        <p class="mb-2">{{ rec.description }}</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted">Impact:</small>
+                                <p class="small fw-bold">{{ rec.impact }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted">Timeline:</small>
+                                <p class="small fw-bold">{{ rec.timeline }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-2">
+                            <small class="text-muted">Action Items:</small>
+                            <ul class="small mb-0">
+                                {% for item in rec.action_items %}
+                                <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="bi-card">
+                    <h5 class="mb-3"><i class="fas fa-dollar-sign me-2"></i>ROI Analysis</h5>
+                    {% for roi in roi_projections %}
+                    <div class="card mb-3">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">{{ roi.recommendation }}</h6>
+                            <div class="roi-indicator {{ 'roi-excellent' if roi.roi_percentage > 200 else 'roi-good' if roi.roi_percentage > 100 else 'roi-fair' if roi.roi_percentage > 50 else 'roi-poor' }}">
+                                {{ roi.roi_percentage }}%
+                            </div>
+                            <div class="mt-2">
+                                <small class="text-muted">Investment: ${{ "{:,.0f}".format(roi.investment_required) }}</small><br>
+                                <small class="text-muted">Payback: {{ roi.payback_period_months }} months</small><br>
+                                <span class="badge bg-{{ 'success' if roi.risk_level == 'Low' else 'warning' if roi.risk_level == 'Medium' else 'danger' }}">
+                                    {{ roi.risk_level }} Risk
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategic Timeline -->
+        <div class="row">
+            <div class="col-12">
+                <div class="bi-card">
+                    <h4 class="mb-3"><i class="fas fa-calendar-alt me-2"></i>Strategic Implementation Timeline</h4>
+                    <div class="strategic-timeline">
+                        {% for rec in strategic_recommendations[:4] %}
+                        <div class="timeline-item">
+                            <h6>{{ rec.title }}</h6>
+                            <p class="mb-1">{{ rec.description }}</p>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Timeline: {{ rec.timeline }}</small>
+                                <small class="text-muted">Investment: {{ rec.investment_required }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Executive Actions -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="bi-card text-center">
+                    <h5 class="mb-3">Executive Actions</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{{ url_for('analytics_dashboard') }}" class="btn btn-primary w-100 mb-2">
+                                <i class="fas fa-chart-line me-2"></i>Detailed Analytics
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('executive_summary') }}" class="btn btn-success w-100 mb-2">
+                                <i class="fas fa-eye me-2"></i>Executive Summary
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('crm_dashboard') }}" class="btn btn-info w-100 mb-2">
+                                <i class="fas fa-users me-2"></i>Customer Management
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary w-100 mb-2">
+                                <i class="fas fa-tachometer-alt me-2"></i>Operations Center
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-refresh every 10 minutes for updated intelligence
+document.addEventListener('DOMContentLoaded', function() {
+    setInterval(function() {
+        location.reload();
+    }, 600000);
+});
+</script>
+{% endblock %}

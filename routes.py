@@ -914,6 +914,27 @@ def project_tracking():
                          total_active_value=total_active_value,
                          upcoming_deadlines=upcoming_deadlines)
 
+@app.route('/admin/business-intelligence')
+def business_intelligence_dashboard():
+    """Comprehensive business intelligence and strategic insights"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access business intelligence.', 'error')
+        return redirect(url_for('admin_login'))
+
+    from business_intelligence import business_intelligence
+    
+    # Generate comprehensive business intelligence
+    executive_briefing = business_intelligence.generate_executive_briefing(handyman_storage)
+    market_insights = business_intelligence.generate_market_insights(handyman_storage)
+    strategic_recommendations = business_intelligence.generate_strategic_recommendations(handyman_storage)
+    roi_projections = business_intelligence.calculate_roi_projections(handyman_storage, strategic_recommendations)
+    
+    return render_template('admin/business_intelligence.html',
+                         executive_briefing=executive_briefing,
+                         market_insights=market_insights,
+                         strategic_recommendations=strategic_recommendations,
+                         roi_projections=roi_projections)
+
 @app.route('/admin/executive-summary')
 def executive_summary():
     """Executive dashboard with key business metrics"""
