@@ -25,8 +25,17 @@ class BusinessAnalytics:
                 total_revenue += invoice.total_amount
                 
                 # Monthly breakdown
-                month_key = invoice.created_date.strftime('%Y-%m')
-                monthly_revenue[month_key] += invoice.total_amount
+                try:
+                    if isinstance(invoice.created_date, str):
+                        date_obj = datetime.fromisoformat(invoice.created_date.replace('Z', '+00:00'))
+                    else:
+                        date_obj = invoice.created_date
+                    month_key = date_obj.strftime('%Y-%m')
+                    monthly_revenue[month_key] += invoice.total_amount
+                except:
+                    # Fallback to current month if date parsing fails
+                    month_key = datetime.now().strftime('%Y-%m')
+                    monthly_revenue[month_key] += invoice.total_amount
                 
                 # Service type breakdown
                 service_revenue[invoice.service_type] += invoice.total_amount
@@ -71,8 +80,17 @@ class BusinessAnalytics:
         # Customer acquisition trends
         monthly_new_customers = defaultdict(int)
         for contact in contacts:
-            month_key = contact.created_date.strftime('%Y-%m')
-            monthly_new_customers[month_key] += 1
+            try:
+                if isinstance(contact.created_date, str):
+                    date_obj = datetime.fromisoformat(contact.created_date.replace('Z', '+00:00'))
+                else:
+                    date_obj = contact.created_date
+                month_key = date_obj.strftime('%Y-%m')
+                monthly_new_customers[month_key] += 1
+            except:
+                # Fallback to current month if date parsing fails
+                month_key = datetime.now().strftime('%Y-%m')
+                monthly_new_customers[month_key] += 1
         
         # Repeat customer rate
         repeat_customers = len([c for c in customer_jobs.values() if c > 1])
