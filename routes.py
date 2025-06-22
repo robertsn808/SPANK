@@ -509,6 +509,10 @@ def admin_dashboard():
             logging.warning(f"Error getting admin notifications: {e}")
             admin_notifications = []
 
+        # Calculate actual stats from database data
+        completed_requests = [req for req in service_requests if hasattr(req, 'status') and req.status == 'completed']
+        unread_messages = [msg for msg in contact_messages if hasattr(msg, 'status') and msg.status == 'unread']
+        
         return render_template('admin_dashboard.html',
                              bookings=service_requests,
                              service_requests=service_requests, 
@@ -520,9 +524,11 @@ def admin_dashboard():
                              today=hawaii_now.strftime('%Y-%m-%d'),
                              user_role=session.get('user_role', 'admin'),
                              user_name=session.get('user_name', 'Admin'),
-                             # Only authentic data
+                             # Only authentic data from database
                              pending_requests=pending_requests,
                              urgent_requests=urgent_requests,
+                             completed_requests=completed_requests,
+                             unread_messages=unread_messages,
                              admin_notifications=admin_notifications)
     
     except Exception as e:

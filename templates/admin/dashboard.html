@@ -619,6 +619,70 @@
                         </h4>
                     </div>
                     <div class="card-body p-4">
+                        <!-- Quick Stats Overview - Only Real Data -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title mb-0">Service Requests</h6>
+                                <h2 class="mb-0">{{ service_requests|length }}</h2>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title mb-0">Contact Messages</h6>
+                                <h2 class="mb-0">{{ contact_messages|length }}</h2>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title mb-0">Pending Requests</h6>
+                                <h2 class="mb-0">{{ pending_requests|length }}</h2>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stat-card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title mb-0">Urgent Items</h6>
+                                <h2 class="mb-0">{{ urgent_requests|length }}</h2>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <h6 class="fw-bold mb-3">Service Request Analysis</h6>
@@ -711,6 +775,48 @@
             </div>
         </div>
         {% endif %}
+
+        
+        <!-- Recent Activity - Authentic Data Only -->
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-clock me-2"></i>Recent Activity
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if service_requests or contact_messages %}
+                            <div class="timeline">
+                                {% for request in service_requests[:3] %}
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-primary"></div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">Service Request</h6>
+                                        <p class="text-muted mb-1">{{ request.name }} - {{ request.service }}</p>
+                                        <small class="text-muted">{{ request.preferred_date or 'Date pending' }}</small>
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                {% for message in contact_messages[:2] %}
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-info"></div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">Contact Message</h6>
+                                        <p class="text-muted mb-1">{{ message.name }} - {{ message.subject or 'General Inquiry' }}</p>
+                                        <small class="text-muted">Message received</small>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-inbox fa-2x text-muted mb-3"></i>
+                                <p class="text-muted">No recent activity to display</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
 
         {% if bookings %}
         <!-- Enhanced Quick Actions -->
