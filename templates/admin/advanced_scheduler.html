@@ -1,0 +1,820 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Advanced Scheduler - SPANKKS Construction{% endblock %}
+
+{% block extra_css %}
+<style>
+.scheduler-container {
+    display: grid;
+    grid-template-columns: 300px 1fr 300px;
+    gap: 1.5rem;
+    height: calc(100vh - 140px);
+}
+
+.sidebar {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.scheduler-main {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.workload-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #007bff;
+}
+
+.workload-bar {
+    background: #e9ecef;
+    border-radius: 4px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.workload-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.workload-low { background-color: #28a745; }
+.workload-medium { background-color: #ffc107; }
+.workload-high { background-color: #fd7e14; }
+.workload-critical { background-color: #dc3545; }
+
+.reminder-item {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid #ffc107;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reminder-urgent {
+    border-left-color: #dc3545;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    50% { box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3); }
+    100% { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.calendar-day {
+    background: white;
+    min-height: 120px;
+    padding: 0.5rem;
+    position: relative;
+}
+
+.calendar-day.other-month {
+    background: #f8f9fa;
+    color: #6c757d;
+}
+
+.calendar-day.today {
+    background: #e3f2fd;
+}
+
+.appointment-block {
+    background: #007bff;
+    color: white;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    margin: 0.125rem 0;
+    font-size: 0.75rem;
+    cursor: move;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.appointment-block:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.appointment-block.dragging {
+    opacity: 0.6;
+    transform: rotate(5deg);
+}
+
+.appointment-block.recurring {
+    background: #6f42c1;
+    border-left: 3px solid #fff;
+}
+
+.appointment-block.high-priority {
+    background: #dc3545;
+}
+
+.drop-zone {
+    border: 2px dashed #007bff;
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 4px;
+    padding: 0.5rem;
+    text-align: center;
+    color: #007bff;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.recurring-modal .form-group {
+    margin-bottom: 1rem;
+}
+
+.time-slot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+    cursor: pointer;
+}
+
+.time-slot:hover {
+    background: #e9ecef;
+}
+
+.time-slot.available {
+    border-left: 3px solid #28a745;
+}
+
+.time-slot.busy {
+    border-left: 3px solid #dc3545;
+    opacity: 0.6;
+}
+
+.staff-assignment {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.staff-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.75rem;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.view-toggle {
+    display: flex;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+}
+
+.view-toggle button {
+    border: none;
+    padding: 0.5rem 1rem;
+    background: white;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.view-toggle button.active {
+    background: #007bff;
+    color: white;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #007bff;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.stat-label {
+    color: #6c757d;
+    margin-top: 0.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-calendar-alt me-2"></i>Advanced Scheduler
+        </h1>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('business_hours_management') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-clock me-1"></i>Business Hours
+            </a>
+            <a href="{{ url_for('unified_scheduler_dashboard') }}" class="btn btn-outline-primary">
+                <i class="fas fa-list me-1"></i>List View
+            </a>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#recurringModal">
+                <i class="fas fa-repeat me-1"></i>Recurring
+            </button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAppointmentModal">
+                <i class="fas fa-plus me-1"></i>New Appointment
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value" id="todayAppointments">0</div>
+            <div class="stat-label">Today's Appointments</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="weekAppointments">0</div>
+            <div class="stat-label">This Week</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="pendingReminders">{{ reminders_24h|length + reminders_2h|length }}</div>
+            <div class="stat-label">Pending Reminders</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="avgCapacity">0%</div>
+            <div class="stat-label">Average Capacity</div>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="view-toggle">
+            <button type="button" class="active" data-view="calendar">
+                <i class="fas fa-calendar me-1"></i>Calendar
+            </button>
+            <button type="button" data-view="timeline">
+                <i class="fas fa-clock me-1"></i>Timeline
+            </button>
+            <button type="button" data-view="workload">
+                <i class="fas fa-chart-bar me-1"></i>Workload
+            </button>
+        </div>
+        
+        <div class="quick-actions">
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshScheduler()">
+                <i class="fas fa-sync-alt me-1"></i>Refresh
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-info" onclick="sendReminders()">
+                <i class="fas fa-bell me-1"></i>Send Reminders
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-warning" onclick="optimizeSchedule()">
+                <i class="fas fa-magic me-1"></i>Optimize
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Scheduler Container -->
+    <div class="scheduler-container">
+        <!-- Left Sidebar - Staff Workload -->
+        <div class="sidebar">
+            <h5 class="mb-3">
+                <i class="fas fa-users me-2"></i>Staff Workload
+            </h5>
+            
+            <div id="staffWorkload">
+                {% for staff_id, workload in staff_workload.items() %}
+                <div class="workload-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="staff-assignment">
+                            <div class="staff-avatar">{{ staff_id[:2].upper() }}</div>
+                            <span class="fw-bold">{{ staff_id.replace('_', ' ').title() }}</span>
+                        </div>
+                        <span class="badge bg-primary">{{ "%.1f"|format(workload.capacity_utilization) }}%</span>
+                    </div>
+                    
+                    <div class="workload-bar">
+                        {% set utilization = workload.capacity_utilization %}
+                        {% if utilization < 50 %}
+                            {% set bar_class = 'workload-low' %}
+                        {% elif utilization < 75 %}
+                            {% set bar_class = 'workload-medium' %}
+                        {% elif utilization < 90 %}
+                            {% set bar_class = 'workload-high' %}
+                        {% else %}
+                            {% set bar_class = 'workload-critical' %}
+                        {% endif %}
+                        <div class="workload-fill {{ bar_class }}" style="width: {{ utilization }}%"></div>
+                    </div>
+                    
+                    <div class="mt-2 small text-muted">
+                        {{ workload.appointment_count }} appointments • {{ "%.1f"|format(workload.total_hours) }}h total
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <h6 class="mt-4 mb-3">Available Time Slots</h6>
+            <div id="availableSlots">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Main Calendar Area -->
+        <div class="scheduler-main">
+            <div id="calendarView">
+                <div id="scheduler-calendar"></div>
+            </div>
+            
+            <div id="timelineView" style="display: none;">
+                <div id="timeline-container"></div>
+            </div>
+            
+            <div id="workloadView" style="display: none;">
+                <div id="workload-charts"></div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar - Reminders -->
+        <div class="sidebar">
+            <h5 class="mb-3">
+                <i class="fas fa-bell me-2"></i>Reminders
+            </h5>
+            
+            <h6 class="text-danger">Due Now (2 hours)</h6>
+            {% for reminder in reminders_2h %}
+            <div class="reminder-item reminder-urgent">
+                <div class="fw-bold">{{ reminder.appointment.client_name }}</div>
+                <div class="small">{{ reminder.appointment.service_type }}</div>
+                <div class="small text-muted">{{ reminder.appointment.scheduled_time }}</div>
+                <button type="button" class="btn btn-sm btn-danger mt-2" 
+                        onclick="sendReminder('{{ reminder.appointment.appointment_id }}', 2)">
+                    <i class="fas fa-sms me-1"></i>Send SMS
+                </button>
+            </div>
+            {% endfor %}
+            
+            <h6 class="text-warning mt-3">Tomorrow (24 hours)</h6>
+            {% for reminder in reminders_24h %}
+            <div class="reminder-item">
+                <div class="fw-bold">{{ reminder.appointment.client_name }}</div>
+                <div class="small">{{ reminder.appointment.service_type }}</div>
+                <div class="small text-muted">{{ reminder.appointment.scheduled_date }} at {{ reminder.appointment.scheduled_time }}</div>
+                <button type="button" class="btn btn-sm btn-warning mt-2" 
+                        onclick="sendReminder('{{ reminder.appointment.appointment_id }}', 24)">
+                    <i class="fas fa-envelope me-1"></i>Send Email
+                </button>
+            </div>
+            {% endfor %}
+
+            <div class="mt-4">
+                <h6>Quick Actions</h6>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="bulkReschedule()">
+                        <i class="fas fa-calendar-alt me-1"></i>Bulk Reschedule
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="optimizeDay()">
+                        <i class="fas fa-route me-1"></i>Optimize Routes
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="generateReport()">
+                        <i class="fas fa-chart-line me-1"></i>Generate Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recurring Appointment Modal -->
+<div class="modal fade" id="recurringModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-repeat me-2"></i>Create Recurring Appointment
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="recurringForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Client Name</label>
+                                <input type="text" class="form-control" name="client_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Service Type</label>
+                                <select class="form-control" name="service_type" required>
+                                    <option value="Drywall Services">Drywall Services</option>
+                                    <option value="Flooring Installation">Flooring Installation</option>
+                                    <option value="General Handyman">General Handyman</option>
+                                    <option value="Home Renovation">Home Renovation</option>
+                                    <option value="Maintenance">Regular Maintenance</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" class="form-control" name="start_date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Start Time</label>
+                                <input type="time" class="form-control" name="start_time" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Duration (hours)</label>
+                                <select class="form-control" name="duration">
+                                    <option value="60">1 hour</option>
+                                    <option value="120" selected>2 hours</option>
+                                    <option value="180">3 hours</option>
+                                    <option value="240">4 hours</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Frequency</label>
+                                <select class="form-control" name="frequency" required>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Interval</label>
+                                <input type="number" class="form-control" name="interval" value="1" min="1" required>
+                                <small class="text-muted">Every X weeks/months</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Max Occurrences</label>
+                                <input type="number" class="form-control" name="max_occurrences" value="12" min="1" max="52">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">End Date (optional)</label>
+                        <input type="date" class="form-control" name="end_date">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="3" placeholder="Special instructions or recurring service details..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="createRecurringAppointment()">
+                    <i class="fas fa-repeat me-1"></i>Create Recurring Series
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script>
+let calendar;
+let currentView = 'calendar';
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCalendar();
+    loadAvailableSlots();
+    updateStats();
+    
+    // View toggle handlers
+    document.querySelectorAll('.view-toggle button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            switchView(this.dataset.view);
+        });
+    });
+});
+
+function initializeCalendar() {
+    const calendarEl = document.getElementById('scheduler-calendar');
+    
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: '/api/unified/calendar/events',
+        editable: true,
+        droppable: true,
+        eventDrop: function(info) {
+            rescheduleAppointment(info.event.id, info.event.startStr, info.event.title);
+        },
+        eventClick: function(info) {
+            showAppointmentDetails(info.event);
+        },
+        dateClick: function(info) {
+            showQuickBooking(info.dateStr);
+        }
+    });
+    
+    calendar.render();
+}
+
+function switchView(view) {
+    // Update active button
+    document.querySelectorAll('.view-toggle button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-view="${view}"]`).classList.add('active');
+    
+    // Hide all views
+    document.getElementById('calendarView').style.display = 'none';
+    document.getElementById('timelineView').style.display = 'none';
+    document.getElementById('workloadView').style.display = 'none';
+    
+    // Show selected view
+    document.getElementById(view + 'View').style.display = 'block';
+    currentView = view;
+    
+    if (view === 'calendar') {
+        calendar.render();
+    } else if (view === 'timeline') {
+        loadTimelineView();
+    } else if (view === 'workload') {
+        loadWorkloadCharts();
+    }
+}
+
+function loadAvailableSlots() {
+    const today = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+    
+    Promise.all([
+        fetch(`/api/scheduler/available-times/${today}`).then(r => r.json()),
+        fetch(`/api/scheduler/available-times/${tomorrow}`).then(r => r.json())
+    ]).then(([todaySlots, tomorrowSlots]) => {
+        const container = document.getElementById('availableSlots');
+        container.innerHTML = '';
+        
+        // Today's slots
+        if (todaySlots.available_times.length > 0) {
+            container.innerHTML += '<div class="fw-bold mb-2">Today</div>';
+            todaySlots.available_times.slice(0, 3).forEach(time => {
+                container.innerHTML += `
+                    <div class="time-slot available" onclick="quickBook('${today}', '${time}')">
+                        <span>${time}</span>
+                        <i class="fas fa-plus"></i>
+                    </div>
+                `;
+            });
+        }
+        
+        // Tomorrow's slots
+        container.innerHTML += '<div class="fw-bold mb-2 mt-3">Tomorrow</div>';
+        tomorrowSlots.available_times.slice(0, 5).forEach(time => {
+            container.innerHTML += `
+                <div class="time-slot available" onclick="quickBook('${tomorrow}', '${time}')">
+                    <span>${time}</span>
+                    <i class="fas fa-plus"></i>
+                </div>
+            `;
+        });
+    }).catch(error => {
+        console.error('Error loading available slots:', error);
+    });
+}
+
+function updateStats() {
+    // Update statistics
+    fetch('/api/scheduler/staff-workload')
+        .then(response => response.json())
+        .then(data => {
+            const totalCapacity = Object.values(data).reduce((sum, staff) => sum + staff.capacity_utilization, 0);
+            const avgCapacity = Object.keys(data).length > 0 ? totalCapacity / Object.keys(data).length : 0;
+            
+            document.getElementById('avgCapacity').textContent = Math.round(avgCapacity) + '%';
+        });
+    
+    // Get today's appointments from calendar
+    calendar.getEvents().forEach(event => {
+        const eventDate = new Date(event.start);
+        const today = new Date();
+        
+        if (eventDate.toDateString() === today.toDateString()) {
+            const todayCount = parseInt(document.getElementById('todayAppointments').textContent) + 1;
+            document.getElementById('todayAppointments').textContent = todayCount;
+        }
+    });
+}
+
+async function createRecurringAppointment() {
+    const form = document.getElementById('recurringForm');
+    const formData = new FormData(form);
+    
+    const baseAppointment = {
+        client_name: formData.get('client_name'),
+        service_type: formData.get('service_type'),
+        scheduled_date: formData.get('start_date'),
+        scheduled_time: formData.get('start_time'),
+        estimated_duration: parseInt(formData.get('duration')),
+        notes: formData.get('notes')
+    };
+    
+    const recurringConfig = {
+        frequency: formData.get('frequency'),
+        interval: parseInt(formData.get('interval')),
+        max_occurrences: parseInt(formData.get('max_occurrences')),
+        end_date: formData.get('end_date') || null
+    };
+    
+    try {
+        const response = await fetch('/api/scheduler/recurring', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                base_appointment: baseAppointment,
+                recurring_config: recurringConfig
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('recurringModal')).hide();
+            calendar.refetchEvents();
+            
+            alert(`Successfully created ${result.total_created} recurring appointments!`);
+        } else {
+            alert('Error creating recurring appointments: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Error creating recurring appointment:', error);
+        alert('Error creating recurring appointments');
+    }
+}
+
+async function sendReminder(appointmentId, hoursAhead) {
+    try {
+        const response = await fetch(`/api/scheduler/reminder-sent/${appointmentId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                reminder_type: hoursAhead === 2 ? 'sms' : 'email',
+                hours_ahead: hoursAhead
+            })
+        });
+        
+        if (response.ok) {
+            // Remove reminder from UI
+            event.target.closest('.reminder-item').style.opacity = '0.5';
+            event.target.disabled = true;
+            event.target.innerHTML = '<i class="fas fa-check me-1"></i>Sent';
+        }
+    } catch (error) {
+        console.error('Error sending reminder:', error);
+    }
+}
+
+function refreshScheduler() {
+    calendar.refetchEvents();
+    loadAvailableSlots();
+    updateStats();
+    location.reload();
+}
+
+function sendReminders() {
+    alert('Sending all pending reminders...');
+    // Implementation would send all pending reminders
+}
+
+function optimizeSchedule() {
+    alert('Optimizing schedule based on travel time and staff availability...');
+    // Implementation would optimize appointment scheduling
+}
+
+function quickBook(date, time) {
+    // Quick booking functionality
+    const name = prompt('Client name:');
+    if (name) {
+        // Create quick appointment
+        console.log(`Quick booking for ${name} on ${date} at ${time}`);
+    }
+}
+
+function rescheduleAppointment(appointmentId, newDateTime, reason) {
+    const [date, time] = newDateTime.split('T');
+    const timeOnly = time.substring(0, 5);
+    
+    fetch(`/api/scheduler/reschedule/${appointmentId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            new_date: date,
+            new_time: timeOnly,
+            reason: reason || 'Drag and drop reschedule'
+        })
+    }).then(response => response.json())
+      .then(result => {
+          if (!result.success) {
+              alert('Reschedule failed: ' + result.reason);
+              calendar.refetchEvents(); // Revert
+          }
+      });
+}
+
+function showAppointmentDetails(event) {
+    alert(`Appointment Details:\n${event.title}\n${event.start}`);
+}
+
+function showQuickBooking(date) {
+    alert(`Quick booking for ${date}`);
+}
+
+function loadTimelineView() {
+    document.getElementById('timeline-container').innerHTML = '<div class="text-center p-4">Timeline view coming soon...</div>';
+}
+
+function loadWorkloadCharts() {
+    document.getElementById('workload-charts').innerHTML = '<div class="text-center p-4">Workload analytics coming soon...</div>';
+}
+
+function bulkReschedule() {
+    alert('Bulk reschedule feature coming soon...');
+}
+
+function optimizeDay() {
+    alert('Route optimization feature coming soon...');
+}
+
+function generateReport() {
+    alert('Report generation feature coming soon...');
+}
+</script>
+{% endblock %}

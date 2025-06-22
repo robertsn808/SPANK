@@ -3654,6 +3654,139 @@ def get_available_times(date):
         logging.error(f"Error getting available times: {e}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/scheduler/reschedule/<appointment_id>', methods=['POST'])
+def reschedule_appointment_api(appointment_id):
+    """Reschedule appointment via API"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        new_date = data.get('new_date')
+        new_time = data.get('new_time')
+        reason = data.get('reason', '')
+        
+        result = unified_scheduler.reschedule_appointment(
+            appointment_id, new_date, new_time, reason
+        )
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error rescheduling appointment: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scheduler/recurring', methods=['POST'])
+def create_recurring_appointment():
+    """Create recurring appointments"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        base_appointment = data.get('base_appointment')
+        recurring_config = data.get('recurring_config')
+        
+        # Create the base appointment first
+        appointment = unified_scheduler.create_appointment(base_appointment)
+        
+        # Create recurring appointments
+        recurring_appointments = unified_scheduler.create_recurring_appointments(
+            appointment, recurring_config
+        )
+        
+        return jsonify({
+            'success': True,
+            'base_appointment': appointment,
+            'recurring_appointments': recurring_appointments,
+            'total_created': len(recurring_appointments) + 1
+        })
+        
+    except Exception as e:
+        logging.error(f"Error creating recurring appointments: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scheduler/reminders/<int:hours_ahead>')
+def get_appointment_reminders_api(hours_ahead):
+    """Get appointments needing reminders"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        reminders = unified_scheduler.get_appointment_reminders(hours_ahead)
+        return jsonify(reminders)
+        
+    except Exception as e:
+        logging.error(f"Error getting reminders: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scheduler/reminder-sent/<appointment_id>', methods=['POST'])
+def mark_reminder_sent_api(appointment_id):
+    """Mark reminder as sent"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        reminder_type = data.get('reminder_type')
+        hours_ahead = data.get('hours_ahead')
+        
+        unified_scheduler.mark_reminder_sent(appointment_id, reminder_type, hours_ahead)
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        logging.error(f"Error marking reminder sent: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scheduler/staff-workload')
+def get_staff_workload_api():
+    """Get staff workload analysis"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        days = int(request.args.get('days', 7))
+        workload = unified_scheduler.get_staff_workload(days)
+        
+        return jsonify(workload)
+        
+    except Exception as e:
+        logging.error(f"Error getting staff workload: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/admin/scheduler/advanced')
+def advanced_scheduler_dashboard():
+    """Advanced scheduler with drag-and-drop and workload management"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get upcoming appointments
+        week_data = unified_scheduler.get_weekly_schedule()
+        
+        # Get staff workload
+        staff_workload = unified_scheduler.get_staff_workload(14)  # 2 weeks
+        
+        # Get pending reminders
+        reminders_24h = unified_scheduler.get_appointment_reminders(24)
+        reminders_2h = unified_scheduler.get_appointment_reminders(2)
+        
+        # Get business hours for validation
+        business_hours = unified_scheduler.get_business_hours()
+        
+        return render_template('admin/advanced_scheduler.html',
+                             week_data=week_data,
+                             staff_workload=staff_workload,
+                             reminders_24h=reminders_24h,
+                             reminders_2h=reminders_2h,
+                             business_hours=business_hours)
+                             
+    except Exception as e:
+        logging.error(f"Error loading advanced scheduler: {e}")
+        flash('Error loading advanced scheduler.', 'error')
+        return redirect(url_for('admin_dashboard'))
+
 # ===============================
 # MULTI-PROJECT CLIENT MANAGEMENT
 # ===============================

@@ -527,6 +527,239 @@ class UnifiedScheduler:
             'reason': 'Appointment time is available'
         }
     
+    def create_recurring_appointments(self, base_appointment: Dict, recurring_config: Dict) -> List[Dict]:
+        """Create recurring appointments based on configuration"""
+        recurring_appointments = []
+        
+        try:
+            frequency = recurring_config.get('frequency', 'weekly')  # weekly, monthly, custom
+            interval = recurring_config.get('interval', 1)  # every X weeks/months
+            end_date = recurring_config.get('end_date')
+            max_occurrences = recurring_config.get('max_occurrences', 12)
+            
+            base_date = datetime.strptime(base_appointment['scheduled_date'], '%Y-%m-%d')
+            current_date = base_date
+            occurrence_count = 0
+            
+            while occurrence_count < max_occurrences:
+                if frequency == 'weekly':
+                    current_date = base_date + timedelta(weeks=interval * (occurrence_count + 1))
+                elif frequency == 'monthly':
+                    current_date = base_date + timedelta(days=30 * interval * (occurrence_count + 1))
+                elif frequency == 'custom':
+                    days_interval = recurring_config.get('custom_days', 7)
+                    current_date = base_date + timedelta(days=days_interval * (occurrence_count + 1))
+                
+                if end_date and current_date > datetime.strptime(end_date, '%Y-%m-%d'):
+                    break
+                
+                # Create recurring appointment
+                recurring_appointment = base_appointment.copy()
+                recurring_appointment['appointment_id'] = f"APT{current_date.strftime('%Y%m%d%H%M%S')}"
+                recurring_appointment['scheduled_date'] = current_date.strftime('%Y-%m-%d')
+                recurring_appointment['job_id'] = self.generate_job_id()
+                recurring_appointment['notes'] = f"Recurring {frequency} maintenance - {recurring_appointment.get('notes', '')}"
+                recurring_appointment['tags'] = recurring_appointment.get('tags', []) + ['recurring', f'series_{base_appointment["appointment_id"]}']
+                recurring_appointment['recurring_parent'] = base_appointment['appointment_id']
+                
+                # Validate each recurring appointment
+                validation = self.validate_appointment_time(
+                    recurring_appointment['scheduled_date'],
+                    recurring_appointment['scheduled_time'],
+                    recurring_appointment.get('estimated_duration', 120)
+                )
+                
+                if validation['valid']:
+                    appointments = self._load_appointments()
+                    appointments.append(recurring_appointment)
+                    self._save_appointments(appointments)
+                    recurring_appointments.append(recurring_appointment)
+                    
+                occurrence_count += 1
+            
+            logging.info(f"Created {len(recurring_appointments)} recurring appointments")
+            return recurring_appointments
+            
+        except Exception as e:
+            logging.error(f"Error creating recurring appointments: {e}")
+            return []
+    
+    def reschedule_appointment(self, appointment_id: str, new_date: str, new_time: str, reason: str = '') -> Dict:
+        """Reschedule an appointment with conflict validation"""
+        try:
+            appointments = self._load_appointments()
+            
+            for appointment in appointments:
+                if appointment['appointment_id'] == appointment_id:
+                    # Validate new time slot
+                    validation = self.validate_appointment_time(
+                        new_date, new_time, 
+                        appointment.get('estimated_duration', 120),
+                        appointment_id  # Exclude current appointment from conflict check
+                    )
+                    
+                    if not validation['valid']:
+                        return {
+                            'success': False,
+                            'reason': validation['reason'],
+                            'suggestions': validation.get('suggestions', [])
+                        }
+                    
+                    # Store original schedule for history
+                    original_schedule = {
+                        'date': appointment['scheduled_date'],
+                        'time': appointment['scheduled_time'],
+                        'rescheduled_at': datetime.now(self.hawaii_tz).isoformat(),
+                        'reason': reason
+                    }
+                    
+                    if not appointment.get('schedule_history'):
+                        appointment['schedule_history'] = []
+                    appointment['schedule_history'].append(original_schedule)
+                    
+                    # Update appointment
+                    appointment['scheduled_date'] = new_date
+                    appointment['scheduled_time'] = new_time
+                    appointment['updated_at'] = datetime.now(self.hawaii_tz).isoformat()
+                    appointment['status'] = 'rescheduled'
+                    
+                    if reason:
+                        appointment['notes'] = f"{appointment.get('notes', '')} | Rescheduled: {reason}".strip(' |')
+                    
+                    self._save_appointments(appointments)
+                    
+                    return {
+                        'success': True,
+                        'appointment': appointment,
+                        'message': f'Appointment rescheduled to {new_date} at {new_time}'
+                    }
+            
+            return {'success': False, 'reason': 'Appointment not found'}
+            
+        except Exception as e:
+            logging.error(f"Error rescheduling appointment: {e}")
+            return {'success': False, 'reason': f'Error: {str(e)}'}
+    
+    def get_appointment_reminders(self, hours_ahead: int = 24) -> List[Dict]:
+        """Get appointments that need reminders sent"""
+        try:
+            appointments = self._load_appointments()
+            reminder_appointments = []
+            
+            hawaii_now = datetime.now(self.hawaii_tz)
+            reminder_cutoff = hawaii_now + timedelta(hours=hours_ahead)
+            
+            for appointment in appointments:
+                if appointment.get('status') not in ['scheduled', 'confirmed']:
+                    continue
+                
+                appointment_datetime = datetime.strptime(
+                    f"{appointment['scheduled_date']} {appointment['scheduled_time']}",
+                    '%Y-%m-%d %H:%M'
+                )
+                appointment_datetime = self.hawaii_tz.localize(appointment_datetime)
+                
+                # Check if appointment is within reminder window
+                if hawaii_now < appointment_datetime <= reminder_cutoff:
+                    reminder_settings = appointment.get('reminder_settings', {})
+                    
+                    # Check if reminder hasn't been sent yet
+                    reminders_sent = appointment.get('reminders_sent', {})
+                    reminder_key = f"{hours_ahead}h"
+                    
+                    if not reminders_sent.get(reminder_key, False):
+                        reminder_appointments.append({
+                            'appointment': appointment,
+                            'hours_until': int((appointment_datetime - hawaii_now).total_seconds() / 3600),
+                            'reminder_types': self._get_reminder_types(reminder_settings, hours_ahead)
+                        })
+            
+            return reminder_appointments
+            
+        except Exception as e:
+            logging.error(f"Error getting appointment reminders: {e}")
+            return []
+    
+    def mark_reminder_sent(self, appointment_id: str, reminder_type: str, hours_ahead: int):
+        """Mark that a reminder has been sent"""
+        try:
+            appointments = self._load_appointments()
+            
+            for appointment in appointments:
+                if appointment['appointment_id'] == appointment_id:
+                    if not appointment.get('reminders_sent'):
+                        appointment['reminders_sent'] = {}
+                    
+                    reminder_key = f"{hours_ahead}h"
+                    appointment['reminders_sent'][reminder_key] = True
+                    appointment['updated_at'] = datetime.now(self.hawaii_tz).isoformat()
+                    
+                    self._save_appointments(appointments)
+                    break
+                    
+        except Exception as e:
+            logging.error(f"Error marking reminder sent: {e}")
+    
+    def _get_reminder_types(self, reminder_settings: Dict, hours_ahead: int) -> List[str]:
+        """Determine which reminder types to send based on settings and timing"""
+        reminder_types = []
+        
+        if hours_ahead == 24 and reminder_settings.get('email_24h', True):
+            reminder_types.append('email')
+        
+        if hours_ahead == 2 and reminder_settings.get('sms_2h', True):
+            reminder_types.append('sms')
+        
+        if hours_ahead == 1 and reminder_settings.get('call_1h', False):
+            reminder_types.append('call')
+        
+        return reminder_types
+    
+    def get_staff_workload(self, date_range_days: int = 7) -> Dict:
+        """Analyze staff workload and capacity"""
+        try:
+            appointments = self._load_appointments()
+            hawaii_now = datetime.now(self.hawaii_tz)
+            end_date = hawaii_now + timedelta(days=date_range_days)
+            
+            staff_workload = {}
+            
+            for appointment in appointments:
+                appointment_date = datetime.strptime(appointment['scheduled_date'], '%Y-%m-%d')
+                appointment_date = self.hawaii_tz.localize(appointment_date)
+                
+                if hawaii_now <= appointment_date <= end_date and appointment.get('status') != 'cancelled':
+                    assigned_staff = appointment.get('assigned_staff', [])
+                    duration = appointment.get('estimated_duration', 120)
+                    
+                    for staff_id in assigned_staff:
+                        if staff_id not in staff_workload:
+                            staff_workload[staff_id] = {
+                                'total_hours': 0,
+                                'appointment_count': 0,
+                                'daily_breakdown': {},
+                                'capacity_utilization': 0
+                            }
+                        
+                        staff_workload[staff_id]['total_hours'] += duration / 60
+                        staff_workload[staff_id]['appointment_count'] += 1
+                        
+                        date_key = appointment['scheduled_date']
+                        if date_key not in staff_workload[staff_id]['daily_breakdown']:
+                            staff_workload[staff_id]['daily_breakdown'][date_key] = 0
+                        staff_workload[staff_id]['daily_breakdown'][date_key] += duration / 60
+            
+            # Calculate capacity utilization (assuming 8-hour workdays)
+            for staff_id, workload in staff_workload.items():
+                max_capacity = date_range_days * 8  # 8 hours per day
+                workload['capacity_utilization'] = (workload['total_hours'] / max_capacity) * 100
+            
+            return staff_workload
+            
+        except Exception as e:
+            logging.error(f"Error calculating staff workload: {e}")
+            return {}
+    
     def get_calendar_events(self, start_date: str = None, end_date: str = None) -> List[Dict]:
         """Get appointments formatted for calendar display"""
         if not start_date or not end_date:
