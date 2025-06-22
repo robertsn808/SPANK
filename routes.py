@@ -291,66 +291,104 @@ def admin_dashboard():
         flash('Please log in to access the admin dashboard.', 'error')
         return redirect(url_for('admin_login'))
 
-    service_requests = handyman_storage.get_all_service_requests()
-    contact_messages = handyman_storage.get_all_contact_messages()
+    try:
+        service_requests = handyman_storage.get_all_service_requests()
+        contact_messages = handyman_storage.get_all_contact_messages()
 
-    # Generate current week dates for calendar using Hawaii timezone
-    hawaii_now = get_hawaii_time()
+        # Generate current week dates for calendar using Hawaii timezone
+        hawaii_now = get_hawaii_time()
 
-    # Get the start of the week (Monday) in Hawaii time
-    start_of_week = hawaii_now - timedelta(days=hawaii_now.weekday())
-    week_dates = [(start_of_week + timedelta(days=i)) for i in range(7)]
+        # Get the start of the week (Monday) in Hawaii time
+        start_of_week = hawaii_now - timedelta(days=hawaii_now.weekday())
+        week_dates = [(start_of_week + timedelta(days=i)) for i in range(7)]
 
-    # Get appointments for current week
-    week_appointments = []
-    for appointment in appointments:
-        appointment_date = datetime.strptime(appointment['date'], '%Y-%m-%d')
-        if start_of_week <= appointment_date < start_of_week + timedelta(days=7):
-            week_appointments.append(appointment)
+        # Get appointments for current week
+        week_appointments = []
+        for appointment in appointments:
+            try:
+                appointment_date = datetime.strptime(appointment['date'], '%Y-%m-%d')
+                if start_of_week <= appointment_date < start_of_week + timedelta(days=7):
+                    week_appointments.append(appointment)
+            except (KeyError, ValueError, TypeError) as e:
+                logging.warning(f"Invalid appointment data: {appointment} - {e}")
+                continue
 
-    # Business Analytics
-    total_revenue_estimate = sum([
-        float(req.budget_range.split('-')[0].replace('$', '').replace(',', '')) 
-        if req.budget_range and '-' in req.budget_range 
-        else 500.0 
-        for req in service_requests if req.status == 'completed'
-    ])
+        # Business Analytics with error handling
+        total_revenue_estimate = 0
+        try:
+            for req in service_requests:
+                if req.status == 'completed' and hasattr(req, 'budget_range') and req.budget_range:
+                    if '-' in req.budget_range:
+                        amount_str = req.budget_range.split('-')[0].replace('$', '').replace(',', '').strip()
+                        total_revenue_estimate += float(amount_str)
+                    else:
+                        total_revenue_estimate += 500.0
+        except (ValueError, AttributeError) as e:
+            logging.warning(f"Error calculating revenue estimate: {e}")
+            total_revenue_estimate = 0
+        
+        # Customer satisfaction metrics
+        pending_requests = [req for req in service_requests if hasattr(req, 'status') and req.status == 'pending']
+        urgent_requests = [req for req in service_requests if getattr(req, 'priority', 'medium') == 'high']
+        
+        # Monthly trends with safe date parsing
+        current_month = hawaii_now.month
+        monthly_requests = []
+        for req in service_requests:
+            try:
+                if hasattr(req, 'preferred_date') and req.preferred_date:
+                    req_date = datetime.strptime(req.preferred_date, '%Y-%m-%d')
+                    if req_date.month == current_month:
+                        monthly_requests.append(req)
+            except (ValueError, AttributeError) as e:
+                logging.warning(f"Error parsing date for request: {e}")
+                continue
+        
+        # Lead source analysis
+        try:
+            referral_stats = handyman_storage.get_referral_stats()
+        except Exception as e:
+            logging.warning(f"Error getting referral stats: {e}")
+            referral_stats = {}
+            
+        try:
+            membership_stats = handyman_storage.get_membership_stats()
+        except Exception as e:
+            logging.warning(f"Error getting membership stats: {e}")
+            membership_stats = {}
+        
+        # Get admin notifications for manual processing
+        try:
+            admin_notifications = handyman_storage.get_admin_notifications()
+        except Exception as e:
+            logging.warning(f"Error getting admin notifications: {e}")
+            admin_notifications = []
+
+        return render_template('admin_dashboard.html',
+                             bookings=service_requests,
+                             service_requests=service_requests, 
+                             contact_messages=contact_messages,
+                             week_dates=week_dates,
+                             week_appointments=week_appointments,
+                             staff_members=staff_members,
+                             staff_logins=staff_logins,
+                             today=hawaii_now.strftime('%Y-%m-%d'),
+                             user_role=session.get('user_role', 'admin'),
+                             user_name=session.get('user_name', 'Admin'),
+                             # Business analytics
+                             total_revenue_estimate=total_revenue_estimate,
+                             pending_requests=pending_requests,
+                             urgent_requests=urgent_requests,
+                             monthly_requests=monthly_requests,
+                             referral_stats=referral_stats,
+                             membership_stats=membership_stats,
+                             # Manual notification system
+                             admin_notifications=admin_notifications)
     
-    # Customer satisfaction metrics
-    pending_requests = [req for req in service_requests if req.status == 'pending']
-    urgent_requests = [req for req in service_requests if getattr(req, 'priority', 'medium') == 'high']
-    
-    # Monthly trends
-    current_month = hawaii_now.month
-    monthly_requests = [req for req in service_requests if datetime.strptime(req.preferred_date or hawaii_now.strftime('%Y-%m-%d'), '%Y-%m-%d').month == current_month]
-    
-    # Lead source analysis
-    referral_stats = handyman_storage.get_referral_stats()
-    membership_stats = handyman_storage.get_membership_stats()
-    
-    # Get admin notifications for manual processing
-    admin_notifications = handyman_storage.get_admin_notifications()
-
-    return render_template('admin_dashboard.html', 
-                         bookings=service_requests,
-                         service_requests=service_requests, 
-                         contact_messages=contact_messages,
-                         week_dates=week_dates,
-                         week_appointments=week_appointments,
-                         staff_members=staff_members,
-                         staff_logins=staff_logins,
-                         today=hawaii_now.strftime('%Y-%m-%d'),
-                         user_role=session.get('user_role', 'admin'),
-                         user_name=session.get('user_name', 'Admin'),
-                         # Business analytics
-                         total_revenue_estimate=total_revenue_estimate,
-                         pending_requests=pending_requests,
-                         urgent_requests=urgent_requests,
-                         monthly_requests=monthly_requests,
-                         referral_stats=referral_stats,
-                         membership_stats=membership_stats,
-                         # Manual notification system
-                         admin_notifications=admin_notifications)
+    except Exception as e:
+        logging.error(f"Error loading admin dashboard: {e}")
+        flash('Dashboard temporarily unavailable. Please try again.', 'error')
+        return render_template('admin_login.html')
 
 @app.route('/admin/notifications/<int:notification_id>/complete', methods=['POST'])
 def mark_notification_complete(notification_id):
