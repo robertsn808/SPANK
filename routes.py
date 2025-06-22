@@ -1859,3 +1859,147 @@ def download_quote_api(quote_id):
     except Exception as e:
         logging.error(f"Error downloading quote via API: {e}")
         return jsonify({'error': 'Failed to download quote', 'details': str(e)}), 500
+
+@app.route('/api/generate-invoice', methods=['POST'])
+def generate_invoice_api():
+    """API endpoint for generating invoices - compatible with external integrations"""
+    try:
+        # Parse request data
+        data = request.get_json() if request.is_json else request.form
+        
+        client_id = data.get('clientId')
+        job_id = data.get('jobId')
+        customer = data.get('customer')
+        total = float(data.get('total', 0))
+        
+        # Validate required fields
+        if not all([customer, total]):
+            return jsonify({'error': 'Missing required fields: customer and total are required'}), 400
+        
+        # Check if contact exists or create new one
+        contacts = handyman_storage.get_all_contacts()
+        contact = next((c for c in contacts if c.name and customer and c.name.lower() == customer.lower()), None)
+        
+        if not contact:
+            # Create new contact for invoice
+            safe_email = 'customer'
+            if customer and isinstance(customer, str):
+                safe_email = customer.lower().replace(' ', '.')
+            contact_data = {
+                'name': customer,
+                'email': f"{safe_email}@tempmail.com",
+                'phone': '(808) 555-0000',  # Default phone for API invoices
+                'address': '',
+                'notes': f'Created via API for invoice {job_id}' if job_id else 'Created via API for invoice',
+                'tags': ['api_generated', 'invoice_only']
+            }
+            contact = handyman_storage.add_contact(contact_data)
+        
+        # Create a basic quote first (required for invoice generation)
+        from models import QuoteItem
+        
+        # Calculate subtotal from total (reverse Hawaii tax calculation)
+        hawaii_tax_rate = 0.04712
+        subtotal = total / (1 + hawaii_tax_rate)
+        
+        quote_items = [QuoteItem(
+            description="Services Rendered",
+            quantity=1.0,
+            unit_price=subtotal,
+            unit="job"
+        )]
+        
+        # Create quote
+        hawaii_time = get_hawaii_time()
+        valid_until = (hawaii_time + timedelta(days=30)).strftime('%Y-%m-%d')
+        
+        quote_data = {
+            'contact_id': contact.id,
+            'service_type': 'api_generated',
+            'items': quote_items,
+            'total_amount': subtotal,
+            'valid_until': valid_until,
+            'notes': f'Auto-generated quote for invoice {job_id}' if job_id else 'Auto-generated quote for API invoice'
+        }
+        
+        quote = handyman_storage.add_quote(quote_data)
+        
+        # Create invoice from quote
+        from models import Invoice
+        
+        invoice_data = {
+            'contact_id': contact.id,
+            'quote_id': quote.id,
+            'items': quote_items,
+            'subtotal': subtotal,
+            'tax_rate': hawaii_tax_rate,
+            'payment_terms': 'Net 30'
+        }
+        
+        invoice = handyman_storage.add_invoice(invoice_data)
+        
+        # Generate PDF
+        from pdf_service import generate_invoice_pdf
+        filename = generate_invoice_pdf(invoice, contact)
+        pdf_path = f"/admin/crm/invoices/{invoice.id}/pdf"
+        
+        # Send notification if configured
+        try:
+            notification_service.send_inquiry_alert(
+                'API Invoice Generated',
+                contact.name,
+                contact.phone,
+                contact.email,
+                f"Invoice I{invoice.id:04d} for ${total:.2f}"
+            )
+        except Exception as e:
+            logging.warning(f"Could not send notification: {e}")
+        
+        return jsonify({
+            'message': 'Invoice generated successfully',
+            'invoiceId': f"I{invoice.id:04d}",
+            'jobId': job_id,
+            'customer': contact.name,
+            'total': total,
+            'subtotal': subtotal,
+            'tax': total - subtotal,
+            'path': pdf_path,
+            'downloadUrl': url_for('download_invoice_pdf', invoice_id=invoice.id, _external=True),
+            'viewUrl': url_for('invoice_detail', invoice_id=invoice.id, _external=True),
+            'date': hawaii_time.strftime('%m/%d/%Y')
+        }), 201
+        
+    except Exception as e:
+        logging.error(f"Error generating invoice via API: {e}")
+        return jsonify({'error': 'Failed to generate invoice', 'details': str(e)}), 500
+
+@app.route('/api/download-invoice/<invoice_id>')
+def download_invoice_api(invoice_id):
+    """API endpoint for downloading invoice PDFs"""
+    try:
+        # Handle both numeric and formatted invoice IDs
+        if invoice_id.startswith('I'):
+            numeric_id = int(invoice_id[1:])
+        else:
+            numeric_id = int(invoice_id)
+        
+        invoices = handyman_storage.get_all_invoices()
+        invoice = next((i for i in invoices if i.id == numeric_id), None)
+        
+        if not invoice:
+            return jsonify({'error': 'Invoice not found'}), 404
+        
+        contact = handyman_storage.get_contact_by_id(invoice.contact_id)
+        if not contact:
+            return jsonify({'error': 'Contact not found'}), 404
+        
+        # Generate PDF if it doesn't exist
+        from pdf_service import generate_invoice_pdf
+        filename = generate_invoice_pdf(invoice, contact)
+        
+        from flask import send_file
+        return send_file(f"static/pdfs/{filename}", as_attachment=True, download_name=filename)
+        
+    except Exception as e:
+        logging.error(f"Error downloading invoice via API: {e}")
+        return jsonify({'error': 'Failed to download invoice', 'details': str(e)}), 500

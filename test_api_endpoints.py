@@ -115,6 +115,101 @@ def test_quote_generation_api():
     
     return results
 
+def test_invoice_generation_api():
+    """Test the invoice generation API endpoint"""
+    print("\n💰 Testing Invoice Generation API")
+    print("=" * 40)
+    
+    base_url = "http://localhost:5000"
+    
+    test_cases = [
+        {
+            "name": "Standard Invoice Test",
+            "data": {
+                "clientId": "CLIENT789",
+                "jobId": "INV001",
+                "customer": "Robert Wilson",
+                "total": 525.75
+            }
+        },
+        {
+            "name": "Large Project Invoice",
+            "data": {
+                "clientId": "CLIENT790",
+                "jobId": "INV002", 
+                "customer": "Lisa Chen",
+                "total": 2150.00
+            }
+        },
+        {
+            "name": "Small Repair Invoice",
+            "data": {
+                "clientId": "CLIENT791",
+                "jobId": "INV003",
+                "customer": "Mike Torres",
+                "total": 185.50
+            }
+        }
+    ]
+    
+    results = []
+    
+    for test_case in test_cases:
+        print(f"\n📄 Running: {test_case['name']}")
+        
+        try:
+            response = requests.post(
+                f"{base_url}/api/generate-invoice",
+                json=test_case['data'],
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if response.status_code == 201:
+                result_data = response.json()
+                print(f"✅ Invoice generated successfully:")
+                print(f"   Invoice ID: {result_data['invoiceId']}")
+                print(f"   Customer: {result_data['customer']}")
+                print(f"   Total: ${result_data['total']:.2f}")
+                print(f"   Subtotal: ${result_data['subtotal']:.2f}")
+                print(f"   Tax: ${result_data['tax']:.2f}")
+                print(f"   Download URL: {result_data['downloadUrl']}")
+                
+                # Test PDF download
+                invoice_id = result_data['invoiceId']
+                download_response = requests.get(f"{base_url}/api/download-invoice/{invoice_id}")
+                
+                if download_response.status_code == 200:
+                    print(f"✅ PDF download successful ({len(download_response.content)} bytes)")
+                else:
+                    print(f"❌ PDF download failed: {download_response.status_code}")
+                
+                results.append({
+                    'test': test_case['name'],
+                    'status': 'success',
+                    'invoice_id': invoice_id,
+                    'data': result_data
+                })
+                
+            else:
+                print(f"❌ Invoice generation failed: {response.status_code}")
+                print(f"   Error: {response.text}")
+                results.append({
+                    'test': test_case['name'],
+                    'status': 'failed',
+                    'error': response.text
+                })
+                
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Network error: {e}")
+            results.append({
+                'test': test_case['name'],
+                'status': 'error',
+                'error': str(e)
+            })
+    
+    return results
+
 def test_form_data_submission():
     """Test API with form data instead of JSON"""
     print("\n🔄 Testing Form Data Submission")
@@ -240,6 +335,9 @@ def main():
     # Test quote generation API
     results = test_quote_generation_api()
     
+    # Test invoice generation API
+    invoice_results = test_invoice_generation_api()
+    
     # Test form data submission
     form_success = test_form_data_submission()
     
@@ -250,8 +348,13 @@ def main():
     successful_tests = [r for r in results if r['status'] == 'success']
     failed_tests = [r for r in results if r['status'] != 'success']
     
-    print(f"✅ Successful API tests: {len(successful_tests)}")
-    print(f"❌ Failed API tests: {len(failed_tests)}")
+    successful_invoices = [r for r in invoice_results if r['status'] == 'success']
+    failed_invoices = [r for r in invoice_results if r['status'] != 'success']
+    
+    print(f"✅ Successful quote tests: {len(successful_tests)}")
+    print(f"✅ Successful invoice tests: {len(successful_invoices)}")
+    print(f"❌ Failed quote tests: {len(failed_tests)}")
+    print(f"❌ Failed invoice tests: {len(failed_invoices)}")
     print(f"🔄 Form data test: {'✅ Passed' if form_success else '❌ Failed'}")
     
     if successful_tests:
@@ -259,9 +362,14 @@ def main():
         for test in successful_tests:
             print(f"   • {test['quote_id']} - {test['test']}")
     
-    if failed_tests:
+    if successful_invoices:
+        print(f"\n💰 Generated Invoices:")
+        for test in successful_invoices:
+            print(f"   • {test['invoice_id']} - {test['test']}")
+    
+    if failed_tests or failed_invoices:
         print(f"\n❌ Failed Tests:")
-        for test in failed_tests:
+        for test in failed_tests + failed_invoices:
             print(f"   • {test['test']}: {test.get('error', 'Unknown error')}")
     
     # Display integration examples
@@ -270,14 +378,19 @@ def main():
     print(f"\n🎯 API Endpoints Available:")
     print(f"   POST /api/generate-quote - Generate professional quotes")
     print(f"   GET  /api/download-quote/<id> - Download quote PDFs")
+    print(f"   POST /api/generate-invoice - Generate professional invoices")
+    print(f"   GET  /api/download-invoice/<id> - Download invoice PDFs")
     print(f"\n💼 Integration Notes:")
     print(f"   • Supports both JSON and form data")
     print(f"   • Automatically creates contacts if they don't exist")
     print(f"   • Generates professional PDFs with SPANKKS branding")
     print(f"   • Sends SMS notifications to admin (808) 452-9779")
     print(f"   • Includes Hawaii GET tax calculations")
+    print(f"   • Invoice API automatically calculates subtotal from total")
+    print(f"   • Full CRM integration with quote-to-invoice workflow")
     
-    return len(failed_tests) == 0 and form_success
+    total_failed = len(failed_tests) + len(failed_invoices)
+    return total_failed == 0 and form_success
 
 if __name__ == "__main__":
     success = main()
