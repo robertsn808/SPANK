@@ -3332,52 +3332,6 @@ def help_faq():
     return render_template('help_faq.html')
 
 # Note: send_client_message route exists elsewhere in file - duplicate removed
-        return jsonify({'success': False, 'error': 'Contact not found'})
-    
-    try:
-        # Log the communication attempt
-        communication_record = {
-            'id': f"comm_{int(datetime.now().timestamp())}",
-            'contact_id': contact_id,
-            'contact_name': contact.name,
-            'type': message_type,
-            'subject': subject,
-            'message': message,
-            'sent_date': datetime.now().isoformat(),
-            'status': 'sent',
-            'sent_by': 'admin'
-        }
-        
-        # Save communication record
-        communications_file = 'data/communications.json'
-        communications = []
-        if os.path.exists(communications_file):
-            try:
-                with open(communications_file, 'r') as f:
-                    communications = json.load(f)
-            except:
-                communications = []
-        
-        communications.append(communication_record)
-        
-        # Keep only last 1000 communications
-        if len(communications) > 1000:
-            communications = communications[-1000:]
-        
-        with open(communications_file, 'w') as f:
-            json.dump(communications, f, indent=2)
-        
-        notification_text = f"Message sent to {contact.name} ({message_type}): {subject}"
-        
-        return jsonify({
-            'success': True,
-            'message': f'{message_type.upper()} message logged successfully',
-            'communication_id': communication_record['id']
-        })
-        
-    except Exception as e:
-        logging.error(f"Error sending message: {e}")
-        return jsonify({'success': False, 'error': str(e)})
 
 # ===============================
 # FILE STORAGE MANAGEMENT
