@@ -339,24 +339,33 @@
                             headerName.innerHTML = `<i class="fas fa-user-circle me-3"></i>${clientData.name}`;
                         }
                         
-                        // Update project details
-                        const addressElement = document.querySelector('.client-info p:nth-of-type(3)');
-                        if (addressElement) {
-                            addressElement.innerHTML = `<strong>Address:</strong> ${clientData.address}`;
+                        // Update project details - more specific selectors
+                        const clientInfoSection = document.querySelector('.client-info');
+                        if (clientInfoSection) {
+                            // Update address in first column
+                            const addressElement = clientInfoSection.querySelector('.col-md-6:first-child p:last-child');
+                            if (addressElement) {
+                                addressElement.innerHTML = `<strong>Address:</strong> ${clientData.address}`;
+                            }
+                            
+                            // Update contact information in second column
+                            const contactColumn = clientInfoSection.querySelector('.col-md-6:last-child');
+                            if (contactColumn) {
+                                const phoneParagraph = contactColumn.querySelector('p:first-child');
+                                const emailParagraph = contactColumn.querySelector('p:nth-child(2)');
+                                
+                                if (phoneParagraph) {
+                                    phoneParagraph.innerHTML = `<strong>Phone:</strong> ${clientData.phone}`;
+                                }
+                                if (emailParagraph) {
+                                    emailParagraph.innerHTML = `<strong>Email:</strong> ${clientData.email}`;
+                                }
+                            }
                         }
                         
-                        // Update contact information
-                        const phoneElement = document.querySelector('.client-info .col-md-6:nth-child(2) p:nth-child(2)');
-                        const emailElement = document.querySelector('.client-info .col-md-6:nth-child(2) p:nth-child(3)');
-                        
-                        if (phoneElement) {
-                            phoneElement.innerHTML = `<strong>Phone:</strong> ${clientData.phone}`;
-                        }
-                        if (emailElement) {
-                            emailElement.innerHTML = `<strong>Email:</strong> ${clientData.email}`;
-                        }
-                        
-                        console.log('Client info refreshed successfully');
+                        console.log('Client info refreshed successfully', clientData);
+                    } else {
+                        console.error('Failed to refresh client info:', data.error || 'Unknown error');
                     }
                 })
                 .catch(error => {
@@ -366,7 +375,13 @@
         
         // Load all data when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            refreshData();
+            // Refresh client info immediately on page load
+            refreshClientInfo();
+            
+            // Then load other data
+            loadQuotes();
+            loadInvoices();
+            loadPhotos();
             
             // Auto-refresh every 10 seconds for faster updates
             setInterval(refreshData, 10000);

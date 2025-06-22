@@ -1082,8 +1082,14 @@ def get_client_info(client_id, job_id):
     if not session.get('portal_authenticated'):
         return jsonify({'error': 'Unauthorized'}), 401
     
-    # Allow both staff and client access to read info
-    if (session.get('client_id') != client_id or session.get('job_id') != job_id):
+    # Allow access if:
+    # 1. User is authenticated for this specific client/job combination, OR
+    # 2. User has staff access level (can view any client info)
+    user_client_id = session.get('client_id')
+    user_job_id = session.get('job_id')
+    access_level = session.get('access_level')
+    
+    if not ((user_client_id == client_id and user_job_id == job_id) or access_level == 'staff'):
         return jsonify({'error': 'Access denied'}), 403
     
     try:
