@@ -914,6 +914,35 @@ def project_tracking():
                          total_active_value=total_active_value,
                          upcoming_deadlines=upcoming_deadlines)
 
+@app.route('/admin/executive-summary')
+def executive_summary():
+    """Executive dashboard with key business metrics"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access executive summary.', 'error')
+        return redirect(url_for('admin_login'))
+
+    from analytics_service import analytics_service
+    
+    # Generate executive-level insights
+    business_report = analytics_service.generate_business_report(handyman_storage)
+    cash_flow_forecast = analytics_service.get_cash_flow_forecast(handyman_storage)
+    performance_alerts = analytics_service.get_performance_alerts(handyman_storage)
+    
+    # Key executive metrics
+    executive_metrics = {
+        'monthly_revenue': business_report['revenue']['total_revenue'],
+        'pipeline_value': cash_flow_forecast['total_pipeline_value'],
+        'conversion_rate': business_report['revenue']['quote_conversion_rate'],
+        'customer_count': business_report['customers']['total_customers'],
+        'high_priority_alerts': len([a for a in performance_alerts if a.get('priority') == 'high'])
+    }
+    
+    return render_template('admin/executive_summary.html',
+                         executive_metrics=executive_metrics,
+                         business_report=business_report,
+                         cash_flow_forecast=cash_flow_forecast,
+                         performance_alerts=performance_alerts[:3])  # Top 3 alerts only
+
 @app.route('/admin/analytics-dashboard')
 def analytics_dashboard():
     """Enhanced business analytics with comprehensive CRM insights"""
@@ -926,6 +955,8 @@ def analytics_dashboard():
     # Generate comprehensive business analytics
     business_report = analytics_service.generate_business_report(handyman_storage)
     performance_alerts = analytics_service.get_performance_alerts(handyman_storage)
+    cash_flow_forecast = analytics_service.get_cash_flow_forecast(handyman_storage)
+    predictive_insights = analytics_service.get_predictive_insights(handyman_storage)
     
     # Legacy data for backward compatibility
     service_requests = handyman_storage.get_all_service_requests()
@@ -940,6 +971,8 @@ def analytics_dashboard():
                          # Enhanced analytics
                          business_report=business_report,
                          performance_alerts=performance_alerts,
+                         cash_flow_forecast=cash_flow_forecast,
+                         predictive_insights=predictive_insights,
                          # Legacy compatibility
                          total_inquiries=total_inquiries,
                          consultation_requests=consultation_requests,

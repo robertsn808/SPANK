@@ -311,6 +311,71 @@
         </div>
     </div>
 
+    <!-- Cash Flow Forecast -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="analytics-card">
+                <h5 class="mb-3"><i class="fas fa-money-bill-wave me-2"></i>Cash Flow Forecast</h5>
+                <div class="row mb-3">
+                    <div class="col-md-3 text-center">
+                        <div class="metric-value text-success">${{ "{:,.0f}".format(cash_flow_forecast.total_pipeline_value) }}</div>
+                        <div class="metric-label">Total Pipeline</div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="metric-value text-warning">${{ "{:,.0f}".format(cash_flow_forecast.pending_quote_value) }}</div>
+                        <div class="metric-label">Pending Quotes</div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="metric-value text-info">${{ "{:,.0f}".format(cash_flow_forecast.outstanding_invoice_value) }}</div>
+                        <div class="metric-label">Outstanding Invoices</div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="metric-value text-primary">${{ "{:,.0f}".format(cash_flow_forecast.scheduled_job_value) }}</div>
+                        <div class="metric-label">Scheduled Jobs</div>
+                    </div>
+                </div>
+                
+                <!-- 6-Month Projections -->
+                <h6 class="mt-4 mb-3">6-Month Revenue Projections</h6>
+                <div class="row">
+                    {% for projection in cash_flow_forecast.monthly_projections %}
+                    <div class="col-md-2 text-center mb-3">
+                        <div class="metric-value" style="font-size: 1.2rem;">${{ "{:,.0f}".format(projection.projected_revenue) }}</div>
+                        <div class="metric-label">{{ projection.month.split()[0][:3] }}</div>
+                        <div class="progress mt-1" style="height: 4px;">
+                            <div class="progress-bar bg-success" style="width: {{ projection.confidence }}%"></div>
+                        </div>
+                        <small class="text-muted">{{ projection.confidence }}% confidence</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="analytics-card">
+                <h5 class="mb-3"><i class="fas fa-brain me-2"></i>Predictive Insights</h5>
+                {% if predictive_insights %}
+                    {% for insight in predictive_insights %}
+                    <div class="alert alert-{{ 'success' if insight.type == 'opportunity' else 'info' if insight.type == 'growth' else 'warning' }} p-3 mb-3">
+                        <h6 class="mb-1">{{ insight.title }}</h6>
+                        <p class="mb-1">{{ insight.prediction }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">{{ insight.impact }}</small>
+                            <span class="badge bg-secondary">{{ insight.confidence }}% confidence</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-chart-line fa-2x opacity-50 mb-2"></i>
+                        <p class="mb-0">Insights will appear as data accumulates</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
     <!-- Monthly Revenue Trends -->
     {% if business_report.revenue.monthly_revenue %}
     <div class="row mb-4">
