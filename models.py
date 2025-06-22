@@ -1,6 +1,6 @@
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 
 def get_hawaii_time():
@@ -63,6 +63,11 @@ class HandymanStorage:
         self.referrals = []
         self.memberships = []
         self.admin_notifications = []
+        # CRM components
+        self.contacts = []
+        self.quotes = []
+        self.invoices = []
+        self.jobs = []
     
     def add_service_request(self, request_data):
         request = ServiceRequest(**request_data)
@@ -218,6 +223,147 @@ class HandymanStorage:
                 return True
         return False
 
+    # CRM Methods
+    def add_contact(self, contact_data):
+        """Add new contact to CRM database"""
+        contact = Contact(
+            name=contact_data['name'],
+            email=contact_data['email'],
+            phone=contact_data['phone'],
+            address=contact_data.get('address'),
+            notes=contact_data.get('notes'),
+            tags=contact_data.get('tags', [])
+        )
+        contact.id = len(self.contacts) + 1
+        self.contacts.append(contact)
+        return contact
+
+    def get_all_contacts(self):
+        """Get all contacts"""
+        return self.contacts
+
+    def get_contact_by_id(self, contact_id):
+        """Get contact by ID"""
+        for contact in self.contacts:
+            if contact.id == contact_id:
+                return contact
+        return None
+
+    def update_contact(self, contact_id, updates):
+        """Update contact information"""
+        contact = self.get_contact_by_id(contact_id)
+        if contact:
+            for key, value in updates.items():
+                setattr(contact, key, value)
+            return True
+        return False
+
+    def add_quote(self, quote_data):
+        """Add new quote"""
+        quote = Quote(
+            contact_id=quote_data['contact_id'],
+            service_type=quote_data['service_type'],
+            items=quote_data['items'],
+            total_amount=quote_data['total_amount'],
+            valid_until=quote_data['valid_until'],
+            notes=quote_data.get('notes')
+        )
+        quote.id = len(self.quotes) + 1
+        self.quotes.append(quote)
+        return quote
+
+    def get_all_quotes(self):
+        """Get all quotes"""
+        return self.quotes
+
+    def get_quotes_by_contact(self, contact_id):
+        """Get quotes for specific contact"""
+        return [q for q in self.quotes if q.contact_id == contact_id]
+
+    def update_quote_status(self, quote_id, status):
+        """Update quote status"""
+        for quote in self.quotes:
+            if quote.id == quote_id:
+                quote.status = status
+                return True
+        return False
+
+    def add_invoice(self, invoice_data):
+        """Add new invoice"""
+        invoice = Invoice(
+            contact_id=invoice_data['contact_id'],
+            quote_id=invoice_data.get('quote_id'),
+            items=invoice_data['items'],
+            subtotal=invoice_data['subtotal'],
+            tax_rate=invoice_data.get('tax_rate', 0.04712),
+            payment_terms=invoice_data.get('payment_terms', 'Net 30')
+        )
+        invoice.id = len(self.invoices) + 1
+        self.invoices.append(invoice)
+        return invoice
+
+    def get_all_invoices(self):
+        """Get all invoices"""
+        return self.invoices
+
+    def get_invoices_by_contact(self, contact_id):
+        """Get invoices for specific contact"""
+        return [i for i in self.invoices if i.contact_id == contact_id]
+
+    def update_invoice_status(self, invoice_id, status):
+        """Update invoice status"""
+        for invoice in self.invoices:
+            if invoice.id == invoice_id:
+                invoice.status = status
+                return True
+        return False
+
+    def add_job(self, job_data):
+        """Add new job"""
+        job = Job(
+            contact_id=job_data['contact_id'],
+            quote_id=job_data.get('quote_id'),
+            scheduled_date=job_data['scheduled_date'],
+            crew_members=job_data.get('crew_members', []),
+            notes=job_data.get('notes')
+        )
+        job.id = len(self.jobs) + 1
+        self.jobs.append(job)
+        return job
+
+    def get_all_jobs(self):
+        """Get all jobs"""
+        return self.jobs
+
+    def get_jobs_by_contact(self, contact_id):
+        """Get jobs for specific contact"""
+        return [j for j in self.jobs if j.contact_id == contact_id]
+
+    def get_jobs_by_date(self, date):
+        """Get jobs scheduled for specific date"""
+        return [j for j in self.jobs if j.scheduled_date == date]
+
+    def update_job_status(self, job_id, status):
+        """Update job status"""
+        for job in self.jobs:
+            if job.id == job_id:
+                job.status = status
+                if status == 'completed':
+                    job.completion_date = get_hawaii_time().strftime('%Y-%m-%d')
+                return True
+        return False
+
+    def add_job_note(self, job_id, note):
+        """Add note to job"""
+        for job in self.jobs:
+            if job.id == job_id:
+                if job.notes:
+                    job.notes += f"\n\n{get_hawaii_time().strftime('%Y-%m-%d %H:%M')}: {note}"
+                else:
+                    job.notes = f"{get_hawaii_time().strftime('%Y-%m-%d %H:%M')}: {note}"
+                return True
+        return False
+
 class Admin:
     def __init__(self, username, password_hash):
         self.username = username
@@ -255,3 +401,76 @@ class AdminNotification:
         self.reason = reason
         self.timestamp = timestamp
         self.status = status  # unread, read
+
+class Contact:
+    def __init__(self, name, email, phone, address=None, notes=None, tags=None, created_date=None):
+        self.id = None  # Will be set by storage
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.address = address or ""
+        self.notes = notes or ""
+        self.tags = tags or []
+        self.created_date = created_date or get_hawaii_time().strftime('%Y-%m-%d')
+        self.job_history = []
+        self.total_spent = 0.0
+        self.last_contact = None
+        self.preferred_contact = "email"
+        self.status = "active"
+
+class Quote:
+    def __init__(self, contact_id, service_type, items, total_amount, valid_until, notes=None):
+        self.id = None  # Will be set by storage
+        self.contact_id = contact_id
+        self.service_type = service_type  # 'drywall', 'flooring', 'fencing', 'general'
+        self.items = items  # List of quote items
+        self.total_amount = total_amount
+        self.valid_until = valid_until
+        self.notes = notes or ""
+        self.created_date = get_hawaii_time().strftime('%Y-%m-%d')
+        self.status = "pending"  # pending, accepted, declined, expired
+        self.pdf_path = None
+
+class QuoteItem:
+    def __init__(self, description, quantity, unit_price, unit="each"):
+        self.description = description
+        self.quantity = quantity
+        self.unit_price = unit_price
+        self.unit = unit
+        self.total = quantity * unit_price
+
+class Invoice:
+    def __init__(self, contact_id, quote_id, items, subtotal, tax_rate=0.04712, payment_terms="Net 30"):
+        self.id = None  # Will be set by storage
+        self.contact_id = contact_id
+        self.quote_id = quote_id
+        self.items = items
+        self.subtotal = subtotal
+        self.tax_rate = tax_rate  # Hawaii GET tax
+        self.tax_amount = subtotal * tax_rate
+        self.total_amount = subtotal + self.tax_amount
+        self.payment_terms = payment_terms
+        self.created_date = get_hawaii_time().strftime('%Y-%m-%d')
+        hawaii_time = get_hawaii_time()
+        due_date = hawaii_time + timedelta(days=30)
+        self.due_date = due_date.strftime('%Y-%m-%d')
+        self.status = "pending"  # pending, paid, overdue, cancelled
+        self.payment_link = None
+        self.pdf_path = None
+
+class Job:
+    def __init__(self, contact_id, quote_id, scheduled_date, crew_members=None, notes=None):
+        self.id = None  # Will be set by storage
+        self.contact_id = contact_id
+        self.quote_id = quote_id
+        self.scheduled_date = scheduled_date
+        self.scheduled_time = None
+        self.crew_members = crew_members or []
+        self.notes = notes or ""
+        self.status = "scheduled"  # scheduled, in_progress, completed, cancelled
+        self.created_date = get_hawaii_time().strftime('%Y-%m-%d')
+        self.completion_date = None
+        self.photos = []
+        self.materials_used = []
+        self.time_spent = 0
+        self.customer_signature = None
