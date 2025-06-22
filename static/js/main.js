@@ -29,6 +29,9 @@ function initializeApp() {
         initConsultationFormEnhancements();
         initPhoneNumberFormatting();
         
+        // Micro-interactions and animations
+        initMicroInteractions();
+        
         // Admin features (if present)
         initAdminDashboardFeatures();
         
@@ -761,6 +764,75 @@ function formatPhoneNumber(input) {
     input.value = value;
 }
 
+/**
+ * Initialize micro-interactions and enhanced UI effects
+ */
+function initMicroInteractions() {
+    // Add scroll-triggered animations to key elements
+    const animatedElements = document.querySelectorAll('.card, .service-item, .pricing-card, .contact-item');
+    animatedElements.forEach(el => {
+        el.classList.add('fade-in-scroll');
+    });
+
+    // Add ripple effects to interactive elements
+    const rippleElements = document.querySelectorAll('.btn, .card, .nav-link');
+    rippleElements.forEach(el => {
+        el.classList.add('ripple-effect');
+    });
+
+    // Enhanced hover effects for service cards
+    document.querySelectorAll('.card').forEach(card => {
+        const icon = card.querySelector('.fa, .service-icon');
+        if (icon) {
+            icon.classList.add('icon-hover');
+        }
+    });
+
+    // Add floating label effects to forms
+    document.querySelectorAll('.form-group, .mb-3').forEach(group => {
+        const input = group.querySelector('.form-control');
+        const label = group.querySelector('.form-label');
+        if (input && label) {
+            group.classList.add('floating-label');
+        }
+    });
+
+    // Initialize counter animations for stats
+    document.querySelectorAll('[data-counter]').forEach(counter => {
+        counter.classList.add('counter');
+        const value = counter.textContent;
+        counter.setAttribute('data-target', value);
+        counter.textContent = '0';
+    });
+
+    // Add stagger animations to lists and grids
+    document.querySelectorAll('.row .col-md-4, .row .col-lg-4, .list-group').forEach(container => {
+        container.classList.add('stagger-children');
+        const items = container.children;
+        Array.from(items).forEach(item => {
+            item.classList.add('stagger-item');
+        });
+    });
+
+    // Enhanced button interactions
+    document.querySelectorAll('.btn-primary').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (window.microInteractions) {
+                window.microInteractions.addPulseEffect(btn);
+            }
+        });
+    });
+
+    // Add tooltips to icons and interactive elements
+    document.querySelectorAll('.fa').forEach(icon => {
+        if (!icon.getAttribute('data-tooltip') && icon.parentElement.textContent.trim()) {
+            const text = icon.parentElement.textContent.trim();
+            if (text.length < 50) {
+                icon.setAttribute('data-tooltip', text);
+            }
+        }
+    });
+}
 
 function handleServiceChange(service) {
     // Add service-specific tips or requirements
