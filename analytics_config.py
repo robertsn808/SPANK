@@ -61,7 +61,7 @@ class AnalyticsConfig:
         'market_growth_rate': 0.08,  # 8% annual growth
         'tourism_factor': 1.12,      # Tourism boost
         'cost_inflation': 1.04,      # 4% cost inflation
-        'get_tax_rate': 0.045        # 4.5% O'ahu GET tax
+        'get_tax_rate': 0.04712      # 4.712% O'ahu GET tax
     }
     
     # Service hour estimates for scheduling

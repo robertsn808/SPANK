@@ -523,8 +523,8 @@ def generate_quote_pdf(quote, contact):
 
         # Add subtotal and total
         items_data.append(['', '', '', 'Subtotal:', f"${quote.total_amount:.2f}"])
-        hawaii_tax = quote.total_amount * 0.045  # Hawaii GET tax
-        items_data.append(['', '', '', 'Tax (4.5%):', f"${hawaii_tax:.2f}"])
+        hawaii_tax = quote.total_amount * 0.04712  # Hawaii GET tax
+        items_data.append(['', '', '', 'Tax (4.712%):', f"${hawaii_tax:.2f}"])
         items_data.append(['', '', '', 'Total:', f"${quote.total_amount + hawaii_tax:.2f}"])
 
         items_table = Table(items_data, colWidths=[3*inch, 0.8*inch, 0.8*inch, 1*inch, 1*inch])
