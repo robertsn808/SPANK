@@ -574,5 +574,50 @@ class BusinessIntelligence:
         """Trend calculations using verified data"""
         return {'record_count': len(requests)}
 
+    def _calculate_growth_trend(self, real_service_requests):
+        """Calculate authentic growth trends from service requests"""
+        if not real_service_requests:
+            return {'record_count': 0, 'trend': 'No data available'}
+
+        # Group requests by month for trend analysis
+        monthly_counts = {}
+        for request in real_service_requests:
+            try:
+                # Handle both datetime objects and string dates
+                if hasattr(request, 'created_at'):
+                    date_obj = request.created_at
+                elif hasattr(request, 'preferred_date') and request.preferred_date:
+                    date_obj = datetime.strptime(request.preferred_date, '%Y-%m-%d')
+                else:
+                    continue
+
+                if isinstance(date_obj, str):
+                    date_obj = datetime.fromisoformat(date_obj.replace('Z', '+00:00'))
+
+                month_key = date_obj.strftime('%Y-%m')
+                monthly_counts[month_key] = monthly_counts.get(month_key, 0) + 1
+            except Exception as e:
+                continue
+
+        # Calculate trend
+        if len(monthly_counts) < 2:
+            trend = 'Insufficient data'
+        else:
+            months = sorted(monthly_counts.keys())
+            recent_month = monthly_counts.get(months[-1], 0)
+            previous_month = monthly_counts.get(months[-2], 0) if len(months) > 1 else 0
+
+            if previous_month == 0:
+                trend = 'New business'
+            else:
+                change = ((recent_month - previous_month) / previous_month) * 100
+                trend = f"{change:+.1f}% from last month"
+
+        return {
+            'record_count': len(real_service_requests),
+            'trend': trend,
+            'monthly_distribution': monthly_counts
+        }
+
 # Initialize business intelligence service
 business_intelligence = BusinessIntelligence()
