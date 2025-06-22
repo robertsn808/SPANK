@@ -34,11 +34,17 @@
                 </div>
                 <div class="col-md-4 text-center">
                     <nav class="admin-nav">
-                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light btn-sm me-2">
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light btn-sm me-1">
                             <i class="fas fa-tachometer-alt me-1"></i>Dashboard
                         </a>
-                        <a href="{{ url_for('ai_leads') }}" class="btn btn-outline-light btn-sm">
-                            <i class="fas fa-robot me-1"></i>AI Leads
+                        <a href="{{ url_for('scheduler_dashboard') }}" class="btn btn-outline-light btn-sm me-1">
+                            <i class="fas fa-calendar-alt me-1"></i>Scheduler
+                        </a>
+                        <a href="{{ url_for('inquiry_management') }}" class="btn btn-outline-light btn-sm me-1">
+                            <i class="fas fa-inbox me-1"></i>Inquiries
+                        </a>
+                        <a href="{{ url_for('staff_management') }}" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-users me-1"></i>Staff
                         </a>
                     </nav>
                 </div>
