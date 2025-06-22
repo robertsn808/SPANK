@@ -2174,3 +2174,139 @@ def job_photos_interface(job_id):
     return render_template('job_photos.html', 
                          job_id=job_id, 
                          existing_photos=existing_photos)
+
+# ===============================
+# JOB SITE PORTAL AUTHENTICATION
+# ===============================
+
+@app.route('/login')
+def portal_login_page():
+    """Job Site Portal login page"""
+    return render_template('login.html')
+
+@app.route('/login', methods=['POST'])
+def portal_login():
+    """Handle portal login authentication"""
+    client_id = request.form.get('clientId', '').strip()
+    job_id = request.form.get('jobId', '').strip()
+    staff_pin = request.form.get('staffPin', '').strip() or None
+    
+    if not client_id or not job_id:
+        flash('Please enter both Client ID and Job ID', 'error')
+        return render_template('login.html')
+    
+    # Authenticate user
+    success, client_data, access_level = auth_service.authenticate(client_id, job_id, staff_pin)
+    
+    if not success:
+        flash('Invalid credentials. Please check your Client ID, Job ID, and PIN (if provided).', 'error')
+        return render_template('login.html')
+    
+    # Store session data
+    session['portal_authenticated'] = True
+    session['client_id'] = client_id
+    session['job_id'] = job_id
+    session['access_level'] = access_level
+    session['client_data'] = client_data
+    
+    # Redirect based on access level
+    if access_level == 'staff':
+        flash(f'Welcome back! Staff access granted for Job #{job_id}', 'success')
+        return redirect(url_for('staff_portal', job_id=job_id))
+    else:
+        flash(f'Welcome {client_data.get("name", "User")}! Client portal access granted.', 'success')
+        return redirect(url_for('client_portal', client_id=client_id, job_id=job_id))
+
+@app.route('/portal/<client_id>/<job_id>')
+def client_portal(client_id, job_id):
+    """Client portal - read-only access"""
+    if not session.get('portal_authenticated') or session.get('client_id') != client_id or session.get('job_id') != job_id:
+        flash('Please log in to access the portal', 'error')
+        return redirect(url_for('portal_login_page'))
+    
+    client_data = session.get('client_data')
+    if not client_data:
+        flash('Session expired. Please log in again.', 'error')
+        return redirect(url_for('portal_login_page'))
+    
+    return render_template('client_portal.html', client=client_data)
+
+@app.route('/job/<job_id>')
+def staff_portal(job_id):
+    """Staff portal - full access"""
+    if (not session.get('portal_authenticated') or 
+        session.get('access_level') != 'staff' or 
+        session.get('job_id') != job_id):
+        flash('Staff access required. Please log in with your PIN.', 'error')
+        return redirect(url_for('portal_login_page'))
+    
+    client_data = session.get('client_data')
+    if not client_data:
+        flash('Session expired. Please log in again.', 'error')
+        return redirect(url_for('portal_login_page'))
+    
+    return render_template('staff_portal.html', client=client_data)
+
+@app.route('/portal/logout')
+def portal_logout():
+    """Logout from portal"""
+    session.pop('portal_authenticated', None)
+    session.pop('client_id', None)
+    session.pop('job_id', None)
+    session.pop('access_level', None)
+    session.pop('client_data', None)
+    flash('You have been logged out successfully.', 'success')
+    return redirect(url_for('portal_login_page'))
+
+# ===============================
+# PORTAL API ENDPOINTS
+# ===============================
+
+@app.route('/api/client/<client_id>/quotes')
+def get_client_quotes(client_id):
+    """Get quotes for a specific client"""
+    if not session.get('portal_authenticated') or session.get('client_id') != client_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    # Get quotes for this client from CRM
+    all_quotes = handyman_storage.get_all_quotes()
+    client_quotes = [q for q in all_quotes if q.get('contact_id') == client_id]
+    
+    return jsonify({
+        'quotes': client_quotes,
+        'count': len(client_quotes)
+    })
+
+@app.route('/api/client/<client_id>/invoices')
+def get_client_invoices(client_id):
+    """Get invoices for a specific client"""
+    if not session.get('portal_authenticated') or session.get('client_id') != client_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    # Get invoices for this client from CRM
+    all_invoices = handyman_storage.get_all_invoices()
+    client_invoices = [i for i in all_invoices if i.get('contact_id') == client_id]
+    
+    return jsonify({
+        'invoices': client_invoices,
+        'count': len(client_invoices)
+    })
+
+@app.route('/api/job/<job_id>/notes')
+def get_job_notes(job_id):
+    """Get notes for a specific job"""
+    if not session.get('portal_authenticated') or session.get('job_id') != job_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    # Get job notes from CRM
+    all_jobs = handyman_storage.get_all_jobs()
+    job = next((j for j in all_jobs if j.get('job_id') == job_id), None)
+    
+    if job:
+        notes = job.get('notes', [])
+        return jsonify({
+            'notes': notes,
+            'count': len(notes)
+        })
+    
+    return jsonify({'notes': [], 'count': 0})
