@@ -2408,6 +2408,225 @@ def invoice_generator():
     """Dedicated invoice generator form"""
     return render_template('invoice_generator.html')
 
+@app.route('/admin/invoice-management')
+def admin_invoice_management():
+    """Invoice management dashboard"""
+    if 'admin_logged_in' not in session:
+        return redirect(url_for('admin_login'))
+    return render_template('admin/invoice_management.html')
+
+@app.route('/api/invoices/mark-paid', methods=['POST'])
+def mark_invoice_paid():
+    """Mark an invoice as paid with payment details"""
+    try:
+        invoice_id = request.form.get('invoice_id')
+        payment_method = request.form.get('payment_method')
+        payment_amount = float(request.form.get('payment_amount', 0))
+        payment_date = request.form.get('payment_date')
+        payment_notes = request.form.get('payment_notes', '')
+        
+        if not all([invoice_id, payment_method, payment_amount, payment_date]):
+            return jsonify({'error': 'Missing required payment information'}), 400
+        
+        # Load invoices
+        invoices = []
+        if os.path.exists('data/invoices.json'):
+            with open('data/invoices.json', 'r') as f:
+                invoices = json.load(f)
+        
+        # Find the invoice
+        invoice_found = False
+        for invoice in invoices:
+            if invoice['id'] == invoice_id:
+                invoice['status'] = 'paid'
+                invoice['payment_method'] = payment_method
+                invoice['payment_amount'] = payment_amount
+                invoice['payment_date'] = payment_date
+                invoice['payment_notes'] = payment_notes
+                invoice['paid_date'] = datetime.now().isoformat()
+                invoice_found = True
+                break
+        
+        if not invoice_found:
+            return jsonify({'error': 'Invoice not found'}), 404
+        
+        # Save updated invoices
+        with open('data/invoices.json', 'w') as f:
+            json.dump(invoices, f, indent=2)
+        
+        # Log the payment in job tracking system
+        if hasattr(storage_service, 'log_payment'):
+            storage_service.log_payment({
+                'invoice_id': invoice_id,
+                'amount': payment_amount,
+                'method': payment_method,
+                'date': payment_date,
+                'notes': payment_notes,
+                'recorded_date': datetime.now().isoformat()
+            })
+        
+        return jsonify({
+            'success': True,
+            'message': f'Invoice {invoice_id} marked as paid',
+            'payment_details': {
+                'method': payment_method,
+                'amount': payment_amount,
+                'date': payment_date
+            }
+        })
+        
+    except Exception as e:
+        logging.error(f"Error marking invoice as paid: {e}")
+        return jsonify({'error': f'Failed to mark invoice as paid: {str(e)}'}), 500
+
+@app.route('/api/invoices')
+def api_invoices():
+    """API endpoint to get all invoices with payment status"""
+    try:
+        invoices = []
+        if os.path.exists('data/invoices.json'):
+            with open('data/invoices.json', 'r') as f:
+                invoices = json.load(f)
+        
+        # Ensure each invoice has required fields for the management dashboard
+        for invoice in invoices:
+            if 'status' not in invoice:
+                invoice['status'] = 'pending'
+            if 'created_date' not in invoice:
+                invoice['created_date'] = datetime.now().isoformat()
+            
+            # Format total_amount as float
+            if isinstance(invoice.get('total_amount'), str):
+                try:
+                    invoice['total_amount'] = float(invoice['total_amount'].replace('$', '').replace(',', ''))
+                except (ValueError, AttributeError):
+                    invoice['total_amount'] = 0.0
+        
+        return jsonify(invoices)
+        
+    except Exception as e:
+        logging.error(f"Error retrieving invoices: {e}")
+        return jsonify({'error': f'Failed to retrieve invoices: {str(e)}'}), 500
+
+@app.route('/admin/enhanced-staff-management')
+def enhanced_staff_management():
+    """Enhanced staff management dashboard"""
+    if 'admin_logged_in' not in session:
+        return redirect(url_for('admin_login'))
+    return render_template('admin/enhanced_staff_management.html')
+
+@app.route('/api/staff/enhanced')
+def api_staff_enhanced():
+    """API endpoint to get enhanced staff data with skills and performance"""
+    try:
+        staff_data = []
+        
+        # Load existing staff data
+        if os.path.exists('data/staff.json'):
+            with open('data/staff.json', 'r') as f:
+                staff_data = json.load(f)
+        
+        # Enhance staff data with additional fields if not present
+        for staff in staff_data:
+            if 'skills' not in staff:
+                staff['skills'] = ['General Handyman', 'Basic Tools']
+            if 'performance_score' not in staff:
+                staff['performance_score'] = 95
+            if 'availability_status' not in staff:
+                staff['availability_status'] = 'available'
+            if 'hourly_rate' not in staff:
+                staff['hourly_rate'] = 25.00
+            if 'hire_date' not in staff:
+                staff['hire_date'] = datetime.now().strftime('%Y-%m-%d')
+            if 'working_days' not in staff:
+                staff['working_days'] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
+            if 'start_time' not in staff:
+                staff['start_time'] = '07:00'
+            if 'end_time' not in staff:
+                staff['end_time'] = '17:00'
+        
+        return jsonify(staff_data)
+        
+    except Exception as e:
+        logging.error(f"Error retrieving enhanced staff data: {e}")
+        return jsonify({'error': f'Failed to retrieve staff data: {str(e)}'}), 500
+
+@app.route('/api/staff/save', methods=['POST'])
+def api_staff_save():
+    """API endpoint to save staff member with enhanced data"""
+    try:
+        staff_id = request.form.get('staff_id')
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        role = request.form.get('role')
+        hourly_rate = float(request.form.get('hourly_rate', 25.00))
+        hire_date = request.form.get('hire_date')
+        skills = json.loads(request.form.get('skills', '[]'))
+        working_days = json.loads(request.form.get('working_days', '[]'))
+        start_time = request.form.get('start_time', '07:00')
+        end_time = request.form.get('end_time', '17:00')
+        notes = request.form.get('notes', '')
+        
+        # Validate required fields
+        if not all([name, email, phone, role]):
+            return jsonify({'error': 'Missing required fields'}), 400
+        
+        # Format phone number
+        formatted_phone = phone_formatter.format_phone(phone)
+        
+        # Load existing staff data
+        staff_data = []
+        if os.path.exists('data/staff.json'):
+            with open('data/staff.json', 'r') as f:
+                staff_data = json.load(f)
+        
+        # Create new staff record
+        new_staff = {
+            'id': staff_id if staff_id else f"STF{len(staff_data) + 1:03d}",
+            'name': name,
+            'email': email,
+            'phone': formatted_phone,
+            'role': role,
+            'hourly_rate': hourly_rate,
+            'hire_date': hire_date,
+            'skills': skills,
+            'working_days': working_days,
+            'start_time': start_time,
+            'end_time': end_time,
+            'notes': notes,
+            'performance_score': 95,  # Default performance score
+            'availability_status': 'available',
+            'active': True,
+            'created_date': datetime.now().isoformat()
+        }
+        
+        # Update existing or add new
+        if staff_id:
+            # Update existing staff
+            for i, staff in enumerate(staff_data):
+                if staff['id'] == staff_id:
+                    staff_data[i] = new_staff
+                    break
+        else:
+            # Add new staff
+            staff_data.append(new_staff)
+        
+        # Save updated staff data
+        os.makedirs('data', exist_ok=True)
+        with open('data/staff.json', 'w') as f:
+            json.dump(staff_data, f, indent=2)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Staff member saved successfully',
+            'staff_id': new_staff['id']
+        })
+        
+    except Exception as e:
+        logging.error(f"Error saving staff member: {e}")
+        return jsonify({'error': f'Failed to save staff member: {str(e)}'}), 500
+
 @app.route('/upload/<job_id>/<photo_type>', methods=['POST'])
 def upload_job_photos(job_id, photo_type):
     """Upload job photos (before/after) with metadata tracking"""

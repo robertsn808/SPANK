@@ -1,0 +1,81 @@
+Area
+Issue / Need
+Action Required
+Priority
+Invoice System
+Missing automatic tax calculation
+Add 4.712% Hawaii GET to all totals dynamically
+High
+No online payment yet
+Add manual “Mark as Paid” for cash/check; prep Stripe/Square later
+High
+No itemized photo support
+Add ability to attach before/after images to invoice by job ID
+Medium
+Quotes
+Limited line items
+Expand quote UI for multiple line entries
+High
+No client acceptance flow
+Add digital “Approve Quote” button for clients
+Medium
+Calendar
+No syncing with job data
+Hook calendar events to job/jobsite data
+High
+No status filters (confirmed/pending/etc.)
+Color-code and add status toggles
+Medium
+Client Portal
+Login flow via Client ID only
+Enhance with PIN or temporary code for added security
+Medium
+No payment history view
+Add “My Invoices” page showing status and receipts
+Medium
+Admin Dashboard
+Staff management is limited
+Add ability to assign roles, view availability
+High
+No materials log per job
+Add form/field to track materials used
+Medium
+No job checklists
+Add per-job task checklists with completion tracking
+Medium
+Backend / Data Layer
+No database (or just JSON file)
+Plan move to Supabase, Firebase, or low-code DB
+High
+No PDF archive tied to job ID
+Save each quote/invoice PDF by job ID
+High
+Reporting
+No financial or job performance reports
+Add dashboard for profit/loss per job, unpaid invoices, etc.
+Medium
+No lead tracking metrics
+Track intake → quote → conversion funnel
+Low
+SPANKKS Skool
+Lessons are static
+Add quizzes, photo uploads, and SPANK Buck rewards logic
+Medium
+Branding & Docs
+Edify/Spankks branding sometimes mismatched
+Ensure consistent logo/colors across portal/docs
+Medium
+Contract + proposal good, but no signing or approval mechanism yet
+Add “Accept Proposal” or “Sign Contract” via digital flow
+Medium
+Scheduler Features
+No logic for blocked/unavailable dates
+Block calendar days for inquiries once a job is booked
+Medium
+No reschedule/cancellation system
+Add “Request Change” button to jobs/estimates
+Low
+Growth Planning
+No pricing tiers or scalability features
+Begin modularizing features for resale to other businesses
+Medium
