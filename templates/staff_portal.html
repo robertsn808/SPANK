@@ -276,6 +276,9 @@
                     <button class="btn-staff mt-2" onclick="addMaterial()">
                         <i class="fas fa-plus me-2"></i>Add Material
                     </button>
+                    <button class="btn btn-success mt-2 ms-2" onclick="saveMaterials()" id="save-materials-btn">
+                        <i class="fas fa-save me-2"></i>Save to Inventory
+                    </button>
                 </div>
             </div>
             
@@ -451,17 +454,26 @@
         }
         
         // Materials management
+        let materialsUsed = [];
+        
         function addMaterial() {
             const nameInput = document.getElementById('material-name');
             const quantityInput = document.getElementById('material-quantity');
             
             if (nameInput.value.trim() && quantityInput.value) {
+                const material = {
+                    name: nameInput.value.trim(),
+                    quantity: parseInt(quantityInput.value)
+                };
+                
+                materialsUsed.push(material);
+                
                 const materialsList = document.getElementById('materials-list');
                 const materialItem = document.createElement('div');
                 materialItem.className = 'material-item';
                 materialItem.innerHTML = `
-                    <span>${nameInput.value} (x${quantityInput.value})</span>
-                    <button class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">
+                    <span>${material.name} (x${material.quantity})</span>
+                    <button class="btn btn-sm btn-outline-danger" onclick="removeMaterial(${materialsUsed.length - 1})">
                         <i class="fas fa-times"></i>
                     </button>
                 `;
@@ -470,6 +482,59 @@
                 nameInput.value = '';
                 quantityInput.value = '';
             }
+        }
+        
+        function removeMaterial(index) {
+            materialsUsed.splice(index, 1);
+            refreshMaterialsList();
+        }
+        
+        function refreshMaterialsList() {
+            const materialsList = document.getElementById('materials-list');
+            materialsList.innerHTML = '';
+            
+            materialsUsed.forEach((material, index) => {
+                const materialItem = document.createElement('div');
+                materialItem.className = 'material-item';
+                materialItem.innerHTML = `
+                    <span>${material.name} (x${material.quantity})</span>
+                    <button class="btn btn-sm btn-outline-danger" onclick="removeMaterial(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                materialsList.appendChild(materialItem);
+            });
+        }
+        
+        function saveMaterials() {
+            if (materialsUsed.length === 0) {
+                alert('No materials to save');
+                return;
+            }
+            
+            fetch(`/api/materials/log/${jobId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    materials: materialsUsed
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Materials logged successfully! Total cost: $${data.total_cost.toFixed(2)}`);
+                    materialsUsed = [];
+                    refreshMaterialsList();
+                } else {
+                    alert('Failed to save materials: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error saving materials:', error);
+                alert('Failed to save materials. Please try again.');
+            });
         }
         
         // Notes management
