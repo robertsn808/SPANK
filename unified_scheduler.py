@@ -760,6 +760,330 @@ class UnifiedScheduler:
             logging.error(f"Error calculating staff workload: {e}")
             return {}
     
+    def assign_job_to_staff(self, appointment_id: str, staff_ids: List[str], team_name: str = '') -> Dict:
+        """Assign job to specific staff members or team"""
+        try:
+            appointments = self._load_appointments()
+            
+            for appointment in appointments:
+                if appointment['appointment_id'] == appointment_id:
+                    appointment['assigned_staff'] = staff_ids
+                    appointment['team_name'] = team_name
+                    appointment['updated_at'] = datetime.now(self.hawaii_tz).isoformat()
+                    
+                    # Update staff availability
+                    self._update_staff_availability(appointment, staff_ids)
+                    
+                    self._save_appointments(appointments)
+                    
+                    return {
+                        'success': True,
+                        'appointment': appointment,
+                        'message': f'Job assigned to {len(staff_ids)} staff member(s)'
+                    }
+            
+            return {'success': False, 'reason': 'Appointment not found'}
+            
+        except Exception as e:
+            logging.error(f"Error assigning job to staff: {e}")
+            return {'success': False, 'reason': f'Error: {str(e)}'}
+    
+    def block_staff_availability(self, staff_id: str, start_date: str, end_date: str, reason: str = 'Time off') -> Dict:
+        """Block staff availability for time off or sick days"""
+        try:
+            appointments = self._load_appointments()
+            
+            # Create blocking appointment
+            block_appointment = {
+                'appointment_id': f"BLOCK{datetime.now().strftime('%Y%m%d%H%M%S')}",
+                'staff_id': staff_id,
+                'block_type': 'availability_block',
+                'scheduled_date': start_date,
+                'end_date': end_date,
+                'reason': reason,
+                'status': 'blocked',
+                'created_at': datetime.now(self.hawaii_tz).isoformat(),
+                'all_day': True
+            }
+            
+            appointments.append(block_appointment)
+            self._save_appointments(appointments)
+            
+            return {
+                'success': True,
+                'block': block_appointment,
+                'message': f'Availability blocked for {staff_id}'
+            }
+            
+        except Exception as e:
+            logging.error(f"Error blocking staff availability: {e}")
+            return {'success': False, 'reason': f'Error: {str(e)}'}
+    
+    def get_staff_schedule(self, staff_id: str, date_range_days: int = 7) -> List[Dict]:
+        """Get detailed schedule for specific staff member"""
+        try:
+            appointments = self._load_appointments()
+            hawaii_now = datetime.now(self.hawaii_tz)
+            end_date = hawaii_now + timedelta(days=date_range_days)
+            
+            staff_schedule = []
+            
+            for appointment in appointments:
+                # Check if staff is assigned to this appointment
+                assigned_staff = appointment.get('assigned_staff', [])
+                
+                if staff_id in assigned_staff or appointment.get('staff_id') == staff_id:
+                    appointment_date = datetime.strptime(appointment['scheduled_date'], '%Y-%m-%d')
+                    appointment_date = self.hawaii_tz.localize(appointment_date)
+                    
+                    if hawaii_now <= appointment_date <= end_date:
+                        staff_schedule.append(appointment)
+            
+            # Sort by date and time
+            staff_schedule.sort(key=lambda x: f"{x['scheduled_date']} {x.get('scheduled_time', '00:00')}")
+            
+            return staff_schedule
+            
+        except Exception as e:
+            logging.error(f"Error getting staff schedule: {e}")
+            return []
+    
+    def update_job_status(self, appointment_id: str, status: str, notes: str = '') -> Dict:
+        """Update job status with workflow tracking"""
+        valid_statuses = [
+            'inquiry', 'estimate_scheduled', 'estimate_sent', 'awaiting_deposit',
+            'work_in_progress', 'completed', 'follow_up', 'cancelled'
+        ]
+        
+        if status not in valid_statuses:
+            return {'success': False, 'reason': f'Invalid status. Must be one of: {valid_statuses}'}
+        
+        try:
+            appointments = self._load_appointments()
+            
+            for appointment in appointments:
+                if appointment['appointment_id'] == appointment_id:
+                    old_status = appointment.get('status', 'unknown')
+                    appointment['status'] = status
+                    appointment['updated_at'] = datetime.now(self.hawaii_tz).isoformat()
+                    
+                    # Add status change to history
+                    if not appointment.get('status_history'):
+                        appointment['status_history'] = []
+                    
+                    appointment['status_history'].append({
+                        'from_status': old_status,
+                        'to_status': status,
+                        'changed_at': datetime.now(self.hawaii_tz).isoformat(),
+                        'notes': notes
+                    })
+                    
+                    if notes:
+                        appointment['notes'] = f"{appointment.get('notes', '')} | Status update: {notes}".strip(' |')
+                    
+                    self._save_appointments(appointments)
+                    
+                    return {
+                        'success': True,
+                        'appointment': appointment,
+                        'message': f'Status updated from {old_status} to {status}'
+                    }
+            
+            return {'success': False, 'reason': 'Appointment not found'}
+            
+        except Exception as e:
+            logging.error(f"Error updating job status: {e}")
+            return {'success': False, 'reason': f'Error: {str(e)}'}
+    
+    def add_job_checklist(self, appointment_id: str, checklist_items: List[str]) -> Dict:
+        """Add materials or prep task checklist to job"""
+        try:
+            appointments = self._load_appointments()
+            
+            for appointment in appointments:
+                if appointment['appointment_id'] == appointment_id:
+                    if not appointment.get('checklist'):
+                        appointment['checklist'] = []
+                    
+                    for item in checklist_items:
+                        appointment['checklist'].append({
+                            'id': str(uuid.uuid4()),
+                            'item': item,
+                            'completed': False,
+                            'added_at': datetime.now(self.hawaii_tz).isoformat()
+                        })
+                    
+                    appointment['updated_at'] = datetime.now(self.hawaii_tz).isoformat()
+                    self._save_appointments(appointments)
+                    
+                    return {
+                        'success': True,
+                        'appointment': appointment,
+                        'message': f'Added {len(checklist_items)} checklist items'
+                    }
+            
+            return {'success': False, 'reason': 'Appointment not found'}
+            
+        except Exception as e:
+            logging.error(f"Error adding job checklist: {e}")
+            return {'success': False, 'reason': f'Error: {str(e)}'}
+    
+    def get_job_reporting_data(self, start_date: str = None, end_date: str = None) -> Dict:
+        """Generate comprehensive reporting data from calendar"""
+        try:
+            appointments = self._load_appointments()
+            
+            if not start_date:
+                start_date = (datetime.now(self.hawaii_tz) - timedelta(days=30)).strftime('%Y-%m-%d')
+            if not end_date:
+                end_date = datetime.now(self.hawaii_tz).strftime('%Y-%m-%d')
+            
+            # Filter appointments by date range
+            filtered_appointments = []
+            for appointment in appointments:
+                if start_date <= appointment['scheduled_date'] <= end_date:
+                    filtered_appointments.append(appointment)
+            
+            # Calculate metrics
+            total_jobs = len(filtered_appointments)
+            
+            # Status breakdown
+            status_counts = {}
+            for appointment in filtered_appointments:
+                status = appointment.get('status', 'unknown')
+                status_counts[status] = status_counts.get(status, 0) + 1
+            
+            # Service type breakdown
+            service_counts = {}
+            for appointment in filtered_appointments:
+                service = appointment.get('service_type', 'unknown')
+                service_counts[service] = service_counts.get(service, 0) + 1
+            
+            # Staff utilization
+            staff_jobs = {}
+            for appointment in filtered_appointments:
+                assigned_staff = appointment.get('assigned_staff', [])
+                for staff_id in assigned_staff:
+                    staff_jobs[staff_id] = staff_jobs.get(staff_id, 0) + 1
+            
+            # Weekly distribution
+            weekly_distribution = {}
+            for appointment in filtered_appointments:
+                date = datetime.strptime(appointment['scheduled_date'], '%Y-%m-%d')
+                week_start = date - timedelta(days=date.weekday())
+                week_key = week_start.strftime('%Y-W%U')
+                weekly_distribution[week_key] = weekly_distribution.get(week_key, 0) + 1
+            
+            return {
+                'period': {'start_date': start_date, 'end_date': end_date},
+                'total_jobs': total_jobs,
+                'status_breakdown': status_counts,
+                'service_breakdown': service_counts,
+                'staff_utilization': staff_jobs,
+                'weekly_distribution': weekly_distribution,
+                'completion_rate': (status_counts.get('completed', 0) / total_jobs * 100) if total_jobs > 0 else 0
+            }
+            
+        except Exception as e:
+            logging.error(f"Error generating job reporting data: {e}")
+            return {}
+    
+    def get_color_coded_events(self, job_type_colors: Dict[str, str] = None) -> List[Dict]:
+        """Get calendar events with color coding by job type"""
+        if not job_type_colors:
+            job_type_colors = {
+                'Drywall Services': '#007bff',      # Blue
+                'Flooring Installation': '#28a745',  # Green
+                'Fence Building': '#ffc107',         # Yellow
+                'General Handyman': '#6c757d',       # Gray
+                'Home Renovation': '#dc3545',        # Red
+                'Maintenance': '#17a2b8',            # Teal
+                'Consultation': '#6f42c1'            # Purple
+            }
+        
+        try:
+            appointments = self._load_appointments()
+            calendar_events = []
+            
+            for appointment in appointments:
+                if appointment.get('block_type') == 'availability_block':
+                    # Staff availability block
+                    event = {
+                        'id': appointment['appointment_id'],
+                        'title': f"🚫 {appointment.get('reason', 'Unavailable')}",
+                        'start': appointment['scheduled_date'],
+                        'end': appointment.get('end_date', appointment['scheduled_date']),
+                        'color': '#6c757d',
+                        'textColor': '#ffffff',
+                        'allDay': True,
+                        'extendedProps': {
+                            'type': 'availability_block',
+                            'staff_id': appointment.get('staff_id'),
+                            'reason': appointment.get('reason')
+                        }
+                    }
+                else:
+                    # Regular job appointment
+                    service_type = appointment.get('service_type', 'General Handyman')
+                    color = job_type_colors.get(service_type, '#6c757d')
+                    
+                    # Adjust color based on status
+                    status = appointment.get('status', 'scheduled')
+                    if status == 'completed':
+                        color = '#28a745'  # Green for completed
+                    elif status == 'cancelled':
+                        color = '#dc3545'  # Red for cancelled
+                    elif status == 'work_in_progress':
+                        color = '#fd7e14'  # Orange for in progress
+                    
+                    event = {
+                        'id': appointment['appointment_id'],
+                        'title': f"{appointment['client_name']} - {service_type}",
+                        'start': f"{appointment['scheduled_date']}T{appointment.get('scheduled_time', '09:00')}",
+                        'end': self._calculate_end_time(
+                            appointment['scheduled_date'],
+                            appointment.get('scheduled_time', '09:00'),
+                            appointment.get('estimated_duration', 120)
+                        ),
+                        'color': color,
+                        'textColor': '#ffffff',
+                        'extendedProps': {
+                            'type': 'job',
+                            'client_id': appointment.get('client_id'),
+                            'job_id': appointment.get('job_id'),
+                            'service_type': service_type,
+                            'status': status,
+                            'assigned_staff': appointment.get('assigned_staff', []),
+                            'priority': appointment.get('priority', 'normal'),
+                            'location': appointment.get('location', ''),
+                            'phone': appointment.get('client_phone', ''),
+                            'notes': appointment.get('notes', '')
+                        }
+                    }
+                
+                calendar_events.append(event)
+            
+            return calendar_events
+            
+        except Exception as e:
+            logging.error(f"Error getting color-coded events: {e}")
+            return []
+    
+    def _calculate_end_time(self, date: str, start_time: str, duration_minutes: int) -> str:
+        """Calculate end time for calendar event"""
+        try:
+            start_datetime = datetime.strptime(f"{date} {start_time}", '%Y-%m-%d %H:%M')
+            end_datetime = start_datetime + timedelta(minutes=duration_minutes)
+            return end_datetime.strftime('%Y-%m-%dT%H:%M')
+        except:
+            return f"{date}T{start_time}"
+    
+    def _update_staff_availability(self, appointment: Dict, staff_ids: List[str]):
+        """Update staff availability tracking"""
+        # This would integrate with a staff availability system
+        # For now, we'll just log the assignment
+        logging.info(f"Assigned staff {staff_ids} to appointment {appointment['appointment_id']}")
+    
     def get_calendar_events(self, start_date: str = None, end_date: str = None) -> List[Dict]:
         """Get appointments formatted for calendar display"""
         if not start_date or not end_date:

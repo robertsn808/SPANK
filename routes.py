@@ -3878,3 +3878,167 @@ def get_client_project_history_api(client_id):
     except Exception as e:
         logging.error(f"Error getting client project history: {e}")
         return jsonify({'error': 'Failed to load project history'}), 500
+
+# Advanced Scheduling API Routes
+@app.route('/api/scheduler/assign-staff/<appointment_id>', methods=['POST'])
+def assign_staff_to_job_api(appointment_id):
+    """Assign staff to specific job"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        staff_ids = data.get('staff_ids', [])
+        team_name = data.get('team_name', '')
+        
+        result = unified_scheduler.assign_job_to_staff(appointment_id, staff_ids, team_name)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error assigning staff to job: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scheduler/block-availability', methods=['POST'])
+def block_staff_availability_api():
+    """Block staff availability for time off or sick days"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        staff_id = data.get('staff_id')
+        start_date = data.get('start_date')
+        end_date = data.get('end_date')
+        reason = data.get('reason', 'Time off')
+        
+        result = unified_scheduler.block_staff_availability(staff_id, start_date, end_date, reason)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error blocking staff availability: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scheduler/staff-schedule/<staff_id>')
+def get_staff_schedule_api(staff_id):
+    """Get schedule for specific staff member"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        days = int(request.args.get('days', 7))
+        schedule = unified_scheduler.get_staff_schedule(staff_id, days)
+        return jsonify(schedule)
+        
+    except Exception as e:
+        logging.error(f"Error getting staff schedule: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scheduler/update-status/<appointment_id>', methods=['POST'])
+def update_job_status_api(appointment_id):
+    """Update job status with workflow tracking"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        status = data.get('status')
+        notes = data.get('notes', '')
+        
+        result = unified_scheduler.update_job_status(appointment_id, status, notes)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error updating job status: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scheduler/add-checklist/<appointment_id>', methods=['POST'])
+def add_job_checklist_api(appointment_id):
+    """Add materials or prep task checklist to job"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        checklist_items = data.get('checklist_items', [])
+        
+        result = unified_scheduler.add_job_checklist(appointment_id, checklist_items)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error adding job checklist: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scheduler/reporting')
+def get_job_reporting_api():
+    """Get comprehensive job reporting data"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        
+        reporting_data = unified_scheduler.get_job_reporting_data(start_date, end_date)
+        return jsonify(reporting_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting job reporting data: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scheduler/color-coded-events')
+def get_color_coded_events_api():
+    """Get calendar events with color coding by job type"""
+    try:
+        events = unified_scheduler.get_color_coded_events()
+        return jsonify(events)
+        
+    except Exception as e:
+        logging.error(f"Error getting color-coded events: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/admin/workflow-dashboard')
+def workflow_management_dashboard():
+    """Comprehensive workflow management dashboard"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get current week appointments
+        week_data = unified_scheduler.get_weekly_schedule()
+        
+        # Get job reporting data for last 30 days
+        reporting_data = unified_scheduler.get_job_reporting_data()
+        
+        # Get staff workload
+        staff_workload = unified_scheduler.get_staff_workload(14)
+        
+        # Get pending reminders
+        reminders_24h = unified_scheduler.get_appointment_reminders(24)
+        reminders_2h = unified_scheduler.get_appointment_reminders(2)
+        
+        # Get overdue jobs
+        appointments = unified_scheduler._load_appointments()
+        hawaii_now = datetime.now(unified_scheduler.hawaii_tz)
+        overdue_jobs = []
+        
+        for appointment in appointments:
+            if appointment.get('status') in ['work_in_progress', 'estimate_sent']:
+                appointment_date = datetime.strptime(appointment['scheduled_date'], '%Y-%m-%d')
+                appointment_date = unified_scheduler.hawaii_tz.localize(appointment_date)
+                
+                # Jobs are overdue if they're past due date and not completed
+                if appointment_date < hawaii_now:
+                    overdue_jobs.append(appointment)
+        
+        return render_template('admin/workflow_dashboard.html',
+                             week_data=week_data,
+                             reporting_data=reporting_data,
+                             staff_workload=staff_workload,
+                             reminders_24h=reminders_24h,
+                             reminders_2h=reminders_2h,
+                             overdue_jobs=overdue_jobs)
+                             
+    except Exception as e:
+        logging.error(f"Error loading workflow dashboard: {e}")
+        flash('Error loading workflow dashboard.', 'error')
+        return redirect(url_for('admin_dashboard'))
