@@ -527,6 +527,56 @@
             loadPreviousNotes();
         });
         
+        // Client editing functions
+        function toggleClientEdit() {
+            const readOnly = document.getElementById('clientReadOnly');
+            const editForm = document.getElementById('clientEditForm');
+            const editBtn = document.getElementById('editClientBtn');
+            
+            if (readOnly.style.display === 'none') {
+                // Cancel edit mode
+                readOnly.style.display = 'block';
+                editForm.style.display = 'none';
+                editBtn.innerHTML = '<i class="fas fa-edit me-1"></i>Edit';
+            } else {
+                // Enter edit mode
+                readOnly.style.display = 'none';
+                editForm.style.display = 'block';
+                editBtn.innerHTML = '<i class="fas fa-times me-1"></i>Cancel';
+            }
+        }
+        
+        function cancelClientEdit() {
+            // Reset form values to original
+            document.getElementById('editName').value = '{{ client.name }}';
+            document.getElementById('editPhone').value = '{{ client.phone }}';
+            document.getElementById('editEmail').value = '{{ client.email }}';
+            document.getElementById('editAddress').value = '{{ client.address }}';
+            
+            // Exit edit mode
+            toggleClientEdit();
+        }
+        
+        function saveClientChanges() {
+            const newName = document.getElementById('editName').value;
+            const newPhone = document.getElementById('editPhone').value;
+            const newEmail = document.getElementById('editEmail').value;
+            const newAddress = document.getElementById('editAddress').value;
+            
+            // Update display
+            document.getElementById('displayName').textContent = newName;
+            document.getElementById('displayPhone').textContent = newPhone;
+            document.getElementById('displayEmail').textContent = newEmail;
+            document.getElementById('displayAddress').textContent = newAddress;
+            
+            // In a real implementation, this would send the data to the server
+            // For now, we'll just show a success message
+            alert('Client information updated successfully!\n\nNote: Changes are saved locally for this session.');
+            
+            // Exit edit mode
+            toggleClientEdit();
+        }
+
         // Enter key support for inputs
         document.getElementById('new-task').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') addTask();
