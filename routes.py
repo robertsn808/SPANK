@@ -1329,7 +1329,7 @@ def add_contact():
         contact_data = {
             'name': request.form['name'],
             'email': request.form['email'],
-            'phone': request.form['phone'],
+            'phone': phone_formatter.format_phone(request.form['phone']),
             'address': request.form.get('address', ''),
             'notes': request.form.get('notes', ''),
             'tags': request.form.get('tags', '').split(',') if request.form.get('tags') else []
@@ -1776,7 +1776,7 @@ def generate_quote_api():
         client_id = data.get('clientId')
         job_id = data.get('jobId')
         customer = data.get('customer')
-        phone = data.get('phone') or data.get('customer_phone')
+        phone = phone_formatter.format_phone(data.get('phone') or data.get('customer_phone'))
         service_type = data.get('serviceType', '')
         price = float(data.get('price', 0))
         
@@ -1976,7 +1976,7 @@ def generate_invoice_api():
             contact_data = {
                 'name': customer,
                 'email': f"{safe_email}@tempmail.com",
-                'phone': '(808) 555-0000',  # Default phone for API invoices
+                'phone': phone_formatter.format_phone('8085550000'),  # Default formatted phone for API invoices
                 'address': '',
                 'notes': f'Created via API for invoice {job_id}' if job_id else 'Created via API for invoice',
                 'tags': ['api_generated', 'invoice_only']

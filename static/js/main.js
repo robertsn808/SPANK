@@ -27,6 +27,7 @@ function initializeApp() {
         // Form enhancements
         initContactFormEnhancements();
         initConsultationFormEnhancements();
+        initPhoneNumberFormatting();
         
         // Admin features (if present)
         initAdminDashboardFeatures();
@@ -686,13 +687,8 @@ function initConsultationFormEnhancements() {
         dateInput.value = nextBusinessDay.toISOString().split('T')[0];
     }
     
-    // Phone number formatting
-    const phoneInput = consultationForm.querySelector('#phone');
-    if (phoneInput) {
-        phoneInput.addEventListener('input', function() {
-            formatPhoneNumber(this);
-        });
-    }
+    // Phone number formatting for all phone inputs
+    initPhoneNumberFormatting();
 }
 
 /**
@@ -719,15 +715,49 @@ function getNextBusinessDay() {
 }
 
 /**
- * Format phone number
+ * Initialize phone number formatting for all phone inputs
+ */
+function initPhoneNumberFormatting() {
+    // Find all phone input fields across the entire application
+    const phoneInputs = document.querySelectorAll('input[type="tel"], input[id*="phone"], input[name*="phone"], input[placeholder*="phone"], input[placeholder*="(808)"]');
+    
+    phoneInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            formatPhoneNumber(this);
+        });
+        
+        // Also format on blur for consistency
+        input.addEventListener('blur', function() {
+            formatPhoneNumber(this);
+        });
+        
+        // Format existing values on page load
+        if (input.value) {
+            formatPhoneNumber(input);
+        }
+    });
+}
+
+/**
+ * Format phone number to (XXX) XXX-XXXX format
  */
 function formatPhoneNumber(input) {
     let value = input.value.replace(/\D/g, '');
-    if (value.length >= 6) {
-        value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
-    } else if (value.length >= 3) {
-        value = value.replace(/(\d{3})(\d{3})/, '($1) $2');
+    
+    // Handle different phone number lengths
+    if (value.length === 11 && value.startsWith('1')) {
+        // Remove leading 1 for US numbers
+        value = value.substring(1);
     }
+    
+    if (value.length >= 10) {
+        value = value.replace(/(\d{3})(\d{3})(\d{4}).*/, '($1) $2-$3');
+    } else if (value.length >= 6) {
+        value = value.replace(/(\d{3})(\d{3})(\d*)/, '($1) $2-$3');
+    } else if (value.length >= 3) {
+        value = value.replace(/(\d{3})(\d*)/, '($1) $2');
+    }
+    
     input.value = value;
 }
 
