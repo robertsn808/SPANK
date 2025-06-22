@@ -34,5 +34,23 @@
         "unit": "job"
       }
     ]
+  },
+  {
+    "id": 3,
+    "contact_id": 2,
+    "service_type": "api_generated",
+    "total_amount": 751.5215311004786,
+    "valid_until": "2025-07-21",
+    "notes": "Auto-generated quote for API invoice",
+    "created_date": "2025-06-21",
+    "status": "pending",
+    "items": [
+      {
+        "description": "Services Rendered",
+        "quantity": 1.0,
+        "unit_price": 751.5215311004786,
+        "unit": "job"
+      }
+    ]
   }
 ]
