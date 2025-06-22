@@ -1704,3 +1704,158 @@ def email_invoice_pdf(invoice_id):
         logging.error(f"Error emailing invoice: {e}")
         flash('Error sending invoice email. Please try again.', 'error')
         return redirect(url_for('invoice_detail', invoice_id=invoice_id))
+
+@app.route('/api/generate-quote', methods=['POST'])
+def generate_quote_api():
+    """API endpoint for generating quotes - compatible with external integrations"""
+    try:
+        # Parse request data
+        data = request.get_json() if request.is_json else request.form
+        
+        client_id = data.get('clientId')
+        job_id = data.get('jobId')
+        customer = data.get('customer')
+        phone = data.get('phone')
+        service_type = data.get('serviceType', '')
+        price = float(data.get('price', 0))
+        
+        # Validate required fields
+        if not all([customer, phone, service_type, price]):
+            return jsonify({'error': 'Missing required fields'}), 400
+        
+        # Check if contact exists or create new one
+        contacts = handyman_storage.get_all_contacts()
+        contact = next((c for c in contacts if c.phone == phone), None)
+        
+        if not contact:
+            # Create new contact
+            # Generate safe email from customer name
+            safe_email = 'customer'
+            if customer and isinstance(customer, str):
+                safe_email = customer.lower().replace(' ', '.')
+            contact_data = {
+                'name': customer,
+                'email': f"{safe_email}@tempmail.com",  # Temporary email
+                'phone': phone,
+                'address': '',
+                'notes': f'Created via API for job {job_id}' if job_id else 'Created via API',
+                'tags': ['api_generated']
+            }
+            contact = handyman_storage.add_contact(contact_data)
+        
+        # Create quote items based on service type
+        from models import QuoteItem
+        
+        # Generate appropriate quote items based on service type and price
+        service_lower = service_type.lower() if service_type else 'general'
+        
+        if service_lower in ['drywall', 'drywall repair']:
+            quote_items = [QuoteItem(
+                description=f"{service_type} Service",
+                quantity=1.0,
+                unit_price=price,
+                unit="job"
+            )]
+        elif service_lower in ['flooring', 'flooring installation']:
+            quote_items = [QuoteItem(
+                description=f"{service_type} Service",
+                quantity=1.0,
+                unit_price=price,
+                unit="sq ft"
+            )]
+        elif service_lower in ['fence', 'fencing']:
+            quote_items = [QuoteItem(
+                description=f"{service_type} Service",
+                quantity=1.0,
+                unit_price=price,
+                unit="linear ft"
+            )]
+        else:
+            quote_items = [QuoteItem(
+                description=f"{service_type} Service",
+                quantity=1.0,
+                unit_price=price,
+                unit="job"
+            )]
+        
+        # Create quote
+        hawaii_time = get_hawaii_time()
+        valid_until = (hawaii_time + timedelta(days=30)).strftime('%Y-%m-%d')
+        
+        quote_data = {
+            'contact_id': contact.id,
+            'service_type': service_type.lower().replace(' ', '_'),
+            'items': quote_items,
+            'total_amount': price,
+            'valid_until': valid_until,
+            'notes': f'Generated via API for job {job_id}' if job_id else 'Generated via API'
+        }
+        
+        quote = handyman_storage.add_quote(quote_data)
+        
+        # Generate PDF
+        from pdf_service import generate_quote_pdf
+        filename = generate_quote_pdf(quote, contact)
+        pdf_path = f"/admin/crm/quotes/{quote.id}/pdf"
+        
+        # Send notification if configured
+        try:
+            notification_service.send_inquiry_alert(
+                'API Quote Generated',
+                contact.name,
+                contact.phone,
+                contact.email,
+                f"Quote Q{quote.id:04d} for {service_type} - ${price:.2f}"
+            )
+        except Exception as e:
+            logging.warning(f"Could not send notification: {e}")
+        
+        return jsonify({
+            'message': 'Quote generated successfully',
+            'quoteId': f"Q{quote.id:04d}",
+            'jobId': job_id,
+            'customer': contact.name,
+            'phone': contact.phone,
+            'serviceType': service_type,
+            'price': price,
+            'total': quote.total_amount * 1.04712,  # Include Hawaii tax
+            'path': pdf_path,
+            'downloadUrl': url_for('download_quote_pdf', quote_id=quote.id, _external=True),
+            'viewUrl': url_for('quote_detail', quote_id=quote.id, _external=True),
+            'date': hawaii_time.strftime('%m/%d/%Y')
+        }), 201
+        
+    except Exception as e:
+        logging.error(f"Error generating quote via API: {e}")
+        return jsonify({'error': 'Failed to generate quote', 'details': str(e)}), 500
+
+@app.route('/api/download-quote/<quote_id>')
+def download_quote_api(quote_id):
+    """API endpoint for downloading quote PDFs"""
+    try:
+        # Handle both numeric and formatted quote IDs
+        if quote_id.startswith('Q'):
+            numeric_id = int(quote_id[1:])
+        else:
+            numeric_id = int(quote_id)
+        
+        quotes = handyman_storage.get_all_quotes()
+        quote = next((q for q in quotes if q.id == numeric_id), None)
+        
+        if not quote:
+            return jsonify({'error': 'Quote not found'}), 404
+        
+        contact = handyman_storage.get_contact_by_id(quote.contact_id)
+        if not contact:
+            return jsonify({'error': 'Contact not found'}), 404
+        
+        # Generate PDF if it doesn't exist
+        from pdf_service import generate_quote_pdf
+        filename = generate_quote_pdf(quote, contact)
+        
+        from flask import send_file
+        return send_file(f"static/pdfs/{filename}", as_attachment=True, download_name=filename)
+        
+    except Exception as e:
+        logging.error(f"Error downloading quote via API: {e}")
+        return jsonify({'error': 'Failed to download quote', 'details': str(e)}), 500
