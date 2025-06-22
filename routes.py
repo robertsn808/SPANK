@@ -3189,7 +3189,7 @@ def checklist_management():
                          completion_status=completion_status)
 
 @app.route('/admin/checklist/create/<job_id>', methods=['POST'])
-def create_job_checklist():
+def create_job_checklist(job_id):
     """Create checklist for a job"""
     if not session.get('admin_logged_in'):
         return jsonify({'error': 'Unauthorized'}), 401
@@ -3212,7 +3212,7 @@ def create_job_checklist():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/checklist/<checklist_id>/task/<task_id>/update', methods=['POST'])
-def update_checklist_task():
+def update_checklist_task(checklist_id, task_id):
     """Update checklist task status"""
     if not session.get('portal_authenticated') and not session.get('admin_logged_in'):
         return jsonify({'error': 'Unauthorized'}), 401
@@ -3233,7 +3233,7 @@ def update_checklist_task():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/checklist/<checklist_id>/add-task', methods=['POST'])
-def add_custom_checklist_task():
+def add_custom_checklist_task(checklist_id):
     """Add custom task to checklist"""
     if not session.get('portal_authenticated') and not session.get('admin_logged_in'):
         return jsonify({'error': 'Unauthorized'}), 401
@@ -3280,7 +3280,7 @@ def get_job_checklist():
 # ===============================
 
 @app.route('/api/job/<job_id>/complete', methods=['POST'])
-def complete_job():
+def complete_job(job_id):
     """Mark job as completed with full workflow"""
     if not session.get('portal_authenticated') and not session.get('admin_logged_in'):
         return jsonify({'error': 'Unauthorized'}), 401
