@@ -1,7 +1,7 @@
 import json
 import os
 import logging
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, List
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +11,7 @@ class AuthService:
     def __init__(self):
         self.clients_file = 'data/clients.json'
         self.staff_pin = "Money$$"  # Staff authentication PIN
-        self.clients_cache = None
+        self.clients_cache: List[Dict] = []
         self.load_clients()
     
     def load_clients(self):
@@ -73,10 +73,14 @@ class AuthService:
                 self.load_clients()
             
             # Check if client already exists
-            existing = self.find_client(client_data.get('clientId'), client_data.get('jobId'))
-            if existing:
-                logger.warning(f"Client {client_data.get('clientId')}/{client_data.get('jobId')} already exists")
-                return False
+            client_id = client_data.get('clientId')
+            job_id = client_data.get('jobId')
+            
+            if client_id and job_id:
+                existing = self.find_client(client_id, job_id)
+                if existing:
+                    logger.warning(f"Client {client_id}/{job_id} already exists")
+                    return False
             
             self.clients_cache.append(client_data)
             
@@ -84,14 +88,14 @@ class AuthService:
             with open(self.clients_file, 'w') as f:
                 json.dump(self.clients_cache, f, indent=2)
             
-            logger.info(f"Added new client: {client_data.get('clientId')}/{client_data.get('jobId')}")
+            logger.info(f"Added new client: {client_id}/{job_id}")
             return True
             
         except Exception as e:
             logger.error(f"Error adding client: {e}")
             return False
     
-    def get_all_clients(self) -> list:
+    def get_all_clients(self) -> List[Dict]:
         """Get all clients for admin purposes"""
         if not self.clients_cache:
             self.load_clients()
