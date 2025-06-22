@@ -207,6 +207,87 @@
                 </div>
             </div>
 
+            <!-- Manual Notification System -->
+            <div class="col-xl-3 col-lg-4">
+                <div class="card border-0 shadow-lg h-100">
+                    <div class="card-header bg-gradient-warning text-white p-4">
+                        <h4 class="mb-0 text-white">
+                            <i class="fas fa-bell me-2"></i>Manual Notifications
+                            {% if admin_notifications %}
+                            <span class="badge bg-danger ms-2">{{ admin_notifications|selectattr('status', 'equalto', 'pending')|list|length }}</span>
+                            {% endif %}
+                        </h4>
+                    </div>
+                    <div class="card-body p-0" style="max-height: 500px; overflow-y: auto;">
+                        {% if admin_notifications %}
+                            {% for notification in admin_notifications %}
+                                {% if notification.status == 'pending' %}
+                                <div class="notification-item border-bottom p-3 {% if notification.type == 'spank_buck_reward' %}bg-light-success{% elif notification.type == 'new_inquiry' %}bg-light-primary{% else %}bg-light-info{% endif %}">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="notification-type">
+                                            {% if notification.type == 'spank_buck_reward' %}
+                                                <i class="fas fa-dollar-sign text-success me-2"></i>
+                                                <span class="badge bg-success">SPANK Buck Reward</span>
+                                            {% elif notification.type == 'new_inquiry' %}
+                                                <i class="fas fa-envelope text-primary me-2"></i>
+                                                <span class="badge bg-primary">New Inquiry</span>
+                                            {% elif notification.type == 'photo_upload' %}
+                                                <i class="fas fa-camera text-info me-2"></i>
+                                                <span class="badge bg-info">Photo Upload</span>
+                                            {% endif %}
+                                        </div>
+                                        <small class="text-muted">
+                                            {{ notification.timestamp.strftime('%m/%d %I:%M%p') if notification.timestamp else 'Now' }}
+                                        </small>
+                                    </div>
+                                    
+                                    <div class="notification-details mb-3">
+                                        <div class="fw-bold text-dark mb-1">{{ notification.customer_name }}</div>
+                                        
+                                        {% if notification.type == 'spank_buck_reward' %}
+                                            <div class="text-success fw-bold mb-1">
+                                                Send ${{ notification.amount }} SPANK Bucks
+                                            </div>
+                                        {% endif %}
+                                        
+                                        <div class="small text-muted mb-1">
+                                            <i class="fas fa-phone me-1"></i>{{ notification.phone_number }}
+                                        </div>
+                                        <div class="small text-muted mb-2">
+                                            <i class="fas fa-envelope me-1"></i>{{ notification.email }}
+                                        </div>
+                                        
+                                        <div class="notification-reason small">
+                                            <strong>Reason:</strong> {{ notification.reason }}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="notification-actions d-flex gap-2">
+                                        <button class="btn btn-success btn-sm flex-fill" 
+                                                onclick="markNotificationComplete({{ notification.id }})">
+                                            <i class="fas fa-check me-1"></i>Mark Complete
+                                        </button>
+                                        {% if notification.type == 'spank_buck_reward' %}
+                                        <button class="btn btn-outline-info btn-sm" 
+                                                onclick="copyRewardDetails({{ notification.id }})">
+                                            <i class="fas fa-copy me-1"></i>Copy
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5 text-muted">
+                                <i class="fas fa-check-circle fa-3x mb-3 opacity-50"></i>
+                                <div>No pending notifications</div>
+                                <small>All notifications have been completed</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
             <!-- Enhanced Quick Actions Panel -->
             <div class="col-xl-3 col-lg-4">
                 <div class="card border-0 shadow-lg h-100">
@@ -1591,6 +1672,102 @@ function addRecentActivity(activity, time) {
         const currentCount = parseInt(engagementElement.textContent);
         engagementElement.textContent = currentCount + Math.floor(Math.random() * 10) + 5;
     }
+}
+
+// Manual Notification System Functions
+function markNotificationComplete(notificationId) {
+    if (confirm('Mark this notification as complete?')) {
+        fetch('/admin/notifications/' + notificationId + '/complete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove notification from display
+                const notificationElement = document.querySelector(`[onclick="markNotificationComplete(${notificationId})"]`).closest('.notification-item');
+                notificationElement.style.transition = 'opacity 0.3s ease';
+                notificationElement.style.opacity = '0';
+                setTimeout(() => {
+                    notificationElement.remove();
+                    // Update badge count
+                    updateNotificationBadge();
+                }, 300);
+                
+                // Show success message
+                showToast('Notification marked as complete', 'success');
+            } else {
+                showToast('Error updating notification', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error updating notification', 'error');
+        });
+    }
+}
+
+function copyRewardDetails(notificationId) {
+    // Find the notification element
+    const notificationElement = document.querySelector(`[onclick="copyRewardDetails(${notificationId})"]`).closest('.notification-item');
+    const customerName = notificationElement.querySelector('.fw-bold.text-dark').textContent;
+    const amount = notificationElement.querySelector('.text-success.fw-bold').textContent;
+    const phone = notificationElement.querySelector('.fa-phone').nextSibling.textContent;
+    const email = notificationElement.querySelector('.fa-envelope').nextSibling.textContent;
+    const reason = notificationElement.querySelector('.notification-reason').textContent.replace('Reason:', '').trim();
+    
+    const rewardText = `SPANK Buck Reward Details:
+Customer: ${customerName}
+Amount: ${amount}
+Phone: ${phone}
+Email: ${email}
+Reason: ${reason}
+
+Please send this reward manually via email or SMS.`;
+    
+    navigator.clipboard.writeText(rewardText).then(() => {
+        showToast('Reward details copied to clipboard', 'success');
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        showToast('Failed to copy details', 'error');
+    });
+}
+
+function updateNotificationBadge() {
+    const badge = document.querySelector('.card-header .badge');
+    const notificationItems = document.querySelectorAll('.notification-item');
+    const count = notificationItems.length;
+    
+    if (badge) {
+        if (count === 0) {
+            badge.remove();
+        } else {
+            badge.textContent = count;
+        }
+    }
+}
+
+function showToast(message, type = 'info') {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 3000);
 }
 
 // Job Opportunities Functions

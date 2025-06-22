@@ -6,12 +6,15 @@ from flask import render_template, request, redirect, url_for, session, flash, j
 from app import app
 from models import HandymanStorage
 from ai_service import ai_service
-from notification_service import notification_service, NotificationService
+from notification_service import NotificationService
 from auth_service import auth_service
 import pytz
 
 # Initialize handyman storage
 handyman_storage = HandymanStorage()
+
+# Initialize notification service
+notification_service = NotificationService()
 
 # Additional storage for appointments and staff
 appointments = []
