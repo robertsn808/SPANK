@@ -141,3 +141,45 @@ class StorageService:
 
 # Global storage instance
 storage = StorageService()
+import json
+import os
+from datetime import datetime
+import logging
+
+class StorageService:
+    """Basic storage service for the application"""
+    
+    def __init__(self):
+        self.data_dir = "data"
+        self.ensure_data_directory()
+    
+    def ensure_data_directory(self):
+        """Ensure data directory exists"""
+        if not os.path.exists(self.data_dir):
+            os.makedirs(self.data_dir)
+    
+    def load_data(self, filename):
+        """Load data from JSON file"""
+        filepath = os.path.join(self.data_dir, filename)
+        try:
+            if os.path.exists(filepath):
+                with open(filepath, 'r') as f:
+                    return json.load(f)
+            return []
+        except Exception as e:
+            logging.error(f"Error loading {filename}: {e}")
+            return []
+    
+    def save_data(self, filename, data):
+        """Save data to JSON file"""
+        filepath = os.path.join(self.data_dir, filename)
+        try:
+            with open(filepath, 'w') as f:
+                json.dump(data, f, indent=2, default=str)
+            return True
+        except Exception as e:
+            logging.error(f"Error saving {filename}: {e}")
+            return False
+
+# Initialize storage service
+storage_service = StorageService()

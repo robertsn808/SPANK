@@ -2,20 +2,49 @@ import os
 import json
 import logging
 from datetime import datetime, timedelta
-from flask import render_template, request, redirect, url_for, session, flash, jsonify
-from app import app
-from models import HandymanStorage
-from ai_service import ai_service
-from notification_service import NotificationService
-from auth_service import auth_service
-from phone_formatter import phone_formatter
+import os
+import json
+import logging
+from datetime import datetime, timedelta
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_file, abort
+from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
+import uuid
 import pytz
 
-# Initialize handyman storage
-handyman_storage = HandymanStorage()
+# Import services after Flask setup to avoid circular imports
+try:
+    from models import HandymanStorage
+    from ai_service import ai_service
+    from notification_service import NotificationService
+    from auth_service import auth_service
+    from phone_formatter import phone_formatter
+except ImportError as e:
+    logging.error(f"Import error in routes.py: {e}")
+    # Create fallback objects to prevent crashes
+    class FallbackService:
+        def __getattr__(self, name):
+            return lambda *args, **kwargs: None
+    
+    HandymanStorage = FallbackService
+    ai_service = FallbackService()
+    NotificationService = FallbackService
+    auth_service = FallbackService()
+    phone_formatter = FallbackService()
 
-# Initialize notification service
-notification_service = NotificationService()
+# Initialize services with proper error handling
+try:
+    handyman_storage = HandymanStorage()
+    notification_service = NotificationService()
+except Exception as e:
+    logging.error(f"Service initialization error: {e}")
+    handyman_storage = None
+    notification_service = None
+
+# Get app instance after imports to avoid circular import
+def get_app():
+    from app import app
+    return app
 
 # Additional storage for appointments and staff
 appointments = []
@@ -53,6 +82,9 @@ def get_hawaii_time():
     hawaii_tz = pytz.timezone('Pacific/Honolulu')
     utc_now = datetime.utcnow().replace(tzinfo=pytz.UTC)
     return utc_now.astimezone(hawaii_tz)
+
+# Import app here to register routes
+from app import app
 
 @app.route('/')
 def index():
@@ -915,29 +947,18 @@ def project_tracking():
                          total_active_value=total_active_value,
                          upcoming_deadlines=upcoming_deadlines)
 
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_file, abort
-from werkzeug.utils import secure_filename
-from werkzeug.security import check_password_hash, generate_password_hash
-import os
-import json
-import uuid
-from datetime import datetime, timedelta
-import pytz
-from models import Contact, Job, Quote, Invoice
-# PDF service functions imported directly
-from pdf_service import generate_quote_pdf, generate_invoice_pdf
-from upload_service import photo_service
-from notification_service import notification_service
-from analytics_service import analytics_service
-from performance_monitor import performance_monitor
-from business_intelligence import business_intelligence
-from ml_analytics import ml_analytics
-from ai_service import ai_service
-from auth_service import auth_service
-import logging
-
-# Get the app instance
-from app import app
+# Additional imports for advanced features
+try:
+    from models import Contact, Job, Quote, Invoice
+    from pdf_service import generate_quote_pdf, generate_invoice_pdf
+    from upload_service import photo_service
+    from analytics_service import analytics_service
+    from performance_monitor import performance_monitor
+    from business_intelligence import business_intelligence
+    from ml_analytics import ml_analytics
+except ImportError as e:
+    logging.warning(f"Advanced feature import failed: {e}")
+    # Continue with basic functionality
 
 @app.route('/admin/business-intelligence')
 def business_intelligence_dashboard():
