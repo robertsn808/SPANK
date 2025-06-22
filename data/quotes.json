@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": 1,
+    "contact_id": 1,
+    "service_type": "drywall_services",
+    "total_amount": 310.0,
+    "valid_until": "2025-07-22",
+    "notes": "Generated via API",
+    "created_date": "2025-06-22",
+    "status": "pending",
+    "items": [
+      {
+        "description": "drywall_services Service",
+        "quantity": 1.0,
+        "unit_price": 310.0,
+        "unit": "job"
+      }
+    ]
+  }
+]
