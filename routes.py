@@ -3037,6 +3037,287 @@ def staff_checkin(staff_id, job_id):
     return redirect(url_for('staff_member_portal', staff_id=staff_id))
 
 # ===============================
+# INVENTORY MANAGEMENT SYSTEM
+# ===============================
+
+@app.route('/admin/inventory')
+def inventory_dashboard():
+    """Comprehensive inventory management dashboard"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    from inventory_service import inventory_service
+    
+    inventory_items = inventory_service.get_all_inventory()
+    inventory_summary = inventory_service.get_inventory_summary()
+    low_stock_items = inventory_service.get_low_stock_items()
+    
+    return render_template('admin/inventory_dashboard.html',
+                         inventory_items=inventory_items,
+                         inventory_summary=inventory_summary,
+                         low_stock_items=low_stock_items)
+
+@app.route('/admin/inventory/add', methods=['POST'])
+def add_inventory_item():
+    """Add new inventory item"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    from inventory_service import inventory_service
+    
+    try:
+        item_data = {
+            'name': request.form.get('name'),
+            'category': request.form.get('category', 'General'),
+            'description': request.form.get('description', ''),
+            'unit': request.form.get('unit', 'each'),
+            'current_stock': request.form.get('current_stock', 0),
+            'minimum_stock': request.form.get('minimum_stock', 5),
+            'unit_cost': request.form.get('unit_cost', 0.0),
+            'supplier': request.form.get('supplier', ''),
+            'location': request.form.get('location', 'Main Storage')
+        }
+        
+        new_item = inventory_service.add_inventory_item(item_data)
+        flash(f'Inventory item "{new_item["name"]}" added successfully!', 'success')
+        
+    except Exception as e:
+        flash(f'Error adding inventory item: {str(e)}', 'error')
+    
+    return redirect(url_for('inventory_dashboard'))
+
+@app.route('/admin/inventory/update', methods=['POST'])
+def update_inventory_item():
+    """Update inventory item"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    from inventory_service import inventory_service
+    
+    try:
+        item_id = request.form.get('item_id')
+        updates = {
+            'name': request.form.get('name'),
+            'category': request.form.get('category'),
+            'description': request.form.get('description'),
+            'unit': request.form.get('unit'),
+            'current_stock': int(request.form.get('current_stock', 0)),
+            'minimum_stock': int(request.form.get('minimum_stock', 5)),
+            'unit_cost': float(request.form.get('unit_cost', 0.0)),
+            'supplier': request.form.get('supplier'),
+            'location': request.form.get('location'),
+            'status': request.form.get('status', 'active')
+        }
+        
+        inventory_service.update_inventory_item(item_id, updates)
+        flash('Inventory item updated successfully!', 'success')
+        
+    except Exception as e:
+        flash(f'Error updating inventory item: {str(e)}', 'error')
+    
+    return redirect(url_for('inventory_dashboard'))
+
+@app.route('/api/materials/log/<job_id>', methods=['POST'])
+def log_job_materials():
+    """Log materials used for a job"""
+    if not session.get('portal_authenticated'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    from inventory_service import inventory_service
+    
+    try:
+        data = request.get_json()
+        materials_used = data.get('materials', [])
+        
+        if not materials_used:
+            return jsonify({'error': 'No materials provided'}), 400
+        
+        usage_record = inventory_service.log_material_usage(job_id, materials_used)
+        
+        # Add note to job about materials logged
+        handyman_storage.add_job_note(job_id, f'Materials logged: {len(materials_used)} items, Total cost: ${usage_record["total_cost"]:.2f}')
+        
+        return jsonify({
+            'success': True,
+            'usage_id': usage_record['usage_id'],
+            'total_cost': usage_record['total_cost'],
+            'message': 'Materials logged successfully'
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/job/<job_id>/materials')
+def get_job_materials():
+    """Get materials used for specific job"""
+    if not session.get('portal_authenticated') and not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    from inventory_service import inventory_service
+    
+    try:
+        materials = inventory_service.get_materials_by_job(job_id)
+        cost_analysis = inventory_service.get_job_cost_analysis(job_id)
+        
+        return jsonify({
+            'materials': materials,
+            'cost_analysis': cost_analysis
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ===============================
+# CHECKLIST MANAGEMENT SYSTEM
+# ===============================
+
+@app.route('/admin/checklists')
+def checklist_management():
+    """Checklist management dashboard"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    from checklist_service import checklist_service
+    
+    all_checklists = checklist_service.get_all_checklists()
+    templates = checklist_service.get_checklist_templates()
+    completion_status = checklist_service.get_jobs_by_completion_status()
+    
+    return render_template('admin/checklist_management.html',
+                         checklists=all_checklists,
+                         templates=templates,
+                         completion_status=completion_status)
+
+@app.route('/admin/checklist/create/<job_id>', methods=['POST'])
+def create_job_checklist():
+    """Create checklist for a job"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    from checklist_service import checklist_service
+    
+    try:
+        service_type = request.form.get('service_type', 'General')
+        custom_tasks = request.form.getlist('custom_tasks')
+        
+        # Filter out empty custom tasks
+        custom_tasks = [task.strip() for task in custom_tasks if task.strip()]
+        
+        checklist = checklist_service.create_job_checklist(job_id, service_type, custom_tasks)
+        
+        flash(f'Checklist created for job {job_id}', 'success')
+        return jsonify({'success': True, 'checklist_id': checklist['checklist_id']})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/checklist/<checklist_id>/task/<task_id>/update', methods=['POST'])
+def update_checklist_task():
+    """Update checklist task status"""
+    if not session.get('portal_authenticated') and not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    from checklist_service import checklist_service
+    
+    try:
+        data = request.get_json()
+        completed = data.get('completed', False)
+        completed_by = data.get('completed_by', 'Staff')
+        notes = data.get('notes', '')
+        
+        checklist_service.update_task_status(checklist_id, task_id, completed, completed_by, notes)
+        
+        return jsonify({'success': True, 'message': 'Task updated successfully'})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/checklist/<checklist_id>/add-task', methods=['POST'])
+def add_custom_checklist_task():
+    """Add custom task to checklist"""
+    if not session.get('portal_authenticated') and not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    from checklist_service import checklist_service
+    
+    try:
+        data = request.get_json()
+        task_description = data.get('task_description', '').strip()
+        required = data.get('required', False)
+        
+        if not task_description:
+            return jsonify({'error': 'Task description is required'}), 400
+        
+        checklist_service.add_custom_task(checklist_id, task_description, required)
+        
+        return jsonify({'success': True, 'message': 'Custom task added successfully'})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/job/<job_id>/checklist')
+def get_job_checklist():
+    """Get checklist for specific job"""
+    if not session.get('portal_authenticated') and not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    from checklist_service import checklist_service
+    
+    try:
+        checklist = checklist_service.get_checklist_by_job(job_id)
+        completion_summary = checklist_service.get_completion_summary(job_id)
+        
+        return jsonify({
+            'checklist': checklist,
+            'completion_summary': completion_summary
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ===============================
+# JOB COMPLETION WORKFLOW
+# ===============================
+
+@app.route('/api/job/<job_id>/complete', methods=['POST'])
+def complete_job():
+    """Mark job as completed with full workflow"""
+    if not session.get('portal_authenticated') and not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    from checklist_service import checklist_service
+    from inventory_service import inventory_service
+    
+    try:
+        # Get completion data
+        completion_summary = checklist_service.get_completion_summary(job_id)
+        cost_analysis = inventory_service.get_job_cost_analysis(job_id)
+        
+        # Check if all required tasks are completed
+        if completion_summary['required_remaining'] > 0:
+            return jsonify({
+                'error': f'Cannot complete job. {completion_summary["required_remaining"]} required tasks remaining.',
+                'required_remaining': completion_summary['required_remaining']
+            }), 400
+        
+        # Update job status in CRM
+        handyman_storage.update_job_status(job_id, 'completed')
+        
+        # Add completion note
+        completion_note = f'Job completed. Checklist: {completion_summary["completion_percentage"]}% complete. Material cost: ${cost_analysis["total_material_cost"]}'
+        handyman_storage.add_job_note(job_id, completion_note)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Job marked as completed successfully',
+            'completion_summary': completion_summary,
+            'cost_analysis': cost_analysis
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ===============================
 # CALENDAR API ENDPOINTS
 # ===============================
 
