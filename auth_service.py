@@ -38,7 +38,7 @@ class AuthService:
                 return client
         return None
     
-    def authenticate(self, client_id: str, job_id: str, staff_pin: str = None) -> Tuple[bool, Optional[Dict], str]:
+    def authenticate(self, client_id: str, job_id: str, staff_pin: Optional[str] = None) -> Tuple[bool, Optional[Dict], str]:
         """
         Authenticate user and determine access level
         
