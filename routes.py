@@ -4186,3 +4186,143 @@ def get_job_tracking_reporting():
     except Exception as e:
         logging.error(f"Error getting reporting data: {e}")
         return jsonify({'error': str(e)}), 500
+
+# Financial Reporting API Routes
+@app.route('/admin/financial-reports')
+def financial_reports_dashboard():
+    """Financial reporting dashboard with P&L, job costing, and tax reports"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from financial_reporting_service import financial_reporting_service
+        
+        # Get current year data for overview
+        current_year = datetime.now().year
+        start_date = f"{current_year}-01-01"
+        end_date = f"{current_year}-12-31"
+        
+        # Generate key reports
+        profit_loss = financial_reporting_service.generate_profit_loss_statement(start_date, end_date)
+        invoice_report = financial_reporting_service.generate_invoice_report()
+        client_summary = financial_reporting_service.generate_client_payment_summary()
+        tax_summary = financial_reporting_service.generate_tax_summary_report(current_year)
+        
+        return render_template('admin/financial_reports_dashboard.html',
+                             profit_loss=profit_loss,
+                             invoice_report=invoice_report,
+                             client_summary=client_summary,
+                             tax_summary=tax_summary,
+                             current_year=current_year)
+                             
+    except Exception as e:
+        logging.error(f"Error loading financial reports dashboard: {e}")
+        flash('Error loading financial reports dashboard.', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/api/financial-reports/profit-loss')
+def generate_profit_loss_api():
+    """Generate profit and loss statement"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from financial_reporting_service import financial_reporting_service
+        
+        start_date = request.args.get('start_date', f"{datetime.now().year}-01-01")
+        end_date = request.args.get('end_date', f"{datetime.now().year}-12-31")
+        
+        result = financial_reporting_service.generate_profit_loss_statement(start_date, end_date)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error generating P&L statement: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/financial-reports/job-costing')
+def generate_job_costing_api():
+    """Generate job costing report"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from financial_reporting_service import financial_reporting_service
+        
+        job_id = request.args.get('job_id')
+        result = financial_reporting_service.generate_job_costing_report(job_id)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error generating job costing report: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/financial-reports/invoice-report')
+def generate_invoice_report_api():
+    """Generate invoice status and payment tracking report"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from financial_reporting_service import financial_reporting_service
+        
+        status_filter = request.args.get('status')
+        result = financial_reporting_service.generate_invoice_report(status_filter)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error generating invoice report: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/financial-reports/client-payments')
+def generate_client_payment_summary_api():
+    """Generate client payment summary report"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from financial_reporting_service import financial_reporting_service
+        
+        client_filter = request.args.get('client')
+        result = financial_reporting_service.generate_client_payment_summary(client_filter)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error generating client payment summary: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/financial-reports/materials')
+def generate_materials_report_api():
+    """Generate materials and supplies report"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from financial_reporting_service import financial_reporting_service
+        
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        
+        date_range = (start_date, end_date) if start_date and end_date else None
+        result = financial_reporting_service.generate_materials_report(date_range)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error generating materials report: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/financial-reports/tax-summary')
+def generate_tax_summary_api():
+    """Generate tax summary report"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from financial_reporting_service import financial_reporting_service
+        
+        tax_year = int(request.args.get('year', datetime.now().year))
+        result = financial_reporting_service.generate_tax_summary_report(tax_year)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error generating tax summary report: {e}")
+        return jsonify({'error': str(e)}), 500
