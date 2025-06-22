@@ -470,6 +470,7 @@ class HandymanStorage:
         """Save invoices to JSON file"""
         try:
             import os
+            import json
             os.makedirs('data', exist_ok=True)
             
             invoices_data = []
@@ -662,7 +663,7 @@ class AdminNotification:
 
 class Contact:
     def __init__(self, name, email, phone, address=None, notes=None, tags=None, created_date=None):
-        self.id = None  # Will be set by storage
+        self.id = 0  # Will be set by storage
         self.name = name
         self.email = email
         self.phone = phone
@@ -678,7 +679,8 @@ class Contact:
 
 class Quote:
     def __init__(self, contact_id, service_type, items, total_amount, valid_until, notes=None):
-        self.id = None  # Will be set by storage
+        self.id = 0  # Will be set by storage
+        self.quote_number = ""  # Will be set by storage
         self.contact_id = contact_id
         self.service_type = service_type  # 'drywall', 'flooring', 'fencing', 'general'
         self.items = items  # List of quote items
@@ -699,7 +701,7 @@ class QuoteItem:
 
 class Invoice:
     def __init__(self, contact_id, quote_id, items, subtotal, tax_rate=0.04712, payment_terms="Net 30"):
-        self.id = None  # Will be set by storage
+        self.id = 0  # Will be set by storage
         self.contact_id = contact_id
         self.quote_id = quote_id
         self.items = items
@@ -718,7 +720,7 @@ class Invoice:
 
 class Job:
     def __init__(self, contact_id, quote_id, scheduled_date, crew_members=None, notes=None):
-        self.id = None  # Will be set by storage
+        self.id = 0  # Will be set by storage
         self.contact_id = contact_id
         self.quote_id = quote_id
         self.scheduled_date = scheduled_date
