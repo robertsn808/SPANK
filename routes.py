@@ -2479,6 +2479,110 @@ def mark_invoice_paid():
         logging.error(f"Error marking invoice as paid: {e}")
         return jsonify({'error': f'Failed to mark invoice as paid: {str(e)}'}), 500
 
+@app.route('/api/convert-quote-to-invoice', methods=['POST'])
+def convert_quote_to_invoice():
+    """Convert a quote to an invoice with workflow automation"""
+    try:
+        data = request.get_json()
+        quote_id = data.get('quote_id')
+        
+        if not quote_id:
+            return jsonify({'error': 'Quote ID is required'}), 400
+        
+        # Load quotes
+        quotes = []
+        if os.path.exists('data/quotes.json'):
+            with open('data/quotes.json', 'r') as f:
+                quotes = json.load(f)
+        
+        # Find the quote
+        quote = None
+        for q in quotes:
+            if q['id'] == quote_id:
+                quote = q
+                break
+        
+        if not quote:
+            return jsonify({'error': f'Quote {quote_id} not found'}), 404
+        
+        if quote.get('status') != 'pending':
+            return jsonify({'error': f'Quote {quote_id} is not in pending status'}), 400
+        
+        # Generate invoice ID
+        existing_invoices = []
+        if os.path.exists('data/invoices.json'):
+            with open('data/invoices.json', 'r') as f:
+                existing_invoices = json.load(f)
+        
+        invoice_id = f"I{datetime.now().strftime('%Y')}-{len(existing_invoices) + 1:04d}"
+        
+        # Create invoice from quote
+        invoice_data = {
+            'id': invoice_id,
+            'quote_id': quote_id,
+            'contact_id': quote.get('contact_id'),
+            'customer_name': quote.get('customer_name'),
+            'customer_phone': quote.get('customer_phone'),
+            'customer_address': quote.get('customer_address'),
+            'service_type': quote.get('service_type'),
+            'items': quote.get('items', []),
+            'subtotal': quote.get('subtotal'),
+            'total_discount': quote.get('total_discount', 0),
+            'total_tax': quote.get('total_tax'),
+            'total_amount': quote.get('total_amount'),
+            'status': 'pending',
+            'payment_terms': 'Net 30',
+            'due_date': (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d'),
+            'created_date': datetime.now().strftime('%Y-%m-%d'),
+            'created_by': 'Admin',
+            'notes': f'Generated from quote {quote_id}'
+        }
+        
+        # Load and update invoices
+        invoices = []
+        if os.path.exists('data/invoices.json'):
+            with open('data/invoices.json', 'r') as f:
+                invoices = json.load(f)
+        
+        invoices.append(invoice_data)
+        
+        # Save invoices
+        os.makedirs('data', exist_ok=True)
+        with open('data/invoices.json', 'w') as f:
+            json.dump(invoices, f, indent=2)
+        
+        # Update quote status
+        quote['status'] = 'converted'
+        quote['converted_to_invoice'] = invoice_id
+        quote['converted_date'] = datetime.now().isoformat()
+        
+        # Save updated quotes
+        with open('data/quotes.json', 'w') as f:
+            json.dump(quotes, f, indent=2)
+        
+        # Trigger workflow automation
+        try:
+            from workflow_automation import WorkflowAutomation
+            workflow = WorkflowAutomation()
+            
+            workflow_result = workflow.process_invoice_generation(invoice_data)
+            
+        except Exception as workflow_error:
+            logging.warning(f"Workflow automation error: {workflow_error}")
+            workflow_result = {'status_changed': False, 'message': 'Workflow automation unavailable'}
+        
+        return jsonify({
+            'success': True,
+            'invoice_id': invoice_id,
+            'quote_id': quote_id,
+            'message': f'Quote {quote_id} successfully converted to invoice {invoice_id}',
+            'workflow_update': workflow_result
+        })
+        
+    except Exception as e:
+        logging.error(f"Error converting quote to invoice: {e}")
+        return jsonify({'error': f'Failed to convert quote: {str(e)}'}), 500
+
 @app.route('/api/invoices')
 def api_invoices():
     """API endpoint to get all invoices with payment status"""

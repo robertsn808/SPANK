@@ -214,10 +214,20 @@
                                         <td>${{ "{:,.2f}".format(quote.total_amount) }}</td>
                                         <td>{{ quote.valid_until }}</td>
                                         <td>
-                                            <a href="{{ url_for('quote_detail', quote_id=quote.id) }}" 
-                                               class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ url_for('quote_detail', quote_id=quote.id) }}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-success convert-to-invoice-btn"
+                                                        data-quote-id="{{ quote.id }}"
+                                                        data-customer-name="{{ contact.name if contact else 'Unknown' }}"
+                                                        data-amount="{{ quote.total_amount }}"
+                                                        title="Convert to Invoice">
+                                                    <i class="fas fa-arrow-right"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -343,4 +353,108 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Convert to Invoice functionality
+    document.querySelectorAll('.convert-to-invoice-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const quoteId = this.dataset.quoteId;
+            const customerName = this.dataset.customerName;
+            const amount = this.dataset.amount;
+            
+            // Use confirmation modal for conversion
+            if (typeof confirmAction === 'function') {
+                confirmAction({
+                    title: 'Convert Quote to Invoice',
+                    message: `Convert quote ${quoteId} for ${customerName} ($${amount}) to an invoice?`,
+                    details: 'This will create an invoice and update the quote status. The customer will be notified.',
+                    confirmText: 'Convert to Invoice',
+                    confirmClass: 'btn-success',
+                    icon: 'fas fa-file-invoice text-success',
+                    onConfirm: () => convertQuoteToInvoice(quoteId, customerName, amount)
+                });
+            } else {
+                // Fallback confirmation
+                if (confirm(`Convert quote ${quoteId} for ${customerName} to an invoice?`)) {
+                    convertQuoteToInvoice(quoteId, customerName, amount);
+                }
+            }
+        });
+    });
+    
+    function convertQuoteToInvoice(quoteId, customerName, amount) {
+        // Show loading toast
+        const loadingToast = window.toast ? 
+            window.toast.loading(`Converting quote ${quoteId} to invoice...`) :
+            null;
+        
+        // Make API request to convert quote
+        fetch('/api/convert-quote-to-invoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                quote_id: quoteId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Hide loading toast
+            if (loadingToast && bootstrap.Toast.getInstance(loadingToast)) {
+                bootstrap.Toast.getInstance(loadingToast).hide();
+            }
+            
+            if (data.success) {
+                // Show success toast with action buttons
+                if (window.toast) {
+                    window.toast.success(`Invoice ${data.invoice_id} created for ${customerName}`, {
+                        title: 'Quote Converted',
+                        action: {
+                            text: 'View Invoice',
+                            callback: `window.open('/api/download-invoice?invoice_id=${data.invoice_id}', '_blank')`
+                        }
+                    });
+                } else {
+                    alert(`Success! Invoice ${data.invoice_id} created for ${customerName}`);
+                }
+                
+                // Trigger workflow automation
+                if (data.workflow_update) {
+                    console.log('Workflow status updated:', data.workflow_update);
+                }
+                
+                // Refresh the page to show updated data
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+                
+            } else {
+                // Show error toast
+                if (window.toast) {
+                    window.toast.error(data.error || 'Failed to convert quote to invoice');
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to convert quote to invoice'));
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error converting quote:', error);
+            
+            // Hide loading toast
+            if (loadingToast && bootstrap.Toast.getInstance(loadingToast)) {
+                bootstrap.Toast.getInstance(loadingToast).hide();
+            }
+            
+            // Show error toast
+            if (window.toast) {
+                window.toast.error('Network error occurred. Please try again.');
+            } else {
+                alert('Network error occurred. Please try again.');
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
