@@ -34,5 +34,24 @@
         "unit": "job"
       }
     ]
+  },
+  {
+    "id": 3,
+    "contact_id": 3,
+    "service_type": "general_handyman",
+    "total_amount": 250.0,
+    "valid_until": "2025-07-22",
+    "notes": "Generated via API",
+    "created_date": "2025-06-22",
+    "status": "accepted",
+    "items": [
+      {
+        "description": "general_handyman Service",
+        "quantity": 1.0,
+        "unit_price": 250.0,
+        "unit": "job"
+      }
+    ],
+    "accepted_date": "2025-06-22"
   }
 ]

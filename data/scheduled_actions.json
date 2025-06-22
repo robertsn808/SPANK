@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "workflow_id": 1,
+    "action_type": "quote_follow_up_email",
+    "scheduled_date": "2025-06-23",
+    "scheduled_time": "09:00:00",
+    "status": "pending",
+    "created_date": "2025-06-22",
+    "attempts": 0,
+    "max_attempts": 3
+  },
+  {
+    "id": 2,
+    "workflow_id": 1,
+    "action_type": "advance_to_job_scheduled",
+    "scheduled_date": "2025-06-23",
+    "scheduled_time": "09:00:00",
+    "status": "pending",
+    "created_date": "2025-06-22",
+    "attempts": 0,
+    "max_attempts": 3
+  }
+]

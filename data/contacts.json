@@ -33,5 +33,22 @@
     "last_contact": null,
     "preferred_contact": "email",
     "status": "active"
+  },
+  {
+    "id": 3,
+    "name": "Workflow Test Customer",
+    "email": "workflow.test.customer@tempmail.com",
+    "phone": "(808) 555-WORK",
+    "address": "",
+    "notes": "Created via API",
+    "tags": [
+      "api_generated"
+    ],
+    "created_date": "2025-06-22",
+    "job_history": [],
+    "total_spent": 0.0,
+    "last_contact": null,
+    "preferred_contact": "email",
+    "status": "active"
   }
 ]

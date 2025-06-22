@@ -1205,6 +1205,102 @@ def api_executive_summary():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/workflow/advance/<int:quote_id>/<string:stage>', methods=['POST'])
+def api_advance_workflow(quote_id, stage):
+    """API endpoint to advance workflow stage"""
+    try:
+        from workflow_automation_service import WorkflowAutomationService
+        workflow_service = WorkflowAutomationService()
+        
+        result = workflow_service.advance_workflow_stage(quote_id, stage, manual=True)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/workflow/analytics')
+def api_workflow_analytics():
+    """API endpoint for workflow analytics"""
+    try:
+        from workflow_automation_service import WorkflowAutomationService
+        workflow_service = WorkflowAutomationService()
+        
+        analytics = workflow_service.get_workflow_analytics()
+        return jsonify(analytics)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/workflow/process-actions', methods=['POST'])
+def api_process_workflow_actions():
+    """API endpoint to process pending automated actions"""
+    try:
+        from workflow_automation_service import WorkflowAutomationService
+        workflow_service = WorkflowAutomationService()
+        
+        results = workflow_service.process_automated_actions()
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/customer-engagement/track', methods=['POST'])
+def api_track_customer_interaction():
+    """API endpoint to track customer interactions"""
+    try:
+        from customer_engagement_service import CustomerEngagementService
+        engagement_service = CustomerEngagementService()
+        
+        data = request.get_json()
+        contact_id = data.get('contact_id')
+        interaction_type = data.get('interaction_type')
+        details = data.get('details', '')
+        
+        if not contact_id or not interaction_type:
+            return jsonify({'error': 'contact_id and interaction_type required'}), 400
+        
+        result = engagement_service.track_customer_interaction(contact_id, interaction_type, details)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/customer-engagement/analytics')
+def api_customer_engagement_analytics():
+    """API endpoint for customer engagement analytics"""
+    try:
+        from customer_engagement_service import CustomerEngagementService
+        engagement_service = CustomerEngagementService()
+        
+        analytics = engagement_service.get_engagement_analytics()
+        return jsonify(analytics)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/customer-engagement/customers-for-engagement')
+def api_customers_for_engagement():
+    """API endpoint to get customers needing engagement"""
+    try:
+        from customer_engagement_service import CustomerEngagementService
+        engagement_service = CustomerEngagementService()
+        
+        engagement_type = request.args.get('type', 'all')
+        customers = engagement_service.get_customers_for_engagement(engagement_type)
+        return jsonify({'customers': customers, 'count': len(customers)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/customer-engagement/generate-campaign', methods=['POST'])
+def api_generate_engagement_campaign():
+    """API endpoint to generate engagement campaign"""
+    try:
+        from customer_engagement_service import CustomerEngagementService
+        engagement_service = CustomerEngagementService()
+        
+        data = request.get_json()
+        target_audience = data.get('target_audience', 'all')
+        
+        campaign = engagement_service.generate_engagement_campaign(target_audience)
+        return jsonify(campaign)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/analytics/cache/clear', methods=['POST'])
 def api_clear_analytics_cache():
     """API endpoint to clear analytics cache"""
@@ -4732,6 +4828,43 @@ def workflow_management_dashboard():
         return redirect(url_for('admin_dashboard'))
 
 # Job Tracking API Routes
+@app.route('/admin/workflow-automation')
+def workflow_automation_dashboard():
+    """Comprehensive workflow automation and business process management"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access workflow automation.', 'error')
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from workflow_automation_service import WorkflowAutomationService
+        workflow_service = WorkflowAutomationService()
+        
+        # Get workflow analytics
+        analytics = workflow_service.get_workflow_analytics()
+        
+        # Process any pending automated actions
+        automation_results = workflow_service.process_automated_actions()
+        
+        # Get active workflows
+        workflows = workflow_service._load_json_file('workflow_tracking.json')
+        active_workflows = [w for w in workflows if w.get('status') == 'active']
+        
+        # Get pending actions
+        scheduled_actions = workflow_service._load_json_file('scheduled_actions.json')
+        pending_actions = [a for a in scheduled_actions if a.get('status') == 'pending']
+        
+        return render_template('admin/workflow_automation.html',
+                             analytics=analytics,
+                             automation_results=automation_results,
+                             active_workflows=active_workflows,
+                             pending_actions=pending_actions,
+                             workflow_stages=workflow_service.workflow_stages)
+                             
+    except Exception as e:
+        logging.error(f"Error in workflow automation dashboard: {e}")
+        flash('Workflow automation temporarily unavailable. Please try again.', 'warning')
+        return redirect(url_for('admin_dashboard'))
+
 @app.route('/admin/job-tracking')
 def job_tracking_dashboard():
     """Job tracking and payment management dashboard"""
