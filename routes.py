@@ -8,6 +8,7 @@ from models import HandymanStorage
 from ai_service import ai_service
 from notification_service import NotificationService
 from auth_service import auth_service
+from phone_formatter import phone_formatter
 import pytz
 
 # Initialize handyman storage
@@ -90,7 +91,7 @@ def consultation():
         # Get form data
         name = request.form.get('name', '').strip()
         email = request.form.get('email', '').strip()
-        phone = request.form.get('phone', '').strip()
+        phone = phone_formatter.format_phone(request.form.get('phone', '').strip())
         service = request.form.get('service', '').strip()
         project_type = request.form.get('project_type', '').strip()
         consultation_type = request.form.get('consultation_type', '').strip()
@@ -149,7 +150,7 @@ def contact():
         # Get form data
         name = request.form.get('contact_name', '').strip()
         email = request.form.get('contact_email', '').strip()
-        phone = request.form.get('contact_phone', '').strip()
+        phone = phone_formatter.format_phone(request.form.get('contact_phone', '').strip())
         subject = request.form.get('contact_subject', '').strip()
         message = request.form.get('contact_message', '').strip()
 
