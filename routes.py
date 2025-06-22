@@ -2,10 +2,6 @@ import os
 import json
 import logging
 from datetime import datetime, timedelta
-import os
-import json
-import logging
-from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_file, abort
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -45,10 +41,25 @@ try:
     from file_storage_service import FileStorageService
     file_storage = FileStorageService()
     
-    logging.info("Notification service initialized for manual admin dashboard notifications")
+    # Initialize all required services
+    from storage_service import StorageService
+    from reminder_service import ReminderService
+    from job_tracking_service import JobTrackingService
+    from financial_reporting_service import FinancialReportingService
+    from inventory_service import InventoryService
+    from checklist_service import ChecklistService
+    
+    storage_service = StorageService()
+    reminder_service = ReminderService()
+    job_tracking_service = JobTrackingService()
+    financial_reporting_service = FinancialReportingService()
+    inventory_service = InventoryService()
+    checklist_service = ChecklistService()
+    
+    logging.info("All services initialized successfully")
 except Exception as e:
     logging.error(f"Service initialization error: {e}")
-    # Ensure handyman_storage is always available, even as fallback
+    # Ensure required services are always available, even as fallbacks
     if 'handyman_storage' not in locals():
         try:
             handyman_storage = HandymanStorage()
@@ -56,6 +67,18 @@ except Exception as e:
             handyman_storage = None
     if 'notification_service' not in locals():
         notification_service = None
+    if 'storage_service' not in locals():
+        storage_service = None
+    if 'reminder_service' not in locals():
+        reminder_service = None
+    if 'job_tracking_service' not in locals():
+        job_tracking_service = None
+    if 'financial_reporting_service' not in locals():
+        financial_reporting_service = None
+    if 'inventory_service' not in locals():
+        inventory_service = None
+    if 'checklist_service' not in locals():
+        checklist_service = None
 
 # Get app instance after imports to avoid circular import
 def get_app():
@@ -2460,7 +2483,7 @@ def mark_invoice_paid():
             json.dump(invoices, f, indent=2)
         
         # Log the payment in job tracking system
-        if hasattr(storage_service, 'log_payment'):
+        if storage_service and hasattr(storage_service, 'log_payment'):
             storage_service.log_payment({
                 'invoice_id': invoice_id,
                 'amount': payment_amount,
