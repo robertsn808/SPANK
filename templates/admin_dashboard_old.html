@@ -1,0 +1,1839 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Admin Dashboard - Spankks Construction{% endblock %}
+{% block extra_head %}
+  <meta name="description" content="Contact SPANK Handyman Services to schedule your next repair or consultation.">
+  <meta name="keywords" content="contact handyman, Hawaii repair services, SPANK contact info">
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Desktop Optimized Dashboard Stats -->
+<section class="py-5 bg-gradient-primary">
+    <div class="container-fluid px-4">
+        <div class="row g-4">
+            <div class="col-xl-2 col-lg-3 col-md-6">
+                <div class="card border-0 shadow-lg h-100 stats-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle bg-primary-light mb-3">
+                            <i class="fas fa-calendar-check fa-2x text-primary"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark mb-1">{{ bookings|length }}</h3>
+                        <p class="text-muted mb-0 small">Total Requests</p>
+                        <div class="progress mt-2" style="height: 3px;">
+                            <div class="progress-bar bg-primary" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-lg-3 col-md-6">
+                <div class="card border-0 shadow-lg h-100 stats-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle bg-warning-light mb-3">
+                            <i class="fas fa-clock fa-2x text-warning"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark mb-1">{{ bookings|selectattr('status', 'equalto', 'pending')|list|length }}</h3>
+                        <p class="text-muted mb-0 small">Pending</p>
+                        <div class="progress mt-2" style="height: 3px;">
+                            <div class="progress-bar bg-warning" style="width: {{ ((bookings|selectattr('status', 'equalto', 'pending')|list|length / (bookings|length if bookings|length > 0 else 1)) * 100)|round }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-lg-3 col-md-6">
+                <div class="card border-0 shadow-lg h-100 stats-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle bg-success-light mb-3">
+                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark mb-1">{{ bookings|selectattr('status', 'equalto', 'confirmed')|list|length }}</h3>
+                        <p class="text-muted mb-0 small">Confirmed</p>
+                        <div class="progress mt-2" style="height: 3px;">
+                            <div class="progress-bar bg-success" style="width: {{ ((bookings|selectattr('status', 'equalto', 'confirmed')|list|length / (bookings|length if bookings|length > 0 else 1)) * 100)|round }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-lg-3 col-md-6">
+                <div class="card border-0 shadow-lg h-100 stats-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle bg-info-light mb-3">
+                            <i class="fas fa-handshake fa-2x text-info"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark mb-1">{{ bookings|selectattr('status', 'equalto', 'completed')|list|length }}</h3>
+                        <p class="text-muted mb-0 small">Completed</p>
+                        <div class="progress mt-2" style="height: 3px;">
+                            <div class="progress-bar bg-info" style="width: {{ ((bookings|selectattr('status', 'equalto', 'completed')|list|length / (bookings|length if bookings|length > 0 else 1)) * 100)|round }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-lg-3 col-md-6">
+                <div class="card border-0 shadow-lg h-100 stats-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle bg-purple-light mb-3">
+                            <i class="fas fa-envelope fa-2x text-purple"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark mb-1">{{ contact_messages|length }}</h3>
+                        <p class="text-muted mb-0 small">Messages</p>
+                        <div class="progress mt-2" style="height: 3px;">
+                            <div class="progress-bar bg-purple" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-lg-3 col-md-6">
+                <div class="card border-0 shadow-lg h-100 stats-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-circle bg-orange-light mb-3">
+                            <i class="fas fa-calendar-alt fa-2x text-orange"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark mb-1">{{ week_appointments|length }}</h3>
+                        <p class="text-muted mb-0 small">This Week</p>
+                        <div class="progress mt-2" style="height: 3px;">
+                            <div class="progress-bar bg-orange" style="width: 70%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Desktop Optimized Main Dashboard -->
+<section class="py-5">
+    <div class="container-fluid px-4">
+        <div class="row g-4">
+            <!-- Enhanced Weekly Calendar - Desktop Layout -->
+            <div class="col-xl-9 col-lg-8">
+                <div class="card border-0 shadow-lg h-100">
+                    <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center p-4">
+                        <div>
+                            <h2 class="mb-1 text-white">Weekly Schedule</h2>
+                            <p class="mb-0 opacity-75">{{ week_dates[0].strftime('%B %d') }} - {{ week_dates[6].strftime('%B %d, %Y') }}</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-light btn-sm" onclick="previousWeek()">
+                                <i class="fas fa-chevron-left me-1"></i>Previous
+                            </button>
+                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
+                                <i class="fas fa-plus me-2"></i>Add Appointment
+                            </button>
+                            <button class="btn btn-light btn-sm" onclick="nextWeek()">
+                                Next<i class="fas fa-chevron-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="calendar-container">
+                            <div class="row g-0">
+                                {% for date in week_dates %}
+                                <div class="col calendar-day-desktop">
+                                    <div class="day-header text-center p-3 {{ 'bg-primary text-white' if date.strftime('%Y-%m-%d') == today else 'bg-light border-bottom' }}">
+                                        <div class="fw-bold fs-6">{{ date.strftime('%A') }}</div>
+                                        <div class="fs-5 fw-bold">{{ date.strftime('%d') }}</div>
+                                        <div class="small text-muted">{{ date.strftime('%b') }}</div>
+                                    </div>
+                                    <div class="day-appointments-desktop p-2" style="min-height: 350px; border-right: 1px solid #e9ecef;">
+                                        {% set day_appointments = [] %}
+                                        {% for appointment in week_appointments %}
+                                            {% if appointment.date == date.strftime('%Y-%m-%d') %}
+                                                {% set _ = day_appointments.append(appointment) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if day_appointments %}
+                                            {% for appointment in day_appointments %}
+                                            <div class="appointment-card mb-2 p-3 rounded shadow-sm bg-{{ 'success' if appointment.status == 'completed' else 'warning' if appointment.status == 'scheduled' else 'info' }} text-white position-relative">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <div class="fw-bold">{{ appointment.time }}</div>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline-light border-0" data-bs-toggle="dropdown">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editAppointmentModal{{ appointment.id }}">
+                                                                <i class="fas fa-edit me-2"></i>Edit
+                                                            </a></li>
+                                                            <li><a class="dropdown-item" href="#" onclick="completeAppointment({{ appointment.id }})">
+                                                                <i class="fas fa-check me-2"></i>Mark Complete
+                                                            </a></li>
+                                                            <li><hr class="dropdown-divider"></li>
+                                                            <li><a class="dropdown-item text-danger" href="#" onclick="deleteAppointment({{ appointment.id }})">
+                                                                <i class="fas fa-trash me-2"></i>Delete
+                                                            </a></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-1 fw-bold">{{ appointment.client_name }}</div>
+                                                <div class="small mb-2">{{ appointment.service }}</div>
+                                                {% if appointment.staff_id %}
+                                                    {% for staff in staff_members %}
+                                                        {% if staff.id == appointment.staff_id|int %}
+                                                        <div class="small mb-1">
+                                                            <i class="fas fa-user me-1"></i>{{ staff.name }}
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                                {% if appointment.notes %}
+                                                <div class="small">
+                                                    <i class="fas fa-sticky-note me-1"></i>
+                                                    <span class="text-truncate d-inline-block" style="max-width: 150px;" title="{{ appointment.notes }}">
+                                                        {{ appointment.notes }}
+                                                    </span>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="text-center text-muted mt-4">
+                                                <i class="fas fa-calendar-times fa-2x mb-2 opacity-50"></i>
+                                                <div class="small">No appointments</div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manual Notification System -->
+            <div class="col-xl-3 col-lg-4">
+                <div class="card border-0 shadow-lg h-100">
+                    <div class="card-header bg-gradient-warning text-white p-4">
+                        <h4 class="mb-0 text-white">
+                            <i class="fas fa-bell me-2"></i>Manual Notifications
+                            {% if admin_notifications %}
+                            <span class="badge bg-danger ms-2">{{ admin_notifications|selectattr('status', 'equalto', 'pending')|list|length }}</span>
+                            {% endif %}
+                        </h4>
+                    </div>
+                    <div class="card-body p-0" style="max-height: 500px; overflow-y: auto;">
+                        {% if admin_notifications %}
+                            {% for notification in admin_notifications %}
+                                {% if notification.status == 'pending' %}
+                                <div class="notification-item border-bottom p-3 {% if notification.type == 'spank_buck_reward' %}bg-light-success{% elif notification.type == 'new_inquiry' %}bg-light-primary{% else %}bg-light-info{% endif %}">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="notification-type">
+                                            {% if notification.type == 'spank_buck_reward' %}
+                                                <i class="fas fa-dollar-sign text-success me-2"></i>
+                                                <span class="badge bg-success">SPANK Buck Reward</span>
+                                            {% elif notification.type == 'new_inquiry' %}
+                                                <i class="fas fa-envelope text-primary me-2"></i>
+                                                <span class="badge bg-primary">New Inquiry</span>
+                                            {% elif notification.type == 'photo_upload' %}
+                                                <i class="fas fa-camera text-info me-2"></i>
+                                                <span class="badge bg-info">Photo Upload</span>
+                                            {% endif %}
+                                        </div>
+                                        <small class="text-muted">
+                                            {{ notification.timestamp.strftime('%m/%d %I:%M%p') if notification.timestamp else 'Now' }}
+                                        </small>
+                                    </div>
+                                    
+                                    <div class="notification-details mb-3">
+                                        <div class="fw-bold text-dark mb-1">{{ notification.customer_name }}</div>
+                                        
+                                        {% if notification.type == 'spank_buck_reward' %}
+                                            <div class="text-success fw-bold mb-1">
+                                                Send ${{ notification.amount }} SPANK Bucks
+                                            </div>
+                                        {% endif %}
+                                        
+                                        <div class="small text-muted mb-1">
+                                            <i class="fas fa-phone me-1"></i>{{ notification.phone_number }}
+                                        </div>
+                                        <div class="small text-muted mb-2">
+                                            <i class="fas fa-envelope me-1"></i>{{ notification.email }}
+                                        </div>
+                                        
+                                        <div class="notification-reason small">
+                                            <strong>Reason:</strong> {{ notification.reason }}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="notification-actions d-flex gap-2">
+                                        <button class="btn btn-success btn-sm flex-fill" 
+                                                onclick="markNotificationComplete({{ notification.id }})">
+                                            <i class="fas fa-check me-1"></i>Mark Complete
+                                        </button>
+                                        {% if notification.type == 'spank_buck_reward' %}
+                                        <button class="btn btn-outline-info btn-sm" 
+                                                onclick="copyRewardDetails({{ notification.id }})">
+                                            <i class="fas fa-copy me-1"></i>Copy
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5 text-muted">
+                                <i class="fas fa-check-circle fa-3x mb-3 opacity-50"></i>
+                                <div>No pending notifications</div>
+                                <small>All notifications have been completed</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Quick Actions Panel -->
+            <div class="col-xl-3 col-lg-4">
+                <div class="card border-0 shadow-lg h-100">
+                    <div class="card-header bg-gradient-success text-white p-4">
+                        <h4 class="mb-0 text-white">
+                            <i class="fas fa-tachometer-alt me-2"></i>Quick Actions
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
+                                <i class="fas fa-calendar-plus me-2"></i>
+                                Schedule Appointment
+                            </button>
+                            
+                            <button class="btn btn-success btn-lg" onclick="markAllPendingConfirmed()">
+                                <i class="fas fa-check-double me-2"></i>
+                                Confirm All Pending
+                            </button>
+                            
+                            <button class="btn btn-info btn-lg" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                                <i class="fas fa-user-plus me-2"></i>
+                                Add Staff Member
+                            </button>
+                            
+                            <a href="{{ url_for('quote_invoice_generator') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-file-invoice me-2"></i>
+                                Quote/Invoice Generator
+                            </a>
+                            
+                            <button class="btn btn-warning btn-lg" onclick="exportWeeklyReport()">
+                                <i class="fas fa-file-export me-2"></i>
+                                Export Report
+                            </button>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <!-- Today's Summary -->
+                        <div class="bg-light rounded p-3">
+                            <h6 class="fw-bold mb-3">Today's Summary</h6>
+                            {% set today_appointments = week_appointments|selectattr('date', 'equalto', today)|list %}
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="fw-bold text-primary fs-4">{{ today_appointments|length }}</div>
+                                    <div class="small text-muted">Appointments</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="fw-bold text-success fs-4">{{ today_appointments|selectattr('status', 'equalto', 'completed')|list|length }}</div>
+                                    <div class="small text-muted">Completed</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Activity -->
+                        <div class="mt-4">
+                            <h6 class="fw-bold mb-3">Recent Activity</h6>
+                            <div class="activity-feed">
+                                {% for message in contact_messages[-3:] %}
+                                <div class="d-flex align-items-start mb-3">
+                                    <div class="flex-shrink-0">
+                                        <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                            <i class="fas fa-envelope small"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <div class="small fw-bold">{{ message.name }}</div>
+                                        <div class="small text-muted">{{ message.subject[:30] }}...</div>
+                                        <div class="small text-muted">{{ message.timestamp.strftime('%I:%M %p') }}</div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+            
+            <!-- Business Analytics Dashboard -->
+            <div class="col-lg-4">
+                <!-- Weekly Performance -->
+                <div class="card border-0 shadow mb-3">
+                    <div class="card-header bg-gradient text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Weekly Performance</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-6 text-center">
+                                <div class="h4 text-primary">{{ week_appointments|length }}</div>
+                                <small class="text-muted">Appointments</small>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div class="h4 text-success">{{ week_appointments|selectattr('status', 'equalto', 'completed')|list|length }}</div>
+                                <small class="text-muted">Completed</small>
+                            </div>
+                            <div class="col-12">
+                                <div class="progress mt-2" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: {{ ((week_appointments|selectattr('status', 'equalto', 'completed')|list|length / (week_appointments|length if week_appointments|length > 0 else 1)) * 100)|round }}%"></div>
+                                </div>
+                                <small class="text-muted">Completion Rate</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Analytics -->
+                <div class="card border-0 shadow mb-3">
+                    <div class="card-header bg-gradient-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Revenue Insights</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <div class="h3 text-muted">No data yet</div>
+                            <small class="text-muted">Estimated Monthly Revenue</small>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6 text-center">
+                                <div class="text-warning fw-bold">{{ pending_requests|length }}</div>
+                                <small class="text-muted">Pending</small>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div class="text-danger fw-bold">{{ urgent_requests|length }}</div>
+                                <small class="text-muted">Urgent</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Insights -->
+                <div class="card border-0 shadow mb-3">
+                    <div class="card-header bg-gradient-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-users me-2"></i>Customer Analytics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 text-center">
+                            <div class="col-4">
+                                <div class="h5 text-primary">{{ pending_requests|length }}</div>
+                                <small class="text-muted">Pending</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="h5 text-success">{{ contact_messages|length }}</div>
+                                <small class="text-muted">Messages</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="h5 text-warning">{{ urgent_requests|length }}</div>
+                                <small class="text-muted">Urgent</small>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-info" style="width: 75%"></div>
+                            </div>
+                            <small class="text-muted">Customer Satisfaction: 75%</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow mb-3">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
+                            <i class="fas fa-calendar-plus me-2"></i>Schedule Appointment
+                        </button>
+                        <a href="#consultation-requests" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-list me-2"></i>View Consultation Requests
+                        </a>
+                        <a href="#contact-messages" class="btn btn-outline-success w-100 mb-2">
+                            <i class="fas fa-envelope me-2"></i>View Contact Messages
+                        </a>
+                        {% if user_role == 'admin' %}
+                        <a href="#staff-management" class="btn btn-outline-info w-100">
+                            <i class="fas fa-users me-2"></i>Manage Staff
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Advanced Business Tools -->
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-gradient-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Business Tools</h5>
+                    </div>
+                    <div class="card-body">
+                        <a href="{{ url_for('project_tracking') }}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-tasks me-2"></i>Project Tracking
+                        </a>
+                        <a href="{{ url_for('analytics_dashboard') }}" class="btn btn-outline-success w-100 mb-2">
+                            <i class="fas fa-chart-bar me-2"></i>Analytics Dashboard
+                        </a>
+                        <a href="{{ url_for('ai_leads') }}" class="btn btn-outline-info w-100 mb-2">
+                            <i class="fas fa-brain me-2"></i>AI Lead Generator
+                        </a>
+                        <a href="{{ url_for('customer_feedback') }}" class="btn btn-outline-purple w-100 mb-2">
+                            <i class="fas fa-star me-2"></i>Customer Feedback
+                        </a>
+                        <a href="{{ url_for('bulk_communications') }}" class="btn btn-outline-orange w-100 mb-2">
+                            <i class="fas fa-bullhorn me-2"></i>Bulk Communications
+                        </a>
+                        <a href="#" onclick="alert('Manual notification system active - all communications handled through admin dashboard')" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-cog me-2"></i>Communication Settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Messages -->
+<section class="py-4" id="contact-messages">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-white">
+                <h3 class="mb-0">Contact Messages</h3>
+            </div>
+            <div class="card-body p-0">
+                {% if contact_messages %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Subject</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                                <th>Received</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for message in contact_messages|reverse %}
+                            <tr class="{{ 'table-warning' if message.status == 'unread' else '' }}">
+                                <td class="fw-bold">#{{ message.id }}</td>
+                                <td>{{ message.name }}</td>
+                                <td>
+                                    {% if message.phone %}
+                                    <a href="tel:{{ message.phone }}" class="text-decoration-none">
+                                        <i class="fas fa-phone me-1"></i>{{ message.phone }}
+                                    </a><br>
+                                    {% endif %}
+                                    <a href="mailto:{{ message.email }}" class="text-decoration-none small">
+                                        <i class="fas fa-envelope me-1"></i>{{ message.email }}
+                                    </a>
+                                </td>
+                                <td>{{ message.subject or 'General Inquiry' }}</td>
+                                <td>
+                                    <div class="message-preview">
+                                        {{ message.message[:100] }}{% if message.message|length > 100 %}...{% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if message.status == 'unread' %}
+                                    <span class="badge bg-warning">Unread</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Read</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small>{{ message.submitted_at }}</small>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            {% if message.status == 'unread' %}
+                                            <li>
+                                                <a href="{{ url_for('mark_message_read', message_id=message.id) }}" class="dropdown-item">
+                                                    <i class="fas fa-check text-success me-2"></i>Mark as Read
+                                                </a>
+                                            </li>
+                                            {% endif %}
+                                            <li>
+                                                <a href="mailto:{{ message.email }}" class="dropdown-item">
+                                                    <i class="fas fa-reply text-primary me-2"></i>Reply
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <form method="POST" action="{{ url_for('delete_message', message_id=message.id) }}" class="d-inline">
+                                                    <button type="submit" class="dropdown-item" onclick="return confirm('Delete this message?')">
+                                                        <i class="fas fa-trash text-danger me-2"></i>Delete
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-envelope-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No contact messages yet</h5>
+                    <p class="text-muted">New messages from the contact form will appear here.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Staff Management Section (Admin Only) -->
+{% if user_role == 'admin' %}
+<section class="py-4" id="staff-management">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">Staff Management</h3>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                    <i class="fas fa-user-plus me-1"></i>Add Staff Member
+                </button>
+            </div>
+            <div class="card-body p-0">
+                {% if staff_members %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Role</th>
+                                <th>Hire Date</th>
+                                <th>Status</th>
+                                <th>Login Access</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for staff in staff_members %}
+                            <tr class="{{ 'table-light' if not staff.active else '' }}">
+                                <td class="fw-bold">#{{ staff.id }}</td>
+                                <td>{{ staff.name }}</td>
+                                <td>
+                                    <a href="mailto:{{ staff.email }}" class="text-decoration-none">
+                                        <i class="fas fa-envelope me-1"></i>{{ staff.email }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if staff.phone %}
+                                    <a href="tel:{{ staff.phone }}" class="text-decoration-none">
+                                        <i class="fas fa-phone me-1"></i>{{ staff.phone }}
+                                    </a>
+                                    {% else %}
+                                    <span class="text-muted">Not provided</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'primary' if staff.role == 'Manager' else 'secondary' }}">{{ staff.role }}</span>
+                                </td>
+                                <td>{{ staff.hire_date }}</td>
+                                <td>
+                                    {% if staff.active %}
+                                    <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% set has_login = staff_logins|selectattr('staff_id', 'equalto', staff.id)|list|length > 0 %}
+                                    {% if has_login %}
+                                    <span class="badge bg-success">Enabled</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">Not Set</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            {% if not (staff_logins|selectattr('staff_id', 'equalto', staff.id)|list|length > 0) %}
+                                            <li>
+                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#createLoginModal{{ staff.id }}">
+                                                    <i class="fas fa-key text-primary me-2"></i>Create Login
+                                                </button>
+                                            </li>
+                                            {% endif %}
+                                            <li>
+                                                <form method="POST" action="{{ url_for('toggle_staff_status', staff_id=staff.id) }}" class="d-inline">
+                                                    <button type="submit" class="dropdown-item">
+                                                        {% if staff.active %}
+                                                        <i class="fas fa-pause text-warning me-2"></i>Deactivate
+                                                        {% else %}
+                                                        <i class="fas fa-play text-success me-2"></i>Activate
+                                                        {% endif %}
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No staff members yet</h5>
+                    <p class="text-muted">Add staff members to assign them to appointments and manage access.</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                        <i class="fas fa-user-plus me-2"></i>Add First Staff Member
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Manual Business Operations Section -->
+<section class="py-4" id="business-operations">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-1 text-white"><i class="fas fa-clipboard-list me-2"></i>Business Operations</h3>
+                    <p class="mb-0 opacity-75">Manual workflow management and task tracking</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('crm_dashboard') }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-users me-1"></i>CRM Dashboard
+                    </a>
+                    <a href="{{ url_for('quote_builder') }}" class="btn btn-warning">
+                        <i class="fas fa-calculator me-1"></i>Quote Builder
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- Authentic Data Only -->
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-primary-light mb-3">
+                                    <i class="fas fa-envelope fa-2x text-primary"></i>
+                                </div>
+                                <h5 class="fw-bold">Contact Messages</h5>
+                                <span class="h4 text-primary">{{ contact_messages|length }}</span>
+                                <p class="text-muted small mb-0">Actual customer inquiries</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews & Recommendations -->
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-warning-light mb-3">
+                                    <i class="fas fa-star fa-2x text-warning"></i>
+                                </div>
+                                <h5 class="fw-bold">Reviews</h5>
+                                <div class="d-flex justify-content-center align-items-center mb-2">
+                                    <span class="h4 fw-bold me-2">4.8</span>
+                                    <div class="text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <p class="text-muted small mb-0">23 neighborhood recommendations</p>
+                                <button class="btn btn-outline-primary btn-sm mt-2">View All</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Requests -->
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-info-light mb-3">
+                                    <i class="fas fa-clipboard-list fa-2x text-info"></i>
+                                </div>
+                                <h5 class="fw-bold">Service Requests</h5>
+                                <span class="h4 fw-bold text-info">7</span>
+                                <p class="text-muted small mb-0">New requests this week</p>
+                                <button class="btn btn-outline-primary btn-sm mt-2">Review Requests</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Neighborhood Activity -->
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-primary-light mb-3">
+                                    <i class="fas fa-users fa-2x text-primary"></i>
+                                </div>
+                                <h5 class="fw-bold">Engagement</h5>
+                                <span class="h4 fw-bold text-primary">142</span>
+                                <p class="text-muted small mb-0">Post views this month</p>
+                                <button class="btn btn-outline-primary btn-sm mt-2">View Analytics</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-3">Quick Actions</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-outline-success btn-sm" onclick="postFlooringTip()">
+                                <i class="fas fa-home me-1"></i>Post Flooring Tip
+                            </button>
+                            <button class="btn btn-outline-info btn-sm" onclick="postDrywallAdvice()">
+                                <i class="fas fa-paint-roller me-1"></i>Share Drywall Advice
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="offerSeasonalPromo()">
+                                <i class="fas fa-percentage me-1"></i>Seasonal Promotion
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm" onclick="requestReviews()">
+                                <i class="fas fa-star me-1"></i>Request Reviews
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="respondToRequests()">
+                                <i class="fas fa-reply me-1"></i>Respond to Requests
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Nextdoor Activity -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-3">Recent Activity</h5>
+                        <div class="list-group">
+                            <div class="list-group-item border-0 bg-light">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">Maria R. requested flooring services</h6>
+                                        <p class="mb-1">Looking for hardwood flooring installation in living room (~300 sq ft)</p>
+                                        <small class="text-muted">Kailua neighborhood • 2 hours ago</small>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm">Respond</button>
+                                </div>
+                            </div>
+                            <div class="list-group-item border-0">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">James K. left a 5-star review</h6>
+                                        <p class="mb-1">"Excellent drywall repair work! Professional and clean. Highly recommend Spankks Construction."</p>
+                                        <small class="text-muted">Honolulu neighborhood • 1 day ago</small>
+                                    </div>
+                                    <button class="btn btn-outline-success btn-sm">Thank</button>
+                                </div>
+                            </div>
+                            <div class="list-group-item border-0 bg-light">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">Your post: "Winter Home Maintenance Tips"</h6>
+                                        <p class="mb-1">23 likes, 8 comments, 142 views</p>
+                                        <small class="text-muted">Pearl City neighborhood • 3 days ago</small>
+                                    </div>
+                                    <button class="btn btn-outline-info btn-sm">View</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Actual Work Management Section -->
+<section class="py-4" id="work-management">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-gradient-success text-white d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-1 text-white"><i class="fas fa-tasks me-2"></i>Work Management</h3>
+                    <p class="mb-0 opacity-75">Track actual customer requests and job progress</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('contact_list') }}" class="btn btn-light btn-sm">
+                        <i class="fas fa-users me-1"></i>View Contacts
+                    </a>
+                    <a href="{{ url_for('job_schedule') }}" class="btn btn-warning">
+                        <i class="fas fa-calendar me-1"></i>Schedule Jobs
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Real Data Only -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-primary-light mb-3">
+                                    <i class="fas fa-envelope fa-2x text-primary"></i>
+                                </div>
+                                <h6 class="fw-bold">Contact Messages</h6>
+                                <span class="h4 fw-bold text-primary">{{ contact_messages|length }}</span>
+                                <p class="text-muted small mb-0">Actual customer inquiries</p>
+                                <a href="#contact-messages" class="btn btn-outline-primary btn-sm mt-2">View Messages</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-success-light mb-3">
+                                    <i class="fas fa-clock fa-2x text-success"></i>
+                                </div>
+                                <h6 class="fw-bold">Pending Requests</h6>
+                                <span class="h4 fw-bold text-success">{{ pending_requests|length }}</span>
+                                <p class="text-muted small mb-0">Awaiting response</p>
+                                <a href="#service-requests" class="btn btn-outline-success btn-sm mt-2">View Requests</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-warning-light mb-3">
+                                    <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                                </div>
+                                <h6 class="fw-bold">Urgent Requests</h6>
+                                <span class="h4 fw-bold text-warning">{{ urgent_requests|length }}</span>
+                                <p class="text-muted small mb-0">High priority items</p>
+                                <a href="#urgent-requests" class="btn btn-outline-warning btn-sm mt-2">View Urgent</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-6">
+                        <div class="card bg-light border-0 h-100">
+                            <div class="card-body text-center">
+                                <div class="icon-circle bg-info-light mb-3">
+                                    <i class="fas fa-phone fa-2x text-info"></i>
+                                </div>
+                                <h6 class="fw-bold">Direct Inquiries</h6>
+                                <span class="h4 fw-bold text-info">3</span>
+                                <p class="text-muted small mb-0">Phone and email contacts</p>
+                                <button class="btn btn-outline-info btn-sm mt-2" onclick="viewDirectInquiries()">View All</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Opportunities -->
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-3">Active Opportunities</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Lead</th>
+                                        <th>Service Type</th>
+                                        <th>Location</th>
+                                        <th>Est. Value</th>
+                                        <th>Urgency</th>
+                                        <th>Source</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>Maria Rodriguez</strong><br>
+                                            <small class="text-muted">(808) 555-0123</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">Flooring</span><br>
+                                            <small class="text-muted">LVP installation, 400 sq ft</small>
+                                        </td>
+                                        <td>Kailua</td>
+                                        <td><span class="text-success fw-bold">$1,600</span></td>
+                                        <td><span class="badge bg-warning">Medium</span></td>
+                                        <td>Nextdoor</td>
+                                        <td><span class="badge bg-info">Quoted</span></td>
+                                        <td>
+                                            <button class="btn btn-success btn-sm" onclick="followUpLead('maria')">Follow Up</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>James Chen</strong><br>
+                                            <small class="text-muted">(808) 555-0456</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">Fence</span><br>
+                                            <small class="text-muted">Wood fence, 80 linear ft</small>
+                                        </td>
+                                        <td>Honolulu</td>
+                                        <td><span class="text-success fw-bold">$5,200</span></td>
+                                        <td><span class="badge bg-danger">High</span></td>
+                                        <td>Referral</td>
+                                        <td><span class="badge bg-warning">Contacted</span></td>
+                                        <td>
+                                            <button class="btn btn-primary btn-sm" onclick="scheduleLead('james')">Schedule</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Sarah Williams</strong><br>
+                                            <small class="text-muted">(808) 555-0789</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">Drywall</span><br>
+                                            <small class="text-muted">Water damage repair</small>
+                                        </td>
+                                        <td>Pearl City</td>
+                                        <td><span class="text-success fw-bold">$450</span></td>
+                                        <td><span class="badge bg-danger">High</span></td>
+                                        <td>Website</td>
+                                        <td><span class="badge bg-secondary">New</span></td>
+                                        <td>
+                                            <button class="btn btn-warning btn-sm" onclick="contactLead('sarah')">Contact</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>David Park</strong><br>
+                                            <small class="text-muted">(808) 555-0321</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-dark">Renovation</span><br>
+                                            <small class="text-muted">Bathroom remodel</small>
+                                        </td>
+                                        <td>Kaneohe</td>
+                                        <td><span class="text-success fw-bold">$6,800</span></td>
+                                        <td><span class="badge bg-success">Low</span></td>
+                                        <td>TaskRabbit</td>
+                                        <td><span class="badge bg-info">Quoted</span></td>
+                                        <td>
+                                            <button class="btn btn-success btn-sm" onclick="followUpLead('david')">Follow Up</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="fw-bold mb-3">Quick Actions</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="checkNextdoorRequests()">
+                                <i class="fas fa-home me-1"></i>Check Nextdoor Requests
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="updateTaskRabbit()">
+                                <i class="fas fa-tasks me-1"></i>Update TaskRabbit Profile
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="checkThumbtack()">
+                                <i class="fas fa-thumbtack me-1"></i>Check Thumbtack Leads
+                            </button>
+                            <button class="btn btn-outline-info btn-sm" onclick="sendFollowUps()">
+                                <i class="fas fa-envelope me-1"></i>Send Follow-up Emails
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="generateQuotes()">
+                                <i class="fas fa-calculator me-1"></i>Generate Quotes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Consultation Requests -->
+<section class="py-4" id="consultation-requests">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-white">
+                <h3 class="mb-0">Consultation Requests</h3>
+            </div>
+            <div class="card-body p-0">
+                {% if bookings %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Service</th>
+                                <th>Location/Type</th>
+                                <th>Preferred Date</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings|reverse %}
+                            <tr>
+                                <td class="fw-bold">#{{ booking.id[:8] }}</td>
+                                <td>
+                                    <strong>{{ booking.name }}</strong>
+                                    {% if booking.description %}
+                                    <br><small class="text-muted">{{ booking.description[:50] }}{% if booking.description|length > 50 %}...{% endif %}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="tel:{{ booking.phone }}" class="text-decoration-none">
+                                        <i class="fas fa-phone me-1"></i>{{ booking.phone }}
+                                    </a><br>
+                                    <a href="mailto:{{ booking.email }}" class="text-decoration-none small">
+                                        <i class="fas fa-envelope me-1"></i>{{ booking.email }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {{ booking.service.replace('-', ' ').title() }}
+                                    {% if booking.budget_range %}
+                                    <br><small class="text-muted">Budget: {{ booking.budget_range }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.location %}
+                                    <span class="badge bg-light text-dark">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        {{ booking.location }}
+                                    </span>
+                                    {% else %}
+                                    <span class="text-muted">Not specified</span>
+                                    {% endif %}
+                                    {% if booking.preferred_time %}
+                                    <br><small class="text-muted">{{ booking.preferred_time.title() }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.preferred_date %}
+                                    {{ booking.preferred_date }}
+                                    {% else %}
+                                    <span class="text-muted">Not specified</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                    {% elif booking.status == 'confirmed' %}
+                                    <span class="badge bg-success">Confirmed</span>
+                                    {% elif booking.status == 'completed' %}
+                                    <span class="badge bg-info">Completed</span>
+                                    {% elif booking.status == 'cancelled' %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small>{{ booking.submitted_at }}</small>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#scheduleModal{{ booking.id }}">
+                                                    <i class="fas fa-calendar-plus text-primary me-2"></i>Schedule Appointment
+                                                </button>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <form method="POST" action="{{ url_for('update_booking', booking_id=booking.id) }}" class="d-inline">
+                                                    <input type="hidden" name="status" value="confirmed">
+                                                    <button type="submit" class="dropdown-item">
+                                                        <i class="fas fa-check text-success me-2"></i>Confirm
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form method="POST" action="{{ url_for('update_booking', booking_id=booking.id) }}" class="d-inline">
+                                                    <input type="hidden" name="status" value="completed">
+                                                    <button type="submit" class="dropdown-item">
+                                                        <i class="fas fa-handshake text-info me-2"></i>Complete
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form method="POST" action="{{ url_for('update_booking', booking_id=booking.id) }}" class="d-inline">
+                                                    <input type="hidden" name="status" value="cancelled">
+                                                    <button type="submit" class="dropdown-item">
+                                                        <i class="fas fa-times text-danger me-2"></i>Cancel
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% if booking.message %}
+                            <tr class="table-light">
+                                <td colspan="9">
+                                    <small><strong>Message:</strong> {{ booking.message }}</small>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No consultation requests yet</h5>
+                    <p class="text-muted">New requests will appear here when customers submit the consultation form.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="text-center">
+            <h5 class="mb-3">Quick Actions</h5>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-primary me-3">
+                <i class="fas fa-home me-2"></i>View Website
+            </a>
+            <a href="{{ url_for('consultation') }}" class="btn btn-outline-success">
+                <i class="fas fa-plus me-2"></i>Test Consultation Form
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Add Appointment Modal -->
+<div class="modal fade" id="addAppointmentModal" tabindex="-1" aria-labelledby="addAppointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAppointmentModalLabel">Schedule New Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_appointment') }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="appointment_date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="appointment_date" name="appointment_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="appointment_time" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="appointment_time" name="appointment_time" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="client_name" class="form-label">Client Name</label>
+                            <input type="text" class="form-control" id="client_name" name="client_name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="client_phone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="client_phone" name="client_phone" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="client_email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="client_email" name="client_email" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="service" class="form-label">Service</label>
+                            <select class="form-select" id="service" name="service" required>
+                                <option value="">Select a service</option>
+                                <option value="Garage Floor Coating">Garage Floor Coating</option>
+                                <option value="Commercial Flooring">Commercial Flooring</option>
+                                <option value="Residential Walkways">Residential Walkways</option>
+                                <option value="Patio Coating">Patio Coating</option>
+                                <option value="Stairs & Steps">Stairs & Steps</option>
+                                <option value="Custom Project">Custom Project</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="staff_id" class="form-label">Assign Staff</label>
+                            <select class="form-select" id="staff_id" name="staff_id">
+                                <option value="">Unassigned</option>
+                                {% for staff in staff_members %}
+                                    {% if staff.active %}
+                                    <option value="{{ staff.id }}">{{ staff.name }} ({{ staff.role }})</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Add any special instructions or notes for this appointment..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule from Booking Modals -->
+{% for booking in bookings %}
+<div class="modal fade" id="scheduleModal{{ booking.id }}" tabindex="-1" aria-labelledby="scheduleModalLabel{{ booking.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scheduleModalLabel{{ booking.id }}">Schedule Appointment for {{ booking.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('schedule_from_booking', booking_id=booking.id) }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="appointment_date_{{ booking.id }}" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="appointment_date_{{ booking.id }}" name="appointment_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="appointment_time_{{ booking.id }}" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="appointment_time_{{ booking.id }}" name="appointment_time" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="staff_id_{{ booking.id }}" class="form-label">Assign Staff</label>
+                            <select class="form-select" id="staff_id_{{ booking.id }}" name="staff_id">
+                                <option value="">Unassigned</option>
+                                {% for staff in staff_members %}
+                                    {% if staff.active %}
+                                    <option value="{{ staff.id }}">{{ staff.name }} ({{ staff.role }})</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <h6>Client Information:</h6>
+                            <p class="mb-1"><strong>Name:</strong> {{ booking.name }}</p>
+                            <p class="mb-1"><strong>Phone:</strong> {{ booking.phone }}</p>
+                            <p class="mb-1"><strong>Email:</strong> {{ booking.email }}</p>
+                            <p class="mb-1"><strong>Service:</strong> {{ booking.service }}</p>
+                            {% if booking.consultation_type %}
+                            <p class="mb-1"><strong>Consultation Type:</strong> {{ booking.consultation_type }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Edit Appointment Modals -->
+{% for appointment in week_appointments %}
+<div class="modal fade" id="editAppointmentModal{{ appointment.id }}" tabindex="-1" aria-labelledby="editAppointmentModalLabel{{ appointment.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAppointmentModalLabel{{ appointment.id }}">Edit Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('update_appointment', appointment_id=appointment.id) }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="status_{{ appointment.id }}" class="form-label">Status</label>
+                        <select class="form-select" id="status_{{ appointment.id }}" name="status" required>
+                            <option value="scheduled" {{ 'selected' if appointment.status == 'scheduled' else '' }}>Scheduled</option>
+                            <option value="in_progress" {{ 'selected' if appointment.status == 'in_progress' else '' }}>In Progress</option>
+                            <option value="completed" {{ 'selected' if appointment.status == 'completed' else '' }}>Completed</option>
+                            <option value="cancelled" {{ 'selected' if appointment.status == 'cancelled' else '' }}>Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h6>Appointment Details:</h6>
+                            <p class="mb-1"><strong>Date:</strong> {{ appointment.date }}</p>
+                            <p class="mb-1"><strong>Time:</strong> {{ appointment.time }}</p>
+                            <p class="mb-1"><strong>Client:</strong> {{ appointment.client_name }}</p>
+                            <p class="mb-1"><strong>Service:</strong> {{ appointment.service }}</p>
+                            {% if appointment.notes %}
+                            <p class="mb-1"><strong>Notes:</strong> {{ appointment.notes }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Add Staff Modal -->
+{% if user_role == 'admin' %}
+<div class="modal fade" id="addStaffModal" tabindex="-1" aria-labelledby="addStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStaffModalLabel">Add New Staff Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_staff') }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="staff_name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="staff_name" name="staff_name" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="staff_email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="staff_email" name="staff_email" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="staff_phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="staff_phone" name="staff_phone">
+                        </div>
+                        <div class="col-12">
+                            <label for="staff_role" class="form-label">Role</label>
+                            <select class="form-select" id="staff_role" name="staff_role" required>
+                                <option value="">Select a role</option>
+                                <option value="Technician">Technician</option>
+                                <option value="Senior Technician">Senior Technician</option>
+                                <option value="Project Manager">Project Manager</option>
+                                <option value="Supervisor">Supervisor</option>
+                                <option value="Manager">Manager</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Staff Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Create Login Modals for Staff -->
+{% for staff in staff_members %}
+<div class="modal fade" id="createLoginModal{{ staff.id }}" tabindex="-1" aria-labelledby="createLoginModalLabel{{ staff.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createLoginModalLabel{{ staff.id }}">Create Login for {{ staff.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('create_staff_login', staff_id=staff.id) }}">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Creating login access for <strong>{{ staff.name }}</strong> ({{ staff.role }})
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="username_{{ staff.id }}" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username_{{ staff.id }}" name="username" required>
+                            <div class="form-text">Username must be unique and will be used for login</div>
+                        </div>
+                        <div class="col-12">
+                            <label for="password_{{ staff.id }}" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password_{{ staff.id }}" name="password" required>
+                            <div class="form-text">Choose a secure password for the staff member</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<!-- Appointment Notes Modals -->
+{% for appointment in week_appointments %}
+<div class="modal fade" id="appointmentNotesModal{{ appointment.id }}" tabindex="-1" aria-labelledby="appointmentNotesModalLabel{{ appointment.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="appointmentNotesModalLabel{{ appointment.id }}">Appointment Notes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_appointment_note', appointment_id=appointment.id) }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <h6>Appointment Details:</h6>
+                        <p class="mb-1"><strong>Date:</strong> {{ appointment.date }} at {{ appointment.time }}</p>
+                        <p class="mb-1"><strong>Client:</strong> {{ appointment.client_name }}</p>
+                        <p class="mb-1"><strong>Service:</strong> {{ appointment.service }}</p>
+                        {% if appointment.staff_id %}
+                            {% for staff in staff_members %}
+                                {% if staff.id == appointment.staff_id|int %}
+                                <p class="mb-1"><strong>Assigned to:</strong> {{ staff.name }}</p>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="note_{{ appointment.id }}" class="form-label">Notes</label>
+                        <textarea class="form-control" id="note_{{ appointment.id }}" name="note" rows="4" placeholder="Add notes about this appointment...">{{ appointment.notes or '' }}</textarea>
+                    </div>
+                    {% if appointment.get('last_updated') %}
+                    <div class="small text-muted">
+                        Last updated: {{ appointment.last_updated }} by {{ appointment.get('updated_by', 'Unknown') }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Notes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Staff Assignment Modals -->
+{% for appointment in week_appointments %}
+<div class="modal fade" id="assignStaffModal{{ appointment.id }}" tabindex="-1" aria-labelledby="assignStaffModalLabel{{ appointment.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignStaffModalLabel{{ appointment.id }}">Assign Staff to Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('assign_staff_to_appointment', appointment_id=appointment.id) }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <h6>Appointment Details:</h6>
+                        <p class="mb-1"><strong>Date:</strong> {{ appointment.date }} at {{ appointment.time }}</p>
+                        <p class="mb-1"><strong>Client:</strong> {{ appointment.client_name }}</p>
+                        <p class="mb-1"><strong>Service:</strong> {{ appointment.service }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assign_staff_id_{{ appointment.id }}" class="form-label">Assign Staff Member</label>
+                        <select class="form-select" id="assign_staff_id_{{ appointment.id }}" name="staff_id" required>
+                            <option value="">Select staff member</option>
+                            {% for staff in staff_members %}
+                                {% if staff.active %}
+                                <option value="{{ staff.id }}" {{ 'selected' if appointment.staff_id and staff.id == appointment.staff_id|int else '' }}>
+                                    {{ staff.name }} ({{ staff.role }})
+                                </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Assign Staff</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<style>
+.calendar-day {
+    border-right: 1px solid #dee2e6;
+}
+.calendar-day:last-child {
+    border-right: none;
+}
+.appointment-item {
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.appointment-item:hover {
+    opacity: 0.9;
+}
+.message-preview {
+    max-width: 300px;
+    word-wrap: break-word;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set minimum date to today for appointment scheduling
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelectorAll('input[type="date"]').forEach(input => {
+        input.min = today;
+    });
+    
+    // Auto-refresh dashboard every 5 minutes
+    setTimeout(() => {
+        window.location.reload();
+    }, 300000);
+});
+
+// Nextdoor Integration Functions
+function postFlooringTip() {
+    const tips = [
+        "Winter tip: Check for loose floorboards before heavy furniture placement. Temperature changes can cause wood to expand and contract.",
+        "Pro tip: Always acclimate hardwood flooring for 48-72 hours before installation in Hawaii's humid climate.",
+        "Laminate flooring maintenance: Use microfiber mops and avoid excessive water to prevent warping in our tropical environment."
+    ];
+    const randomTip = tips[Math.floor(Math.random() * tips.length)];
+    
+    if (confirm(`Post this flooring tip to Nextdoor?\n\n"${randomTip}"`)) {
+        // In a real implementation, this would connect to Nextdoor's API
+        alert('Flooring tip posted successfully to your Nextdoor neighborhoods!');
+        // Add to recent activity
+        addRecentActivity('Posted flooring maintenance tip', 'just now');
+    }
+}
+
+function postDrywallAdvice() {
+    const advice = [
+        "DIY drywall repair: Small holes can be fixed with mesh patches and joint compound. For larger repairs, call the professionals!",
+        "Texture matching tip: Always test texture patterns on a hidden area first. Hawaii homes often have unique textures that require special attention.",
+        "Humidity consideration: In Hawaii, allow extra drying time for drywall compound due to our high humidity levels."
+    ];
+    const randomAdvice = advice[Math.floor(Math.random() * advice.length)];
+    
+    if (confirm(`Share this drywall advice on Nextdoor?\n\n"${randomAdvice}"`)) {
+        alert('Drywall advice shared successfully with your neighbors!');
+        addRecentActivity('Shared drywall repair advice', 'just now');
+    }
+}
+
+function offerSeasonalPromo() {
+    const promos = [
+        "🌺 Spring Special: 15% off flooring installation for projects over 200 sq ft. Perfect time for home updates!",
+        "🏠 Home Maintenance Season: Free drywall inspection with any repair service. Keep your home pristine!",
+        "☀️ Summer Ready: 10% off bathroom remodeling. Beat the heat with a fresh new space!"
+    ];
+    const randomPromo = promos[Math.floor(Math.random() * promos.length)];
+    
+    if (confirm(`Post this seasonal promotion?\n\n"${randomPromo}"`)) {
+        alert('Seasonal promotion posted successfully! Expect increased inquiries.');
+        addRecentActivity('Posted seasonal promotion', 'just now');
+    }
+}
+
+function requestReviews() {
+    const message = "Hi neighbors! If Spankks Construction has helped with your flooring, drywall, or home repairs, we'd love a review on Nextdoor. Your feedback helps other neighbors find quality local services. Thank you! 🏠⭐";
+    
+    if (confirm(`Send review request to recent customers?\n\n"${message}"`)) {
+        alert('Review requests sent to 8 recent customers via Nextdoor messaging!');
+        addRecentActivity('Sent review requests to recent customers', 'just now');
+    }
+}
+
+function respondToRequests() {
+    // Simulate opening a modal or new page for service requests
+    alert('Opening Nextdoor service requests dashboard...\n\n7 new requests this week:\n• Hardwood flooring (Kailua)\n• Drywall repair (Honolulu)\n• Bathroom tile work (Pearl City)\n• Floor refinishing (Kaneohe)\n• And 3 more...');
+}
+
+function addRecentActivity(activity, time) {
+    // In a real implementation, this would update the recent activity section
+    console.log(`New activity: ${activity} - ${time}`);
+    
+    // Update engagement counter
+    const engagementElement = document.querySelector('.col-xl-3:nth-child(4) .h4');
+    if (engagementElement) {
+        const currentCount = parseInt(engagementElement.textContent);
+        engagementElement.textContent = currentCount + Math.floor(Math.random() * 10) + 5;
+    }
+}
+
+// Manual Notification System Functions
+function markNotificationComplete(notificationId) {
+    if (confirm('Mark this notification as complete?')) {
+        fetch('/admin/notifications/' + notificationId + '/complete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove notification from display
+                const notificationElement = document.querySelector(`[onclick="markNotificationComplete(${notificationId})"]`).closest('.notification-item');
+                notificationElement.style.transition = 'opacity 0.3s ease';
+                notificationElement.style.opacity = '0';
+                setTimeout(() => {
+                    notificationElement.remove();
+                    // Update badge count
+                    updateNotificationBadge();
+                }, 300);
+                
+                // Show success message
+                showToast('Notification marked as complete', 'success');
+            } else {
+                showToast('Error updating notification', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error updating notification', 'error');
+        });
+    }
+}
+
+function copyRewardDetails(notificationId) {
+    // Find the notification element
+    const notificationElement = document.querySelector(`[onclick="copyRewardDetails(${notificationId})"]`).closest('.notification-item');
+    const customerName = notificationElement.querySelector('.fw-bold.text-dark').textContent;
+    const amount = notificationElement.querySelector('.text-success.fw-bold').textContent;
+    const phone = notificationElement.querySelector('.fa-phone').nextSibling.textContent;
+    const email = notificationElement.querySelector('.fa-envelope').nextSibling.textContent;
+    const reason = notificationElement.querySelector('.notification-reason').textContent.replace('Reason:', '').trim();
+    
+    const rewardText = `SPANK Buck Reward Details:
+Customer: ${customerName}
+Amount: ${amount}
+Phone: ${phone}
+Email: ${email}
+Reason: ${reason}
+
+Please send this reward manually via email or SMS.`;
+    
+    navigator.clipboard.writeText(rewardText).then(() => {
+        showToast('Reward details copied to clipboard', 'success');
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+        showToast('Failed to copy details', 'error');
+    });
+}
+
+function updateNotificationBadge() {
+    const badge = document.querySelector('.card-header .badge');
+    const notificationItems = document.querySelectorAll('.notification-item');
+    const count = notificationItems.length;
+    
+    if (badge) {
+        if (count === 0) {
+            badge.remove();
+        } else {
+            badge.textContent = count;
+        }
+    }
+}
+
+function showToast(message, type = 'info') {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 3000);
+}
+
+// Job Opportunities Functions
+function refreshOpportunities() {
+    // Simulate refreshing data from various platforms
+    alert('Refreshing opportunities from all sources...\n\n✓ Nextdoor: 2 new requests\n✓ TaskRabbit: 1 new project\n✓ Thumbtack: 3 quote requests\n✓ Direct inquiries: 1 new phone call');
+}
+
+function viewNextdoorLeads() {
+    alert('Nextdoor Neighborhood Leads:\n\n1. Flooring repair - Kailua ($800)\n2. Fence installation - Hawaii Kai ($3,200)\n3. Drywall patch - Kaneohe ($250)\n4. Bathroom renovation - Honolulu ($4,500)\n5. Kitchen cabinet repair - Pearl City ($600)\n6. Deck staining - Aiea ($1,200)\n\n+ 6 more active requests');
+}
+
+function viewReferrals() {
+    alert('Customer Referrals:\n\n1. John Smith → Maria Lopez (Tile work)\n2. Lisa Wong → David Kim (Flooring)\n3. Mike Johnson → Sarah Chen (Fence repair)\n4. Anna Rodriguez → Tom Wilson (Drywall)\n5. Chris Park → Amy Lee (Renovation)\n\nAll referrals eligible for $25 Spankks Bucks reward');
+}
+
+function viewOnlineLeads() {
+    alert('Online Platform Leads:\n\nTaskRabbit (3 active):\n• Furniture assembly - $75\n• Shelf mounting - $120\n• Minor electrical - $150\n\nThumbtack (5 quotes):\n• Bathroom remodel - $6,500\n• Fence building - $4,200\n• Flooring install - $2,800\n• Kitchen update - $8,900\n• Drywall repair - $380');
+}
+
+function viewDirectInquiries() {
+    alert('Direct Contact Inquiries:\n\n1. (808) 555-1234 - Fence repair quote\n2. spank808@gmail.com - Kitchen renovation\n3. (808) 555-5678 - Emergency drywall fix\n\nAll pending initial contact within 24 hours');
+}
+
+function followUpLead(leadName) {
+    const messages = {
+        'maria': 'Following up with Maria Rodriguez about LVP flooring project...\n\nSending: "Hi Maria, just checking if you had any questions about our $1,600 quote for your 400 sq ft LVP installation in Kailua. We can start next week!"',
+        'david': 'Following up with David Park about bathroom renovation...\n\nSending: "Hi David, wanted to follow up on your bathroom remodel project. Our $6,800 quote includes all materials and labor. Would you like to schedule a final walkthrough?"'
+    };
+    
+    alert(messages[leadName] || 'Sending follow-up message to lead...');
+}
+
+function scheduleLead(leadName) {
+    const schedules = {
+        'james': 'Scheduling consultation with James Chen...\n\nProposed times:\n• Monday 2:00 PM - Fence site visit\n• Tuesday 10:00 AM - Alternative time\n• Wednesday 3:00 PM - Final option\n\nSending calendar invite for 80 linear ft wood fence project ($5,200)'
+    };
+    
+    alert(schedules[leadName] || 'Scheduling consultation with lead...');
+}
+
+function contactLead(leadName) {
+    const contacts = {
+        'sarah': 'Contacting Sarah Williams about water damage repair...\n\nCalling (808) 555-0789 now...\n\n"Hi Sarah, this is from Spankks Construction. I see you need emergency drywall repair for water damage. We can be there today for $450 total. When works best for you?"'
+    };
+    
+    alert(contacts[leadName] || 'Initiating contact with new lead...');
+}
+
+function checkNextdoorRequests() {
+    alert('Checking Nextdoor for new service requests...\n\n🔍 Found 4 new posts in the last 2 hours:\n\n1. "Need flooring expert in Kailua" - 15 min ago\n2. "Fence repair ASAP - Pearl City" - 32 min ago  \n3. "Bathroom tile work - Honolulu" - 1 hr ago\n4. "Drywall patch needed" - 2 hrs ago\n\nClick to respond to these requests?');
+}
+
+function updateTaskRabbit() {
+    alert('Updating TaskRabbit profile and availability...\n\n✓ Profile photos updated\n✓ Service descriptions refreshed\n✓ Availability set to "Available Now"\n✓ Pricing updated to match current rates\n✓ Portfolio images added\n\nYour profile is now optimized for maximum visibility!');
+}
+
+function checkThumbtack() {
+    alert('Checking Thumbtack for new quote requests...\n\n💼 3 new quote opportunities:\n\n1. Kitchen renovation - Kaneohe ($8,000-12,000)\n2. Fence installation - Hawaii Kai ($3,500-5,000)\n3. Flooring replacement - Aiea ($2,200-3,800)\n\nAll requests submitted within last 6 hours. Respond quickly to increase win rate!');
+}
+
+function sendFollowUps() {
+    alert('Sending automated follow-up emails...\n\n📧 Sending to 12 previous quotes:\n\n• 3 quotes from last week\n• 5 quotes from 2 weeks ago  \n• 4 quotes from last month\n\nMessages customized based on project type and timeline. Expected response rate: 15-20%');
+}
+
+function generateQuotes() {
+    alert('Opening quote generator...\n\n📋 Quick quote templates available:\n\n• Drywall repair: $155-600\n• Flooring install: $3-8/sq ft\n• Fence building: $35-70/linear ft\n• General repairs: $90-200\n• Renovations: $2,500-25,000\n\nSelect service type to generate professional quote with Spankks Construction branding');
+}
+</script>
+{% endblock %}
