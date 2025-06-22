@@ -922,6 +922,7 @@ def business_intelligence_dashboard():
         return redirect(url_for('admin_login'))
 
     from business_intelligence import business_intelligence
+    from ml_analytics import ml_analytics
     
     # Generate comprehensive business intelligence
     executive_briefing = business_intelligence.generate_executive_briefing(handyman_storage)
@@ -929,11 +930,45 @@ def business_intelligence_dashboard():
     strategic_recommendations = business_intelligence.generate_strategic_recommendations(handyman_storage)
     roi_projections = business_intelligence.calculate_roi_projections(handyman_storage, strategic_recommendations)
     
+    # Generate ML-powered insights
+    ml_insights = ml_analytics.generate_ml_insights(handyman_storage)
+    
     return render_template('admin/business_intelligence.html',
                          executive_briefing=executive_briefing,
                          market_insights=market_insights,
                          strategic_recommendations=strategic_recommendations,
-                         roi_projections=roi_projections)
+                         roi_projections=roi_projections,
+                         ml_insights=ml_insights)
+
+@app.route('/admin/ml-insights')
+def ml_insights_dashboard():
+    """Machine Learning powered business insights and predictions"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access ML insights.', 'error')
+        return redirect(url_for('admin_login'))
+
+    from ml_analytics import ml_analytics
+    
+    # Generate comprehensive ML insights
+    ml_insights = ml_analytics.generate_ml_insights(handyman_storage)
+    
+    return render_template('admin/ml_insights.html',
+                         ml_insights=ml_insights)
+
+@app.route('/admin/performance-monitor')
+def performance_monitor_dashboard():
+    """Real-time performance monitoring and automated alerts"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access performance monitoring.', 'error')
+        return redirect(url_for('admin_login'))
+
+    from performance_monitor import performance_monitor
+    
+    # Generate real-time performance data
+    executive_data = performance_monitor.generate_executive_dashboard_data(handyman_storage)
+    
+    return render_template('admin/performance_monitor.html',
+                         executive_data=executive_data)
 
 @app.route('/admin/executive-summary')
 def executive_summary():
