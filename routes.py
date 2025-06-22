@@ -2558,9 +2558,39 @@ def get_client_quotes(client_id):
     if not session.get('portal_authenticated') or session.get('client_id') != client_id:
         return jsonify({'error': 'Unauthorized'}), 401
     
-    # Get quotes for this client from CRM
+    # Get client data to find their name for contact lookup
+    client_data = session.get('client_data', {})
+    client_name = client_data.get('name', '')
+    
+    if not client_name:
+        return jsonify({'error': 'Client name not found'}), 400
+    
+    # Find the contact by name
+    all_contacts = handyman_storage.get_all_contacts()
+    client_contact = None
+    for contact in all_contacts:
+        if contact.name == client_name:
+            client_contact = contact
+            break
+    
+    if not client_contact:
+        return jsonify({'quotes': [], 'count': 0})
+    
+    # Get quotes for this contact
     all_quotes = handyman_storage.get_all_quotes()
-    client_quotes = [q for q in all_quotes if q.contact_id == client_id]
+    client_quotes = []
+    for quote in all_quotes:
+        if quote.contact_id == client_contact.id:
+            quote_dict = {
+                'id': quote.id,
+                'service_type': quote.service_type,
+                'total_amount': quote.total_amount,
+                'status': quote.status,
+                'created_date': quote.created_date,
+                'valid_until': quote.valid_until,
+                'notes': quote.notes
+            }
+            client_quotes.append(quote_dict)
     
     return jsonify({
         'quotes': client_quotes,
@@ -2573,9 +2603,39 @@ def get_client_invoices(client_id):
     if not session.get('portal_authenticated') or session.get('client_id') != client_id:
         return jsonify({'error': 'Unauthorized'}), 401
     
-    # Get invoices for this client from CRM
+    # Get client data to find their name for contact lookup
+    client_data = session.get('client_data', {})
+    client_name = client_data.get('name', '')
+    
+    if not client_name:
+        return jsonify({'error': 'Client name not found'}), 400
+    
+    # Find the contact by name
+    all_contacts = handyman_storage.get_all_contacts()
+    client_contact = None
+    for contact in all_contacts:
+        if contact.name == client_name:
+            client_contact = contact
+            break
+    
+    if not client_contact:
+        return jsonify({'invoices': [], 'count': 0})
+    
+    # Get invoices for this contact
     all_invoices = handyman_storage.get_all_invoices()
-    client_invoices = [i for i in all_invoices if i.contact_id == client_id]
+    client_invoices = []
+    for invoice in all_invoices:
+        if invoice.contact_id == client_contact.id:
+            invoice_dict = {
+                'id': invoice.id,
+                'invoice_number': getattr(invoice, 'invoice_number', f'I{invoice.id:04d}'),
+                'total_amount': invoice.total_amount,
+                'status': invoice.status,
+                'created_date': invoice.created_date,
+                'due_date': getattr(invoice, 'due_date', ''),
+                'notes': getattr(invoice, 'notes', '')
+            }
+            client_invoices.append(invoice_dict)
     
     return jsonify({
         'invoices': client_invoices,

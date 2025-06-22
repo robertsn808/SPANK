@@ -15,5 +15,22 @@
     "last_contact": null,
     "preferred_contact": "email",
     "status": "active"
+  },
+  {
+    "id": 2,
+    "name": "Jessica Houtz",
+    "email": "jessica.houtz@tempmail.com",
+    "phone": "(808) 555-0123",
+    "address": "",
+    "notes": "Created via API for job 23456",
+    "tags": [
+      "api_generated"
+    ],
+    "created_date": "2025-06-21",
+    "job_history": [],
+    "total_spent": 0.0,
+    "last_contact": null,
+    "preferred_contact": "email",
+    "status": "active"
   }
 ]
