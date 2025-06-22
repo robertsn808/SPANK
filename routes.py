@@ -4042,3 +4042,147 @@ def workflow_management_dashboard():
         logging.error(f"Error loading workflow dashboard: {e}")
         flash('Error loading workflow dashboard.', 'error')
         return redirect(url_for('admin_dashboard'))
+
+# Job Tracking API Routes
+@app.route('/admin/job-tracking')
+def job_tracking_dashboard():
+    """Job tracking and payment management dashboard"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from job_tracking_service import job_tracking_service
+        
+        # Get comprehensive data
+        job_records = job_tracking_service.get_job_records()
+        quote_history = job_tracking_service.get_quote_history()
+        payment_logs = job_tracking_service.get_payment_logs()
+        reporting_data = job_tracking_service.get_reporting_data()
+        
+        return render_template('admin/job_tracking_dashboard.html',
+                             job_records=job_records,
+                             quote_history=quote_history,
+                             payment_logs=payment_logs,
+                             reporting_data=reporting_data)
+                             
+    except Exception as e:
+        logging.error(f"Error loading job tracking dashboard: {e}")
+        flash('Error loading job tracking dashboard.', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/api/job-tracking/create-job', methods=['POST'])
+def create_job_record_api():
+    """Create new job record"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from job_tracking_service import job_tracking_service
+        
+        data = request.get_json()
+        result = job_tracking_service.create_job_record(data)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error creating job record: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/job-tracking/create-quote', methods=['POST'])
+def create_quote_record_api():
+    """Create new quote record"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from job_tracking_service import job_tracking_service
+        
+        data = request.get_json()
+        result = job_tracking_service.create_quote_record(data)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error creating quote record: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/job-tracking/log-payment', methods=['POST'])
+def log_payment_api():
+    """Log manual payment received"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from job_tracking_service import job_tracking_service
+        
+        data = request.get_json()
+        result = job_tracking_service.log_payment(data)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error logging payment: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/job-tracking/log-materials', methods=['POST'])
+def log_materials_api():
+    """Log materials used for job"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from job_tracking_service import job_tracking_service
+        
+        data = request.get_json()
+        result = job_tracking_service.log_materials(data)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error logging materials: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/job-tracking/log-labor', methods=['POST'])
+def log_labor_api():
+    """Log labor hours for job"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from job_tracking_service import job_tracking_service
+        
+        data = request.get_json()
+        result = job_tracking_service.log_labor(data)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error logging labor: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/job-tracking/job-summary/<job_id>')
+def get_job_summary_api(job_id):
+    """Get comprehensive job summary"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from job_tracking_service import job_tracking_service
+        
+        result = job_tracking_service.get_job_summary(job_id)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error getting job summary: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/job-tracking/reporting')
+def get_job_tracking_reporting():
+    """Get job tracking reporting data"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from job_tracking_service import job_tracking_service
+        
+        reporting_data = job_tracking_service.get_reporting_data()
+        return jsonify(reporting_data)
+        
+    except Exception as e:
+        logging.error(f"Error getting reporting data: {e}")
+        return jsonify({'error': str(e)}), 500

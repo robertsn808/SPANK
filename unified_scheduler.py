@@ -989,7 +989,7 @@ class UnifiedScheduler:
             return {}
     
     def get_color_coded_events(self, job_type_colors: Dict[str, str] = None) -> List[Dict]:
-        """Get calendar events with color coding by job type"""
+        """Get calendar events with color coding by job type in FullCalendar format"""
         if not job_type_colors:
             job_type_colors = {
                 'Drywall Services': '#007bff',      # Blue
@@ -1023,41 +1023,66 @@ class UnifiedScheduler:
                         }
                     }
                 else:
-                    # Regular job appointment
+                    # Regular job appointment - FullCalendar compatible format
                     service_type = appointment.get('service_type', 'General Handyman')
                     color = job_type_colors.get(service_type, '#6c757d')
+                    status = appointment.get('status', 'inquiry')
                     
-                    # Adjust color based on status
-                    status = appointment.get('status', 'scheduled')
-                    if status == 'completed':
-                        color = '#28a745'  # Green for completed
-                    elif status == 'cancelled':
-                        color = '#dc3545'  # Red for cancelled
-                    elif status == 'work_in_progress':
-                        color = '#fd7e14'  # Orange for in progress
+                    # Status-based border colors
+                    status_colors = {
+                        'inquiry': '#6c757d',
+                        'estimate_scheduled': '#ffc107',
+                        'estimate_sent': '#17a2b8',
+                        'awaiting_deposit': '#007bff',
+                        'work_in_progress': '#fd7e14',
+                        'completed': '#28a745',
+                        'follow_up': '#6f42c1'
+                    }
+                    
+                    border_color = status_colors.get(status, color)
+                    
+                    # Calculate end time
+                    start_time = appointment.get('scheduled_time', '09:00')
+                    duration = appointment.get('estimated_duration', 120)
                     
                     event = {
                         'id': appointment['appointment_id'],
                         'title': f"{appointment['client_name']} - {service_type}",
-                        'start': f"{appointment['scheduled_date']}T{appointment.get('scheduled_time', '09:00')}",
+                        'start': f"{appointment['scheduled_date']}T{start_time}:00",
                         'end': self._calculate_end_time(
                             appointment['scheduled_date'],
-                            appointment.get('scheduled_time', '09:00'),
-                            appointment.get('estimated_duration', 120)
+                            start_time,
+                            duration
                         ),
                         'color': color,
+                        'borderColor': border_color,
                         'textColor': '#ffffff',
                         'extendedProps': {
                             'type': 'job',
-                            'client_id': appointment.get('client_id'),
-                            'job_id': appointment.get('job_id'),
-                            'service_type': service_type,
+                            'jobId': appointment.get('job_id', appointment['appointment_id']),
+                            'client': {
+                                'name': appointment['client_name'],
+                                'address': appointment.get('location', ''),
+                                'phone': appointment.get('client_phone', ''),
+                                'email': appointment.get('client_email', ''),
+                                'client_id': appointment.get('client_id')
+                            },
                             'status': status,
-                            'assigned_staff': appointment.get('assigned_staff', []),
+                            'assignedTo': appointment.get('assigned_staff', []),
+                            'materials': appointment.get('materials', []),
+                            'checklist': appointment.get('checklist', []),
+                            'notes': appointment.get('notes', ''),
+                            'paymentStatus': appointment.get('payment_status', 'unpaid'),
+                            'service_type': service_type,
                             'priority': appointment.get('priority', 'normal'),
-                            'location': appointment.get('location', ''),
-                            'phone': appointment.get('client_phone', ''),
-                            'notes': appointment.get('notes', '')
+                            'duration_minutes': duration,
+                            'estimated_cost': appointment.get('estimated_cost', 0),
+                            'actual_cost': appointment.get('actual_cost', 0),
+                            'project_phase': appointment.get('project_phase', 'initial'),
+                            'reminder_settings': appointment.get('reminder_settings', {}),
+                            'created_at': appointment.get('created_at', ''),
+                            'quote_id': appointment.get('quote_id', ''),
+                            'invoice_id': appointment.get('invoice_id', '')
                         }
                     }
                 
