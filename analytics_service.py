@@ -231,24 +231,48 @@ class BusinessAnalytics:
         monthly_data = defaultdict(lambda: {'revenue': 0, 'customers': 0})
         
         for invoice in invoices:
-            if invoice.status == 'paid':
-                try:
-                    if isinstance(invoice.created_date, str):
-                        date_obj = datetime.fromisoformat(invoice.created_date.replace('Z', '+00:00'))
-                    else:
-                        date_obj = invoice.created_date
-                    month_key = date_obj.strftime('%Y-%m')
-                    monthly_data[month_key]['revenue'] += invoice.total_amount
-                except:
-                    month_key = datetime.now().strftime('%Y-%m')
-                    monthly_data[month_key]['revenue'] += invoice.total_amount
+            # Handle both dict and object formats
+            if isinstance(invoice, dict):
+                if invoice.get('status') == 'paid':
+                    try:
+                        invoice_date = invoice.get('created_date', invoice.get('date'))
+                        if isinstance(invoice_date, str):
+                            date_obj = datetime.fromisoformat(invoice_date.replace('Z', '+00:00'))
+                        else:
+                            date_obj = invoice_date or datetime.now()
+                        month_key = date_obj.strftime('%Y-%m')
+                        monthly_data[month_key]['revenue'] += invoice.get('total_amount', 0)
+                    except:
+                        month_key = datetime.now().strftime('%Y-%m')
+                        monthly_data[month_key]['revenue'] += invoice.get('total_amount', 0)
+            else:
+                if hasattr(invoice, 'status') and invoice.status == 'paid':
+                    try:
+                        if isinstance(invoice.created_date, str):
+                            date_obj = datetime.fromisoformat(invoice.created_date.replace('Z', '+00:00'))
+                        else:
+                            date_obj = invoice.created_date
+                        month_key = date_obj.strftime('%Y-%m')
+                        monthly_data[month_key]['revenue'] += invoice.total_amount
+                    except:
+                        month_key = datetime.now().strftime('%Y-%m')
+                        monthly_data[month_key]['revenue'] += invoice.total_amount
         
         for contact in contacts:
             try:
-                if isinstance(contact.created_date, str):
-                    date_obj = datetime.fromisoformat(contact.created_date.replace('Z', '+00:00'))
+                # Handle both dict and object formats
+                if isinstance(contact, dict):
+                    created_date = contact.get('created_date')
+                    if isinstance(created_date, str):
+                        date_obj = datetime.fromisoformat(created_date.replace('Z', '+00:00'))
+                    else:
+                        date_obj = created_date or datetime.now()
                 else:
-                    date_obj = contact.created_date
+                    if isinstance(contact.created_date, str):
+                        date_obj = datetime.fromisoformat(contact.created_date.replace('Z', '+00:00'))
+                    else:
+                        date_obj = contact.created_date
+                
                 month_key = date_obj.strftime('%Y-%m')
                 monthly_data[month_key]['customers'] += 1
             except:
@@ -304,19 +328,49 @@ class BusinessAnalytics:
         invoices = storage.get_all_invoices()
         
         # Current outstanding amounts
-        pending_quotes = [q for q in quotes if q.status == 'pending']
-        outstanding_invoices = [i for i in invoices if i.status in ['sent', 'overdue']]
-        scheduled_jobs = [j for j in jobs if j.status == 'scheduled']
+        pending_quotes = []
+        outstanding_invoices = []
+        scheduled_jobs = []
+        
+        for q in quotes:
+            status = q.get('status') if isinstance(q, dict) else getattr(q, 'status', '')
+            if status == 'pending':
+                pending_quotes.append(q)
+        
+        for i in invoices:
+            status = i.get('status') if isinstance(i, dict) else getattr(i, 'status', '')
+            if status in ['sent', 'overdue']:
+                outstanding_invoices.append(i)
+        
+        for j in jobs:
+            status = j.get('status') if isinstance(j, dict) else getattr(j, 'status', '')
+            if status == 'scheduled':
+                scheduled_jobs.append(j)
         
         # Calculate potential revenue
-        pending_quote_value = sum([q.total_amount for q in pending_quotes if hasattr(q, 'total_amount')])
-        outstanding_invoice_value = sum([i.total_amount for i in outstanding_invoices])
-        scheduled_job_value = sum([j.estimated_value for j in scheduled_jobs if hasattr(j, 'estimated_value')])
+        pending_quote_value = 0
+        for q in pending_quotes:
+            amount = q.get('total_amount', 0) if isinstance(q, dict) else getattr(q, 'total_amount', 0)
+            pending_quote_value += amount
+        
+        outstanding_invoice_value = 0
+        for i in outstanding_invoices:
+            amount = i.get('total_amount', 0) if isinstance(i, dict) else getattr(i, 'total_amount', 0)
+            outstanding_invoice_value += amount
+        
+        scheduled_job_value = 0
+        for j in scheduled_jobs:
+            amount = j.get('estimated_value', 0) if isinstance(j, dict) else getattr(j, 'estimated_value', 0)
+            scheduled_job_value += amount
         
         # Monthly projections (next 6 months)
         monthly_projections = []
-        current_month_revenue = sum([i.total_amount for i in invoices if i.status == 'paid' and 
-                                   (datetime.now() - i.created_date).days <= 30])
+        current_month_revenue = 0
+        for i in invoices:
+            status = i.get('status') if isinstance(i, dict) else getattr(i, 'status', '')
+            if status == 'paid':
+                amount = i.get('total_amount', 0) if isinstance(i, dict) else getattr(i, 'total_amount', 0)
+                current_month_revenue += amount
         
         for i in range(6):
             # Simple projection based on current trends
