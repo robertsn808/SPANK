@@ -216,8 +216,8 @@
 </head>
 
 <body>
-    <!-- Include Mobile Navigation Component (Admin Only) -->
-    {% if request.endpoint and request.endpoint.startswith('admin') %}
+    <!-- Include Mobile Navigation Component (Admin Dashboard Only) -->
+    {% if request.endpoint and (request.endpoint == 'admin_dashboard' or request.endpoint.startswith('admin_')) %}
         {% include 'mobile_navigation.html' %}
     {% endif %}
     
