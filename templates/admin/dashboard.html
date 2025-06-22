@@ -645,10 +645,10 @@
                     </div>
                     <div class="card-body p-4">
                         <!-- Quick Stats Overview - Only Real Data -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card bg-primary text-white">
-                    <div class="card-body">
+        <div class="row mb-4 justify-content-center">
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card stat-card bg-primary text-white" style="min-width: 240px;">
+                    <div class="card-body px-4">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h6 class="card-title mb-0">Service Requests</h6>
@@ -661,9 +661,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card bg-success text-white">
-                    <div class="card-body">
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card stat-card bg-success text-white" style="min-width: 240px;">
+                    <div class="card-body px-4">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h6 class="card-title mb-0">Contact Messages</h6>
@@ -676,9 +676,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card bg-warning text-white">
-                    <div class="card-body">
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card stat-card bg-warning text-white" style="min-width: 240px;">
+                    <div class="card-body px-4">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h6 class="card-title mb-0">Pending Requests</h6>
@@ -691,9 +691,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card bg-info text-white">
-                    <div class="card-body">
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card stat-card bg-info text-white" style="min-width: 240px;">
+                    <div class="card-body px-4">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h6 class="card-title mb-0">Urgent Items</h6>
@@ -854,27 +854,27 @@
                         </h5>
                     </div>
                     <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-lg-3 col-md-6">
-                                <a href="{{ url_for('index') }}" class="btn btn-outline-primary w-100 py-3">
+                        <div class="row g-3 justify-content-center">
+                            <div class="col-md-6 col-lg-3">
+                                <a href="{{ url_for('index') }}" class="btn btn-outline-primary w-100 py-3" style="min-width: 200px;">
                                     <i class="fas fa-home fa-2x mb-2 d-block"></i>
                                     View Website
                                 </a>
                             </div>
-                            <div class="col-lg-3 col-md-6">
-                                <a href="/admin/business-intelligence" class="btn btn-outline-purple w-100 py-3">
+                            <div class="col-md-6 col-lg-3">
+                                <a href="/admin/business-intelligence" class="btn btn-outline-purple w-100 py-3" style="min-width: 200px;">
                                     <i class="fas fa-brain fa-2x mb-2 d-block"></i>
                                     AI Insights
                                 </a>
                             </div>
-                            <div class="col-lg-3 col-md-6">
-                                <a href="/admin/workflow-automation" class="btn btn-outline-orange w-100 py-3">
+                            <div class="col-md-6 col-lg-3">
+                                <a href="/admin/workflow-automation" class="btn btn-outline-orange w-100 py-3" style="min-width: 200px;">
                                     <i class="fas fa-cogs fa-2x mb-2 d-block"></i>
                                     Automation
                                 </a>
                             </div>
-                            <div class="col-lg-3 col-md-6">
-                                <button class="btn btn-outline-success w-100 py-3" onclick="window.print()">
+                            <div class="col-md-6 col-lg-3">
+                                <button class="btn btn-outline-success w-100 py-3" onclick="window.print()" style="min-width: 200px;">
                                     <i class="fas fa-print fa-2x mb-2 d-block"></i>
                                     Print Report
                                 </button>
