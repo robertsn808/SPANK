@@ -19,6 +19,7 @@ try:
     from notification_service import NotificationService
     from auth_service import auth_service
     from phone_formatter import phone_formatter
+    from unified_scheduler import unified_scheduler
     logging.info("All required modules imported successfully")
 except ImportError as e:
     logging.error(f"Critical import error in routes.py: {e}")
@@ -3033,3 +3034,154 @@ def get_staff_availability():
             }
     
     return jsonify(availability)
+
+# ===============================
+# UNIFIED SCHEDULER ENDPOINTS
+# ===============================
+
+@app.route('/admin/scheduler/unified')
+def unified_scheduler_dashboard():
+    """Unified scheduler dashboard with consolidated appointment management"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get weekly schedule from unified scheduler
+        week_data = unified_scheduler.get_weekly_schedule()
+        
+        # Get available staff for assignment
+        staff_members = [
+            {'id': 'mike_spankks', 'name': 'Mike Spankks', 'role': 'Lead Contractor'},
+            {'id': 'crew_member_1', 'name': 'Crew Member 1', 'role': 'Assistant'},
+            {'id': 'crew_member_2', 'name': 'Crew Member 2', 'role': 'Specialist'}
+        ]
+        
+        # Migration status - check if legacy appointments exist
+        legacy_appointments_count = len(appointments) if appointments else 0
+        
+        return render_template('admin/unified_scheduler.html',
+                             week_data=week_data,
+                             staff_members=staff_members,
+                             legacy_count=legacy_appointments_count)
+                             
+    except Exception as e:
+        logging.error(f"Error loading unified scheduler: {e}")
+        flash('Error loading scheduler dashboard.', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/scheduler/appointments/create', methods=['POST'])
+def create_unified_appointment():
+    """Create new appointment using unified scheduler"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        appointment_data = {
+            'client_name': request.form['client_name'],
+            'client_phone': phone_formatter.format_phone(request.form.get('client_phone', '')),
+            'client_email': request.form.get('client_email', ''),
+            'service_type': request.form['service_type'],
+            'scheduled_date': request.form['scheduled_date'],
+            'scheduled_time': request.form.get('scheduled_time', '09:00'),
+            'estimated_duration': int(request.form.get('estimated_duration', 120)),
+            'assigned_staff': request.form.getlist('assigned_staff'),
+            'priority': request.form.get('priority', 'normal'),
+            'location': request.form.get('location', ''),
+            'notes': request.form.get('notes', ''),
+            'created_by': session.get('user_name', 'Admin')
+        }
+        
+        appointment = unified_scheduler.create_appointment(appointment_data)
+        
+        # Send notification if notification service is available
+        if notification_service:
+            try:
+                notification_service.send_inquiry_alert(
+                    f"New appointment scheduled: {appointment['service_type']} for {appointment['client_name']} on {appointment['scheduled_date']}"
+                )
+            except Exception as e:
+                logging.warning(f"Failed to send appointment notification: {e}")
+        
+        return jsonify({
+            'success': True,
+            'appointment': appointment,
+            'message': f'Appointment created: {appointment["client_id"]}/{appointment["job_id"]}'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error creating unified appointment: {e}")
+        return jsonify({'error': 'Failed to create appointment'}), 500
+
+@app.route('/admin/scheduler/appointments/<appointment_id>/update', methods=['POST'])
+def update_unified_appointment(appointment_id):
+    """Update unified appointment status"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        status = request.form.get('status')
+        notes = request.form.get('notes')
+        
+        # Update status
+        if status:
+            success = unified_scheduler.update_appointment_status(
+                appointment_id, status, session.get('user_name', 'Admin')
+            )
+            if not success:
+                return jsonify({'error': 'Appointment not found'}), 404
+        
+        # Add notes if provided
+        if notes:
+            unified_scheduler.add_appointment_note(
+                appointment_id, notes, session.get('user_name', 'Admin')
+            )
+        
+        return jsonify({'success': True, 'message': 'Appointment updated successfully'})
+        
+    except Exception as e:
+        logging.error(f"Error updating appointment {appointment_id}: {e}")
+        return jsonify({'error': 'Failed to update appointment'}), 500
+
+@app.route('/admin/scheduler/migrate', methods=['POST'])
+def migrate_legacy_appointments():
+    """Migrate legacy appointments to unified system"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        # Migrate existing legacy appointments
+        migrated_count = unified_scheduler.migrate_legacy_appointments(appointments)
+        
+        # Clear legacy appointments after successful migration
+        if migrated_count > 0:
+            appointments.clear()
+            logging.info(f"Cleared {migrated_count} legacy appointments after migration")
+        
+        return jsonify({
+            'success': True,
+            'migrated_count': migrated_count,
+            'message': f'Successfully migrated {migrated_count} appointments to unified system'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error migrating appointments: {e}")
+        return jsonify({'error': 'Failed to migrate appointments'}), 500
+
+@app.route('/api/unified/calendar/events')
+def get_unified_calendar_events():
+    """Get calendar events from unified scheduler"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        start_date = request.args.get('start')
+        end_date = request.args.get('end')
+        
+        # Get events from unified scheduler
+        events = unified_scheduler.get_calendar_events(start_date, end_date)
+        
+        return jsonify(events)
+        
+    except Exception as e:
+        logging.error(f"Error getting unified calendar events: {e}")
+        return jsonify({'error': 'Failed to load calendar events'}), 500
