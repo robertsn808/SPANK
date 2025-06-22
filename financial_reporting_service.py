@@ -67,26 +67,16 @@ class FinancialReportingService:
             gross_profit = net_revenue - total_cogs
             gross_margin = (gross_profit / net_revenue * 100) if net_revenue > 0 else 0
             
-            # Operating Expenses (estimated - would be enhanced with actual expense tracking)
-            operating_expenses = {
-                'vehicle_fuel': gross_profit * 0.08,  # 8% estimate
-                'tools_equipment': gross_profit * 0.05,  # 5% estimate
-                'insurance': gross_profit * 0.04,  # 4% estimate
-                'licenses_permits': gross_profit * 0.02,  # 2% estimate
-                'marketing': gross_profit * 0.03,  # 3% estimate
-                'administrative': gross_profit * 0.05,  # 5% estimate
-                'professional_services': gross_profit * 0.02  # 2% estimate
-            }
+            # Only include actual tracked operating expenses (none yet tracked)
+            operating_expenses = {}
+            total_operating_expenses = 0
             
-            total_operating_expenses = sum(operating_expenses.values())
-            
-            # Calculate Operating Profit
-            operating_profit = gross_profit - total_operating_expenses
+            # Calculate Operating Profit (same as gross profit without tracked expenses)
+            operating_profit = gross_profit
             operating_margin = (operating_profit / net_revenue * 100) if net_revenue > 0 else 0
             
-            # Calculate Net Income
-            estimated_taxes = operating_profit * 0.25  # 25% estimated tax rate
-            net_income = operating_profit - estimated_taxes
+            # Calculate Net Income (no taxes deducted without actual expense tracking)
+            net_income = operating_profit
             net_margin = (net_income / net_revenue * 100) if net_revenue > 0 else 0
             
             return {
@@ -574,20 +564,8 @@ class FinancialReportingService:
             labor_expenses = sum(l['labor_cost'] + (l.get('overtime_hours', 0) * l.get('overtime_rate', 0)) 
                                for l in year_labor)
             
-            # Estimated business expenses (would be enhanced with actual expense tracking)
-            estimated_expenses = {
-                'vehicle_expenses': net_income_after_get * 0.08,
-                'tools_equipment': net_income_after_get * 0.05,
-                'insurance': net_income_after_get * 0.04,
-                'licenses_permits': net_income_after_get * 0.02,
-                'marketing_advertising': net_income_after_get * 0.03,
-                'office_supplies': net_income_after_get * 0.02,
-                'professional_services': net_income_after_get * 0.02,
-                'utilities': net_income_after_get * 0.03
-            }
-            
-            total_estimated_expenses = sum(estimated_expenses.values())
-            total_deductible_expenses = material_expenses + labor_expenses + total_estimated_expenses
+            # Only use actual tracked expenses - no estimates
+            total_deductible_expenses = material_expenses + labor_expenses
             
             # Calculate taxable income
             taxable_income = net_income_after_get - total_deductible_expenses
@@ -636,7 +614,6 @@ class FinancialReportingService:
                 'deductible_expenses': {
                     'materials': material_expenses,
                     'labor': labor_expenses,
-                    'estimated_business_expenses': estimated_expenses,
                     'total_deductions': total_deductible_expenses
                 },
                 'taxable_income': taxable_income,

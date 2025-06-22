@@ -1,0 +1,749 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Financial Reports Dashboard - SPANKKS Construction{% endblock %}
+
+{% block extra_head %}
+<style>
+    .report-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+    
+    .report-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .metric-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .profit-positive { color: #28a745; }
+    .profit-negative { color: #dc3545; }
+    .profit-neutral { color: #6c757d; }
+    
+    .table-financial {
+        font-size: 0.9rem;
+    }
+    
+    .table-financial th {
+        background-color: #f8f9fa;
+        border-top: none;
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .bg-profit { background: linear-gradient(135deg, #28a745, #20c997); }
+    .bg-revenue { background: linear-gradient(135deg, #007bff, #0056b3); }
+    .bg-expenses { background: linear-gradient(135deg, #fd7e14, #e63946); }
+    .bg-taxes { background: linear-gradient(135deg, #6610f2, #6f42c1); }
+    
+    .nav-pills .nav-link.active {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin: 20px 0;
+    }
+    
+    .filter-section {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-paid { background-color: #d1e7dd; color: #0f5132; }
+    .status-partial { background-color: #fff3cd; color: #664d03; }
+    .status-unpaid { background-color: #f8d7da; color: #721c24; }
+    .status-overdue { background-color: #f5c6cb; color: #721c24; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">Financial Reports Dashboard</h1>
+            <p class="text-muted mb-0">Comprehensive financial analysis for {{ current_year }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" id="refreshReports">
+                <i class="fas fa-sync-alt me-2"></i>Refresh Data
+            </button>
+            <button class="btn btn-success" id="exportReports">
+                <i class="fas fa-download me-2"></i>Export Reports
+            </button>
+        </div>
+    </div>
+
+    <!-- Financial Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card report-card bg-revenue text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="metric-value">
+                                ${{ "%.2f"|format(profit_loss.revenue.net_revenue if profit_loss.revenue else 0) }}
+                            </div>
+                            <div class="metric-label">Net Revenue</div>
+                        </div>
+                        <i class="fas fa-chart-line fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card report-card bg-expenses text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="metric-value">
+                                ${{ "%.2f"|format(profit_loss.total_operating_expenses if profit_loss.total_operating_expenses else 0) }}
+                            </div>
+                            <div class="metric-label">Total Expenses</div>
+                        </div>
+                        <i class="fas fa-chart-pie fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card report-card bg-profit text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="metric-value">
+                                ${{ "%.2f"|format(profit_loss.net_income.amount if profit_loss.net_income else 0) }}
+                            </div>
+                            <div class="metric-label">Net Profit</div>
+                        </div>
+                        <i class="fas fa-dollar-sign fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card report-card bg-taxes text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="metric-value">
+                                ${{ "%.2f"|format(tax_summary.quarterly_estimates.total_quarterly if tax_summary.quarterly_estimates else 0) }}
+                            </div>
+                            <div class="metric-label">Quarterly Tax Due</div>
+                        </div>
+                        <i class="fas fa-receipt fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Navigation Tabs -->
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-pills card-header-pills" id="reportTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="profit-loss-tab" data-bs-toggle="pill" data-bs-target="#profit-loss" type="button" role="tab">
+                        <i class="fas fa-chart-bar me-2"></i>Profit & Loss
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="job-costing-tab" data-bs-toggle="pill" data-bs-target="#job-costing" type="button" role="tab">
+                        <i class="fas fa-hammer me-2"></i>Job Costing
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="invoices-tab" data-bs-toggle="pill" data-bs-target="#invoices" type="button" role="tab">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>Invoices
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="clients-tab" data-bs-toggle="pill" data-bs-target="#clients" type="button" role="tab">
+                        <i class="fas fa-users me-2"></i>Client Payments
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="materials-tab" data-bs-toggle="pill" data-bs-target="#materials" type="button" role="tab">
+                        <i class="fas fa-boxes me-2"></i>Materials
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="taxes-tab" data-bs-toggle="pill" data-bs-target="#taxes" type="button" role="tab">
+                        <i class="fas fa-calculator me-2"></i>Tax Summary
+                    </button>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="card-body">
+            <div class="tab-content" id="reportTabContent">
+                
+                <!-- Profit & Loss Tab -->
+                <div class="tab-pane fade show active" id="profit-loss" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 class="mb-3">Income Statement - {{ profit_loss.period if profit_loss.period else current_year }}</h5>
+                            {% if profit_loss %}
+                            <table class="table table-financial">
+                                <tbody>
+                                    <tr class="table-light">
+                                        <td><strong>Revenue</strong></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Gross Revenue</td>
+                                        <td class="text-end">${{ "%.2f"|format(profit_loss.revenue.gross_revenue) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Less: Hawaii GET Tax</td>
+                                        <td class="text-end">({{ "%.2f"|format(profit_loss.revenue.collected_hawaii_get) }})</td>
+                                    </tr>
+                                    <tr class="fw-bold border-bottom">
+                                        <td class="ps-4">Net Revenue</td>
+                                        <td class="text-end">${{ "%.2f"|format(profit_loss.revenue.net_revenue) }}</td>
+                                    </tr>
+                                    
+                                    <tr class="table-light">
+                                        <td><strong>Cost of Goods Sold</strong></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Materials</td>
+                                        <td class="text-end">${{ "%.2f"|format(profit_loss.cost_of_goods_sold.materials) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Labor</td>
+                                        <td class="text-end">${{ "%.2f"|format(profit_loss.cost_of_goods_sold.labor) }}</td>
+                                    </tr>
+                                    <tr class="fw-bold border-bottom">
+                                        <td class="ps-4">Total COGS</td>
+                                        <td class="text-end">${{ "%.2f"|format(profit_loss.cost_of_goods_sold.total_cogs) }}</td>
+                                    </tr>
+                                    
+                                    <tr class="table-success">
+                                        <td><strong>Gross Profit</strong></td>
+                                        <td class="text-end fw-bold">${{ "%.2f"|format(profit_loss.gross_profit.amount) }} ({{ "%.1f"|format(profit_loss.gross_profit.margin_percentage) }}%)</td>
+                                    </tr>
+                                    
+                                    <tr class="table-success fw-bold">
+                                        <td><strong>Net Income</strong></td>
+                                        <td class="text-end">${{ "%.2f"|format(profit_loss.net_income.amount) }} ({{ "%.1f"|format(profit_loss.net_income.margin_percentage) }}%)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                No financial data available for the selected period.
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <h6>Business Summary</h6>
+                            {% if profit_loss.summary %}
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex justify-content-between">
+                                    <span>Total Jobs</span>
+                                    <strong>{{ profit_loss.summary.total_jobs }}</strong>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between">
+                                    <span>Jobs Completed</span>
+                                    <strong>{{ profit_loss.summary.jobs_completed }}</strong>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between">
+                                    <span>Average Job Value</span>
+                                    <strong>${{ "%.2f"|format(profit_loss.summary.average_job_value) }}</strong>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between">
+                                    <span>Revenue Per Day</span>
+                                    <strong>${{ "%.2f"|format(profit_loss.summary.revenue_per_day) }}</strong>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Job Costing Tab -->
+                <div class="tab-pane fade" id="job-costing" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Job Profitability Analysis</h5>
+                        <button class="btn btn-primary btn-sm" id="loadJobCosting">
+                            <i class="fas fa-sync-alt me-1"></i>Load Job Costing Data
+                        </button>
+                    </div>
+                    <div id="jobCostingContent">
+                        <div class="text-center py-5">
+                            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Click "Load Job Costing Data" to view detailed job profitability analysis</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Invoices Tab -->
+                <div class="tab-pane fade" id="invoices" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Invoice Status & Payment Tracking</h5>
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-select-sm" id="invoiceStatusFilter">
+                                <option value="">All Statuses</option>
+                                <option value="paid">Paid</option>
+                                <option value="partial">Partial Payment</option>
+                                <option value="unpaid">Unpaid</option>
+                            </select>
+                            <button class="btn btn-primary btn-sm" id="loadInvoices">
+                                <i class="fas fa-sync-alt me-1"></i>Load Invoices
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {% if invoice_report %}
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h4 class="text-primary">${{ "%.2f"|format(invoice_report.summary.total_billed) }}</h4>
+                                    <small class="text-muted">Total Billed</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h4 class="text-success">${{ "%.2f"|format(invoice_report.summary.total_paid) }}</h4>
+                                    <small class="text-muted">Total Paid</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h4 class="text-warning">${{ "%.2f"|format(invoice_report.summary.total_outstanding) }}</h4>
+                                    <small class="text-muted">Outstanding</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h4 class="text-info">{{ "%.1f"|format(invoice_report.summary.collection_rate) }}%</h4>
+                                    <small class="text-muted">Collection Rate</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div id="invoiceContent">
+                        <div class="text-center py-5">
+                            <i class="fas fa-file-invoice-dollar fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Click "Load Invoices" to view detailed invoice tracking</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Client Payments Tab -->
+                <div class="tab-pane fade" id="clients" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Client Payment Analysis</h5>
+                        <button class="btn btn-primary btn-sm" id="loadClientPayments">
+                            <i class="fas fa-sync-alt me-1"></i>Load Client Data
+                        </button>
+                    </div>
+                    
+                    {% if client_summary %}
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h4 class="text-primary">{{ client_summary.summary.total_clients }}</h4>
+                                    <small class="text-muted">Total Clients</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h4 class="text-success">${{ "%.2f"|format(client_summary.summary.total_lifetime_value) }}</h4>
+                                    <small class="text-muted">Total Lifetime Value</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h4 class="text-info">${{ "%.2f"|format(client_summary.summary.average_client_value) }}</h4>
+                                    <small class="text-muted">Average Client Value</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div id="clientPaymentContent">
+                        <div class="text-center py-5">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Click "Load Client Data" to view detailed payment analysis</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Materials Tab -->
+                <div class="tab-pane fade" id="materials" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Materials & Supplies Report</h5>
+                        <button class="btn btn-primary btn-sm" id="loadMaterials">
+                            <i class="fas fa-sync-alt me-1"></i>Load Materials Data
+                        </button>
+                    </div>
+                    <div id="materialsContent">
+                        <div class="text-center py-5">
+                            <i class="fas fa-boxes fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Click "Load Materials Data" to view detailed materials analysis</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tax Summary Tab -->
+                <div class="tab-pane fade" id="taxes" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 class="mb-3">Tax Summary - {{ current_year }}</h5>
+                            {% if tax_summary %}
+                            <table class="table table-financial">
+                                <tbody>
+                                    <tr class="table-light">
+                                        <td><strong>Income Summary</strong></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Gross Income</td>
+                                        <td class="text-end">${{ "%.2f"|format(tax_summary.income_summary.gross_income) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Hawaii GET Collected</td>
+                                        <td class="text-end">${{ "%.2f"|format(tax_summary.income_summary.hawaii_get_collected) }}</td>
+                                    </tr>
+                                    <tr class="fw-bold border-bottom">
+                                        <td class="ps-4">Net Income After GET</td>
+                                        <td class="text-end">${{ "%.2f"|format(tax_summary.income_summary.net_income_after_get) }}</td>
+                                    </tr>
+                                    
+                                    <tr class="table-light">
+                                        <td><strong>Deductible Expenses</strong></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Materials</td>
+                                        <td class="text-end">${{ "%.2f"|format(tax_summary.deductible_expenses.materials) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Labor</td>
+                                        <td class="text-end">${{ "%.2f"|format(tax_summary.deductible_expenses.labor) }}</td>
+                                    </tr>
+
+                                    <tr class="fw-bold border-bottom">
+                                        <td class="ps-4">Total Deductions</td>
+                                        <td class="text-end">${{ "%.2f"|format(tax_summary.deductible_expenses.total_deductions) }}</td>
+                                    </tr>
+                                    
+                                    <tr class="table-warning">
+                                        <td><strong>Taxable Income</strong></td>
+                                        <td class="text-end fw-bold">${{ "%.2f"|format(tax_summary.taxable_income) }}</td>
+                                    </tr>
+                                    
+                                    <tr class="table-light">
+                                        <td><strong>Tax Estimates</strong></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Federal Tax</td>
+                                        <td class="text-end">${{ "%.2f"|format(tax_summary.tax_estimates.federal_tax) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="ps-4">Hawaii State Tax</td>
+                                        <td class="text-end">${{ "%.2f"|format(tax_summary.tax_estimates.hawaii_state_tax) }}</td>
+                                    </tr>
+                                    <tr class="fw-bold border-bottom">
+                                        <td class="ps-4">Total Income Tax</td>
+                                        <td class="text-end">${{ "%.2f"|format(tax_summary.tax_estimates.total_income_tax) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                No tax data available for {{ current_year }}.
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <h6>Quarterly Estimates</h6>
+                            {% if tax_summary.quarterly_estimates %}
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex justify-content-between">
+                                    <span>Federal (Quarterly)</span>
+                                    <strong>${{ "%.2f"|format(tax_summary.quarterly_estimates.federal) }}</strong>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between">
+                                    <span>Hawaii State (Quarterly)</span>
+                                    <strong>${{ "%.2f"|format(tax_summary.quarterly_estimates.hawaii_state) }}</strong>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between">
+                                    <span>Hawaii GET (Quarterly)</span>
+                                    <strong>${{ "%.2f"|format(tax_summary.quarterly_estimates.hawaii_get) }}</strong>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between bg-warning">
+                                    <span><strong>Total Quarterly</strong></span>
+                                    <strong>${{ "%.2f"|format(tax_summary.quarterly_estimates.total_quarterly) }}</strong>
+                                </div>
+                            </div>
+                            
+                            <h6 class="mt-4">Hawaii GET Info</h6>
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item">
+                                    <small class="text-muted">Current Rate:</small>
+                                    <div>{{ "%.1f"|format(tax_summary.hawaii_get_info.rate * 100) }}% (O'ahu)</div>
+                                </div>
+                                <div class="list-group-item">
+                                    <small class="text-muted">Filing Frequency:</small>
+                                    <div>{{ tax_summary.hawaii_get_info.filing_frequency }}</div>
+                                </div>
+                                <div class="list-group-item">
+                                    <small class="text-muted">Annual Collected:</small>
+                                    <div>${{ "%.2f"|format(tax_summary.hawaii_get_info.annual_collected) }}</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Refresh reports functionality
+document.getElementById('refreshReports').addEventListener('click', function() {
+    location.reload();
+});
+
+// Load dynamic content for tabs
+document.getElementById('loadJobCosting').addEventListener('click', function() {
+    loadJobCostingData();
+});
+
+document.getElementById('loadInvoices').addEventListener('click', function() {
+    const statusFilter = document.getElementById('invoiceStatusFilter').value;
+    loadInvoiceData(statusFilter);
+});
+
+document.getElementById('loadClientPayments').addEventListener('click', function() {
+    loadClientPaymentData();
+});
+
+document.getElementById('loadMaterials').addEventListener('click', function() {
+    loadMaterialsData();
+});
+
+function loadJobCostingData() {
+    fetch('/api/financial-reports/job-costing')
+        .then(response => response.json())
+        .then(data => {
+            displayJobCostingData(data);
+        })
+        .catch(error => {
+            console.error('Error loading job costing data:', error);
+            document.getElementById('jobCostingContent').innerHTML = 
+                '<div class="alert alert-danger">Error loading job costing data</div>';
+        });
+}
+
+function loadInvoiceData(statusFilter = '') {
+    let url = '/api/financial-reports/invoice-report';
+    if (statusFilter) {
+        url += `?status=${statusFilter}`;
+    }
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            displayInvoiceData(data);
+        })
+        .catch(error => {
+            console.error('Error loading invoice data:', error);
+            document.getElementById('invoiceContent').innerHTML = 
+                '<div class="alert alert-danger">Error loading invoice data</div>';
+        });
+}
+
+function loadClientPaymentData() {
+    fetch('/api/financial-reports/client-payments')
+        .then(response => response.json())
+        .then(data => {
+            displayClientPaymentData(data);
+        })
+        .catch(error => {
+            console.error('Error loading client payment data:', error);
+            document.getElementById('clientPaymentContent').innerHTML = 
+                '<div class="alert alert-danger">Error loading client payment data</div>';
+        });
+}
+
+function loadMaterialsData() {
+    fetch('/api/financial-reports/materials')
+        .then(response => response.json())
+        .then(data => {
+            displayMaterialsData(data);
+        })
+        .catch(error => {
+            console.error('Error loading materials data:', error);
+            document.getElementById('materialsContent').innerHTML = 
+                '<div class="alert alert-danger">Error loading materials data</div>';
+        });
+}
+
+function displayJobCostingData(data) {
+    let html = '<div class="table-responsive"><table class="table table-financial">';
+    html += '<thead><tr><th>Job ID</th><th>Client</th><th>Service Type</th><th>Revenue</th><th>Costs</th><th>Profit</th><th>Margin</th></tr></thead><tbody>';
+    
+    if (data.job_costing_data && data.job_costing_data.length > 0) {
+        data.job_costing_data.forEach(job => {
+            const profitClass = job.profit_analysis.gross_profit >= 0 ? 'profit-positive' : 'profit-negative';
+            html += `<tr>
+                <td>${job.job_id}</td>
+                <td>${job.client_name}</td>
+                <td>${job.service_type}</td>
+                <td>$${job.actual_revenue.toFixed(2)}</td>
+                <td>$${job.costs.total.toFixed(2)}</td>
+                <td class="${profitClass}">$${job.profit_analysis.gross_profit.toFixed(2)}</td>
+                <td class="${profitClass}">${job.profit_analysis.profit_margin.toFixed(1)}%</td>
+            </tr>`;
+        });
+    } else {
+        html += '<tr><td colspan="7" class="text-center text-muted">No job costing data available</td></tr>';
+    }
+    
+    html += '</tbody></table></div>';
+    document.getElementById('jobCostingContent').innerHTML = html;
+}
+
+function displayInvoiceData(data) {
+    let html = '<div class="table-responsive"><table class="table table-financial">';
+    html += '<thead><tr><th>Invoice #</th><th>Client</th><th>Amount Billed</th><th>Amount Paid</th><th>Outstanding</th><th>Status</th><th>Days Overdue</th></tr></thead><tbody>';
+    
+    if (data.invoices && data.invoices.length > 0) {
+        data.invoices.forEach(invoice => {
+            const statusClass = getStatusClass(invoice.payment_status, invoice.days_overdue);
+            html += `<tr>
+                <td>${invoice.invoice_number}</td>
+                <td>${invoice.client_name}</td>
+                <td>$${invoice.amount_billed.toFixed(2)}</td>
+                <td>$${invoice.amount_paid.toFixed(2)}</td>
+                <td>$${invoice.outstanding_balance.toFixed(2)}</td>
+                <td><span class="status-badge ${statusClass}">${invoice.payment_status.toUpperCase()}</span></td>
+                <td>${invoice.days_overdue > 0 ? invoice.days_overdue + ' days' : '-'}</td>
+            </tr>`;
+        });
+    } else {
+        html += '<tr><td colspan="7" class="text-center text-muted">No invoice data available</td></tr>';
+    }
+    
+    html += '</tbody></table></div>';
+    document.getElementById('invoiceContent').innerHTML = html;
+}
+
+function displayClientPaymentData(data) {
+    let html = '<div class="table-responsive"><table class="table table-financial">';
+    html += '<thead><tr><th>Client Name</th><th>Total Jobs</th><th>Total Billed</th><th>Total Paid</th><th>Payment Rate</th><th>Avg Job Value</th></tr></thead><tbody>';
+    
+    if (data.clients && data.clients.length > 0) {
+        data.clients.forEach(client => {
+            html += `<tr>
+                <td>${client.client_name}</td>
+                <td>${client.total_jobs}</td>
+                <td>$${client.total_billed.toFixed(2)}</td>
+                <td>$${client.total_paid.toFixed(2)}</td>
+                <td>${client.payment_rate.toFixed(1)}%</td>
+                <td>$${client.average_invoice_value.toFixed(2)}</td>
+            </tr>`;
+        });
+    } else {
+        html += '<tr><td colspan="6" class="text-center text-muted">No client payment data available</td></tr>';
+    }
+    
+    html += '</tbody></table></div>';
+    document.getElementById('clientPaymentContent').innerHTML = html;
+}
+
+function displayMaterialsData(data) {
+    let html = '<div class="table-responsive"><table class="table table-financial">';
+    html += '<thead><tr><th>Material</th><th>Total Quantity</th><th>Total Cost</th><th>Avg Unit Cost</th><th>Jobs Used</th><th>Suppliers</th></tr></thead><tbody>';
+    
+    if (data.materials) {
+        Object.entries(data.materials).forEach(([material, info]) => {
+            html += `<tr>
+                <td>${material}</td>
+                <td>${info.total_quantity}</td>
+                <td>$${info.total_cost.toFixed(2)}</td>
+                <td>$${info.average_unit_cost.toFixed(2)}</td>
+                <td>${info.jobs_count}</td>
+                <td>${info.suppliers.join(', ')}</td>
+            </tr>`;
+        });
+    } else {
+        html += '<tr><td colspan="6" class="text-center text-muted">No materials data available</td></tr>';
+    }
+    
+    html += '</tbody></table></div>';
+    document.getElementById('materialsContent').innerHTML = html;
+}
+
+function getStatusClass(status, daysOverdue) {
+    if (daysOverdue > 0) return 'status-overdue';
+    switch(status) {
+        case 'paid': return 'status-paid';
+        case 'partial': return 'status-partial';
+        case 'unpaid': return 'status-unpaid';
+        default: return 'status-unpaid';
+    }
+}
+
+// Export functionality
+document.getElementById('exportReports').addEventListener('click', function() {
+    // This would implement PDF/Excel export functionality
+    alert('Export functionality would be implemented here');
+});
+</script>
+{% endblock %}
