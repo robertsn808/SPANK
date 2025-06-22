@@ -1,0 +1,71 @@
+[
+  {
+    "id": "ENG_20250622_080245",
+    "name": "Customer Engagement - New Customers",
+    "target_audience": "new_customers",
+    "created_date": "2025-06-22",
+    "target_customers": 0,
+    "campaign_type": "engagement",
+    "status": "planned",
+    "customers": [],
+    "success_metrics": {
+      "target_response_rate": 25.0,
+      "target_conversion_rate": 10.0,
+      "target_satisfaction_increase": 0.5
+    },
+    "content_suggestions": {
+      "email_subjects": [
+        "Welcome to the SPANKKS Construction Family!",
+        "Your Home Improvement Journey Starts Here",
+        "Exclusive New Customer Benefits Inside"
+      ],
+      "key_messages": [
+        "Professional construction services across O'ahu",
+        "Licensed, insured, and locally trusted",
+        "Free consultations for new customers"
+      ]
+    },
+    "execution_timeline": [
+      {
+        "phase": "preparation",
+        "start_date": "2025-06-22",
+        "end_date": "2025-06-24",
+        "tasks": [
+          "Finalize content",
+          "Review customer list",
+          "Setup tracking"
+        ]
+      },
+      {
+        "phase": "execution",
+        "start_date": "2025-06-25",
+        "end_date": "2025-07-02",
+        "tasks": [
+          "Send emails",
+          "Make follow-up calls",
+          "Track responses"
+        ]
+      },
+      {
+        "phase": "follow_up",
+        "start_date": "2025-07-03",
+        "end_date": "2025-07-13",
+        "tasks": [
+          "Follow up with respondents",
+          "Schedule consultations",
+          "Update customer profiles"
+        ]
+      },
+      {
+        "phase": "analysis",
+        "start_date": "2025-07-14",
+        "end_date": "2025-07-20",
+        "tasks": [
+          "Analyze results",
+          "Update strategies",
+          "Plan next campaign"
+        ]
+      }
+    ]
+  }
+]

@@ -139,6 +139,25 @@
                 </div>
 
                 <div class="nav-section">
+                    <div class="nav-section-header" onclick="toggleSection('automation-section')">
+                        <i class="fas fa-robot"></i>
+                        <span>Business Automation</span>
+                        <i class="fas fa-chevron-down section-toggle"></i>
+                    </div>
+                    <div class="nav-section-content" id="automation-section">
+                        <a href="{{ url_for('workflow_automation_dashboard') }}" class="nav-link">
+                            <i class="fas fa-project-diagram"></i> Workflow Automation
+                        </a>
+                        <a href="{{ url_for('api_workflow_analytics') }}" class="nav-link" target="_blank">
+                            <i class="fas fa-chart-line"></i> Workflow Analytics
+                        </a>
+                        <a href="{{ url_for('api_customer_engagement_analytics') }}" class="nav-link" target="_blank">
+                            <i class="fas fa-users-cog"></i> Engagement Analytics
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
                     <div class="nav-section-header" onclick="toggleSection('operations-section')">
                         <i class="fas fa-cogs"></i>
                         <span>Operations</span>
