@@ -39,10 +39,17 @@ except ImportError as e:
 try:
     handyman_storage = HandymanStorage()
     notification_service = NotificationService()
+    logging.info("Notification service initialized for manual admin dashboard notifications")
 except Exception as e:
     logging.error(f"Service initialization error: {e}")
-    handyman_storage = None
-    notification_service = None
+    # Ensure handyman_storage is always available, even as fallback
+    if 'handyman_storage' not in locals():
+        try:
+            handyman_storage = HandymanStorage()
+        except:
+            handyman_storage = None
+    if 'notification_service' not in locals():
+        notification_service = None
 
 # Get app instance after imports to avoid circular import
 def get_app():
@@ -1490,6 +1497,12 @@ def crm_dashboard():
     """CRM Dashboard with contacts, quotes, invoices, and jobs"""
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
+    
+    # Ensure storage is available
+    global handyman_storage
+    if handyman_storage is None:
+        from models import HandymanStorage
+        handyman_storage = HandymanStorage()
     
     contacts = handyman_storage.get_all_contacts()
     quotes = handyman_storage.get_all_quotes()
