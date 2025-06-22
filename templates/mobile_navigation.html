@@ -1,712 +1,282 @@
-<!-- Mobile Navigation Component -->
+<!-- Mobile Navigation Enhancement -->
+<div class="mobile-nav-container">
+    <!-- Mobile Header -->
+    <div class="mobile-header d-md-none bg-primary text-white p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link text-white p-0 me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavMenu">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+                <h5 class="mb-0">SPANKKS Admin</h5>
+            </div>
+            <div>
+                <button class="btn btn-link text-white p-0" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation Menu -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileNavMenu">
+        <div class="offcanvas-header bg-primary text-white">
+            <h5 class="offcanvas-title">
+                <i class="fas fa-tools me-2"></i>SPANKKS Dashboard
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <!-- Quick Stats -->
+            <div class="mobile-stats p-3 bg-light">
+                <div class="row g-2 text-center">
+                    <div class="col-4">
+                        <div class="mobile-stat-item">
+                            <div class="fw-bold text-primary">{{ bookings|length }}</div>
+                            <small class="text-muted">Requests</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="mobile-stat-item">
+                            <div class="fw-bold text-success">23</div>
+                            <small class="text-muted">Active</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="mobile-stat-item">
+                            <div class="fw-bold text-warning">8</div>
+                            <small class="text-muted">Pending</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="mobile-nav-links">
+                <a href="/admin/dashboard" class="mobile-nav-item active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <a href="/admin/crm" class="mobile-nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>CRM</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <a href="/admin/scheduler" class="mobile-nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Schedule</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <a href="/admin/analytics" class="mobile-nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <!-- Quick Actions Section -->
+                <div class="mobile-nav-section">
+                    <div class="mobile-nav-section-title">Quick Actions</div>
+                    <a href="/admin/crm/quotes/builder" class="mobile-nav-item">
+                        <i class="fas fa-plus-circle text-primary"></i>
+                        <span>New Quote</span>
+                    </a>
+                    <a href="/admin/crm/invoices/create" class="mobile-nav-item">
+                        <i class="fas fa-receipt text-warning"></i>
+                        <span>Create Invoice</span>
+                    </a>
+                    <a href="/admin/crm/contacts/add" class="mobile-nav-item">
+                        <i class="fas fa-user-plus text-info"></i>
+                        <span>Add Client</span>
+                    </a>
+                </div>
+
+                <!-- Advanced Tools -->
+                <div class="mobile-nav-section">
+                    <div class="mobile-nav-section-title">Advanced Tools</div>
+                    <a href="/admin/business-intelligence" class="mobile-nav-item">
+                        <i class="fas fa-brain text-purple"></i>
+                        <span>AI Insights</span>
+                    </a>
+                    <a href="/admin/workflow-automation" class="mobile-nav-item">
+                        <i class="fas fa-cogs text-orange"></i>
+                        <span>Automation</span>
+                    </a>
+                    <a href="/admin/performance-monitor" class="mobile-nav-item">
+                        <i class="fas fa-heartbeat text-danger"></i>
+                        <span>Performance</span>
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Mobile Footer -->
+            <div class="mobile-nav-footer p-3 border-top">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">{{ user_name or 'Admin' }}</small>
+                    <a href="/admin/logout" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-bottom-nav d-md-none">
+        <a href="/admin/dashboard" class="mobile-bottom-nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="/admin/crm" class="mobile-bottom-nav-item">
+            <i class="fas fa-users"></i>
+            <span>Clients</span>
+        </a>
+        <a href="/admin/scheduler" class="mobile-bottom-nav-item">
+            <i class="fas fa-calendar"></i>
+            <span>Schedule</span>
+        </a>
+        <a href="/admin/analytics" class="mobile-bottom-nav-item">
+            <i class="fas fa-chart-bar"></i>
+            <span>Reports</span>
+        </a>
+        <button class="mobile-bottom-nav-item" data-bs-toggle="offcanvas" data-bs-target="#mobileNavMenu">
+            <i class="fas fa-ellipsis-h"></i>
+            <span>More</span>
+        </button>
+    </div>
+</div>
+
 <style>
 /* Mobile Navigation Styles */
-.mobile-nav {
-    display: none;
-}
-
-.hamburger-menu {
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    z-index: 1050;
-    background: #007bff;
-    border: none;
-    border-radius: 8px;
-    padding: 12px;
-    color: white;
-    font-size: 18px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-}
-
-.mobile-sidebar {
-    position: fixed;
+.mobile-header {
+    position: sticky;
     top: 0;
-    left: -300px;
-    width: 280px;
-    height: 100vh;
-    background: white;
-    z-index: 1040;
-    transition: left 0.3s ease;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-    overflow-y: auto;
+    z-index: 1020;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.mobile-sidebar.open {
-    left: 0;
+.mobile-stats {
+    border-bottom: 1px solid #dee2e6;
 }
 
-.mobile-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.5);
-    z-index: 1030;
-    display: none;
+.mobile-stat-item {
+    padding: 0.5rem;
 }
 
-.mobile-overlay.active {
-    display: block;
-}
-
-.mobile-nav-header {
-    padding: 20px;
-    background: #007bff;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.mobile-nav-close {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 24px;
+.mobile-nav-links {
+    padding: 0;
 }
 
 .mobile-nav-item {
-    padding: 16px 20px;
-    border-bottom: 1px solid #e9ecef;
     display: flex;
     align-items: center;
-    text-decoration: none;
+    padding: 1rem 1.5rem;
     color: #495057;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    position: relative;
-}
-
-.mobile-nav-item:hover {
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    color: white;
     text-decoration: none;
-    transform: translateX(5px);
-    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
-}
-
-.mobile-nav-item.active {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    border-left: 4px solid #155724;
-}
-
-.mobile-nav-item i {
-    margin-right: 15px;
-    width: 20px;
-    text-align: center;
-}
-
-.mobile-nav-section {
-    padding: 15px 20px 8px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    color: #495057;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-bottom: 2px solid #007bff;
-    margin: 5px 0;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-/* Advanced Mobile Workflow Optimizations */
-.mobile-touch-target {
-    min-height: 48px;
-    min-width: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+    border-bottom: 1px solid #f8f9fa;
     transition: all 0.2s ease;
 }
 
-.mobile-workflow-bar {
+.mobile-nav-item:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+}
+
+.mobile-nav-item.active {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border-left: 4px solid #1976d2;
+}
+
+.mobile-nav-item i:first-child {
+    width: 24px;
+    margin-right: 1rem;
+}
+
+.mobile-nav-item span {
+    flex: 1;
+}
+
+.mobile-nav-item i:last-child {
+    opacity: 0.5;
+}
+
+.mobile-nav-section {
+    margin-top: 1rem;
+}
+
+.mobile-nav-section-title {
+    padding: 0.5rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: #f8f9fa;
+}
+
+.mobile-nav-footer {
+    margin-top: auto;
+    background-color: #f8f9fa;
+}
+
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    padding: 8px 0;
-    box-shadow: 0 -4px 20px rgba(0, 123, 255, 0.3);
-    z-index: 1000;
-    display: none;
-}
-
-.mobile-workflow-bar.active {
-    display: block;
-    animation: slideUpWorkflow 0.3s ease;
-}
-
-@keyframes slideUpWorkflow {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-}
-
-.workflow-action {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    margin: 0 4px;
-    backdrop-filter: blur(10px);
-    transition: all 0.2s ease;
-}
-
-.workflow-action:hover, .workflow-action:focus {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.mobile-quick-add {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    border: none;
-    font-size: 24px;
-    box-shadow: 0 4px 20px rgba(40, 167, 69, 0.4);
-    z-index: 999;
-    transition: all 0.3s ease;
-}
-
-.mobile-quick-add:hover {
-    transform: scale(1.1) rotate(90deg);
-    box-shadow: 0 6px 25px rgba(40, 167, 69, 0.6);
-}
-
-.mobile-swipe-actions {
-    position: relative;
-    overflow: hidden;
-}
-
-.swipe-bg {
-    position: absolute;
-    top: 0;
-    right: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, #dc3545, #c82333);
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 20px;
-    color: white;
-    font-weight: 600;
-    transition: right 0.3s ease;
-}
-
-.mobile-swipe-actions.swiping .swipe-bg {
-    right: 0;
-}
-
-.mobile-gesture-hint {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    color: #6c757d;
-    font-size: 12px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-}
-
-.mobile-list-item:hover .mobile-gesture-hint {
-    opacity: 1;
-}
-
-/* Mobile Context Menu */
-.mobile-context-menu {
-    position: fixed;
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    z-index: 2000;
-    padding: 8px 0;
-    min-width: 200px;
-    transform: scale(0.8);
-    opacity: 0;
-    transition: all 0.2s ease;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    z-index: 1030;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
 }
 
-.mobile-context-menu.active {
-    transform: scale(1);
-    opacity: 1;
-}
-
-.context-menu-item {
-    padding: 12px 20px;
+.mobile-bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem 0.5rem;
+    color: #6c757d;
+    text-decoration: none;
     border: none;
     background: none;
-    width: 100%;
-    text-align: left;
-    font-size: 16px;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
+    min-height: 60px;
 }
 
-.context-menu-item:hover {
-    background: #f8f9fa;
-}
-
-.context-menu-item.danger {
-    color: #dc3545;
-}
-
-.context-menu-item.danger:hover {
-    background: #f8d7da;
-}
-
-/* Enhanced Touch Feedback */
-.mobile-touch-target:active {
-    transform: scale(0.95);
-    background: rgba(0, 123, 255, 0.1);
-}
-
-.ripple-effect {
-    position: relative;
-    overflow: hidden;
-}
-
-.ripple {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.6);
-    animation: ripple 0.6s linear;
-    pointer-events: none;
-}
-
-@keyframes ripple {
-    to {
-        transform: scale(4);
-        opacity: 0;
-    }
-}
-
-/* Mobile Progress Indicators */
-.mobile-progress-ring {
-    position: relative;
-    width: 80px;
-    height: 80px;
-}
-
-.progress-ring-circle {
-    stroke: #e9ecef;
-    stroke-width: 4;
-    fill: transparent;
-    r: 36;
-    cx: 40;
-    cy: 40;
-    transform: rotate(-90deg);
-    transform-origin: center;
-}
-
-.progress-ring-fill {
-    stroke: #007bff;
-    stroke-width: 4;
-    stroke-linecap: round;
-    stroke-dasharray: 226;
-    stroke-dashoffset: 226;
-    animation: fillProgress 2s ease-in-out forwards;
-}
-
-@keyframes fillProgress {
-    to {
-        stroke-dashoffset: 0;
-    }
-}
-
-/* Mobile Haptic Feedback Simulation */
-.haptic-light {
-    animation: hapticLight 0.1s ease;
-}
-
-.haptic-medium {
-    animation: hapticMedium 0.15s ease;
-}
-
-.haptic-heavy {
-    animation: hapticHeavy 0.2s ease;
-}
-
-@keyframes hapticLight {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(1px); }
-}
-
-@keyframes hapticMedium {
-    0%, 100% { transform: translateX(0); }
-    25%, 75% { transform: translateX(-2px); }
-    50% { transform: translateX(2px); }
-}
-
-@keyframes hapticHeavy {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-3px); }
-    40%, 80% { transform: translateX(3px); }
-}
-
-.mobile-form-control {
-    font-size: 16px;
-    padding: 12px 15px;
-    border-radius: 8px;
-    border: 2px solid #dee2e6;
-    width: 100%;
-}
-
-.mobile-btn {
-    min-height: 48px;
-    font-size: 16px;
-    padding: 12px 20px;
-    border-radius: 8px;
-    width: 100%;
-    margin-bottom: 10px;
-}
-
-.mobile-card {
-    margin-bottom: 15px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.mobile-list-item {
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-    background: white;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-}
-
-.mobile-help-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: #28a745;
-    color: white;
-    border: none;
-    font-size: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    z-index: 1000;
-}
-
-/* Responsive breakpoints */
-@media (max-width: 768px) {
-    .mobile-nav {
-        display: block;
-    }
-    
-    .desktop-nav {
-        display: none;
-    }
-    
-    .sidebar {
-        display: none;
-    }
-    
-    .main-content {
-        margin-left: 0;
-        padding-top: 70px;
-    }
-    
-    .container-fluid {
-        padding-left: 15px;
-        padding-right: 15px;
-    }
-    
-    .btn {
-        min-height: 44px;
-        font-size: 16px;
-    }
-    
-    .form-control {
-        font-size: 16px;
-        padding: 12px 15px;
-    }
-}
-</style>
-
-<!-- Mobile Navigation HTML -->
-<div class="mobile-nav">
-    <button class="hamburger-menu mobile-touch-target" onclick="toggleMobileNav()">
-        <i class="fas fa-bars"></i>
-    </button>
-    
-    <div class="mobile-sidebar" id="mobileSidebar">
-        <div class="mobile-nav-header">
-            <div>
-                <strong>SPANKKS</strong><br>
-                <small>Construction</small>
-            </div>
-            <button class="mobile-nav-close mobile-touch-target" onclick="toggleMobileNav()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        {% if session.admin_logged_in %}
-        <div class="mobile-nav-section">Dashboard</div>
-        <a href="/admin/dashboard" class="mobile-nav-item">
-            <i class="fas fa-tachometer-alt"></i>Main Dashboard
-        </a>
-        <a href="/admin/analytics" class="mobile-nav-item">
-            <i class="fas fa-chart-line"></i>Business Analytics
-        </a>
-        
-        <div class="mobile-nav-section">Customer Management</div>
-        <a href="/admin/crm" class="mobile-nav-item">
-            <i class="fas fa-users"></i>CRM & Contacts
-        </a>
-        <a href="/admin/scheduler" class="mobile-nav-item">
-            <i class="fas fa-calendar-alt"></i>Calendar & Scheduling
-        </a>
-        <a href="/admin/quotes" class="mobile-nav-item">
-            <i class="fas fa-file-invoice-dollar"></i>Quotes & Invoices
-        </a>
-        
-        <div class="mobile-nav-section">Operations</div>
-        <a href="/admin/job-tracking" class="mobile-nav-item">
-            <i class="fas fa-clipboard-list"></i>Job Tracking
-        </a>
-        <a href="/admin/inventory" class="mobile-nav-item">
-            <i class="fas fa-boxes"></i>Inventory & Materials
-        </a>
-        <a href="/admin/checklists" class="mobile-nav-item">
-            <i class="fas fa-tasks"></i>Job Checklists
-        </a>
-        <a href="/admin/staff" class="mobile-nav-item">
-            <i class="fas fa-hard-hat"></i>Staff Management
-        </a>
-        
-        <div class="mobile-nav-section">Reports & Tools</div>
-        <a href="/admin/reports" class="mobile-nav-item">
-            <i class="fas fa-chart-bar"></i>Financial Reports
-        </a>
-        <a href="/admin/workflow-automation" class="mobile-nav-item">
-            <i class="fas fa-robot"></i>Workflow Automation
-        </a>
-        <a href="/admin/client-messaging" class="mobile-nav-item">
-            <i class="fas fa-comments"></i>Client Communications
-        </a>
-        
-        <div class="mobile-nav-section">Account</div>
-        <a href="/admin/logout" class="mobile-nav-item">
-            <i class="fas fa-sign-out-alt"></i>Logout
-        </a>
-        {% else %}
-        <div class="mobile-nav-section">Main</div>
-        <a href="/" class="mobile-nav-item">
-            <i class="fas fa-home"></i>Home
-        </a>
-        <a href="/services" class="mobile-nav-item">
-            <i class="fas fa-tools"></i>Services
-        </a>
-        <a href="/pricing" class="mobile-nav-item">
-            <i class="fas fa-dollar-sign"></i>Pricing
-        </a>
-        <a href="/contact" class="mobile-nav-item">
-            <i class="fas fa-phone"></i>Contact
-        </a>
-        <a href="/help" class="mobile-nav-item">
-            <i class="fas fa-question-circle"></i>Help & FAQ
-        </a>
-        {% endif %}
-    </div>
-    
-    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileNav()"></div>
-</div>
-
-<button class="mobile-help-btn mobile-touch-target" onclick="showMobileHelp()">
-    <i class="fas fa-question"></i>
-</button>
-
-<script>
-// Enhanced Mobile Navigation with Active State Management
-function toggleMobileNav() {
-    const sidebar = document.getElementById('mobileSidebar');
-    const overlay = document.getElementById('mobileOverlay');
-    const isOpen = sidebar.style.left === '0px';
-    
-    if (isOpen) {
-        sidebar.style.left = '-300px';
-        overlay.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    } else {
-        sidebar.style.left = '0px';
-        overlay.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-        highlightCurrentPage();
-    }
-}
-
-function highlightCurrentPage() {
-    const currentPath = window.location.pathname;
-    const navItems = document.querySelectorAll('.mobile-nav-item');
-    
-    navItems.forEach(item => {
-        item.classList.remove('active');
-        const href = item.getAttribute('href');
-        
-        // Exact match or section match for admin routes
-        if (href === currentPath || 
-            (currentPath.startsWith('/admin/') && href.startsWith('/admin/') && 
-             currentPath.includes(href.replace('/admin/', '')))) {
-            item.classList.add('active');
-        }
-    });
-}
-
-function showMobileHelp() {
-    const helpContent = `
-        <div class="mobile-help-overlay">
-            <div class="mobile-help-content">
-                <h5><i class="fas fa-question-circle me-2"></i>Admin Dashboard Help</h5>
-                <div class="help-sections">
-                    <div class="help-section">
-                        <h6><i class="fas fa-tachometer-alt me-2"></i>Dashboard Navigation</h6>
-                        <p>• Main Dashboard - Overview and quick stats</p>
-                        <p>• Business Analytics - Performance metrics and insights</p>
-                    </div>
-                    <div class="help-section">
-                        <h6><i class="fas fa-users me-2"></i>Customer Management</h6>
-                        <p>• CRM & Contacts - Manage customer database</p>
-                        <p>• Calendar & Scheduling - Book and manage appointments</p>
-                        <p>• Quotes & Invoices - Generate and track billing</p>
-                    </div>
-                    <div class="help-section">
-                        <h6><i class="fas fa-clipboard-list me-2"></i>Operations</h6>
-                        <p>• Job Tracking - Monitor project progress</p>
-                        <p>• Inventory & Materials - Stock management</p>
-                        <p>• Job Checklists - Task completion tracking</p>
-                        <p>• Staff Management - Team coordination</p>
-                    </div>
-                </div>
-                <button class="btn btn-primary btn-sm" onclick="closeMobileHelp()">
-                    <i class="fas fa-times me-2"></i>Got it
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.body.insertAdjacentHTML('beforeend', helpContent);
-}
-
-function closeMobileHelp() {
-    const helpOverlay = document.querySelector('.mobile-help-overlay');
-    if (helpOverlay) {
-        helpOverlay.remove();
-    }
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    highlightCurrentPage();
-    
-    // Close mobile nav when clicking nav items
-    document.querySelectorAll('.mobile-nav-item').forEach(item => {
-        item.addEventListener('click', function() {
-            setTimeout(() => toggleMobileNav(), 100);
-        });
-    });
-});
-</script>
-
-<style>
-.mobile-help-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    padding: 20px;
-}
-
-.mobile-help-content {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    max-width: 400px;
-    width: 100%;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-
-.help-sections {
-    margin: 20px 0;
-}
-
-.help-section {
-    margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 10px;
-    border-left: 4px solid #007bff;
-}
-
-.help-section h6 {
+.mobile-bottom-nav-item:hover,
+.mobile-bottom-nav-item.active {
     color: #007bff;
-    margin-bottom: 10px;
-    font-weight: 600;
+    background-color: #f8f9fa;
 }
 
-.help-section p {
-    margin: 5px 0;
-    font-size: 0.9rem;
-    color: #495057;
+.mobile-bottom-nav-item i {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.mobile-bottom-nav-item span {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Add padding to body when bottom nav is present */
+@media (max-width: 767px) {
+    body {
+        padding-bottom: 70px;
+    }
+}
+
+/* Offcanvas adjustments */
+.offcanvas {
+    width: 280px;
+}
+
+@media (max-width: 576px) {
+    .offcanvas {
+        width: 100%;
+    }
 }
 </style>
-
-<script>
-function toggleMobileNav() {
-    const sidebar = document.getElementById('mobileSidebar');
-    const overlay = document.getElementById('mobileOverlay');
-    
-    sidebar.classList.toggle('open');
-    overlay.classList.toggle('active');
-    
-    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
-}
-
-function showMobileHelp() {
-    const currentPage = window.location.pathname;
-    let helpMessage = 'Need help? Contact us at (808) 778-9132 or tap the menu for more options.';
-    
-    if (currentPage.includes('dashboard')) {
-        helpMessage = 'Dashboard shows your latest activity and quick actions. Tap any card to explore more details.';
-    } else if (currentPage.includes('quotes')) {
-        helpMessage = 'Quotes show project estimates. You can view details and accept quotes digitally.';
-    } else if (currentPage.includes('invoices')) {
-        helpMessage = 'Invoices show what you owe. You can download PDFs and see payment history.';
-    }
-    
-    alert(helpMessage);
-}
-
-window.addEventListener('orientationchange', function() {
-    setTimeout(function() {
-        const sidebar = document.getElementById('mobileSidebar');
-        if (sidebar && sidebar.classList.contains('open')) {
-            toggleMobileNav();
-        }
-    }, 100);
-});
-</script>
