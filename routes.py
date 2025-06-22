@@ -3118,7 +3118,7 @@ def update_inventory_item():
     return redirect(url_for('inventory_dashboard'))
 
 @app.route('/api/materials/log/<job_id>', methods=['POST'])
-def log_job_materials():
+def log_job_materials(job_id):
     """Log materials used for a job"""
     if not session.get('portal_authenticated'):
         return jsonify({'error': 'Unauthorized'}), 401
