@@ -1715,13 +1715,22 @@ def generate_quote_api():
         client_id = data.get('clientId')
         job_id = data.get('jobId')
         customer = data.get('customer')
-        phone = data.get('phone')
+        phone = data.get('phone') or data.get('customer_phone')
         service_type = data.get('serviceType', '')
         price = float(data.get('price', 0))
         
-        # Validate required fields
-        if not all([customer, phone, service_type, price]):
-            return jsonify({'error': 'Missing required fields'}), 400
+        # Check if this is a multi-line quote with items array
+        has_items = 'items' in data and isinstance(data['items'], list) and len(data['items']) > 0
+        
+        # Validate required fields based on quote type
+        if has_items:
+            # Multi-line quote validation
+            if not all([customer, phone]):
+                return jsonify({'error': 'Missing required fields: customer and phone'}), 400
+        else:
+            # Legacy single-item quote validation
+            if not all([customer, phone, service_type, price]):
+                return jsonify({'error': 'Missing required fields: customer, phone, serviceType, price'}), 400
         
         # Check if contact exists or create new one
         contacts = handyman_storage.get_all_contacts()
@@ -1751,17 +1760,18 @@ def generate_quote_api():
             # Multi-line quote with itemized descriptions
             total_amount = 0
             for item in data['items']:
-                item_obj = QuoteItem(
-                    description=item.get('description', 'Service Item'),
-                    quantity=float(item.get('quantity', 1)),
-                    unit_price=float(item.get('unit_price', 0)),
-                    unit="each"
-                )
-                quote_items.append(item_obj)
-                total_amount += item.get('line_total', item_obj.quantity * item_obj.unit_price)
+                if isinstance(item, dict):
+                    item_obj = QuoteItem(
+                        description=item.get('description', 'Service Item'),
+                        quantity=float(item.get('quantity', 1)),
+                        unit_price=float(item.get('unit_price', 0)),
+                        unit="each"
+                    )
+                    quote_items.append(item_obj)
+                    total_amount += item.get('line_total', item_obj.quantity * item_obj.unit_price)
             
-            # Use calculated total from items
-            price = data.get('total', total_amount)
+            # Use calculated total from items or fallback to provided total
+            price = data.get('total', total_amount) if total_amount > 0 else float(data.get('price', 0))
         else:
             # Legacy single-item quote for backward compatibility
             service_lower = service_type.lower() if service_type else 'general'
