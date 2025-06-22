@@ -19,11 +19,14 @@ try:
     from notification_service import NotificationService
     from auth_service import auth_service
     from phone_formatter import phone_formatter
+    logging.info("All required modules imported successfully")
 except ImportError as e:
-    logging.error(f"Import error in routes.py: {e}")
+    logging.error(f"Critical import error in routes.py: {e}")
+    logging.error("This may cause application functionality issues")
     # Create fallback objects to prevent crashes
     class FallbackService:
         def __getattr__(self, name):
+            logging.warning(f"Fallback service called for missing method: {name}")
             return lambda *args, **kwargs: None
     
     HandymanStorage = FallbackService

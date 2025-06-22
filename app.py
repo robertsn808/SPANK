@@ -1,4 +1,5 @@
-import os
+
+<old_str>import os
 import logging
 from flask import Flask
 
@@ -24,7 +25,39 @@ try:
     print("✅ App initialized successfully")
 except ImportError as e:
     logging.error(f"Route import error: {e}")
-    print("❌ App initialization failed - check dependencies")
+    print("❌ App initialization failed - check dependencies")</old_str>
+<new_str>import os
+import logging
+from flask import Flask
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+app = Flask(__name__)
+app.secret_key = os.environ.get("SESSION_SECRET", "triton-concrete-coating-secret-key-2025")
+
+# Print startup message
+print("\n🏗️ Spankks Construction")
+print("🏝️ Professional construction and home improvements across O'ahu")
+print("📞 Contact: (808) 778-9132")
+print("🌐 Licensed & Insured")
+print("\nBuilt with ❤️ for the local community\n")
+
+# Register template helpers
+try:
+    from template_helpers import register_template_helpers
+    register_template_helpers(app)
+    logging.info("Template helpers registered successfully")
+except ImportError as e:
+    logging.warning(f"Could not register template helpers: {e}")
+
+# Import routes after app creation to avoid circular imports
+try:
+    from routes import *
+    print("✅ App initialized successfully")
+except ImportError as e:
+    logging.error(f"Route import error: {e}")
+    print("❌ App initialization failed - check dependencies")</old_str>
