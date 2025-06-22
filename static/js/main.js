@@ -42,7 +42,10 @@ function initializeApp() {
         // Mobile-specific optimizations
         initMobileOptimizations();
         
-        console.log('✅ App initialized successfully');
+        // Only log initialization for admin pages
+        if (window.location.pathname.includes('/admin/')) {
+            console.log('✅ App initialized successfully');
+        }
     } catch (error) {
         console.error('❌ Error initializing app:', error);
         // Fallback: ensure basic functionality works
@@ -1315,9 +1318,10 @@ function formatDate(date) {
 }
 
 /**
- * Console welcome message
+ * Console welcome message - only for admin pages
  */
-console.log(`
+if (window.location.pathname.includes('/admin/')) {
+    console.log(`
 🏗️ Spankks Construction
 🏝️ Professional construction and home improvements across O'ahu
 📞 Contact: (808) 778-9132
@@ -1325,3 +1329,4 @@ console.log(`
 
 Built with ❤️ for the local community
 `);
+}

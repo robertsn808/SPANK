@@ -29,7 +29,8 @@ except ImportError as e:
 # Import routes after app creation to avoid circular imports
 try:
     from routes import *
-    print("✅ App initialized successfully")
+    # Only log to file, not to console on public pages
+    logging.info("App initialized successfully")
 except ImportError as e:
     logging.error(f"Route import error: {e}")
-    print("❌ App initialization failed - check dependencies")
+    logging.error("App initialization failed - check dependencies")
