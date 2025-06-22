@@ -926,7 +926,7 @@ import pytz
 from models import Contact, Job, Quote, Invoice
 # PDF service functions imported directly
 from pdf_service import generate_quote_pdf, generate_invoice_pdf
-from upload_service import upload_service
+from upload_service import photo_service
 from notification_service import notification_service
 from analytics_service import analytics_service
 from performance_monitor import performance_monitor
