@@ -162,13 +162,33 @@ def consultation():
                 'budget_range': None
             })
 
-            # Send inquiry alert to admin
+            # Automatically create unified appointment with client/job IDs
+            appointment_data = {
+                'client_name': name,
+                'client_phone': phone_formatter.format_phone(phone),
+                'client_email': email,
+                'service_type': service,
+                'scheduled_date': preferred_date if preferred_date else (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d'),
+                'scheduled_time': preferred_time if preferred_time else '09:00',
+                'status': 'tentative',
+                'priority': 'normal',
+                'location': f"{consultation_type} consultation" if consultation_type else '',
+                'notes': f"Auto-created from consultation request. {message}. Project: {project_type}. Sq ft: {square_footage}",
+                'booking_reference': request_id,
+                'created_by': 'system_auto',
+                'tags': ['consultation', 'auto_created']
+            }
+            
+            appointment = unified_scheduler.create_appointment(appointment_data)
+            
+            # Send inquiry alert to admin with appointment details
             notification_service.send_inquiry_alert(
                 inquiry_type="consultation",
                 customer_name=name,
                 phone_number=phone,
                 email=email,
-                service_type=service
+                service_type=service,
+                additional_info=f"Auto-scheduled: {appointment['client_id']}/{appointment['job_id']} for {preferred_date or 'next day'}"
             )
             
             logging.info(f"New service request created with ID: {request_id}")
@@ -212,13 +232,63 @@ def contact():
                 'message': message
             })
 
-            # Send inquiry alert to admin
-            notification_service.send_inquiry_alert(
-                inquiry_type="contact",
-                customer_name=name,
-                phone_number=phone,
-                email=email
-            )
+            # Auto-create appointment for service-related inquiries
+            service_keywords = ['drywall', 'floor', 'fence', 'plumb', 'electric', 'paint', 'repair', 'renovation', 'handyman']
+            is_service_inquiry = any(keyword in (subject + ' ' + message).lower() for keyword in service_keywords)
+            
+            if is_service_inquiry:
+                # Determine service type from keywords
+                service_type = 'General Handyman'
+                if 'drywall' in (subject + ' ' + message).lower():
+                    service_type = 'Drywall Services'
+                elif 'floor' in (subject + ' ' + message).lower():
+                    service_type = 'Flooring Installation'
+                elif 'fence' in (subject + ' ' + message).lower():
+                    service_type = 'Fence Building'
+                elif 'plumb' in (subject + ' ' + message).lower():
+                    service_type = 'Plumbing Repair'
+                elif 'electric' in (subject + ' ' + message).lower():
+                    service_type = 'Electrical Work'
+                elif 'paint' in (subject + ' ' + message).lower():
+                    service_type = 'Painting'
+                elif 'renovation' in (subject + ' ' + message).lower():
+                    service_type = 'Home Renovation'
+                
+                appointment_data = {
+                    'client_name': name,
+                    'client_phone': phone,
+                    'client_email': email,
+                    'service_type': service_type,
+                    'scheduled_date': (datetime.now() + timedelta(days=2)).strftime('%Y-%m-%d'),
+                    'scheduled_time': '10:00',
+                    'status': 'tentative',
+                    'priority': 'normal',
+                    'location': '',
+                    'notes': f"Auto-created from contact form. Subject: {subject}. Message: {message}",
+                    'booking_reference': message_id,
+                    'created_by': 'system_auto',
+                    'tags': ['contact_form', 'auto_created']
+                }
+                
+                appointment = unified_scheduler.create_appointment(appointment_data)
+                
+                # Send enhanced notification with appointment details
+                notification_service.send_inquiry_alert(
+                    inquiry_type="contact",
+                    customer_name=name,
+                    phone_number=phone,
+                    email=email,
+                    service_type=service_type,
+                    additional_info=f"Service inquiry auto-scheduled: {appointment['client_id']}/{appointment['job_id']} for {appointment['scheduled_date']}"
+                )
+            else:
+                # Send standard notification for general inquiries
+                notification_service.send_inquiry_alert(
+                    inquiry_type="contact",
+                    customer_name=name,
+                    phone_number=phone,
+                    email=email
+                )
             
             logging.info(f"New contact message created with ID: {message_id}")
             return redirect(url_for('form_confirmation', 

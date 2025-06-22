@@ -37,17 +37,21 @@ class NotificationService:
             logging.error(f"Failed to create admin notification: {e}")
             return False
 
-    def send_inquiry_alert(self, inquiry_type, customer_name, phone_number, email, service_type=None):
+    def send_inquiry_alert(self, inquiry_type, customer_name, phone_number, email, service_type=None, additional_info=None):
         """Create admin notification for new inquiry to be manually followed up"""
         try:
             # Create admin notification for manual follow-up
+            reason = f"New {inquiry_type} inquiry: {service_type or inquiry_type} - manual follow-up required"
+            if additional_info:
+                reason += f" | {additional_info}"
+            
             notification_data = {
                 'type': 'new_inquiry',
                 'customer_name': customer_name,
                 'phone_number': phone_number,
                 'email': email,
                 'amount': 0,  # No monetary value for inquiries
-                'reason': f"New {inquiry_type} inquiry: {service_type or inquiry_type} - manual follow-up required",
+                'reason': reason,
                 'timestamp': datetime.now(),
                 'status': 'pending'
             }
