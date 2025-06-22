@@ -216,8 +216,10 @@
 </head>
 
 <body>
-    <!-- Include Mobile Navigation Component -->
-    {% include 'mobile_navigation.html' %}
+    <!-- Include Mobile Navigation Component (Admin Only) -->
+    {% if request.endpoint and request.endpoint.startswith('admin') %}
+        {% include 'mobile_navigation.html' %}
+    {% endif %}
     
     <!-- Include Notification System -->
     {% include 'notification_system.html' %}
