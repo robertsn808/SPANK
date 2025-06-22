@@ -970,6 +970,33 @@ def performance_monitor_dashboard():
     return render_template('admin/performance_monitor.html',
                          executive_data=executive_data)
 
+@app.route('/admin/integrated-analytics')
+def integrated_analytics():
+    """Comprehensive integrated analytics dashboard"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access integrated analytics.', 'error')
+        return redirect(url_for('admin_login'))
+
+    from analytics_service import analytics_service
+    from business_intelligence import business_intelligence
+    from ml_analytics import ml_analytics
+    from performance_monitor import performance_monitor
+    from automated_insights import automated_insights
+    
+    # Generate comprehensive analytics
+    business_report = analytics_service.generate_business_report(handyman_storage)
+    executive_briefing = business_intelligence.generate_executive_briefing(handyman_storage)
+    ml_insights = ml_analytics.generate_ml_insights(handyman_storage)
+    performance_data = performance_monitor.generate_executive_dashboard_data(handyman_storage)
+    daily_insights = automated_insights.generate_daily_insights(handyman_storage)
+    
+    return render_template('admin/integrated_analytics.html',
+                         business_report=business_report,
+                         executive_briefing=executive_briefing,
+                         ml_insights=ml_insights,
+                         performance_data=performance_data,
+                         daily_insights=daily_insights)
+
 @app.route('/admin/executive-summary')
 def executive_summary():
     """Executive dashboard with key business metrics"""
