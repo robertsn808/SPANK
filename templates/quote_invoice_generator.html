@@ -166,6 +166,85 @@
       border-left: none;
     }
     
+    .line-item {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .line-item:hover {
+      border-color: #1e3c72;
+      box-shadow: 0 4px 15px rgba(30, 60, 114, 0.1);
+    }
+    
+    .line-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .line-item-number {
+      font-weight: 600;
+      color: #1e3c72;
+      font-size: 14px;
+    }
+    
+    .remove-item {
+      background: #dc3545;
+      border: none;
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .remove-item:hover {
+      background: #c82333;
+      transform: scale(1.1);
+    }
+    
+    .line-total {
+      background: #e3f2fd;
+      border: 2px solid #90caf9;
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    .pricing-summary {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    
+    .summary-row.total {
+      font-weight: 700;
+      font-size: 18px;
+      border-top: 2px solid #1e3c72;
+      padding-top: 10px;
+      color: #1e3c72;
+    }
+    
     @media (max-width: 768px) {
       .form-container {
         margin: 10px;
@@ -174,6 +253,20 @@
       
       .brand-title {
         font-size: 1.5rem;
+      }
+      
+      .line-item {
+        padding: 15px;
+      }
+      
+      .line-item-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .remove-item {
+        align-self: flex-end;
       }
     }
   </style>
@@ -242,12 +335,65 @@
         </div>
 
         <div class="mb-3">
-          <label for="price" class="form-label">
-            <i class="fas fa-dollar-sign me-2"></i>Total Price
+          <label for="jobLocation" class="form-label">
+            <i class="fas fa-map-marker-alt me-2"></i>Job Location
           </label>
-          <div class="input-group">
-            <span class="input-group-text">$</span>
-            <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" required>
+          <input type="text" class="form-control" id="jobLocation" name="job_location" placeholder="123 Main St, Honolulu, HI" required>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="employeeName" class="form-label">
+              <i class="fas fa-user-tie me-2"></i>Quote By
+            </label>
+            <input type="text" class="form-control" id="employeeName" name="employee_name" placeholder="Sales Representative" required>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="quoteDays" class="form-label">
+              <i class="fas fa-calendar me-2"></i>Quote Valid For (Days)
+            </label>
+            <input type="number" class="form-control" id="quoteDays" name="quote_days" value="30" min="1" max="365" required>
+          </div>
+        </div>
+
+        <!-- Line Items Section -->
+        <div class="mb-4" id="lineItemsSection">
+          <h5 class="mb-3">
+            <i class="fas fa-list me-2"></i>Line Items
+          </h5>
+          
+          <div id="items-container">
+            <!-- Items will be inserted here -->
+          </div>
+          
+          <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addItem()">
+            <i class="fas fa-plus me-2"></i>Add Line Item
+          </button>
+        </div>
+
+        <!-- Pricing Summary -->
+        <div class="mb-3">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="totalDiscount" class="form-label">
+                <i class="fas fa-percent me-2"></i>Discount
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="totalDiscount" name="total_discount" step="0.01" value="0" min="0">
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="totalTax" class="form-label">
+                <i class="fas fa-receipt me-2"></i>HI State Tax
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="totalTax" name="total_tax" step="0.01" value="0" min="0">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -260,6 +406,27 @@
             <option value="quote">Professional Quote</option>
             <option value="invoice">Professional Invoice</option>
           </select>
+        </div>
+
+        <!-- Live Pricing Summary -->
+        <div class="pricing-summary" id="pricingSummary" style="display: none;">
+          <h6><i class="fas fa-calculator me-2"></i>Quote Summary</h6>
+          <div class="summary-row">
+            <span>Subtotal:</span>
+            <span id="summarySubtotal">$0.00</span>
+          </div>
+          <div class="summary-row">
+            <span>Discount:</span>
+            <span id="summaryDiscount">$0.00</span>
+          </div>
+          <div class="summary-row">
+            <span>Tax:</span>
+            <span id="summaryTax">$0.00</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total:</span>
+            <span id="summaryTotal">$0.00</span>
+          </div>
         </div>
 
         <button type="submit" class="btn btn-primary btn-generate" id="generateBtn">
@@ -285,6 +452,10 @@
     const loadingSpinner = document.querySelector('.loading-spinner');
     const resultSection = document.getElementById('resultSection');
     const resultContent = document.getElementById('resultContent');
+    const itemsContainer = document.getElementById('items-container');
+    const pricingSummary = document.getElementById('pricingSummary');
+    
+    let itemCounter = 0;
 
     // Format phone number as user types
     document.getElementById('phone').addEventListener('input', function(e) {
@@ -297,6 +468,130 @@
       e.target.value = value;
     });
 
+    // Add line item functionality
+    function addItem() {
+      const itemIndex = itemCounter++;
+      const itemHTML = `
+        <div class="line-item" data-item-index="${itemIndex}">
+          <div class="line-item-header">
+            <span class="line-item-number">
+              <i class="fas fa-wrench me-1"></i>Line Item ${itemIndex + 1}
+            </span>
+            <button type="button" class="remove-item" onclick="removeItem(${itemIndex})" title="Remove item">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label class="form-label">Description</label>
+              <input type="text" class="form-control" name="description_${itemIndex}" 
+                     placeholder="e.g., Drywall repair - 5x8 area" required onchange="updateSummary()">
+            </div>
+            
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Unit Price</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" name="unit_price_${itemIndex}" 
+                       step="0.01" min="0" required onchange="updateLineTotal(${itemIndex})">
+              </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Quantity</label>
+              <input type="number" class="form-control" name="quantity_${itemIndex}" 
+                     value="1" min="1" required onchange="updateLineTotal(${itemIndex})">
+            </div>
+            
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Line Total</label>
+              <input type="text" class="form-control line-total" name="line_total_${itemIndex}" 
+                     readonly value="$0.00">
+            </div>
+          </div>
+        </div>
+      `;
+      
+      itemsContainer.insertAdjacentHTML('beforeend', itemHTML);
+      updateSummary();
+    }
+
+    // Remove line item
+    function removeItem(itemIndex) {
+      const itemElement = document.querySelector(`[data-item-index="${itemIndex}"]`);
+      if (itemElement) {
+        itemElement.remove();
+        updateSummary();
+        renumberItems();
+      }
+    }
+
+    // Update line total when unit price or quantity changes
+    function updateLineTotal(itemIndex) {
+      const unitPriceInput = document.querySelector(`input[name="unit_price_${itemIndex}"]`);
+      const quantityInput = document.querySelector(`input[name="quantity_${itemIndex}"]`);
+      const lineTotalInput = document.querySelector(`input[name="line_total_${itemIndex}"]`);
+      
+      if (unitPriceInput && quantityInput && lineTotalInput) {
+        const unitPrice = parseFloat(unitPriceInput.value) || 0;
+        const quantity = parseInt(quantityInput.value) || 0;
+        const lineTotal = unitPrice * quantity;
+        
+        lineTotalInput.value = `$${lineTotal.toFixed(2)}`;
+        updateSummary();
+      }
+    }
+
+    // Renumber items after removal
+    function renumberItems() {
+      const items = document.querySelectorAll('.line-item');
+      items.forEach((item, index) => {
+        const numberSpan = item.querySelector('.line-item-number');
+        if (numberSpan) {
+          numberSpan.innerHTML = `<i class="fas fa-wrench me-1"></i>Line Item ${index + 1}`;
+        }
+      });
+    }
+
+    // Update pricing summary
+    function updateSummary() {
+      const items = document.querySelectorAll('.line-item');
+      let subtotal = 0;
+      
+      items.forEach(item => {
+        const lineTotalInput = item.querySelector('input[name^="line_total_"]');
+        if (lineTotalInput) {
+          const value = lineTotalInput.value.replace('$', '');
+          subtotal += parseFloat(value) || 0;
+        }
+      });
+      
+      const discount = parseFloat(document.getElementById('totalDiscount')?.value) || 0;
+      const tax = parseFloat(document.getElementById('totalTax')?.value) || 0;
+      const total = subtotal - discount + tax;
+      
+      // Update summary display
+      document.getElementById('summarySubtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('summaryDiscount').textContent = `$${discount.toFixed(2)}`;
+      document.getElementById('summaryTax').textContent = `$${tax.toFixed(2)}`;
+      document.getElementById('summaryTotal').textContent = `$${total.toFixed(2)}`;
+      
+      // Show/hide summary based on items
+      if (items.length > 0) {
+        pricingSummary.style.display = 'block';
+      } else {
+        pricingSummary.style.display = 'none';
+      }
+    }
+
+    // Add event listeners for discount and tax changes
+    document.getElementById('totalDiscount')?.addEventListener('input', updateSummary);
+    document.getElementById('totalTax')?.addEventListener('input', updateSummary);
+
+    // Initialize with one item
+    addItem();
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -308,42 +603,70 @@
 
       try {
         const formData = new FormData(form);
-        const payload = Object.fromEntries(formData.entries());
+        const docType = formData.get('docType');
         
         // Determine the correct API endpoint
-        const route = payload.docType === 'quote' ? '/api/generate-quote' : '/api/generate-invoice';
+        const route = docType === 'quote' ? '/api/generate-quote' : '/api/generate-invoice';
         
-        // Prepare payload based on document type
-        let apiPayload;
-        if (payload.docType === 'quote') {
-          apiPayload = {
-            clientId: payload.clientId,
-            jobId: payload.jobId,
-            customer: payload.customer,
-            phone: payload.phone,
-            serviceType: payload.serviceType,
-            price: parseFloat(payload.price)
-          };
-        } else {
-          apiPayload = {
-            clientId: payload.clientId,
-            jobId: payload.jobId,
-            customer: payload.customer,
-            total: parseFloat(payload.price)
-          };
+        // Build core payload
+        const payload = {
+          clientId: formData.get('clientId'),
+          jobId: formData.get('jobId'),
+          customer: formData.get('customer'),
+          customer_phone: formData.get('phone'),
+          job_location: formData.get('job_location'),
+          employee_name: formData.get('employee_name'),
+          quote_days: parseInt(formData.get('quote_days')),
+          date: new Date().toISOString().split('T')[0], // Current date if not provided
+          total_discount: parseFloat(formData.get('total_discount')) || 0,
+          total_tax: parseFloat(formData.get('total_tax')) || 0
+        };
+        
+        // Build items array with the exact structure expected by backend
+        const items = [];
+        const itemElements = document.querySelectorAll('.line-item');
+        
+        itemElements.forEach((item, index) => {
+          const description = item.querySelector(`input[name^="description_"]`)?.value;
+          const unitPrice = parseFloat(item.querySelector(`input[name^="unit_price_"]`)?.value) || 0;
+          const quantity = parseInt(item.querySelector(`input[name^="quantity_"]`)?.value) || 1;
+          const lineTotal = unitPrice * quantity;
+          
+          if (description && unitPrice > 0) {
+            items.push({
+              description: description,
+              unit_price: unitPrice,
+              quantity: quantity,
+              line_total: lineTotal
+            });
+          }
+        });
+        
+        payload.items = items;
+        
+        // Calculate totals
+        payload.total_sub = items.reduce((sum, item) => sum + item.line_total, 0);
+        payload.total = payload.total_sub - payload.total_discount + payload.total_tax;
+        
+        // For invoices, adjust the payload structure
+        if (docType === 'invoice') {
+          payload.total = payload.total;
+          delete payload.quote_days; // Invoices don't need quote validity
         }
+
+        console.log('Sending payload:', payload); // Debug log
 
         const res = await fetch(route, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(apiPayload)
+          body: JSON.stringify(payload)
         });
 
         const data = await res.json();
         
         if (res.ok && (data.quoteId || data.invoiceId)) {
           // Success - show result
-          showSuccess(data, payload.docType);
+          showSuccess(data, docType);
         } else {
           // Error - show error message
           showError(data.error || 'Failed to generate PDF');

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SPANKKS – Multi-Line Quote Generator</title>
+  <style>
+    body { font-family: sans-serif; margin: 40px; max-width: 700px; }
+    label { font-weight: bold; display: block; margin-top: 15px; }
+    input, select { width: 100%; padding: 8px; margin-top: 5px; }
+    .item-group { border: 1px solid #ccc; padding: 10px; margin-top: 10px; background: #f9f9f9; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>SPANKKS: Multi-Line Quote Generator</h1>
+
+  <form id="docForm">
+    <label>Client ID</label>
+    <input type="text" name="clientId" required>
+
+    <label>Job ID</label>
+    <input type="text" name="jobId" required>
+
+    <label>Customer Name</label>
+    <input type="text" name="customer" required>
+
+    <label>Phone Number</label>
+    <input type="text" name="customer_phone" required>
+
+    <label>Job Location</label>
+    <input type="text" name="job_location" required>
+
+    <label>Quote By</label>
+    <input type="text" name="employee_name" required>
+
+    <label>Date</label>
+    <input type="date" name="date" required>
+
+    <label>Quote Valid For (Days)</label>
+    <input type="number" name="quote_days" value="30" required>
+
+    <hr>
+    <h3>Line Items</h3>
+    <div id="items-container">
+      <!-- Items will be inserted here -->
+    </div>
+    <button type="button" onclick="addItem()">➕ Add Line Item</button>
+
+    <label>Discount ($)</label>
+    <input type="number" name="total_discount" step="0.01" value="0">
+
+    <label>HI State Tax ($)</label>
+    <input type="number" name="total_tax" step="0.01" value="0">
+
+    <button type="submit">Generate Quote PDF</button>
+  </form>
+
+  <script>
+    const itemsContainer = document.getElementById('items-container');
+
+    function addItem() {
+      const index = itemsContainer.children.length;
+      const itemHTML = `
+        <div class="item-group">
+          <label>Description</label>
+          <input type="text" name="description_${index}" required>
+          <label>Unit Price ($)</label>
+          <input type="number" step="0.01" name="unit_price_${index}" required>
+          <label>Quantity</label>
+          <input type="number" name="quantity_${index}" value="1" required>
+        </div>
+      `;
+      itemsContainer.insertAdjacentHTML('beforeend', itemHTML);
+    }
+
+    // Initialize with one item
+    addItem();
+
+    document.getElementById('docForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const payload = {};
+
+      // Pull core fields
+      for (let [key, val] of formData.entries()) {
+        if (!key.startsWith('description_') && !key.startsWith('unit_price_') && !key.startsWith('quantity_')) {
+          payload[key] = val;
+        }
+      }
+
+      // Build items array
+      const itemCount = document.querySelectorAll('.item-group').length;
+      payload.items = [];
+
+      for (let i = 0; i < itemCount; i++) {
+        const desc = formData.get(`description_${i}`);
+        const unit = parseFloat(formData.get(`unit_price_${i}`));
+        const qty = parseInt(formData.get(`quantity_${i}`));
+        const total = parseFloat((unit * qty).toFixed(2));
+        payload.items.push({ description: desc, unit_price: unit, line_total: total });
+      }
+
+      // Calculate subtotal & total
+      payload.total_sub = payload.items.reduce((sum, i) => sum + i.line_total, 0);
+      payload.total_discount = parseFloat(payload.total_discount || 0);
+      payload.total_tax = parseFloat(payload.total_tax || 0);
+      payload.total = parseFloat((payload.total_sub - payload.total_discount + payload.total_tax).toFixed(2));
+
+      // Post to backend
+      const res = await fetch('/generate-quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (data.path) {
+        window.location.href = data.path;
+      } else {
+        alert('Something went wrong generating the PDF.');
+      }
+    });
+  </script>
+</body>
+</html>

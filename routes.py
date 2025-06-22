@@ -1743,40 +1743,57 @@ def generate_quote_api():
             }
             contact = handyman_storage.add_contact(contact_data)
         
-        # Create quote items based on service type
+        # Handle multi-line quote items from req.body.items[] array
         from models import QuoteItem
+        quote_items = []
         
-        # Generate appropriate quote items based on service type and price
-        service_lower = service_type.lower() if service_type else 'general'
-        
-        if service_lower in ['drywall', 'drywall repair']:
-            quote_items = [QuoteItem(
-                description=f"{service_type} Service",
-                quantity=1.0,
-                unit_price=price,
-                unit="job"
-            )]
-        elif service_lower in ['flooring', 'flooring installation']:
-            quote_items = [QuoteItem(
-                description=f"{service_type} Service",
-                quantity=1.0,
-                unit_price=price,
-                unit="sq ft"
-            )]
-        elif service_lower in ['fence', 'fencing']:
-            quote_items = [QuoteItem(
-                description=f"{service_type} Service",
-                quantity=1.0,
-                unit_price=price,
-                unit="linear ft"
-            )]
+        if 'items' in data and isinstance(data['items'], list) and len(data['items']) > 0:
+            # Multi-line quote with itemized descriptions
+            total_amount = 0
+            for item in data['items']:
+                item_obj = QuoteItem(
+                    description=item.get('description', 'Service Item'),
+                    quantity=float(item.get('quantity', 1)),
+                    unit_price=float(item.get('unit_price', 0)),
+                    unit="each"
+                )
+                quote_items.append(item_obj)
+                total_amount += item.get('line_total', item_obj.quantity * item_obj.unit_price)
+            
+            # Use calculated total from items
+            price = data.get('total', total_amount)
         else:
-            quote_items = [QuoteItem(
-                description=f"{service_type} Service",
-                quantity=1.0,
-                unit_price=price,
-                unit="job"
-            )]
+            # Legacy single-item quote for backward compatibility
+            service_lower = service_type.lower() if service_type else 'general'
+            
+            if service_lower in ['drywall', 'drywall repair']:
+                quote_items = [QuoteItem(
+                    description=f"{service_type} Service",
+                    quantity=1.0,
+                    unit_price=price,
+                    unit="job"
+                )]
+            elif service_lower in ['flooring', 'flooring installation']:
+                quote_items = [QuoteItem(
+                    description=f"{service_type} Service",
+                    quantity=1.0,
+                    unit_price=price,
+                    unit="sq ft"
+                )]
+            elif service_lower in ['fence', 'fencing']:
+                quote_items = [QuoteItem(
+                    description=f"{service_type} Service",
+                    quantity=1.0,
+                    unit_price=price,
+                    unit="linear ft"
+                )]
+            else:
+                quote_items = [QuoteItem(
+                    description=f"{service_type} Service",
+                    quantity=1.0,
+                    unit_price=price,
+                    unit="job"
+                )]
         
         # Create quote
         hawaii_time = get_hawaii_time()
