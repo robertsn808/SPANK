@@ -277,6 +277,16 @@ def consultation():
 
     return render_template('consultation.html')
 
+@app.route('/help')
+def help():
+    """Help and FAQ page"""
+    return render_template('help.html')
+
+@app.route('/gallery')
+def gallery():
+    """Project gallery showcasing completed work"""
+    return render_template('gallery.html')
+
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     """Contact page with business information and form handling"""
