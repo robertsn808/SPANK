@@ -529,33 +529,40 @@
     </div>
 </div>
 
-<!-- Status Bar -->
-<div class="status-bar">
-    <div class="status-left">
-        <div class="status-item">
-            <div class="status-indicator" id="connectionStatus"></div>
-            <span>Connected</span>
+<!-- Status Bar (Admin and Portal Only) -->
+<script>
+// Check if current page should show status bar
+if (window.location.pathname.startsWith('/admin/') || window.location.pathname.startsWith('/portal/')) {
+    document.write(`
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <div class="status-indicator" id="connectionStatus"></div>
+                    <span>Connected</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="currentTime">--:-- --</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Last sync: <span id="lastSync">--:--</span></span>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">
+                    <i class="fas fa-user"></i>
+                    <span>Admin User</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-keyboard"></i>
+                    <span>Press ? for shortcuts</span>
+                </div>
+            </div>
         </div>
-        <div class="status-item">
-            <i class="fas fa-clock"></i>
-            <span id="currentTime">--:-- --</span>
-        </div>
-        <div class="status-item">
-            <i class="fas fa-sync-alt"></i>
-            <span>Last sync: <span id="lastSync">--:--</span></span>
-        </div>
-    </div>
-    <div class="status-right">
-        <div class="status-item">
-            <i class="fas fa-user"></i>
-            <span>Admin User</span>
-        </div>
-        <div class="status-item">
-            <i class="fas fa-keyboard"></i>
-            <span>Press ? for shortcuts</span>
-        </div>
-    </div>
-</div>
+    `);
+}
+</script>
 
 <script>
 // Notification System JavaScript
@@ -812,8 +819,13 @@ class NotificationSystem {
         }
     }
     
-    // Status Bar
+    // Status Bar (Admin and Portal Only)
     initializeStatusBar() {
+        // Only initialize status bar on admin and portal pages
+        if (!window.location.pathname.startsWith('/admin/') && !window.location.pathname.startsWith('/portal/')) {
+            return;
+        }
+        
         this.updateTime();
         this.updateLastSync();
         
@@ -828,6 +840,9 @@ class NotificationSystem {
     }
     
     updateTime() {
+        const timeElement = document.getElementById('currentTime');
+        if (!timeElement) return;
+        
         const now = new Date();
         const timeString = now.toLocaleTimeString('en-US', {
             timeZone: 'Pacific/Honolulu',
@@ -835,21 +850,26 @@ class NotificationSystem {
             hour: 'numeric',
             minute: '2-digit'
         });
-        document.getElementById('currentTime').textContent = timeString + ' HST';
+        timeElement.textContent = timeString + ' HST';
     }
     
     updateLastSync() {
+        const syncElement = document.getElementById('lastSync');
+        if (!syncElement) return;
+        
         const now = new Date();
         const timeString = now.toLocaleTimeString('en-US', {
             hour12: true,
             hour: 'numeric',
             minute: '2-digit'
         });
-        document.getElementById('lastSync').textContent = timeString;
+        syncElement.textContent = timeString;
     }
     
     monitorConnection() {
         const statusIndicator = document.getElementById('connectionStatus');
+        if (!statusIndicator) return;
+        
         const statusText = statusIndicator.nextElementSibling;
         
         // Check connection status
