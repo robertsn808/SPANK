@@ -435,7 +435,7 @@ class HandymanStorage:
                             setattr(contact, key, value)
 
                     # Save back to storage
-                    self._save_contacts(contacts)
+                    self._save_contacts_to_file()
                     logging.info(f"Updated contact {contact_id}")
                     return True
 
@@ -466,6 +466,69 @@ class HandymanStorage:
         self._save_quotes_to_file()
         return quote
 
+    def _save_invoices(self):
+        """Save invoices to JSON file"""
+        try:
+            import os
+            os.makedirs('data', exist_ok=True)
+            
+            invoices_data = []
+            for invoice in self.invoices:
+                invoice_dict = {
+                    'id': invoice.id,
+                    'contact_id': invoice.contact_id,
+                    'quote_id': invoice.quote_id,
+                    'subtotal': invoice.subtotal,
+                    'tax_rate': invoice.tax_rate,
+                    'total_amount': invoice.total_amount,
+                    'created_date': invoice.created_date,
+                    'due_date': invoice.due_date,
+                    'status': invoice.status,
+                    'payment_terms': invoice.payment_terms,
+                    'items': [{'description': item.description, 'quantity': item.quantity, 
+                              'unit_price': item.unit_price, 'unit': item.unit} for item in invoice.items]
+                }
+                invoices_data.append(invoice_dict)
+            
+            with open('data/invoices.json', 'w') as f:
+                json.dump(invoices_data, f, indent=2)
+            logging.info(f"Saved {len(invoices_data)} invoices to file")
+            
+        except Exception as e:
+            logging.error(f"Error saving invoices: {e}")
+
+    def _save_contacts_to_file(self):
+        """Save contacts to JSON file"""
+        try:
+            import os
+            os.makedirs('data', exist_ok=True)
+            
+            contacts_data = []
+            for contact in self.contacts:
+                contact_dict = {
+                    'id': contact.id,
+                    'name': contact.name,
+                    'email': contact.email,
+                    'phone': contact.phone,
+                    'address': contact.address,
+                    'notes': contact.notes,
+                    'tags': contact.tags,
+                    'created_date': contact.created_date,
+                    'job_history': contact.job_history,
+                    'total_spent': contact.total_spent,
+                    'last_contact': contact.last_contact,
+                    'preferred_contact': contact.preferred_contact,
+                    'status': contact.status
+                }
+                contacts_data.append(contact_dict)
+            
+            with open('data/contacts.json', 'w') as f:
+                json.dump(contacts_data, f, indent=2)
+            logging.info(f"Saved {len(contacts_data)} contacts to file")
+            
+        except Exception as e:
+            logging.error(f"Error saving contacts: {e}")
+
     def get_all_quotes(self):
         """Get all quotes"""
         return self.quotes
@@ -494,6 +557,7 @@ class HandymanStorage:
         )
         invoice.id = len(self.invoices) + 1
         self.invoices.append(invoice)
+        self._save_invoices()
         return invoice
 
     def get_all_invoices(self):
