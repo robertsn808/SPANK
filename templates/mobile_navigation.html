@@ -1,0 +1,295 @@
+<!-- Mobile Navigation Component -->
+<style>
+/* Mobile Navigation Styles */
+.mobile-nav {
+    display: none;
+}
+
+.hamburger-menu {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1050;
+    background: #007bff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    color: white;
+    font-size: 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.mobile-sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 280px;
+    height: 100vh;
+    background: white;
+    z-index: 1040;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    overflow-y: auto;
+}
+
+.mobile-sidebar.open {
+    left: 0;
+}
+
+.mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 1030;
+    display: none;
+}
+
+.mobile-overlay.active {
+    display: block;
+}
+
+.mobile-nav-header {
+    padding: 20px;
+    background: #007bff;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mobile-nav-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+}
+
+.mobile-nav-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s ease;
+}
+
+.mobile-nav-item:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.mobile-nav-item i {
+    margin-right: 15px;
+    width: 20px;
+    text-align: center;
+}
+
+.mobile-nav-section {
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #666;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Mobile optimizations */
+.mobile-touch-target {
+    min-height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-form-control {
+    font-size: 16px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+    width: 100%;
+}
+
+.mobile-btn {
+    min-height: 48px;
+    font-size: 16px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.mobile-card {
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.mobile-list-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    background: white;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.mobile-help-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #28a745;
+    color: white;
+    border: none;
+    font-size: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1000;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+    .mobile-nav {
+        display: block;
+    }
+    
+    .desktop-nav {
+        display: none;
+    }
+    
+    .sidebar {
+        display: none;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding-top: 70px;
+    }
+    
+    .container-fluid {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .btn {
+        min-height: 44px;
+        font-size: 16px;
+    }
+    
+    .form-control {
+        font-size: 16px;
+        padding: 12px 15px;
+    }
+}
+</style>
+
+<!-- Mobile Navigation HTML -->
+<div class="mobile-nav">
+    <button class="hamburger-menu mobile-touch-target" onclick="toggleMobileNav()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="mobile-nav-header">
+            <div>
+                <strong>SPANKKS</strong><br>
+                <small>Construction</small>
+            </div>
+            <button class="mobile-nav-close mobile-touch-target" onclick="toggleMobileNav()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        {% if session.admin_logged_in %}
+        <div class="mobile-nav-section">Admin Dashboard</div>
+        <a href="/admin/dashboard" class="mobile-nav-item">
+            <i class="fas fa-tachometer-alt"></i>Dashboard
+        </a>
+        <a href="/admin/crm" class="mobile-nav-item">
+            <i class="fas fa-users"></i>CRM & Contacts
+        </a>
+        <a href="/admin/scheduler" class="mobile-nav-item">
+            <i class="fas fa-calendar-alt"></i>Scheduler
+        </a>
+        <a href="/admin/quotes" class="mobile-nav-item">
+            <i class="fas fa-file-invoice-dollar"></i>Quotes & Invoices
+        </a>
+        <a href="/admin/staff" class="mobile-nav-item">
+            <i class="fas fa-hard-hat"></i>Staff Management
+        </a>
+        <a href="/admin/client-messaging" class="mobile-nav-item">
+            <i class="fas fa-comments"></i>Client Messaging
+        </a>
+        <a href="/admin/logout" class="mobile-nav-item">
+            <i class="fas fa-sign-out-alt"></i>Logout
+        </a>
+        {% else %}
+        <div class="mobile-nav-section">Main</div>
+        <a href="/" class="mobile-nav-item">
+            <i class="fas fa-home"></i>Home
+        </a>
+        <a href="/services" class="mobile-nav-item">
+            <i class="fas fa-tools"></i>Services
+        </a>
+        <a href="/pricing" class="mobile-nav-item">
+            <i class="fas fa-dollar-sign"></i>Pricing
+        </a>
+        <a href="/contact" class="mobile-nav-item">
+            <i class="fas fa-phone"></i>Contact
+        </a>
+        <a href="/help" class="mobile-nav-item">
+            <i class="fas fa-question-circle"></i>Help & FAQ
+        </a>
+        {% endif %}
+    </div>
+    
+    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileNav()"></div>
+</div>
+
+<button class="mobile-help-btn mobile-touch-target" onclick="showMobileHelp()">
+    <i class="fas fa-question"></i>
+</button>
+
+<script>
+function toggleMobileNav() {
+    const sidebar = document.getElementById('mobileSidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
+    
+    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+}
+
+function showMobileHelp() {
+    const currentPage = window.location.pathname;
+    let helpMessage = 'Need help? Contact us at (808) 778-9132 or tap the menu for more options.';
+    
+    if (currentPage.includes('dashboard')) {
+        helpMessage = 'Dashboard shows your latest activity and quick actions. Tap any card to explore more details.';
+    } else if (currentPage.includes('quotes')) {
+        helpMessage = 'Quotes show project estimates. You can view details and accept quotes digitally.';
+    } else if (currentPage.includes('invoices')) {
+        helpMessage = 'Invoices show what you owe. You can download PDFs and see payment history.';
+    }
+    
+    alert(helpMessage);
+}
+
+window.addEventListener('orientationchange', function() {
+    setTimeout(function() {
+        const sidebar = document.getElementById('mobileSidebar');
+        if (sidebar && sidebar.classList.contains('open')) {
+            toggleMobileNav();
+        }
+    }, 100);
+});
+</script>

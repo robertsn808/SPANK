@@ -1,0 +1,640 @@
+<!-- Enhanced Dashboard Widgets for User Flow Improvements -->
+<style>
+.dashboard-widget {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.dashboard-widget:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.widget-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.widget-action {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.metric-card {
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin-bottom: 15px;
+}
+
+.metric-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.metric-label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.metric-change {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.metric-change.positive {
+    color: #28a745;
+}
+
+.metric-change.negative {
+    color: #dc3545;
+}
+
+.quick-action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.quick-action {
+    padding: 15px;
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.quick-action:hover {
+    border-color: #007bff;
+    background: #f8f9fa;
+    color: #007bff;
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
+.quick-action i {
+    font-size: 24px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.status-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.status-item:last-child {
+    border-bottom: none;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-paid {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #dee2e6;
+}
+
+.progress-ring {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 10px;
+}
+
+.progress-ring-circle {
+    fill: transparent;
+    stroke: #dee2e6;
+    stroke-width: 4;
+    stroke-dasharray: 188.5;
+    stroke-dashoffset: 188.5;
+    transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+    transition: stroke-dashoffset 0.3s ease;
+}
+
+.progress-ring-circle.active {
+    stroke: #28a745;
+}
+
+.onboarding-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.onboarding-tooltip .tooltip-content {
+    visibility: hidden;
+    background: #333;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
+    width: 160px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.onboarding-tooltip:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+.mobile-friendly {
+    border-radius: 12px;
+    min-height: 44px;
+    font-size: 16px;
+    padding: 12px 20px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .dashboard-widget {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .quick-action-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .quick-action {
+        padding: 12px;
+    }
+    
+    .metric-number {
+        font-size: 2rem;
+    }
+    
+    .widget-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .status-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}
+</style>
+
+<!-- Admin Dashboard Widgets -->
+{% if session.admin_logged_in %}
+<div class="row">
+    <!-- This Week Metrics -->
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-number" id="jobsThisWeek">{{ jobs_this_week|default(0) }}</div>
+            <div class="metric-label">Jobs This Week</div>
+            <div class="metric-change positive">+{{ jobs_change|default(0) }} from last week</div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-number" id="quotesSent">{{ quotes_sent|default(0) }}</div>
+            <div class="metric-label">Quotes Sent</div>
+            <div class="metric-change">{{ quotes_accepted|default(0) }} accepted ({{ acceptance_rate|default(0) }}%)</div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-number" id="outstandingInvoices">{{ outstanding_invoices|default(0) }}</div>
+            <div class="metric-label">Outstanding Invoices</div>
+            <div class="metric-change">${{ outstanding_amount|default(0) }} total</div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-number">${{ revenue_this_month|default(0) }}</div>
+            <div class="metric-label">Revenue This Month</div>
+            <div class="metric-change positive">+{{ revenue_change|default(0) }}% vs last month</div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="dashboard-widget">
+    <div class="widget-header">
+        <h3 class="widget-title">What do you want to do today?</h3>
+    </div>
+    <div class="quick-action-grid">
+        <a href="/admin/quote-builder" class="quick-action onboarding-tooltip mobile-friendly">
+            <i class="fas fa-file-invoice-dollar"></i>
+            Create Quote
+            <div class="tooltip-content">Generate a new quote for a client</div>
+        </a>
+        <a href="/admin/scheduler" class="quick-action onboarding-tooltip mobile-friendly">
+            <i class="fas fa-calendar-plus"></i>
+            Schedule Job
+            <div class="tooltip-content">Add a new job to the calendar</div>
+        </a>
+        <a href="/admin/crm/contacts/add" class="quick-action onboarding-tooltip mobile-friendly">
+            <i class="fas fa-user-plus"></i>
+            Add Client
+            <div class="tooltip-content">Add a new client to the system</div>
+        </a>
+        <a href="/admin/invoices" class="quick-action onboarding-tooltip mobile-friendly">
+            <i class="fas fa-receipt"></i>
+            Review Invoices
+            <div class="tooltip-content">Check payment status and send reminders</div>
+        </a>
+        <a href="/admin/staff" class="quick-action onboarding-tooltip mobile-friendly">
+            <i class="fas fa-hard-hat"></i>
+            Manage Staff
+            <div class="tooltip-content">View staff schedules and assignments</div>
+        </a>
+        <a href="/admin/analytics" class="quick-action onboarding-tooltip mobile-friendly">
+            <i class="fas fa-chart-line"></i>
+            View Analytics
+            <div class="tooltip-content">Business insights and performance metrics</div>
+        </a>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="dashboard-widget">
+    <div class="widget-header">
+        <h3 class="widget-title">Recent Activity</h3>
+        <a href="/admin/activity" class="widget-action btn btn-sm btn-outline-primary">View All</a>
+    </div>
+    <div class="status-list">
+        {% if recent_activities %}
+            {% for activity in recent_activities[:5] %}
+            <div class="status-item">
+                <div>
+                    <strong>{{ activity.title }}</strong><br>
+                    <small class="text-muted">{{ activity.description }}</small>
+                </div>
+                <div>
+                    <span class="status-badge status-{{ activity.status }}">{{ activity.status }}</span><br>
+                    <small class="text-muted">{{ activity.date }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-clipboard-list"></i>
+            <p>No recent activity</p>
+            <small>Activity will appear here as you use the system</small>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endif %}
+
+<!-- Staff Dashboard Widgets -->
+{% if session.staff_logged_in %}
+<div class="dashboard-widget">
+    <div class="widget-header">
+        <h3 class="widget-title">My Jobs Today</h3>
+        <span class="badge bg-primary">{{ todays_jobs|length|default(0) }} jobs</span>
+    </div>
+    {% if todays_jobs %}
+        <div class="status-list">
+            {% for job in todays_jobs %}
+            <div class="status-item">
+                <div>
+                    <strong>{{ job.client_name }}</strong><br>
+                    <small>{{ job.service_type }} - {{ job.time }}</small>
+                </div>
+                <div>
+                    <span class="status-badge status-{{ job.status }}">{{ job.status }}</span>
+                    <div class="progress-ring">
+                        <svg class="progress-ring" width="60" height="60">
+                            <circle class="progress-ring-circle {{ 'active' if job.completion > 50 else '' }}"
+                                    cx="30" cy="30" r="30"
+                                    style="stroke-dashoffset: {{ 188.5 - (job.completion * 1.885) }}">
+                            </circle>
+                        </svg>
+                    </div>
+                    <small>{{ job.completion }}% complete</small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="quick-action-grid mt-3">
+            <a href="/staff/checkin" class="quick-action mobile-friendly">
+                <i class="fas fa-clock"></i>
+                Check In
+            </a>
+            <a href="/staff/photos" class="quick-action mobile-friendly">
+                <i class="fas fa-camera"></i>
+                Upload Photos
+            </a>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-calendar-check"></i>
+            <p>No jobs scheduled today</p>
+            <small>Enjoy your day off!</small>
+        </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Client Dashboard Widgets -->
+{% if not session.admin_logged_in and not session.staff_logged_in %}
+<div class="dashboard-widget">
+    <div class="widget-header">
+        <h3 class="widget-title">Project Status Summary</h3>
+    </div>
+    {% if client_projects %}
+        <div class="row">
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <div class="metric-number">{{ active_projects|default(0) }}</div>
+                    <div class="metric-label">Active Projects</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <div class="metric-number">{{ pending_quotes|default(0) }}</div>
+                    <div class="metric-label">Pending Quotes</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <div class="metric-number">${{ unpaid_invoices_total|default(0) }}</div>
+                    <div class="metric-label">Outstanding Balance</div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-home"></i>
+            <p>Welcome to SPANKKS Construction!</p>
+            <small>Start by requesting a quote for your project</small>
+        </div>
+    {% endif %}
+    
+    <div class="quick-action-grid">
+        <a href="/consultation" class="quick-action mobile-friendly">
+            <i class="fas fa-calendar-plus"></i>
+            Request Quote
+        </a>
+        <a href="/contact" class="quick-action mobile-friendly">
+            <i class="fas fa-phone"></i>
+            Contact Us
+        </a>
+        <a href="/spank-school" class="quick-action mobile-friendly">
+            <i class="fas fa-graduation-cap"></i>
+            SPANKKS SKOOL
+        </a>
+        <a href="/help" class="quick-action mobile-friendly">
+            <i class="fas fa-question-circle"></i>
+            Help & FAQ
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Digital Quote Acceptance -->
+<div class="dashboard-widget" id="quoteAcceptanceWidget" style="display: none;">
+    <div class="widget-header">
+        <h3 class="widget-title">Quote Awaiting Your Response</h3>
+        <span class="badge bg-warning">Action Required</span>
+    </div>
+    <div class="alert alert-info">
+        <strong>Quote #Q2025-001</strong> - Kitchen Renovation<br>
+        <strong>Amount:</strong> $4,500.00 (incl. Hawaii GET tax)<br>
+        <strong>Valid Until:</strong> <span id="quoteExpiry"></span>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-success mobile-friendly flex-fill" onclick="acceptQuote('Q2025-001')">
+            <i class="fas fa-check"></i> Accept Quote
+        </button>
+        <button class="btn btn-outline-secondary mobile-friendly" onclick="downloadQuotePDF('Q2025-001')">
+            <i class="fas fa-download"></i> Download PDF
+        </button>
+    </div>
+</div>
+
+<script>
+// Enhanced dashboard functionality
+function acceptQuote(quoteId) {
+    if (confirm('Are you sure you want to accept this quote? This will create a binding agreement.')) {
+        fetch(`/api/quotes/${quoteId}/accept`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                accepted_date: new Date().toISOString(),
+                digital_signature: true
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessMessage('Quote accepted successfully! We\'ll contact you soon to schedule the work.');
+                document.getElementById('quoteAcceptanceWidget').style.display = 'none';
+                // Refresh dashboard metrics
+                location.reload();
+            } else {
+                alert('Error accepting quote: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error accepting quote. Please try again.');
+        });
+    }
+}
+
+function showSuccessMessage(message) {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+    alert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        if (alert.parentElement) {
+            alert.remove();
+        }
+    }, 5000);
+}
+
+// Real-time metric updates
+function updateDashboardMetrics() {
+    fetch('/api/dashboard/metrics')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update metric displays
+                const metrics = data.metrics;
+                document.getElementById('jobsThisWeek').textContent = metrics.jobs_this_week;
+                document.getElementById('quotesSent').textContent = metrics.quotes_sent;
+                document.getElementById('outstandingInvoices').textContent = metrics.outstanding_invoices;
+            }
+        })
+        .catch(error => console.log('Metrics update failed:', error));
+}
+
+// Update metrics every 5 minutes
+setInterval(updateDashboardMetrics, 300000);
+
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    // Show onboarding tour for new users
+    if (localStorage.getItem('dashboard_tour_completed') !== 'true') {
+        setTimeout(showOnboardingTour, 1000);
+    }
+    
+    // Set quote expiry countdown
+    const expiryElement = document.getElementById('quoteExpiry');
+    if (expiryElement) {
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 7); // 7 days from now
+        expiryElement.textContent = expiryDate.toLocaleDateString();
+    }
+});
+
+function showOnboardingTour() {
+    const tourSteps = [
+        {
+            element: '.quick-action-grid',
+            title: 'Quick Actions',
+            content: 'Start common tasks right from your dashboard'
+        },
+        {
+            element: '.metric-card',
+            title: 'Key Metrics',
+            content: 'Monitor your business performance at a glance'
+        },
+        {
+            element: '.status-list',
+            title: 'Recent Activity',
+            content: 'Stay updated with the latest changes'
+        }
+    ];
+    
+    // Simple tour implementation (you could use a library like intro.js for more features)
+    let currentStep = 0;
+    
+    function showStep(step) {
+        if (step >= tourSteps.length) {
+            localStorage.setItem('dashboard_tour_completed', 'true');
+            return;
+        }
+        
+        const tourStep = tourSteps[step];
+        const element = document.querySelector(tourStep.element);
+        
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tour-tooltip';
+            tooltip.innerHTML = `
+                <div class="tour-content">
+                    <h6>${tourStep.title}</h6>
+                    <p>${tourStep.content}</p>
+                    <div class="tour-actions">
+                        <button onclick="this.closest('.tour-tooltip').remove(); showStep(${step + 1})" class="btn btn-primary btn-sm">
+                            ${step === tourSteps.length - 1 ? 'Finish' : 'Next'}
+                        </button>
+                        <button onclick="this.closest('.tour-tooltip').remove(); localStorage.setItem('dashboard_tour_completed', 'true')" class="btn btn-link btn-sm">
+                            Skip Tour
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            tooltip.style.cssText = `
+                position: absolute;
+                background: white;
+                border: 2px solid #007bff;
+                border-radius: 8px;
+                padding: 15px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 9999;
+                max-width: 250px;
+            `;
+            
+            document.body.appendChild(tooltip);
+            
+            const rect = element.getBoundingClientRect();
+            tooltip.style.top = (rect.bottom + 10) + 'px';
+            tooltip.style.left = rect.left + 'px';
+        }
+    }
+    
+    showStep(0);
+}
+</script>
