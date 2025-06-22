@@ -406,6 +406,15 @@ def mark_notification_complete(notification_id):
         logging.error(f"Error marking notification {notification_id} as complete: {e}")
         return jsonify({'success': False, 'error': 'Internal error'}), 500
 
+@app.route('/admin/twilio-config')
+def twilio_config():
+    """Legacy Twilio configuration page - now shows manual notification system info"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access configuration.', 'error')
+        return redirect(url_for('admin_login'))
+    
+    return render_template('twilio_config.html')
+
 @app.route('/admin/logout')
 def admin_logout():
     """Admin logout"""
