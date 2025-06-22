@@ -1118,16 +1118,43 @@ def update_client_info(client_id, job_id):
         if success:
             # Also update in CRM system if contact exists
             try:
-                # Find existing contact in CRM by phone or email
+                # Find existing contact in CRM by multiple criteria
                 contacts = handyman_storage.get_all_contacts()
                 contact_to_update = None
                 
+                # Normalize phone number for comparison
+                def normalize_phone(phone):
+                    if not phone:
+                        return ""
+                    return ''.join(filter(str.isdigit, str(phone)))
+                
+                new_phone_normalized = normalize_phone(data.get('phone'))
+                new_email = data.get('email', '').lower().strip()
+                new_name = data.get('name', '').lower().strip()
+                
+                logging.info(f"Searching for existing contact: phone={new_phone_normalized}, email={new_email}, name={new_name}")
+                
                 for contact in contacts:
-                    if (contact.phone == data.get('phone') or 
-                        contact.email == data.get('email') or
-                        contact.name.lower() == data.get('name', '').lower()):
+                    contact_phone_normalized = normalize_phone(contact.phone)
+                    contact_email = (contact.email or '').lower().strip()
+                    contact_name = (contact.name or '').lower().strip()
+                    
+                    # Check for matches by phone, email, or exact name
+                    if (new_phone_normalized and contact_phone_normalized and new_phone_normalized == contact_phone_normalized) or \
+                       (new_email and contact_email and new_email == contact_email) or \
+                       (new_name and contact_name and new_name == contact_name):
                         contact_to_update = contact
+                        logging.info(f"Found matching contact: {contact.id} - {contact.name}")
                         break
+                
+                # Check for portal sync tags to find previously synced contacts
+                if not contact_to_update:
+                    for contact in contacts:
+                        if (hasattr(contact, 'tags') and contact.tags and 'portal_sync' in contact.tags) or \
+                           (hasattr(contact, 'notes') and contact.notes and f'portal client {client_id}/{job_id}' in contact.notes):
+                            contact_to_update = contact
+                            logging.info(f"Found portal-synced contact: {contact.id} - {contact.name}")
+                            break
                 
                 # If contact exists in CRM, update it
                 if contact_to_update:
@@ -1137,7 +1164,32 @@ def update_client_info(client_id, job_id):
                         'email': data.get('email'),
                         'address': data.get('address')
                     })
-                    logging.info(f"Synced client update to CRM contact {contact_to_update.id}")
+                    logging.info(f"Updated existing CRM contact {contact_to_update.id}: {data.get('name')}")
+                    
+                    # Update any related quotes, invoices, and jobs with new contact info
+                    try:
+                        # Update quotes
+                        quotes = handyman_storage.get_quotes_by_contact(contact_to_update.id)
+                        for quote in quotes:
+                            if hasattr(quote, 'contact_name'):
+                                quote.contact_name = data.get('name')
+                        
+                        # Update invoices  
+                        invoices = handyman_storage.get_invoices_by_contact(contact_to_update.id)
+                        for invoice in invoices:
+                            if hasattr(invoice, 'contact_name'):
+                                invoice.contact_name = data.get('name')
+                        
+                        # Update jobs
+                        jobs = handyman_storage.get_jobs_by_contact(contact_to_update.id)
+                        for job in jobs:
+                            if hasattr(job, 'contact_name'):
+                                job.contact_name = data.get('name')
+                                
+                        logging.info(f"Updated related records for contact {contact_to_update.id}")
+                    except Exception as e:
+                        logging.warning(f"Could not update related records: {e}")
+                        
                 else:
                     # Create new contact in CRM if it doesn't exist
                     contact_data = {
@@ -1149,7 +1201,7 @@ def update_client_info(client_id, job_id):
                         'tags': ['portal_sync', 'auto_created']
                     }
                     new_contact = handyman_storage.add_contact(contact_data)
-                    logging.info(f"Created new CRM contact {new_contact.id} from portal sync")
+                    logging.info(f"Created new CRM contact {new_contact.id}: {data.get('name')}")
                     
             except Exception as e:
                 logging.warning(f"Could not sync client update to CRM: {e}")
