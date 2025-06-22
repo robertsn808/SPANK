@@ -1,0 +1,14 @@
+{
+  "20250622_011220_3ff8aedd.jpg": {
+    "original_filename": "test_before.jpg",
+    "saved_filename": "20250622_011220_3ff8aedd.jpg",
+    "file_path": "uploads/jobs/TEST123/before/20250622_011220_3ff8aedd.jpg",
+    "file_size": 8229,
+    "upload_date": "2025-06-22T01:12:20.406758",
+    "job_id": "TEST123",
+    "photo_type": "before",
+    "file_extension": "jpg",
+    "uploader_ip": "127.0.0.1",
+    "user_agent": "python-requests/2.32.4"
+  }
+}

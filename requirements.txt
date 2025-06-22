@@ -21,3 +21,4 @@ sendgrid
 twilio
 pillow
 reportlab
+pillow
