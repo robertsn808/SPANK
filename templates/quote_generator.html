@@ -502,6 +502,29 @@
         taxInput.value = autoTax.toFixed(2);
       }
       
+      const finalTotal = discountedSubtotal + autoTax;
+      
+      // Update summary display
+      const summarySubtotal = document.getElementById('summarySubtotal');
+      const summaryDiscount = document.getElementById('summaryDiscount');
+      const summaryTax = document.getElementById('summaryTax');
+      const summaryTotal = document.getElementById('summaryTotal');
+      
+      if (summarySubtotal) summarySubtotal.textContent = `$${subtotal.toFixed(2)}`;
+      if (summaryDiscount) summaryDiscount.textContent = `-$${discount.toFixed(2)}`;
+      if (summaryTax) summaryTax.textContent = `$${autoTax.toFixed(2)}`;
+      if (summaryTotal) summaryTotal.textContent = `$${finalTotal.toFixed(2)}`;
+      
+      // Show/hide summary based on whether items exist
+      const pricingSummary = document.getElementById('pricingSummary');
+      if (pricingSummary) {
+        pricingSummary.style.display = items.length > 0 ? 'block' : 'none';
+      }
+    }
+      if (taxInput) {
+        taxInput.value = autoTax.toFixed(2);
+      }
+      
       const total = discountedSubtotal + autoTax;
       
       // Update summary display
