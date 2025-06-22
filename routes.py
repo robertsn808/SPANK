@@ -1068,6 +1068,45 @@ def update_client_info(client_id, job_id):
         })
         
         if success:
+            # Also update in CRM system if contact exists
+            try:
+                # Find existing contact in CRM by phone or email
+                contacts = handyman_storage.get_all_contacts()
+                contact_to_update = None
+                
+                for contact in contacts:
+                    if (contact.phone == data.get('phone') or 
+                        contact.email == data.get('email') or
+                        contact.name.lower() == data.get('name', '').lower()):
+                        contact_to_update = contact
+                        break
+                
+                # If contact exists in CRM, update it
+                if contact_to_update:
+                    handyman_storage.update_contact(contact_to_update.id, {
+                        'name': data.get('name'),
+                        'phone': data.get('phone'),
+                        'email': data.get('email'),
+                        'address': data.get('address')
+                    })
+                    logging.info(f"Synced client update to CRM contact {contact_to_update.id}")
+                else:
+                    # Create new contact in CRM if it doesn't exist
+                    contact_data = {
+                        'name': data.get('name'),
+                        'email': data.get('email'),
+                        'phone': data.get('phone'),
+                        'address': data.get('address'),
+                        'notes': f'Auto-synced from portal client {client_id}/{job_id}',
+                        'tags': ['portal_sync', 'auto_created']
+                    }
+                    new_contact = handyman_storage.add_contact(contact_data)
+                    logging.info(f"Created new CRM contact {new_contact.id} from portal sync")
+                    
+            except Exception as e:
+                logging.warning(f"Could not sync client update to CRM: {e}")
+                # Don't fail the update if CRM sync fails
+            
             return jsonify({'success': True, 'message': 'Client information updated successfully'})
         else:
             return jsonify({'error': 'Client not found'}), 404

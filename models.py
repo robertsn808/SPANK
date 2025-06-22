@@ -1,7 +1,7 @@
-
 import uuid
 from datetime import datetime, timedelta
 import pytz
+import logging
 
 def get_hawaii_time():
     """Get current time in Hawaii timezone"""
@@ -68,67 +68,67 @@ class HandymanStorage:
         self.quotes = []
         self.invoices = []
         self.jobs = []
-    
+
     def add_service_request(self, request_data):
         request = ServiceRequest(**request_data)
         self.service_requests.append(request)
         return request.id
-    
+
     def get_all_service_requests(self):
         return self.service_requests
-    
+
     def update_service_request_status(self, request_id, status):
         for request in self.service_requests:
             if request.id == request_id:
                 request.status = status
                 return True
         return False
-    
+
     def delete_service_request(self, request_id):
         self.service_requests = [r for r in self.service_requests if r.id != request_id]
         return True
-    
+
     def add_contact_message(self, message_data):
         message = ContactMessage(**message_data)
         self.contact_messages.append(message)
         return message.id
-    
+
     def get_all_contact_messages(self):
         return self.contact_messages
-    
+
     def update_message_status(self, message_id, status):
         for message in self.contact_messages:
             if message.id == message_id:
                 message.status = status
                 return True
         return False
-    
+
     def delete_contact_message(self, message_id):
         self.contact_messages = [m for m in self.contact_messages if m.id != message_id]
         return True
-    
+
     def add_lead(self, lead_data):
         lead = Lead(**lead_data)
         self.leads.append(lead)
         return lead.id
-    
+
     def get_all_leads(self):
         return self.leads
-    
+
     def update_lead_status(self, lead_id, status):
         for lead in self.leads:
             if lead.id == lead_id:
                 lead.status = status
                 return True
         return False
-    
+
     def delete_lead(self, lead_id):
         self.leads = [l for l in self.leads if l.id != lead_id]
         return True
-    
+
     def get_high_priority_leads(self):
         return [lead for lead in self.leads if lead.ai_score > 7 or lead.interest_level == 'high']
-    
+
     # Referral management methods
     def add_referral(self, referral_data):
         referral = Referral(
@@ -139,13 +139,13 @@ class HandymanStorage:
         )
         self.referrals.append(referral)
         return referral.id
-    
+
     def get_all_referrals(self):
         return self.referrals
-    
+
     def get_referrals_by_code(self, referrer_code):
         return [ref for ref in self.referrals if ref.referrer_code == referrer_code]
-    
+
     def update_referral_status(self, referral_id, status):
         for referral in self.referrals:
             if referral.id == referral_id:
@@ -154,7 +154,7 @@ class HandymanStorage:
                     referral.completed_date = get_hawaii_time()
                 return True
         return False
-    
+
     # Membership management methods
     def add_membership(self, membership_data):
         membership = Membership(
@@ -164,23 +164,23 @@ class HandymanStorage:
         )
         self.memberships.append(membership)
         return membership.id
-    
+
     def get_all_memberships(self):
         return self.memberships
-    
+
     def get_membership_by_email(self, email):
         for membership in self.memberships:
             if membership.customer_email == email:
                 return membership
         return None
-    
+
     def update_membership_status(self, membership_id, status):
         for membership in self.memberships:
             if membership.id == membership_id:
                 membership.status = status
                 return True
         return False
-    
+
     def get_referral_stats(self):
         total_referrals = len(self.referrals)
         completed_referrals = len([r for r in self.referrals if r.status == 'completed'])
@@ -191,30 +191,30 @@ class HandymanStorage:
             'pending': total_referrals - completed_referrals,
             'total_rewards': total_rewards
         }
-    
+
     def get_membership_stats(self):
         active_memberships = len([m for m in self.memberships if m.status == 'active'])
         revenue_by_plan = {}
         for membership in self.memberships:
             if membership.status == 'active':
                 revenue_by_plan[membership.plan_type] = revenue_by_plan.get(membership.plan_type, 0) + membership.monthly_fee
-        
+
         return {
             'active_members': active_memberships,
             'monthly_revenue': sum(revenue_by_plan.values()),
             'revenue_by_plan': revenue_by_plan
         }
-    
+
     def add_admin_notification(self, notification_data):
         """Add admin notification for SPANK Buck rewards"""
         notification = AdminNotification(**notification_data)
         self.admin_notifications.append(notification)
         return notification.id
-    
+
     def get_admin_notifications(self):
         """Get all admin notifications"""
         return sorted(self.admin_notifications, key=lambda x: x.timestamp, reverse=True)
-    
+
     def mark_notification_read(self, notification_id):
         """Mark notification as read"""
         for notification in self.admin_notifications:
@@ -225,38 +225,58 @@ class HandymanStorage:
 
     # CRM Methods
     def add_contact(self, contact_data):
-        """Add new contact to CRM database"""
+        """Add a new contact"""
         contact = Contact(
             name=contact_data['name'],
             email=contact_data['email'],
             phone=contact_data['phone'],
-            address=contact_data.get('address'),
-            notes=contact_data.get('notes'),
+            address=contact_data.get('address', ''),
+            notes=contact_data.get('notes', ''),
             tags=contact_data.get('tags', [])
         )
-        contact.id = len(self.contacts) + 1
         self.contacts.append(contact)
+        self._save_contacts(self.contacts)
         return contact
+
+    def _save_contacts(self, contacts):
+        """Save contacts to persistent storage (if implemented)"""
+        # In a real implementation, this would save to database
+        # For now, just update the in-memory list
+        self.contacts = contacts
+        logging.info(f"Saved {len(contacts)} contacts to storage")
 
     def get_all_contacts(self):
         """Get all contacts"""
         return self.contacts
 
     def get_contact_by_id(self, contact_id):
-        """Get contact by ID"""
-        for contact in self.contacts:
-            if contact.id == contact_id:
-                return contact
-        return None
+        """Get a specific contact by ID"""
+        contacts = self.get_all_contacts()
+        return next((c for c in contacts if c.id == contact_id), None)
 
     def update_contact(self, contact_id, updates):
-        """Update contact information"""
-        contact = self.get_contact_by_id(contact_id)
-        if contact:
-            for key, value in updates.items():
-                setattr(contact, key, value)
-            return True
-        return False
+        """Update an existing contact"""
+        try:
+            contacts = self.get_all_contacts()
+
+            for contact in contacts:
+                if contact.id == contact_id:
+                    # Update contact attributes
+                    for key, value in updates.items():
+                        if hasattr(contact, key) and value is not None:
+                            setattr(contact, key, value)
+
+                    # Save back to storage
+                    self._save_contacts(contacts)
+                    logging.info(f"Updated contact {contact_id}")
+                    return True
+
+            logging.warning(f"Contact {contact_id} not found for update")
+            return False
+
+        except Exception as e:
+            logging.error(f"Error updating contact {contact_id}: {e}")
+            return False
 
     def add_quote(self, quote_data):
         """Add new quote"""
