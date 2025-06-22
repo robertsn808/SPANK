@@ -217,7 +217,7 @@
 
 <body>
     <!-- Include Mobile Navigation Component (Admin Dashboard Only) -->
-    {% if request.endpoint and (request.endpoint == 'admin_dashboard' or request.endpoint.startswith('admin_')) %}
+    {% if request.endpoint and request.endpoint != 'admin_login' and request.endpoint != 'portal_login' and request.endpoint in ['admin_dashboard', 'admin', 'admin_analytics', 'admin_crm', 'admin_inventory', 'admin_checklists', 'admin_staff', 'admin_scheduler', 'admin_workflow_automation'] %}
         {% include 'mobile_navigation.html' %}
     {% endif %}
     
