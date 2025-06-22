@@ -111,3 +111,6 @@ class NotificationService:
             reason=reason,
             customer_name=customer_name
         )
+
+# Global instance
+notification_service = NotificationService()

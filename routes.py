@@ -2236,7 +2236,6 @@ def invoice_generator():
 @app.route('/upload/<job_id>/<photo_type>', methods=['POST'])
 def upload_job_photos(job_id, photo_type):
     """Upload job photos (before/after) with metadata tracking"""
-    from upload_service import photo_service
     
     # Validate photo type
     if photo_type not in ['before', 'after']:
@@ -2310,7 +2309,6 @@ def upload_job_photos(job_id, photo_type):
 @app.route('/photos/<job_id>/<photo_type>')
 def get_job_photos(job_id, photo_type=None):
     """Get all photos for a job"""
-    from upload_service import photo_service
     
     try:
         photos = photo_service.get_job_photos(job_id, photo_type)
@@ -2326,7 +2324,6 @@ def get_job_photos(job_id, photo_type=None):
 @app.route('/photo/<job_id>/<photo_type>/<filename>')
 def serve_photo(job_id, photo_type, filename):
     """Serve uploaded photo files"""
-    from upload_service import photo_service
     import os
     from flask import send_file
     
