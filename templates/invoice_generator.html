@@ -511,8 +511,8 @@
       const discount = parseFloat(document.getElementById('totalDiscount')?.value) || 0;
       const discountedSubtotal = subtotal - discount;
       
-      // Auto-calculate Hawaii GET tax at 4.5% O'ahu rate
-      const hawaiiTaxRate = 0.045;
+      // Auto-calculate Hawaii GET tax at 4.712% O'ahu rate
+      const hawaiiTaxRate = 0.04712;
       const autoTax = discountedSubtotal * hawaiiTaxRate;
       
       // Update tax field automatically
