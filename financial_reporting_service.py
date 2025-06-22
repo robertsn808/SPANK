@@ -75,8 +75,13 @@ class FinancialReportingService:
             operating_profit = gross_profit
             operating_margin = (operating_profit / net_revenue * 100) if net_revenue > 0 else 0
             
-            # Calculate Net Income (no taxes deducted without actual expense tracking)
-            net_income = operating_profit
+            # Calculate estimated taxes for Hawaii business
+            estimated_federal_tax = operating_profit * 0.22  # 22% federal rate
+            estimated_hawaii_tax = operating_profit * 0.085  # 8.5% Hawaii state rate
+            estimated_taxes = estimated_federal_tax + estimated_hawaii_tax
+            
+            # Calculate Net Income after estimated taxes
+            net_income = operating_profit - estimated_taxes
             net_margin = (net_income / net_revenue * 100) if net_revenue > 0 else 0
             
             return {
