@@ -15,5 +15,23 @@
     "last_contact": null,
     "preferred_contact": "email",
     "status": "active"
+  },
+  {
+    "id": 2,
+    "name": "Test Invoice Customer",
+    "email": "test.invoice.customer@tempmail.com",
+    "phone": "(808) 555-0000",
+    "address": "",
+    "notes": "Created via API for invoice",
+    "tags": [
+      "api_generated",
+      "invoice_only"
+    ],
+    "created_date": "2025-06-22",
+    "job_history": [],
+    "total_spent": 0.0,
+    "last_contact": null,
+    "preferred_contact": "email",
+    "status": "active"
   }
 ]

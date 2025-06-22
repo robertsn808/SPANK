@@ -2210,6 +2210,15 @@ def generate_quote_api():
         
         quote = handyman_storage.add_quote(quote_data)
         
+        # Initialize automated workflow tracking for quote follow-up
+        try:
+            from workflow_automation_service import WorkflowAutomationService
+            workflow_service = WorkflowAutomationService()
+            workflow_result = workflow_service.initialize_quote_workflow(quote.id)
+            logging.info(f"Workflow automation initialized for quote {quote.id}")
+        except Exception as e:
+            logging.warning(f"Workflow automation failed for quote {quote.id}: {e}")
+        
         # Generate PDF
         from pdf_service import generate_quote_pdf
         filename = generate_quote_pdf(quote, contact)
