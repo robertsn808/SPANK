@@ -2273,7 +2273,7 @@ def generate_invoice_api():
         from models import QuoteItem
         
         # Calculate subtotal from total (reverse Hawaii tax calculation)
-        hawaii_tax_rate = 0.045  # Hawaii GET tax (4.5% O'ahu rate)
+        hawaii_tax_rate = 0.04712  # Hawaii GET tax (4.712% O'ahu rate)
         subtotal = total / (1 + hawaii_tax_rate)
         
         quote_items = [QuoteItem(

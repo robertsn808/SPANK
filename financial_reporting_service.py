@@ -16,7 +16,7 @@ class FinancialReportingService:
     
     def __init__(self):
         self.data_dir = 'data'
-        self.hawaii_get_rate = 0.045  # 4.5% Hawaii GET tax rate
+        self.hawaii_get_rate = 0.04712  # 4.712% Hawaii GET tax rate
         
     def generate_profit_loss_statement(self, start_date: str, end_date: str) -> Dict:
         """Generate comprehensive Profit & Loss Statement"""
