@@ -1,0 +1,178 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Contact Database - SPANKKS Construction Admin{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="fas fa-users"></i> Contact Database
+                </h2>
+                <a href="{{ url_for('add_contact') }}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Add Contact
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3 class="mb-0">{{ contacts|length }}</h3>
+                    <small>Total Contacts</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3 class="mb-0">{{ contacts|selectattr('status', 'equalto', 'active')|list|length }}</h3>
+                    <small>Active Contacts</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3 class="mb-0">${{ "{:,.2f}".format(contacts|sum(attribute='total_spent')) }}</h3>
+                    <small>Total Revenue</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3 class="mb-0">{{ contacts|selectattr('tags')|list|length }}</h3>
+                    <small>Tagged Contacts</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact List -->
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h6 class="mb-0">
+                        <i class="fas fa-list"></i> All Contacts
+                    </h6>
+                </div>
+                <div class="col-auto">
+                    <div class="input-group input-group-sm" style="width: 250px;">
+                        <input type="text" class="form-control" placeholder="Search contacts..." id="contactSearch">
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if contacts %}
+                <div class="table-responsive">
+                    <table class="table table-hover" id="contactsTable">
+                        <thead>
+                            <tr>
+                                <th>Contact Info</th>
+                                <th>Address</th>
+                                <th>Total Spent</th>
+                                <th>Last Contact</th>
+                                <th>Status</th>
+                                <th>Tags</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contact in contacts %}
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>{{ contact.name }}</strong><br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-envelope"></i> {{ contact.email }}<br>
+                                            <i class="fas fa-phone"></i> {{ contact.phone }}
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <small>{{ contact.address or 'No address' }}</small>
+                                </td>
+                                <td>
+                                    <span class="font-weight-bold">${{ "{:,.2f}".format(contact.total_spent) }}</span>
+                                </td>
+                                <td>
+                                    {% if contact.last_contact %}
+                                        {{ contact.last_contact }}
+                                    {% else %}
+                                        <span class="text-muted">Never</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge badge-{{ 'success' if contact.status == 'active' else 'secondary' }}">
+                                        {{ contact.status.title() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% for tag in contact.tags %}
+                                        <span class="badge badge-primary badge-sm mr-1">{{ tag }}</span>
+                                    {% endfor %}
+                                    {% if not contact.tags %}
+                                        <span class="text-muted">None</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{{ url_for('contact_detail', contact_id=contact.id) }}" 
+                                           class="btn btn-outline-primary" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('quote_builder') }}?contact_id={{ contact.id }}" 
+                                           class="btn btn-outline-success" title="Create Quote">
+                                            <i class="fas fa-calculator"></i>
+                                        </a>
+                                        <a href="{{ url_for('create_job') }}?contact_id={{ contact.id }}" 
+                                           class="btn btn-outline-info" title="Schedule Job">
+                                            <i class="fas fa-calendar-plus"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-users fa-4x mb-3"></i>
+                    <h4>No Contacts Yet</h4>
+                    <p>Start building your customer database by adding your first contact.</p>
+                    <a href="{{ url_for('add_contact') }}" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Add First Contact
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Contact search functionality
+document.getElementById('contactSearch').addEventListener('keyup', function() {
+    const searchTerm = this.value.toLowerCase();
+    const table = document.getElementById('contactsTable');
+    const rows = table.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

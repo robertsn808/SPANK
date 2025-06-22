@@ -1220,3 +1220,332 @@ def bulk_communications():
                          seasonal_promotions=seasonal_promotions,
                          memberships=memberships,
                          referrals=referrals)
+
+# CRM Routes
+@app.route('/admin/crm')
+def crm_dashboard():
+    """CRM Dashboard with contacts, quotes, invoices, and jobs"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    contacts = handyman_storage.get_all_contacts()
+    quotes = handyman_storage.get_all_quotes()
+    invoices = handyman_storage.get_all_invoices()
+    jobs = handyman_storage.get_all_jobs()
+    
+    # CRM metrics
+    total_revenue = sum(i.total_amount for i in invoices if i.status == 'paid')
+    pending_invoices = sum(i.total_amount for i in invoices if i.status == 'pending')
+    active_jobs = len([j for j in jobs if j.status in ['scheduled', 'in_progress']])
+    pending_quotes = len([q for q in quotes if q.status == 'pending'])
+    
+    return render_template('admin/crm_dashboard.html',
+                         contacts=contacts,
+                         quotes=quotes,
+                         invoices=invoices,
+                         jobs=jobs,
+                         total_revenue=total_revenue,
+                         pending_invoices=pending_invoices,
+                         active_jobs=active_jobs,
+                         pending_quotes=pending_quotes)
+
+@app.route('/admin/crm/contacts')
+def contact_list():
+    """Contact database management"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    contacts = handyman_storage.get_all_contacts()
+    return render_template('admin/contacts.html', contacts=contacts)
+
+@app.route('/admin/crm/contacts/add', methods=['GET', 'POST'])
+def add_contact():
+    """Add new contact"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    if request.method == 'POST':
+        contact_data = {
+            'name': request.form['name'],
+            'email': request.form['email'],
+            'phone': request.form['phone'],
+            'address': request.form.get('address', ''),
+            'notes': request.form.get('notes', ''),
+            'tags': request.form.get('tags', '').split(',') if request.form.get('tags') else []
+        }
+        handyman_storage.add_contact(contact_data)
+        flash('Contact added successfully!', 'success')
+        return redirect(url_for('contact_list'))
+    
+    return render_template('admin/add_contact.html')
+
+@app.route('/admin/crm/contacts/<int:contact_id>')
+def contact_detail(contact_id):
+    """Contact detail view with job history"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    contact = handyman_storage.get_contact_by_id(contact_id)
+    if not contact:
+        flash('Contact not found.', 'error')
+        return redirect(url_for('contact_list'))
+    
+    quotes = handyman_storage.get_quotes_by_contact(contact_id)
+    invoices = handyman_storage.get_invoices_by_contact(contact_id)
+    jobs = handyman_storage.get_jobs_by_contact(contact_id)
+    
+    return render_template('admin/contact_detail.html',
+                         contact=contact,
+                         quotes=quotes,
+                         invoices=invoices,
+                         jobs=jobs)
+
+@app.route('/admin/crm/quotes')
+def quote_list():
+    """Quote management"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    quotes = handyman_storage.get_all_quotes()
+    contacts = handyman_storage.get_all_contacts()
+    
+    return render_template('admin/quotes.html', quotes=quotes, contacts=contacts)
+
+@app.route('/admin/crm/quotes/builder')
+def quote_builder():
+    """Interactive quote builder"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    contacts = handyman_storage.get_all_contacts()
+    
+    # Service templates for quick quote building
+    service_templates = {
+        'drywall': [
+            {'description': 'Small patch (under 12")', 'unit_price': 155, 'unit': 'patch'},
+            {'description': 'Medium patch (12"-24")', 'unit_price': 275, 'unit': 'patch'},
+            {'description': 'Large patch (24"+)', 'unit_price': 425, 'unit': 'patch'},
+            {'description': 'Texture matching', 'unit_price': 125, 'unit': 'sq ft'},
+            {'description': 'Prime and paint', 'unit_price': 85, 'unit': 'sq ft'}
+        ],
+        'flooring': [
+            {'description': 'Vinyl plank installation', 'unit_price': 4.50, 'unit': 'sq ft'},
+            {'description': 'Tile installation', 'unit_price': 6.75, 'unit': 'sq ft'},
+            {'description': 'Hardwood installation', 'unit_price': 8.25, 'unit': 'sq ft'},
+            {'description': 'Subfloor repair', 'unit_price': 125, 'unit': 'sq ft'},
+            {'description': 'Transition strips', 'unit_price': 35, 'unit': 'linear ft'}
+        ],
+        'fencing': [
+            {'description': 'Wood fence installation', 'unit_price': 45, 'unit': 'linear ft'},
+            {'description': 'Vinyl fence installation', 'unit_price': 55, 'unit': 'linear ft'},
+            {'description': 'Chain link fence', 'unit_price': 35, 'unit': 'linear ft'},
+            {'description': 'Gate installation', 'unit_price': 325, 'unit': 'each'},
+            {'description': 'Post replacement', 'unit_price': 85, 'unit': 'each'}
+        ],
+        'general': [
+            {'description': 'General repair (per hour)', 'unit_price': 95, 'unit': 'hour'},
+            {'description': 'Emergency service', 'unit_price': 125, 'unit': 'hour'},
+            {'description': 'Material markup', 'unit_price': 0.15, 'unit': 'percentage'},
+            {'description': 'Travel charge', 'unit_price': 45, 'unit': 'trip'},
+            {'description': 'Disposal fee', 'unit_price': 65, 'unit': 'load'}
+        ]
+    }
+    
+    return render_template('admin/quote_builder.html', 
+                         contacts=contacts, 
+                         service_templates=service_templates)
+
+@app.route('/admin/crm/quotes/create', methods=['POST'])
+def create_quote():
+    """Create new quote from builder"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    from models import QuoteItem
+    
+    # Parse quote items from form
+    items = []
+    item_count = int(request.form.get('item_count', 0))
+    
+    for i in range(item_count):
+        if request.form.get(f'item_{i}_description'):
+            item = QuoteItem(
+                description=request.form[f'item_{i}_description'],
+                quantity=float(request.form[f'item_{i}_quantity']),
+                unit_price=float(request.form[f'item_{i}_unit_price']),
+                unit=request.form[f'item_{i}_unit']
+            )
+            items.append(item)
+    
+    total_amount = sum(item.total for item in items)
+    
+    quote_data = {
+        'contact_id': int(request.form['contact_id']),
+        'service_type': request.form['service_type'],
+        'items': items,
+        'total_amount': total_amount,
+        'valid_until': request.form['valid_until'],
+        'notes': request.form.get('notes', '')
+    }
+    
+    quote = handyman_storage.add_quote(quote_data)
+    flash('Quote created successfully!', 'success')
+    return redirect(url_for('quote_detail', quote_id=quote.id))
+
+@app.route('/admin/crm/quotes/<int:quote_id>')
+def quote_detail(quote_id):
+    """Quote detail view"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    quotes = handyman_storage.get_all_quotes()
+    quote = next((q for q in quotes if q.id == quote_id), None)
+    
+    if not quote:
+        flash('Quote not found.', 'error')
+        return redirect(url_for('quote_list'))
+    
+    contact = handyman_storage.get_contact_by_id(quote.contact_id)
+    
+    return render_template('admin/quote_detail.html', quote=quote, contact=contact)
+
+@app.route('/admin/crm/invoices')
+def invoice_list():
+    """Invoice management"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    invoices = handyman_storage.get_all_invoices()
+    contacts = handyman_storage.get_all_contacts()
+    
+    return render_template('admin/invoices.html', invoices=invoices, contacts=contacts)
+
+@app.route('/admin/crm/invoices/create/<int:quote_id>')
+def create_invoice_from_quote(quote_id):
+    """Create invoice from accepted quote"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    quotes = handyman_storage.get_all_quotes()
+    quote = next((q for q in quotes if q.id == quote_id), None)
+    
+    if not quote:
+        flash('Quote not found.', 'error')
+        return redirect(url_for('quote_list'))
+    
+    invoice_data = {
+        'contact_id': quote.contact_id,
+        'quote_id': quote.id,
+        'items': quote.items,
+        'subtotal': quote.total_amount
+    }
+    
+    invoice = handyman_storage.add_invoice(invoice_data)
+    handyman_storage.update_quote_status(quote_id, 'accepted')
+    
+    flash('Invoice created from quote successfully!', 'success')
+    return redirect(url_for('invoice_detail', invoice_id=invoice.id))
+
+@app.route('/admin/crm/invoices/<int:invoice_id>')
+def invoice_detail(invoice_id):
+    """Invoice detail view"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    invoices = handyman_storage.get_all_invoices()
+    invoice = next((i for i in invoices if i.id == invoice_id), None)
+    
+    if not invoice:
+        flash('Invoice not found.', 'error')
+        return redirect(url_for('invoice_list'))
+    
+    contact = handyman_storage.get_contact_by_id(invoice.contact_id)
+    
+    return render_template('admin/invoice_detail.html', invoice=invoice, contact=contact)
+
+@app.route('/admin/crm/schedule')
+def job_schedule():
+    """Job scheduling calendar"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    jobs = handyman_storage.get_all_jobs()
+    contacts = handyman_storage.get_all_contacts()
+    
+    # Organize jobs by date for calendar view
+    jobs_by_date = {}
+    for job in jobs:
+        date = job.scheduled_date
+        if date not in jobs_by_date:
+            jobs_by_date[date] = []
+        jobs_by_date[date].append(job)
+    
+    return render_template('admin/schedule.html', 
+                         jobs=jobs, 
+                         contacts=contacts, 
+                         jobs_by_date=jobs_by_date)
+
+@app.route('/admin/crm/jobs/create', methods=['GET', 'POST'])
+def create_job():
+    """Create new job"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    if request.method == 'POST':
+        job_data = {
+            'contact_id': int(request.form['contact_id']),
+            'quote_id': int(request.form['quote_id']) if request.form.get('quote_id') else None,
+            'scheduled_date': request.form['scheduled_date'],
+            'crew_members': request.form.get('crew_members', '').split(',') if request.form.get('crew_members') else [],
+            'notes': request.form.get('notes', '')
+        }
+        
+        job = handyman_storage.add_job(job_data)
+        flash('Job created successfully!', 'success')
+        return redirect(url_for('job_detail', job_id=job.id))
+    
+    contacts = handyman_storage.get_all_contacts()
+    quotes = handyman_storage.get_all_quotes()
+    
+    return render_template('admin/create_job.html', contacts=contacts, quotes=quotes)
+
+@app.route('/admin/crm/jobs/<int:job_id>')
+def job_detail(job_id):
+    """Job detail view with mobile crew access"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    jobs = handyman_storage.get_all_jobs()
+    job = next((j for j in jobs if j.id == job_id), None)
+    
+    if not job:
+        flash('Job not found.', 'error')
+        return redirect(url_for('job_schedule'))
+    
+    contact = handyman_storage.get_contact_by_id(job.contact_id)
+    
+    return render_template('admin/job_detail.html', job=job, contact=contact)
+
+@app.route('/admin/crm/jobs/<int:job_id>/update_status', methods=['POST'])
+def update_job_status(job_id):
+    """Update job status"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    status = request.form['status']
+    handyman_storage.update_job_status(job_id, status)
+    
+    flash(f'Job status updated to {status}!', 'success')
+    return redirect(url_for('job_detail', job_id=job_id))
+
+@app.route('/admin/crm/jobs/<int:job_id>/add_note', methods=['POST'])
+def add_job_note_route(job_id):
+    """Add note to job"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    note = request.form['note']
+    handyman_storage.add_job_note(job_id, note)
+    
+    flash('Note added successfully!', 'success')
+    return redirect(url_for('job_detail', job_id=job_id))

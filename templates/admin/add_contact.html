@@ -1,0 +1,160 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Add Contact - SPANKKS Construction Admin{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="fas fa-user-plus"></i> Add New Contact
+                </h2>
+                <a href="{{ url_for('contact_list') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Contacts
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-user"></i> Contact Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('add_contact') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">
+                                    <i class="fas fa-user"></i> Full Name *
+                                </label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope"></i> Email Address *
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">
+                                    <i class="fas fa-phone"></i> Phone Number *
+                                </label>
+                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                       placeholder="(808) 555-0123" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="preferred_contact" class="form-label">
+                                    <i class="fas fa-heart"></i> Preferred Contact Method
+                                </label>
+                                <select class="form-control" id="preferred_contact" name="preferred_contact">
+                                    <option value="email">Email</option>
+                                    <option value="phone">Phone</option>
+                                    <option value="text">Text Message</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">
+                                <i class="fas fa-map-marker-alt"></i> Address
+                            </label>
+                            <textarea class="form-control" id="address" name="address" rows="2" 
+                                      placeholder="Street address, city, state, ZIP"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">
+                                <i class="fas fa-tags"></i> Tags
+                                <small class="text-muted">(comma-separated)</small>
+                            </label>
+                            <input type="text" class="form-control" id="tags" name="tags" 
+                                   placeholder="residential, repeat customer, referral">
+                            <small class="form-text text-muted">
+                                Examples: residential, commercial, repeat customer, referral, high-value
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">
+                                <i class="fas fa-sticky-note"></i> Notes
+                            </label>
+                            <textarea class="form-control" id="notes" name="notes" rows="4" 
+                                      placeholder="Any additional information about this contact..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <a href="{{ url_for('contact_list') }}" class="btn btn-secondary mr-2">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Contact
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Actions Card -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-bolt"></i> After Adding Contact
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Once you save this contact, you can:</p>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <div class="text-center">
+                                <i class="fas fa-calculator fa-2x text-success mb-2"></i>
+                                <p class="mb-0"><strong>Create Quote</strong></p>
+                                <small class="text-muted">Build professional estimates</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <div class="text-center">
+                                <i class="fas fa-calendar-plus fa-2x text-info mb-2"></i>
+                                <p class="mb-0"><strong>Schedule Job</strong></p>
+                                <small class="text-muted">Book appointments</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <div class="text-center">
+                                <i class="fas fa-file-invoice fa-2x text-warning mb-2"></i>
+                                <p class="mb-0"><strong>Generate Invoice</strong></p>
+                                <small class="text-muted">Bill for services</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Phone number formatting
+document.getElementById('phone').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 6) {
+        value = `(${value.slice(0,3)}) ${value.slice(3,6)}-${value.slice(6,10)}`;
+    } else if (value.length >= 3) {
+        value = `(${value.slice(0,3)}) ${value.slice(3)}`;
+    }
+    e.target.value = value;
+});
+
+// Auto-capitalize name
+document.getElementById('name').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/\b\w/g, l => l.toUpperCase());
+});
+</script>
+{% endblock %}
