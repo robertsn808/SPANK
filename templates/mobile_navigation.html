@@ -68,19 +68,29 @@
 }
 
 .mobile-nav-item {
-    padding: 15px 20px;
-    border-bottom: 1px solid #eee;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e9ecef;
     display: flex;
     align-items: center;
     text-decoration: none;
-    color: #333;
-    transition: background-color 0.2s ease;
+    color: #495057;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    position: relative;
 }
 
 .mobile-nav-item:hover {
-    background-color: #f8f9fa;
-    color: #007bff;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
     text-decoration: none;
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.mobile-nav-item.active {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border-left: 4px solid #155724;
 }
 
 .mobile-nav-item i {
@@ -90,13 +100,17 @@
 }
 
 .mobile-nav-section {
-    padding: 10px 20px;
-    font-weight: bold;
-    font-size: 12px;
+    padding: 15px 20px 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
     text-transform: uppercase;
-    color: #666;
-    background: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
+    color: #495057;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid #007bff;
+    margin: 5px 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 /* Mobile optimizations */
@@ -209,25 +223,51 @@
         </div>
         
         {% if session.admin_logged_in %}
-        <div class="mobile-nav-section">Admin Dashboard</div>
+        <div class="mobile-nav-section">Dashboard</div>
         <a href="/admin/dashboard" class="mobile-nav-item">
-            <i class="fas fa-tachometer-alt"></i>Dashboard
+            <i class="fas fa-tachometer-alt"></i>Main Dashboard
         </a>
+        <a href="/admin/analytics" class="mobile-nav-item">
+            <i class="fas fa-chart-line"></i>Business Analytics
+        </a>
+        
+        <div class="mobile-nav-section">Customer Management</div>
         <a href="/admin/crm" class="mobile-nav-item">
             <i class="fas fa-users"></i>CRM & Contacts
         </a>
         <a href="/admin/scheduler" class="mobile-nav-item">
-            <i class="fas fa-calendar-alt"></i>Scheduler
+            <i class="fas fa-calendar-alt"></i>Calendar & Scheduling
         </a>
         <a href="/admin/quotes" class="mobile-nav-item">
             <i class="fas fa-file-invoice-dollar"></i>Quotes & Invoices
         </a>
+        
+        <div class="mobile-nav-section">Operations</div>
+        <a href="/admin/job-tracking" class="mobile-nav-item">
+            <i class="fas fa-clipboard-list"></i>Job Tracking
+        </a>
+        <a href="/admin/inventory" class="mobile-nav-item">
+            <i class="fas fa-boxes"></i>Inventory & Materials
+        </a>
+        <a href="/admin/checklists" class="mobile-nav-item">
+            <i class="fas fa-tasks"></i>Job Checklists
+        </a>
         <a href="/admin/staff" class="mobile-nav-item">
             <i class="fas fa-hard-hat"></i>Staff Management
         </a>
-        <a href="/admin/client-messaging" class="mobile-nav-item">
-            <i class="fas fa-comments"></i>Client Messaging
+        
+        <div class="mobile-nav-section">Reports & Tools</div>
+        <a href="/admin/reports" class="mobile-nav-item">
+            <i class="fas fa-chart-bar"></i>Financial Reports
         </a>
+        <a href="/admin/workflow-automation" class="mobile-nav-item">
+            <i class="fas fa-robot"></i>Workflow Automation
+        </a>
+        <a href="/admin/client-messaging" class="mobile-nav-item">
+            <i class="fas fa-comments"></i>Client Communications
+        </a>
+        
+        <div class="mobile-nav-section">Account</div>
         <a href="/admin/logout" class="mobile-nav-item">
             <i class="fas fa-sign-out-alt"></i>Logout
         </a>
@@ -257,6 +297,148 @@
 <button class="mobile-help-btn mobile-touch-target" onclick="showMobileHelp()">
     <i class="fas fa-question"></i>
 </button>
+
+<script>
+// Enhanced Mobile Navigation with Active State Management
+function toggleMobileNav() {
+    const sidebar = document.getElementById('mobileSidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    const isOpen = sidebar.style.left === '0px';
+    
+    if (isOpen) {
+        sidebar.style.left = '-300px';
+        overlay.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    } else {
+        sidebar.style.left = '0px';
+        overlay.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        highlightCurrentPage();
+    }
+}
+
+function highlightCurrentPage() {
+    const currentPath = window.location.pathname;
+    const navItems = document.querySelectorAll('.mobile-nav-item');
+    
+    navItems.forEach(item => {
+        item.classList.remove('active');
+        const href = item.getAttribute('href');
+        
+        // Exact match or section match for admin routes
+        if (href === currentPath || 
+            (currentPath.startsWith('/admin/') && href.startsWith('/admin/') && 
+             currentPath.includes(href.replace('/admin/', '')))) {
+            item.classList.add('active');
+        }
+    });
+}
+
+function showMobileHelp() {
+    const helpContent = `
+        <div class="mobile-help-overlay">
+            <div class="mobile-help-content">
+                <h5><i class="fas fa-question-circle me-2"></i>Admin Dashboard Help</h5>
+                <div class="help-sections">
+                    <div class="help-section">
+                        <h6><i class="fas fa-tachometer-alt me-2"></i>Dashboard Navigation</h6>
+                        <p>• Main Dashboard - Overview and quick stats</p>
+                        <p>• Business Analytics - Performance metrics and insights</p>
+                    </div>
+                    <div class="help-section">
+                        <h6><i class="fas fa-users me-2"></i>Customer Management</h6>
+                        <p>• CRM & Contacts - Manage customer database</p>
+                        <p>• Calendar & Scheduling - Book and manage appointments</p>
+                        <p>• Quotes & Invoices - Generate and track billing</p>
+                    </div>
+                    <div class="help-section">
+                        <h6><i class="fas fa-clipboard-list me-2"></i>Operations</h6>
+                        <p>• Job Tracking - Monitor project progress</p>
+                        <p>• Inventory & Materials - Stock management</p>
+                        <p>• Job Checklists - Task completion tracking</p>
+                        <p>• Staff Management - Team coordination</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="closeMobileHelp()">
+                    <i class="fas fa-times me-2"></i>Got it
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', helpContent);
+}
+
+function closeMobileHelp() {
+    const helpOverlay = document.querySelector('.mobile-help-overlay');
+    if (helpOverlay) {
+        helpOverlay.remove();
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    highlightCurrentPage();
+    
+    // Close mobile nav when clicking nav items
+    document.querySelectorAll('.mobile-nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            setTimeout(() => toggleMobileNav(), 100);
+        });
+    });
+});
+</script>
+
+<style>
+.mobile-help-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.mobile-help-content {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    max-width: 400px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.help-sections {
+    margin: 20px 0;
+}
+
+.help-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #007bff;
+}
+
+.help-section h6 {
+    color: #007bff;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.help-section p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: #495057;
+}
+</style>
 
 <script>
 function toggleMobileNav() {
