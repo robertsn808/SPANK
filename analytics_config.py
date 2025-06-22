@@ -156,7 +156,8 @@ class AnalyticsConfig:
         weights = cls.HEALTH_SCORE_WEIGHTS
         
         # Conversion rate score (0-100)
-        conversion_score = min(100, (metrics.get('conversion_rate', 0) / 50) * 100)
+        conversion_rate = max(0.1, metrics.get('conversion_rate', 0.1))  # Avoid division by zero
+        conversion_score = min(100, (conversion_rate / 50) * 100)
         scores['conversion'] = conversion_score
         
         # Efficiency score (inverse of completion time)
@@ -165,7 +166,8 @@ class AnalyticsConfig:
         scores['efficiency'] = efficiency_score
         
         # Retention score
-        retention_score = min(100, (metrics.get('retention_rate', 0) / 40) * 100)
+        retention_rate = max(0.1, metrics.get('retention_rate', 0.1))  # Avoid division by zero
+        retention_score = min(100, (retention_rate / 40) * 100)
         scores['retention'] = retention_score
         
         # Cash flow score
