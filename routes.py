@@ -994,6 +994,57 @@ def performance_monitor_dashboard():
         flash('Performance monitoring temporarily unavailable. Please try again.', 'warning')
         return redirect(url_for('admin_dashboard'))
 
+# Analytics API Endpoints
+@app.route('/api/analytics/comprehensive')
+def api_comprehensive_analytics():
+    """API endpoint for comprehensive analytics data"""
+    try:
+        from analytics_manager import analytics_manager
+        analytics_data = analytics_manager.get_comprehensive_analytics(handyman_storage)
+        return jsonify(analytics_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/real-time')
+def api_real_time_metrics():
+    """API endpoint for real-time metrics"""
+    try:
+        from analytics_manager import analytics_manager
+        metrics = analytics_manager.get_real_time_metrics(handyman_storage)
+        return jsonify(metrics)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/alerts')
+def api_performance_alerts():
+    """API endpoint for performance alerts"""
+    try:
+        from analytics_manager import analytics_manager
+        alerts = analytics_manager.get_performance_alerts(handyman_storage)
+        return jsonify(alerts)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/executive-summary')
+def api_executive_summary():
+    """API endpoint for executive summary"""
+    try:
+        from analytics_manager import analytics_manager
+        summary = analytics_manager.get_executive_summary(handyman_storage)
+        return jsonify(summary)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/analytics/cache/clear', methods=['POST'])
+def api_clear_analytics_cache():
+    """API endpoint to clear analytics cache"""
+    try:
+        from analytics_manager import analytics_manager
+        analytics_manager.clear_cache()
+        return jsonify({'success': True, 'message': 'Analytics cache cleared'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/admin/integrated-analytics')
 def integrated_analytics():
     """Comprehensive integrated analytics dashboard"""
