@@ -1,0 +1,57 @@
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const path = require('path');
+
+function generateQuotePDF(data, outputPath) {
+  const doc = new PDFDocument({ margin: 50 });
+
+  // Header with logo
+  const logoPath = path.join(__dirname, 'public/images/spankks_logo.png');
+  if (fs.existsSync(logoPath)) {
+    doc.image(logoPath, 50, 40, { width: 80 });
+  }
+
+  // Company Info
+  doc.fontSize(14).text("SPANKKS CONSTRUCTION LLC", 400, 50, { align: 'right' });
+  doc.fontSize(10).text("(808) 778-9132", { align: 'right' });
+  doc.text("spanks808@gmail.com", { align: 'right' });
+
+  doc.moveDown().moveTo(50, 110).lineTo(550, 110).stroke();
+
+  // Quote Title & Meta
+  doc.moveDown().fontSize(18).text("QUOTE", { align: 'center' });
+  doc.moveDown().fontSize(12)
+    .text(`Customer: ${data.customer}`)
+    .text(`Phone: ${data.customer_phone}`)
+    .text(`Location: ${data.job_location}`)
+    .text(`Quote by: ${data.employee_name}`)
+    .text(`Date: ${data.date}`);
+
+  doc.moveDown();
+
+  // Table Header
+  doc.fontSize(11).text("Item#", 50, doc.y).text("Description", 100).text("Unit Price", 320).text("Line Total", 450);
+
+  doc.moveTo(50, doc.y + 5).lineTo(550, doc.y + 5).stroke();
+
+  // Table Items
+  data.items.forEach((item, index) => {
+    doc.text(`${index + 1}`, 50, doc.y + 10)
+      .text(item.description, 100)
+      .text(`$${item.unit_price.toFixed(2)}`, 320)
+      .text(`$${item.line_total.toFixed(2)}`, 450);
+  });
+
+  doc.moveDown(2);
+
+  // Totals
+  doc.text(`Discount: $${data.total_discount.toFixed(2)}`, { align: 'right' });
+  doc.text(`Sub Total: $${data.total_sub.toFixed(2)}`, { align: 'right' });
+  doc.text(`HI State Tax: $${data.total_tax.toFixed(2)}`, { align: 'right' });
+  doc.text(`TOTAL: $${data.total.toFixed(2)}`, { align: 'right', underline: true });
+
+  doc.moveDown().fontSize(10).text(`This quote is good for ${data.quote_days} days. Please give us a call at (808) 778-9132 if you have any questions. We look forward to working with you.`);
+
+  doc.end();
+  doc.pipe(fs.createWriteStream(outputPath));
+}

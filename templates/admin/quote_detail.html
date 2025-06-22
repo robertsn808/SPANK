@@ -1,0 +1,296 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Quote #{{ quote.id }} - {{ contact.name if contact else 'Unknown Contact' }} - SPANKKS Construction{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid">
+    <!-- Quote Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h4 class="mb-1">Quote #Q{{ "%04d"|format(quote.id) }}</h4>
+                            <h6 class="mb-0">{{ contact.name if contact else 'Unknown Contact' }}</h6>
+                            <small>{{ quote.service_type.title() }} Services</small>
+                        </div>
+                        <div class="text-right">
+                            <span class="badge badge-{{ 'success' if quote.status == 'accepted' else 'warning' if quote.status == 'pending' else 'secondary' }} badge-lg">
+                                {{ quote.status.title() }}
+                            </span>
+                            <br>
+                            <h4 class="mb-0 mt-2">${{ "{:,.2f}".format(quote.total_amount) }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-bolt"></i> Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group btn-group-sm mr-2" role="group">
+                        <a href="{{ url_for('download_quote_pdf', quote_id=quote.id) }}" 
+                           class="btn btn-success" target="_blank">
+                            <i class="fas fa-file-pdf"></i> Download PDF
+                        </a>
+                        <a href="{{ url_for('email_quote_pdf', quote_id=quote.id) }}" 
+                           class="btn btn-info">
+                            <i class="fas fa-envelope"></i> Email to Customer
+                        </a>
+                    </div>
+                    
+                    {% if quote.status == 'pending' %}
+                        <div class="btn-group btn-group-sm mr-2" role="group">
+                            <form method="POST" action="{{ url_for('update_quote_status', quote_id=quote.id) }}" class="d-inline">
+                                <input type="hidden" name="status" value="accepted">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-check"></i> Accept Quote
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('update_quote_status', quote_id=quote.id) }}" class="d-inline">
+                                <input type="hidden" name="status" value="declined">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-times"></i> Decline Quote
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                    
+                    {% if quote.status == 'accepted' %}
+                        <a href="{{ url_for('create_invoice_from_quote', quote_id=quote.id) }}" 
+                           class="btn btn-warning btn-sm">
+                            <i class="fas fa-file-invoice"></i> Create Invoice
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Quote Information -->
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Quote Details
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Created:</strong> {{ quote.created_date }}</p>
+                            <p><strong>Valid Until:</strong> {{ quote.valid_until }}</p>
+                            <p><strong>Service Type:</strong> {{ quote.service_type.title() }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if quote.notes %}
+                                <p><strong>Notes:</strong></p>
+                                <div class="border rounded p-2 bg-light">
+                                    {{ quote.notes }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Quote Items Table -->
+                    <h6 class="mb-3">
+                        <i class="fas fa-list"></i> Quote Items
+                    </h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Item#</th>
+                                    <th>Description</th>
+                                    <th>Qty</th>
+                                    <th>Unit</th>
+                                    <th>Unit Price</th>
+                                    <th>Line Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in quote.items %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ item.description }}</td>
+                                    <td>{{ "{:.2f}".format(item.quantity) }}</td>
+                                    <td>{{ item.unit }}</td>
+                                    <td>${{ "{:.2f}".format(item.unit_price) }}</td>
+                                    <td><strong>${{ "{:.2f}".format(item.total) }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Quote Totals -->
+                    <div class="row justify-content-end">
+                        <div class="col-md-4">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Subtotal:</strong></td>
+                                    <td class="text-right"><strong>${{ "{:.2f}".format(quote.total_amount) }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Hawaii GET Tax (4.712%):</strong></td>
+                                    <td class="text-right"><strong>${{ "{:.2f}".format(quote.total_amount * 0.04712) }}</strong></td>
+                                </tr>
+                                <tr class="table-primary">
+                                    <td><strong>TOTAL:</strong></td>
+                                    <td class="text-right"><strong>${{ "{:.2f}".format(quote.total_amount * 1.04712) }}</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-user"></i> Customer Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if contact %}
+                        <p class="mb-2">
+                            <strong>{{ contact.name }}</strong><br>
+                            <a href="tel:{{ contact.phone }}" class="text-decoration-none">
+                                <i class="fas fa-phone text-success"></i> {{ contact.phone }}
+                            </a><br>
+                            <a href="mailto:{{ contact.email }}" class="text-decoration-none">
+                                <i class="fas fa-envelope text-info"></i> {{ contact.email }}
+                            </a>
+                        </p>
+                        {% if contact.address %}
+                            <p class="mb-0">
+                                <i class="fas fa-map-marker-alt text-warning"></i> 
+                                {{ contact.address }}
+                            </p>
+                        {% endif %}
+                        <hr>
+                        <a href="{{ url_for('contact_detail', contact_id=contact.id) }}" 
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-user"></i> View Customer Profile
+                        </a>
+                    {% else %}
+                        <p class="text-muted">Contact information not available</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quote Status Timeline -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-history"></i> Quote Timeline
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Quote Created</h6>
+                                <small class="text-muted">{{ quote.created_date }}</small>
+                            </div>
+                        </div>
+                        
+                        {% if quote.status == 'accepted' %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Quote Accepted</h6>
+                                <small class="text-muted">Customer approved</small>
+                            </div>
+                        </div>
+                        {% elif quote.status == 'declined' %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-danger"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Quote Declined</h6>
+                                <small class="text-muted">Customer declined</small>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-warning"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Awaiting Response</h6>
+                                <small class="text-muted">Valid until {{ quote.valid_until }}</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('quote_list') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Quotes
+                </a>
+                <div>
+                    <a href="{{ url_for('quote_builder') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> New Quote
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -35px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.timeline:before {
+    content: '';
+    position: absolute;
+    left: -29px;
+    top: 11px;
+    bottom: 0;
+    width: 2px;
+    background-color: #e9ecef;
+}
+
+.badge-lg {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+}
+</style>
+{% endblock %}

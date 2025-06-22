@@ -19,3 +19,5 @@ pyjwt
 requests
 sendgrid
 twilio
+pillow
+reportlab

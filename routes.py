@@ -1549,3 +1549,158 @@ def add_job_note_route(job_id):
     
     flash('Note added successfully!', 'success')
     return redirect(url_for('job_detail', job_id=job_id))
+
+# PDF Generation Routes
+@app.route('/admin/crm/quotes/<int:quote_id>/pdf')
+def download_quote_pdf(quote_id):
+    """Generate and download quote PDF"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from pdf_service import generate_quote_pdf
+        
+        quotes = handyman_storage.get_all_quotes()
+        quote = next((q for q in quotes if q.id == quote_id), None)
+        
+        if not quote:
+            flash('Quote not found.', 'error')
+            return redirect(url_for('quote_list'))
+        
+        contact = handyman_storage.get_contact_by_id(quote.contact_id)
+        if not contact:
+            flash('Contact information not found.', 'error')
+            return redirect(url_for('quote_list'))
+        
+        # Generate PDF
+        filename = generate_quote_pdf(quote, contact)
+        
+        # Update quote with PDF path
+        quote.pdf_path = f"static/pdfs/{filename}"
+        
+        # Send file to user
+        from flask import send_file
+        return send_file(f"static/pdfs/{filename}", as_attachment=True, download_name=filename)
+        
+    except Exception as e:
+        logging.error(f"Error generating quote PDF: {e}")
+        flash('Error generating PDF. Please try again.', 'error')
+        return redirect(url_for('quote_detail', quote_id=quote_id))
+
+@app.route('/admin/crm/invoices/<int:invoice_id>/pdf')
+def download_invoice_pdf(invoice_id):
+    """Generate and download invoice PDF"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from pdf_service import generate_invoice_pdf
+        
+        invoices = handyman_storage.get_all_invoices()
+        invoice = next((i for i in invoices if i.id == invoice_id), None)
+        
+        if not invoice:
+            flash('Invoice not found.', 'error')
+            return redirect(url_for('invoice_list'))
+        
+        contact = handyman_storage.get_contact_by_id(invoice.contact_id)
+        if not contact:
+            flash('Contact information not found.', 'error')
+            return redirect(url_for('invoice_list'))
+        
+        # Generate PDF
+        filename = generate_invoice_pdf(invoice, contact)
+        
+        # Update invoice with PDF path
+        invoice.pdf_path = f"static/pdfs/{filename}"
+        
+        # Send file to user
+        from flask import send_file
+        return send_file(f"static/pdfs/{filename}", as_attachment=True, download_name=filename)
+        
+    except Exception as e:
+        logging.error(f"Error generating invoice PDF: {e}")
+        flash('Error generating PDF. Please try again.', 'error')
+        return redirect(url_for('invoice_detail', invoice_id=invoice_id))
+
+@app.route('/admin/crm/quotes/<int:quote_id>/email')
+def email_quote_pdf(quote_id):
+    """Email quote PDF to customer"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from pdf_service import generate_quote_pdf
+        
+        quotes = handyman_storage.get_all_quotes()
+        quote = next((q for q in quotes if q.id == quote_id), None)
+        
+        if not quote:
+            flash('Quote not found.', 'error')
+            return redirect(url_for('quote_list'))
+        
+        contact = handyman_storage.get_contact_by_id(quote.contact_id)
+        if not contact:
+            flash('Contact information not found.', 'error')
+            return redirect(url_for('quote_list'))
+        
+        # Generate PDF
+        filename = generate_quote_pdf(quote, contact)
+        
+        # Send quote via notification service
+        notification_service.send_inquiry_alert(
+            'Quote Delivery',
+            contact.name,
+            contact.phone,
+            contact.email,
+            f"Professional quote Q{quote.id:04d} for {quote.service_type} services - ${quote.total_amount:.2f}"
+        )
+        
+        flash(f'Quote emailed to {contact.name} at {contact.email}!', 'success')
+        return redirect(url_for('quote_detail', quote_id=quote_id))
+        
+    except Exception as e:
+        logging.error(f"Error emailing quote: {e}")
+        flash('Error sending quote email. Please try again.', 'error')
+        return redirect(url_for('quote_detail', quote_id=quote_id))
+
+@app.route('/admin/crm/invoices/<int:invoice_id>/email')
+def email_invoice_pdf(invoice_id):
+    """Email invoice PDF to customer"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from pdf_service import generate_invoice_pdf
+        
+        invoices = handyman_storage.get_all_invoices()
+        invoice = next((i for i in invoices if i.id == invoice_id), None)
+        
+        if not invoice:
+            flash('Invoice not found.', 'error')
+            return redirect(url_for('invoice_list'))
+        
+        contact = handyman_storage.get_contact_by_id(invoice.contact_id)
+        if not contact:
+            flash('Contact information not found.', 'error')
+            return redirect(url_for('invoice_list'))
+        
+        # Generate PDF
+        filename = generate_invoice_pdf(invoice, contact)
+        
+        # Send invoice via notification service
+        notification_service.send_inquiry_alert(
+            'Invoice Delivery',
+            contact.name,
+            contact.phone,
+            contact.email,
+            f"Invoice INV{invoice.id:04d} - Amount Due: ${invoice.total_amount:.2f} - Due: {invoice.due_date}"
+        )
+        
+        flash(f'Invoice emailed to {contact.name} at {contact.email}!', 'success')
+        return redirect(url_for('invoice_detail', invoice_id=invoice_id))
+        
+    except Exception as e:
+        logging.error(f"Error emailing invoice: {e}")
+        flash('Error sending invoice email. Please try again.', 'error')
+        return redirect(url_for('invoice_detail', invoice_id=invoice_id))
