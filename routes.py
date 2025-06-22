@@ -947,13 +947,24 @@ def ml_insights_dashboard():
         flash('Please log in to access ML insights.', 'error')
         return redirect(url_for('admin_login'))
 
-    from ml_analytics import ml_analytics
+    from analytics_manager import analytics_manager
     
-    # Generate comprehensive ML insights
-    ml_insights = ml_analytics.generate_ml_insights(handyman_storage)
-    
-    return render_template('admin/ml_insights.html',
-                         ml_insights=ml_insights)
+    try:
+        # Get business insights through centralized manager
+        business_insights = analytics_manager.get_business_insights(handyman_storage)
+        
+        # Get comprehensive analytics for additional context
+        analytics_data = analytics_manager.get_comprehensive_analytics(handyman_storage)
+        
+        return render_template('admin/ml_insights.html',
+                             ml_insights=analytics_data['ml_insights'],
+                             business_insights=business_insights,
+                             confidence_level=business_insights.get('confidence_level', 'Developing'))
+                             
+    except Exception as e:
+        logging.error(f"Error in ML insights: {e}")
+        flash('ML insights temporarily unavailable. Please try again.', 'warning')
+        return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/performance-monitor')
 def performance_monitor_dashboard():
@@ -962,13 +973,26 @@ def performance_monitor_dashboard():
         flash('Please log in to access performance monitoring.', 'error')
         return redirect(url_for('admin_login'))
 
-    from performance_monitor import performance_monitor
+    from analytics_manager import analytics_manager
     
-    # Generate real-time performance data
-    executive_data = performance_monitor.generate_executive_dashboard_data(handyman_storage)
-    
-    return render_template('admin/performance_monitor.html',
-                         executive_data=executive_data)
+    try:
+        # Get real-time performance data through centralized manager
+        real_time_metrics = analytics_manager.get_real_time_metrics(handyman_storage)
+        performance_alerts = analytics_manager.get_performance_alerts(handyman_storage)
+        
+        # Get cache status for system monitoring
+        cache_status = analytics_manager.get_cache_status()
+        
+        return render_template('admin/performance_monitor.html',
+                             real_time_metrics=real_time_metrics,
+                             performance_alerts=performance_alerts,
+                             cache_status=cache_status,
+                             system_health=real_time_metrics.get('health_score', {}))
+                             
+    except Exception as e:
+        logging.error(f"Error in performance monitoring: {e}")
+        flash('Performance monitoring temporarily unavailable. Please try again.', 'warning')
+        return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/integrated-analytics')
 def integrated_analytics():
@@ -977,25 +1001,32 @@ def integrated_analytics():
         flash('Please log in to access integrated analytics.', 'error')
         return redirect(url_for('admin_login'))
 
-    from analytics_service import analytics_service
-    from business_intelligence import business_intelligence
-    from ml_analytics import ml_analytics
-    from performance_monitor import performance_monitor
-    from automated_insights import automated_insights
+    from analytics_manager import analytics_manager
     
-    # Generate comprehensive analytics
-    business_report = analytics_service.generate_business_report(handyman_storage)
-    executive_briefing = business_intelligence.generate_executive_briefing(handyman_storage)
-    ml_insights = ml_analytics.generate_ml_insights(handyman_storage)
-    performance_data = performance_monitor.generate_executive_dashboard_data(handyman_storage)
-    daily_insights = automated_insights.generate_daily_insights(handyman_storage)
-    
-    return render_template('admin/integrated_analytics.html',
-                         business_report=business_report,
-                         executive_briefing=executive_briefing,
-                         ml_insights=ml_insights,
-                         performance_data=performance_data,
-                         daily_insights=daily_insights)
+    try:
+        # Get comprehensive analytics through centralized manager
+        analytics_data = analytics_manager.get_comprehensive_analytics(handyman_storage)
+        
+        # Get real-time performance data
+        real_time_metrics = analytics_manager.get_real_time_metrics(handyman_storage)
+        
+        # Get executive summary for quick overview
+        executive_summary = analytics_manager.get_executive_summary(handyman_storage)
+        
+        return render_template('admin/integrated_analytics.html',
+                             business_report=analytics_data['business_report'],
+                             executive_briefing=analytics_data['executive_briefing'],
+                             ml_insights=analytics_data['ml_insights'],
+                             performance_data=analytics_data['performance_data'],
+                             daily_insights=analytics_data['daily_insights'],
+                             real_time_metrics=real_time_metrics,
+                             executive_summary=executive_summary,
+                             system_status=analytics_data['system_status'])
+                             
+    except Exception as e:
+        logging.error(f"Error in integrated analytics: {e}")
+        flash('Analytics temporarily unavailable. Please try again.', 'warning')
+        return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/executive-summary')
 def executive_summary():
@@ -1004,27 +1035,32 @@ def executive_summary():
         flash('Please log in to access executive summary.', 'error')
         return redirect(url_for('admin_login'))
 
-    from analytics_service import analytics_service
+    from analytics_manager import analytics_manager
     
-    # Generate executive-level insights
-    business_report = analytics_service.generate_business_report(handyman_storage)
-    cash_flow_forecast = analytics_service.get_cash_flow_forecast(handyman_storage)
-    performance_alerts = analytics_service.get_performance_alerts(handyman_storage)
-    
-    # Key executive metrics
-    executive_metrics = {
-        'monthly_revenue': business_report['revenue']['total_revenue'],
-        'pipeline_value': cash_flow_forecast['total_pipeline_value'],
-        'conversion_rate': business_report['revenue']['quote_conversion_rate'],
-        'customer_count': business_report['customers']['total_customers'],
-        'high_priority_alerts': len([a for a in performance_alerts if a.get('priority') == 'high'])
-    }
-    
-    return render_template('admin/executive_summary.html',
-                         executive_metrics=executive_metrics,
-                         business_report=business_report,
-                         cash_flow_forecast=cash_flow_forecast,
-                         performance_alerts=performance_alerts[:3])  # Top 3 alerts only
+    try:
+        # Get executive summary through centralized manager
+        executive_data = analytics_manager.get_executive_summary(handyman_storage)
+        
+        # Get real-time metrics for current status
+        real_time_metrics = analytics_manager.get_real_time_metrics(handyman_storage)
+        
+        # Get performance alerts
+        performance_alerts = analytics_manager.get_performance_alerts(handyman_storage)
+        
+        return render_template('admin/executive_summary.html',
+                             executive_metrics=executive_data['key_metrics'],
+                             business_status=executive_data['business_status'],
+                             health_score=executive_data['health_score'],
+                             top_priorities=executive_data['top_priorities'],
+                             growth_outlook=executive_data['growth_outlook'],
+                             recommendations=executive_data['recommendations'],
+                             real_time_metrics=real_time_metrics,
+                             performance_alerts=performance_alerts['alerts'][:3])
+                             
+    except Exception as e:
+        logging.error(f"Error in executive summary: {e}")
+        flash('Executive summary temporarily unavailable. Please try again.', 'warning')
+        return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/analytics-dashboard')
 def analytics_dashboard():
@@ -1033,33 +1069,19 @@ def analytics_dashboard():
         flash('Please log in to access analytics.', 'error')
         return redirect(url_for('admin_login'))
 
-    from analytics_service import analytics_service
+    from analytics_manager import analytics_manager
     
-    # Generate comprehensive business analytics
-    business_report = analytics_service.generate_business_report(handyman_storage)
-    performance_alerts = analytics_service.get_performance_alerts(handyman_storage)
-    cash_flow_forecast = analytics_service.get_cash_flow_forecast(handyman_storage)
-    predictive_insights = analytics_service.get_predictive_insights(handyman_storage)
+    # Get comprehensive analytics through centralized manager
+    analytics_data = analytics_manager.get_comprehensive_analytics(handyman_storage)
+    real_time_metrics = analytics_manager.get_real_time_metrics(handyman_storage)
+    performance_alerts = analytics_manager.get_performance_alerts(handyman_storage)
     
-    # Legacy data for backward compatibility
-    service_requests = handyman_storage.get_all_service_requests()
-    contact_messages = handyman_storage.get_all_contact_messages()
-    
-    # Basic metrics for simple display
-    total_inquiries = len(contact_messages) + len(service_requests)
-    consultation_requests = len(service_requests)
-    completed_jobs = len([req for req in service_requests if req.status == 'completed'])
-
     return render_template('admin/enhanced_analytics.html',
-                         # Enhanced analytics
-                         business_report=business_report,
-                         performance_alerts=performance_alerts,
-                         cash_flow_forecast=cash_flow_forecast,
-                         predictive_insights=predictive_insights,
-                         # Legacy compatibility
-                         total_inquiries=total_inquiries,
-                         consultation_requests=consultation_requests,
-                         completed_jobs=completed_jobs)
+                         business_report=analytics_data['business_report'],
+                         performance_alerts=performance_alerts['alerts'],
+                         cash_flow_forecast=analytics_data['business_report']['revenue'],
+                         predictive_insights=analytics_data['ml_insights'],
+                         real_time_metrics=real_time_metrics)
 
 @app.route('/admin/customer-feedback')
 def customer_feedback():

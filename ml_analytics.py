@@ -130,7 +130,7 @@ class MLAnalytics:
         invoices = storage.get_all_invoices()
         
         # Customer value analysis
-        customer_values = defaultdict(lambda: {'total_spent': 0, 'jobs_count': 0, 'avg_job_value': 0, 'recency': 0})
+        customer_values = defaultdict(lambda: {'total_spent': 0.0, 'jobs_count': 0, 'avg_job_value': 0.0, 'recency': 0})
         
         for invoice in invoices:
             if hasattr(invoice, 'contact_id') and hasattr(invoice, 'total_amount'):
@@ -149,7 +149,7 @@ class MLAnalytics:
         
         for contact_id, data in customer_values.items():
             if data['jobs_count'] > 0:
-                data['avg_job_value'] = float(data['total_spent'] / data['jobs_count'])
+                data['avg_job_value'] = data['total_spent'] / data['jobs_count']
                 
                 # CLV prediction model
                 # Factors: frequency, recency, monetary value
