@@ -913,15 +913,17 @@ const notificationSystem = new NotificationSystem();
 
 // Example notifications on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Show welcome notification
-    setTimeout(() => {
-        notificationSystem.showToast(
-            'Welcome Back!',
-            'All systems are running normally. You have 3 new quotes pending review.',
-            'success',
-            4000
-        );
-    }, 1000);
+    // Show welcome notification only on admin pages
+    if (window.location.pathname.startsWith('/admin/')) {
+        setTimeout(() => {
+            notificationSystem.showToast(
+                'Welcome Back!',
+                'All systems are running normally. You have 3 new quotes pending review.',
+                'success',
+                4000
+            );
+        }, 1000);
+    }
     
     // Show banner for important updates
     if (Math.random() > 0.7) { // 30% chance to show maintenance banner
