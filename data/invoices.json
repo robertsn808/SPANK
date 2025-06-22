@@ -1,11 +1,11 @@
 [
   {
     "id": 1,
-    "contact_id": 2,
-    "quote_id": 2,
-    "subtotal": 477.50019100007637,
+    "contact_id": 4,
+    "quote_id": 5,
+    "subtotal": 238.75009550003819,
     "tax_rate": 0.04712,
-    "total_amount": 499.99999999999994,
+    "total_amount": 249.99999999999997,
     "created_date": "2025-06-22",
     "due_date": "2025-07-22",
     "status": "pending",
@@ -14,7 +14,27 @@
       {
         "description": "Services Rendered",
         "quantity": 1.0,
-        "unit_price": 477.50019100007637,
+        "unit_price": 238.75009550003819,
+        "unit": "job"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "contact_id": 6,
+    "quote_id": 8,
+    "subtotal": 286.50011460004583,
+    "tax_rate": 0.04712,
+    "total_amount": 300.0,
+    "created_date": "2025-06-22",
+    "due_date": "2025-07-22",
+    "status": "pending",
+    "payment_terms": "Net 30",
+    "items": [
+      {
+        "description": "Services Rendered",
+        "quantity": 1.0,
+        "unit_price": 286.50011460004583,
         "unit": "job"
       }
     ]

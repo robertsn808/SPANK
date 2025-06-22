@@ -31,5 +31,71 @@
     "priority": "normal",
     "automation_enabled": true,
     "job_id": 1
+  },
+  {
+    "id": 2,
+    "quote_id": 4,
+    "current_stage": "quote_sent",
+    "stage_entered": "2025-06-22 12:32:33",
+    "next_action_due": "2025-06-25",
+    "actions_completed": [],
+    "stages_history": [
+      {
+        "stage": "quote_sent",
+        "entered": "2025-06-22 12:32:33",
+        "actions": [
+          "Send follow-up email",
+          "Schedule phone call"
+        ]
+      }
+    ],
+    "status": "active",
+    "created_date": "2025-06-22",
+    "priority": "normal",
+    "automation_enabled": true
+  },
+  {
+    "id": 3,
+    "quote_id": 6,
+    "current_stage": "quote_sent",
+    "stage_entered": "2025-06-22 12:32:56",
+    "next_action_due": "2025-06-25",
+    "actions_completed": [],
+    "stages_history": [
+      {
+        "stage": "quote_sent",
+        "entered": "2025-06-22 12:32:56",
+        "actions": [
+          "Send follow-up email",
+          "Schedule phone call"
+        ]
+      }
+    ],
+    "status": "active",
+    "created_date": "2025-06-22",
+    "priority": "normal",
+    "automation_enabled": true
+  },
+  {
+    "id": 4,
+    "quote_id": 7,
+    "current_stage": "quote_sent",
+    "stage_entered": "2025-06-22 12:32:56",
+    "next_action_due": "2025-06-25",
+    "actions_completed": [],
+    "stages_history": [
+      {
+        "stage": "quote_sent",
+        "entered": "2025-06-22 12:32:56",
+        "actions": [
+          "Send follow-up email",
+          "Schedule phone call"
+        ]
+      }
+    ],
+    "status": "active",
+    "created_date": "2025-06-22",
+    "priority": "normal",
+    "automation_enabled": true
   }
 ]

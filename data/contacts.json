@@ -50,5 +50,58 @@
     "last_contact": null,
     "preferred_contact": "email",
     "status": "active"
+  },
+  {
+    "id": 4,
+    "name": "Invoice Test Customer",
+    "email": "invoice.test.customer@tempmail.com",
+    "phone": "(808) 555-0000",
+    "address": "",
+    "notes": "Created via API for invoice INV_TEST",
+    "tags": [
+      "api_generated",
+      "invoice_only"
+    ],
+    "created_date": "2025-06-22",
+    "job_history": [],
+    "total_spent": 0.0,
+    "last_contact": null,
+    "preferred_contact": "email",
+    "status": "active"
+  },
+  {
+    "id": 5,
+    "name": "Multi Line Customer",
+    "email": "multi.line.customer@tempmail.com",
+    "phone": "(808) 555-5678",
+    "address": "",
+    "notes": "Created via API",
+    "tags": [
+      "api_generated"
+    ],
+    "created_date": "2025-06-22",
+    "job_history": [],
+    "total_spent": 0.0,
+    "last_contact": null,
+    "preferred_contact": "email",
+    "status": "active"
+  },
+  {
+    "id": 6,
+    "name": "Invoice Customer",
+    "email": "invoice.customer@tempmail.com",
+    "phone": "(808) 555-0000",
+    "address": "",
+    "notes": "Created via API for invoice INV_TEST",
+    "tags": [
+      "api_generated",
+      "invoice_only"
+    ],
+    "created_date": "2025-06-22",
+    "job_history": [],
+    "total_spent": 0.0,
+    "last_contact": null,
+    "preferred_contact": "email",
+    "status": "active"
   }
 ]
