@@ -42,11 +42,23 @@ class BusinessAnalytics:
         
         # Quote conversion metrics
         total_quotes = len(quotes)
-        accepted_quotes = len([q for q in quotes if q.status == 'accepted'])
-        conversion_rate = (accepted_quotes / total_quotes * 100) if total_quotes > 0 else 0
+        accepted_quotes = 0
+        quote_values = []
         
-        # Average quote value
-        quote_values = [q.total_amount for q in quotes if hasattr(q, 'total_amount')]
+        for q in quotes:
+            # Handle both dict and object formats
+            if isinstance(q, dict):
+                if q.get('status') == 'accepted':
+                    accepted_quotes += 1
+                if 'total_amount' in q:
+                    quote_values.append(q['total_amount'])
+            else:
+                if hasattr(q, 'status') and q.status == 'accepted':
+                    accepted_quotes += 1
+                if hasattr(q, 'total_amount'):
+                    quote_values.append(q.total_amount)
+        
+        conversion_rate = (accepted_quotes / total_quotes * 100) if total_quotes > 0 else 0
         avg_quote_value = sum(quote_values) / len(quote_values) if quote_values else 0
         
         return {

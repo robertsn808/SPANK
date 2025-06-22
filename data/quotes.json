@@ -250,5 +250,41 @@
         "unit": "job"
       }
     ]
+  },
+  {
+    "id": 15,
+    "contact_id": 2,
+    "service_type": "general_handyman",
+    "total_amount": 100.0,
+    "valid_until": "2025-07-22",
+    "notes": "Generated via API",
+    "created_date": "2025-06-22",
+    "status": "pending",
+    "items": [
+      {
+        "description": "General Handyman Service",
+        "quantity": 1.0,
+        "unit_price": 100.0,
+        "unit": "job"
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "contact_id": 8,
+    "service_type": "api_generated",
+    "total_amount": 99.99808999923599,
+    "valid_until": "2025-07-22",
+    "notes": "Auto-generated quote for API invoice",
+    "created_date": "2025-06-22",
+    "status": "pending",
+    "items": [
+      {
+        "description": "Services Rendered",
+        "quantity": 1.0,
+        "unit_price": 99.99808999923599,
+        "unit": "job"
+      }
+    ]
   }
 ]
