@@ -2342,7 +2342,6 @@ def serve_photo(job_id, photo_type, filename):
 @app.route('/photo/<job_id>/<photo_type>/<filename>', methods=['DELETE'])
 def delete_job_photo(job_id, photo_type, filename):
     """Delete a specific job photo"""
-    from upload_service import photo_service
     
     try:
         result = photo_service.delete_photo(job_id, photo_type, filename)
@@ -2359,7 +2358,6 @@ def delete_job_photo(job_id, photo_type, filename):
 @app.route('/job-photos/<job_id>')
 def job_photos_interface(job_id):
     """Job photo upload and management interface"""
-    from upload_service import photo_service
     
     # Get existing photos
     existing_photos = photo_service.get_job_photos(job_id)
