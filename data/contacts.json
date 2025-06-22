@@ -15,5 +15,40 @@
     "last_contact": null,
     "preferred_contact": "email",
     "status": "active"
+  },
+  {
+    "id": 2,
+    "name": "Test Hawaii Tax",
+    "email": "test.hawaii.tax@tempmail.com",
+    "phone": "(808) 555-1234",
+    "address": "",
+    "notes": "Created via API",
+    "tags": [
+      "api_generated"
+    ],
+    "created_date": "2025-06-22",
+    "job_history": [],
+    "total_spent": 0.0,
+    "last_contact": null,
+    "preferred_contact": "email",
+    "status": "active"
+  },
+  {
+    "id": 3,
+    "name": "Hawaii Tax Test Invoice",
+    "email": "hawaii.tax.test.invoice@tempmail.com",
+    "phone": "(808) 555-0000",
+    "address": "",
+    "notes": "Created via API for invoice",
+    "tags": [
+      "api_generated",
+      "invoice_only"
+    ],
+    "created_date": "2025-06-22",
+    "job_history": [],
+    "total_spent": 0.0,
+    "last_contact": null,
+    "preferred_contact": "email",
+    "status": "active"
   }
 ]
