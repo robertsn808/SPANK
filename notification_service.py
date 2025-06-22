@@ -46,9 +46,8 @@ class NotificationService:
                 'customer_name': customer_name,
                 'phone_number': phone_number,
                 'email': email,
-                'service_type': service_type or inquiry_type,
                 'amount': 0,  # No monetary value for inquiries
-                'reason': f"New {inquiry_type} inquiry - manual follow-up required",
+                'reason': f"New {inquiry_type} inquiry: {service_type or inquiry_type} - manual follow-up required",
                 'timestamp': datetime.now(),
                 'status': 'pending'
             }

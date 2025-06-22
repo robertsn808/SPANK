@@ -327,6 +327,9 @@ def admin_dashboard():
     # Lead source analysis
     referral_stats = handyman_storage.get_referral_stats()
     membership_stats = handyman_storage.get_membership_stats()
+    
+    # Get admin notifications for manual processing
+    admin_notifications = handyman_storage.get_admin_notifications()
 
     return render_template('admin_dashboard.html', 
                          bookings=service_requests,
@@ -345,7 +348,25 @@ def admin_dashboard():
                          urgent_requests=urgent_requests,
                          monthly_requests=monthly_requests,
                          referral_stats=referral_stats,
-                         membership_stats=membership_stats)
+                         membership_stats=membership_stats,
+                         # Manual notification system
+                         admin_notifications=admin_notifications)
+
+@app.route('/admin/notifications/<int:notification_id>/complete', methods=['POST'])
+def mark_notification_complete(notification_id):
+    """Mark a notification as complete"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'error': 'Not authenticated'}), 401
+
+    try:
+        success = handyman_storage.mark_notification_read(notification_id)
+        if success:
+            return jsonify({'success': True, 'message': 'Notification marked as complete'})
+        else:
+            return jsonify({'success': False, 'error': 'Notification not found'}), 404
+    except Exception as e:
+        logging.error(f"Error marking notification {notification_id} as complete: {e}")
+        return jsonify({'success': False, 'error': 'Internal error'}), 500
 
 @app.route('/admin/logout')
 def admin_logout():
