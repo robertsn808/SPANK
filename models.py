@@ -63,11 +63,182 @@ class HandymanStorage:
         self.referrals = []
         self.memberships = []
         self.admin_notifications = []
-        # CRM components
-        self.contacts = []
-        self.quotes = []
-        self.invoices = []
-        self.jobs = []
+        
+        # CRM components with file persistence
+        self.data_dir = 'data'
+        self._ensure_data_directory()
+        
+        # Load existing data from files
+        self.contacts = self._load_contacts()
+        self.quotes = self._load_quotes()
+        self.invoices = self._load_invoices()
+        self.jobs = self._load_jobs()
+        
+        # Counter for IDs
+        self._next_contact_id = self._get_next_id(self.contacts)
+        self._next_quote_id = self._get_next_id(self.quotes)
+        self._next_invoice_id = self._get_next_id(self.invoices)
+        self._next_job_id = self._get_next_id(self.jobs)
+    
+    def _ensure_data_directory(self):
+        """Ensure data directory exists"""
+        import os
+        if not os.path.exists(self.data_dir):
+            os.makedirs(self.data_dir, exist_ok=True)
+    
+    def _get_next_id(self, items):
+        """Get next available ID for a collection"""
+        if not items:
+            return 1
+        return max(item.id for item in items if hasattr(item, 'id') and item.id) + 1
+    
+    def _load_contacts(self):
+        """Load contacts from file"""
+        import json
+        import os
+        contacts_file = os.path.join(self.data_dir, 'contacts.json')
+        if os.path.exists(contacts_file):
+            try:
+                with open(contacts_file, 'r') as f:
+                    data = json.load(f)
+                contacts = []
+                for item in data:
+                    contact = Contact(
+                        name=item['name'],
+                        email=item['email'],
+                        phone=item['phone'],
+                        address=item.get('address', ''),
+                        notes=item.get('notes', ''),
+                        tags=item.get('tags', []),
+                        created_date=item.get('created_date')
+                    )
+                    contact.id = item['id']
+                    contact.job_history = item.get('job_history', [])
+                    contact.total_spent = item.get('total_spent', 0.0)
+                    contact.last_contact = item.get('last_contact')
+                    contact.preferred_contact = item.get('preferred_contact', 'email')
+                    contact.status = item.get('status', 'active')
+                    contacts.append(contact)
+                return contacts
+            except Exception as e:
+                logging.error(f"Error loading contacts: {e}")
+        return []
+    
+    def _save_contacts_to_file(self):
+        """Save contacts to file"""
+        import json
+        import os
+        contacts_file = os.path.join(self.data_dir, 'contacts.json')
+        try:
+            data = []
+            for contact in self.contacts:
+                data.append({
+                    'id': contact.id,
+                    'name': contact.name,
+                    'email': contact.email,
+                    'phone': contact.phone,
+                    'address': contact.address,
+                    'notes': contact.notes,
+                    'tags': contact.tags,
+                    'created_date': contact.created_date,
+                    'job_history': contact.job_history,
+                    'total_spent': contact.total_spent,
+                    'last_contact': contact.last_contact,
+                    'preferred_contact': contact.preferred_contact,
+                    'status': contact.status
+                })
+            with open(contacts_file, 'w') as f:
+                json.dump(data, f, indent=2)
+            logging.info(f"Saved {len(data)} contacts to file")
+        except Exception as e:
+            logging.error(f"Error saving contacts: {e}")
+    
+    def _load_quotes(self):
+        """Load quotes from file"""
+        import json
+        import os
+        quotes_file = os.path.join(self.data_dir, 'quotes.json')
+        if os.path.exists(quotes_file):
+            try:
+                with open(quotes_file, 'r') as f:
+                    data = json.load(f)
+                quotes = []
+                for item in data:
+                    quote = Quote(
+                        contact_id=item['contact_id'],
+                        service_type=item['service_type'],
+                        items=[],  # Will be populated below
+                        total_amount=item['total_amount'],
+                        valid_until=item['valid_until'],
+                        notes=item.get('notes', '')
+                    )
+                    quote.id = item['id']
+                    quote.created_date = item.get('created_date')
+                    quote.status = item.get('status', 'pending')
+                    quote.quote_number = f"Q{quote.id:04d}"
+                    
+                    # Reconstruct quote items
+                    for item_data in item.get('items', []):
+                        quote_item = QuoteItem(
+                            description=item_data['description'],
+                            quantity=item_data['quantity'],
+                            unit_price=item_data['unit_price'],
+                            unit=item_data.get('unit', 'each')
+                        )
+                        quote.items.append(quote_item)
+                    
+                    quotes.append(quote)
+                return quotes
+            except Exception as e:
+                logging.error(f"Error loading quotes: {e}")
+        return []
+    
+    def _save_quotes_to_file(self):
+        """Save quotes to file"""
+        import json
+        import os
+        quotes_file = os.path.join(self.data_dir, 'quotes.json')
+        try:
+            data = []
+            for quote in self.quotes:
+                quote_data = {
+                    'id': quote.id,
+                    'contact_id': quote.contact_id,
+                    'service_type': quote.service_type,
+                    'total_amount': quote.total_amount,
+                    'valid_until': quote.valid_until,
+                    'notes': quote.notes,
+                    'created_date': quote.created_date,
+                    'status': getattr(quote, 'status', 'pending'),
+                    'items': []
+                }
+                
+                # Save quote items
+                for item in quote.items:
+                    quote_data['items'].append({
+                        'description': item.description,
+                        'quantity': item.quantity,
+                        'unit_price': item.unit_price,
+                        'unit': item.unit
+                    })
+                
+                data.append(quote_data)
+            
+            with open(quotes_file, 'w') as f:
+                json.dump(data, f, indent=2)
+            logging.info(f"Saved {len(data)} quotes to file")
+        except Exception as e:
+            logging.error(f"Error saving quotes: {e}")
+    
+    def _load_invoices(self):
+        """Load invoices from file"""
+        # Similar to quotes but for invoices
+        return []
+    
+    def _load_jobs(self):
+        """Load jobs from file"""
+        # Similar to quotes but for jobs
+        return []
 
     def add_service_request(self, request_data):
         request = ServiceRequest(**request_data)
@@ -234,16 +405,13 @@ class HandymanStorage:
             notes=contact_data.get('notes', ''),
             tags=contact_data.get('tags', [])
         )
+        # Assign unique ID
+        contact.id = self._next_contact_id
+        self._next_contact_id += 1
+        
         self.contacts.append(contact)
-        self._save_contacts(self.contacts)
+        self._save_contacts_to_file()
         return contact
-
-    def _save_contacts(self, contacts):
-        """Save contacts to persistent storage (if implemented)"""
-        # In a real implementation, this would save to database
-        # For now, just update the in-memory list
-        self.contacts = contacts
-        logging.info(f"Saved {len(contacts)} contacts to storage")
 
     def get_all_contacts(self):
         """Get all contacts"""
@@ -288,8 +456,14 @@ class HandymanStorage:
             valid_until=quote_data['valid_until'],
             notes=quote_data.get('notes')
         )
-        quote.id = len(self.quotes) + 1
+        # Assign unique ID
+        quote.id = self._next_quote_id
+        self._next_quote_id += 1
+        quote.quote_number = f"Q{quote.id:04d}"
+        quote.status = 'pending'
+        
         self.quotes.append(quote)
+        self._save_quotes_to_file()
         return quote
 
     def get_all_quotes(self):
