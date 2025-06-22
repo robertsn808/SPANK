@@ -313,49 +313,9 @@ def admin_dashboard():
                 logging.warning(f"Invalid appointment data: {appointment} - {e}")
                 continue
 
-        # Business Analytics with error handling
-        total_revenue_estimate = 0
-        try:
-            for req in service_requests:
-                if req.status == 'completed' and hasattr(req, 'budget_range') and req.budget_range:
-                    if '-' in req.budget_range:
-                        amount_str = req.budget_range.split('-')[0].replace('$', '').replace(',', '').strip()
-                        total_revenue_estimate += float(amount_str)
-                    else:
-                        total_revenue_estimate += 500.0
-        except (ValueError, AttributeError) as e:
-            logging.warning(f"Error calculating revenue estimate: {e}")
-            total_revenue_estimate = 0
-        
-        # Customer satisfaction metrics
+        # Only show authentic data - actual contact messages and service requests
         pending_requests = [req for req in service_requests if hasattr(req, 'status') and req.status == 'pending']
         urgent_requests = [req for req in service_requests if getattr(req, 'priority', 'medium') == 'high']
-        
-        # Monthly trends with safe date parsing
-        current_month = hawaii_now.month
-        monthly_requests = []
-        for req in service_requests:
-            try:
-                if hasattr(req, 'preferred_date') and req.preferred_date:
-                    req_date = datetime.strptime(req.preferred_date, '%Y-%m-%d')
-                    if req_date.month == current_month:
-                        monthly_requests.append(req)
-            except (ValueError, AttributeError) as e:
-                logging.warning(f"Error parsing date for request: {e}")
-                continue
-        
-        # Lead source analysis
-        try:
-            referral_stats = handyman_storage.get_referral_stats()
-        except Exception as e:
-            logging.warning(f"Error getting referral stats: {e}")
-            referral_stats = {}
-            
-        try:
-            membership_stats = handyman_storage.get_membership_stats()
-        except Exception as e:
-            logging.warning(f"Error getting membership stats: {e}")
-            membership_stats = {}
         
         # Get admin notifications for manual processing
         try:
@@ -375,14 +335,9 @@ def admin_dashboard():
                              today=hawaii_now.strftime('%Y-%m-%d'),
                              user_role=session.get('user_role', 'admin'),
                              user_name=session.get('user_name', 'Admin'),
-                             # Business analytics
-                             total_revenue_estimate=total_revenue_estimate,
+                             # Only authentic data
                              pending_requests=pending_requests,
                              urgent_requests=urgent_requests,
-                             monthly_requests=monthly_requests,
-                             referral_stats=referral_stats,
-                             membership_stats=membership_stats,
-                             # Manual notification system
                              admin_notifications=admin_notifications)
     
     except Exception as e:
