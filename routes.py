@@ -2182,7 +2182,7 @@ def get_client_quotes(client_id):
     
     # Get quotes for this client from CRM
     all_quotes = handyman_storage.get_all_quotes()
-    client_quotes = [q for q in all_quotes if q.get('contact_id') == client_id]
+    client_quotes = [q for q in all_quotes if q.contact_id == client_id]
     
     return jsonify({
         'quotes': client_quotes,
@@ -2197,7 +2197,7 @@ def get_client_invoices(client_id):
     
     # Get invoices for this client from CRM
     all_invoices = handyman_storage.get_all_invoices()
-    client_invoices = [i for i in all_invoices if i.get('contact_id') == client_id]
+    client_invoices = [i for i in all_invoices if i.contact_id == client_id]
     
     return jsonify({
         'invoices': client_invoices,

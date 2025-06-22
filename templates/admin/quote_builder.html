@@ -309,7 +309,7 @@ function updateQuoteSummary() {
         subtotal += parseFloat(item.textContent) || 0;
     });
     
-    const tax = subtotal * 0.04712; // Hawaii GET tax
+    const tax = subtotal * 0.045; // Hawaii GET tax (4.5% O'ahu rate)
     const total = subtotal + tax;
     
     document.getElementById('subtotal').textContent = subtotal.toFixed(2);
