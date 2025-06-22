@@ -13,14 +13,12 @@ class MicroInteractions {
     init() {
         this.initScrollAnimations();
         this.initRippleEffects();
-        this.initHoverEnhancements();
         this.initFormInteractions();
         this.initButtonAnimations();
         this.initCardAnimations();
         this.initNavigationEffects();
         this.initLoadingStates();
         this.initTooltipAnimations();
-        this.initCounterAnimations();
     }
 
     // =====================================================================
