@@ -1948,6 +1948,16 @@ def quote_invoice_generator():
     """Professional quote and invoice generation form"""
     return render_template('quote_invoice_generator.html')
 
+@app.route('/quote-generator')
+def quote_generator():
+    """Dedicated quote generator form"""
+    return render_template('quote_generator.html')
+
+@app.route('/invoice-generator')
+def invoice_generator():
+    """Dedicated invoice generator form"""
+    return render_template('invoice_generator.html')
+
 @app.route('/upload/<job_id>/<photo_type>', methods=['POST'])
 def upload_job_photos(job_id, photo_type):
     """Upload job photos (before/after) with metadata tracking"""

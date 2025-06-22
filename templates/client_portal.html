@@ -281,12 +281,14 @@
             fetch(`/photos/${jobId}`)
                 .then(response => response.json())
                 .then(data => {
+                    const photos = data.photos || {};
+                    
                     // Load before photos
                     const beforeDiv = document.getElementById('before-photos');
-                    if (data.before && data.before.length > 0) {
-                        beforeDiv.innerHTML = data.before.map(photo => `
+                    if (photos.before && photos.before.length > 0) {
+                        beforeDiv.innerHTML = photos.before.map(photo => `
                             <div class="photo-item">
-                                <img src="/serve-photo/${jobId}/before/${photo.filename}" alt="Before photo">
+                                <img src="/photo/${jobId}/before/${photo.filename}" alt="Before photo">
                                 <div class="photo-label">Before</div>
                             </div>
                         `).join('');
@@ -296,10 +298,10 @@
                     
                     // Load after photos
                     const afterDiv = document.getElementById('after-photos');
-                    if (data.after && data.after.length > 0) {
-                        afterDiv.innerHTML = data.after.map(photo => `
+                    if (photos.after && photos.after.length > 0) {
+                        afterDiv.innerHTML = photos.after.map(photo => `
                             <div class="photo-item">
-                                <img src="/serve-photo/${jobId}/after/${photo.filename}" alt="After photo">
+                                <img src="/photo/${jobId}/after/${photo.filename}" alt="After photo">
                                 <div class="photo-label">After</div>
                             </div>
                         `).join('');
