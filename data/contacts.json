@@ -50,5 +50,40 @@
     "last_contact": null,
     "preferred_contact": "email",
     "status": "active"
+  },
+  {
+    "id": 4,
+    "name": "API Test",
+    "email": "api.test@tempmail.com",
+    "phone": "(808) 555-0001",
+    "address": "",
+    "notes": "Created via API",
+    "tags": [
+      "api_generated"
+    ],
+    "created_date": "2025-06-22",
+    "job_history": [],
+    "total_spent": 0.0,
+    "last_contact": null,
+    "preferred_contact": "email",
+    "status": "active"
+  },
+  {
+    "id": 5,
+    "name": "API Test Invoice",
+    "email": "api.test.invoice@tempmail.com",
+    "phone": "(808) 555-0000",
+    "address": "",
+    "notes": "Created via API for invoice",
+    "tags": [
+      "api_generated",
+      "invoice_only"
+    ],
+    "created_date": "2025-06-22",
+    "job_history": [],
+    "total_spent": 0.0,
+    "last_contact": null,
+    "preferred_contact": "email",
+    "status": "active"
   }
 ]
