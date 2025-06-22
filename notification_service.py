@@ -158,6 +158,8 @@ class NotificationService:
                 message_body = f"🔔 New Contact Inquiry!\n\nCustomer: {customer_name}\nPhone: {phone_number}\nEmail: {email}\n\nPlease follow up promptly.\n- SPANK Team"
             elif inquiry_type == "consultation":
                 message_body = f"🔔 New Consultation Request!\n\nCustomer: {customer_name}\nPhone: {phone_number}\nEmail: {email}\nService: {service_type or 'General'}\n\nPlease schedule consultation.\n- SPANK Team"
+            elif inquiry_type == "photo_upload":
+                message_body = f"📸 Job Photos Uploaded!\n\nJob: {customer_name}\nUpload Type: {service_type}\nAdmin: {email}\n\nCheck the job photos interface.\n- SPANK Team"
             else:
                 message_body = f"🔔 New Inquiry!\n\nCustomer: {customer_name}\nPhone: {phone_number}\nEmail: {email}\n\nPlease follow up.\n- SPANK Team"
             

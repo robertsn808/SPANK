@@ -2035,3 +2035,141 @@ def download_invoice_api(invoice_id):
 def quote_invoice_generator():
     """Professional quote and invoice generation form"""
     return render_template('quote_invoice_generator.html')
+
+@app.route('/upload/<job_id>/<photo_type>', methods=['POST'])
+def upload_job_photos(job_id, photo_type):
+    """Upload job photos (before/after) with metadata tracking"""
+    from upload_service import photo_service
+    
+    # Validate photo type
+    if photo_type not in ['before', 'after']:
+        return jsonify({'error': 'Invalid photo type. Must be "before" or "after"'}), 400
+    
+    try:
+        # Get uploaded files
+        uploaded_files = request.files.getlist('photos')
+        
+        if not uploaded_files or all(file.filename == '' for file in uploaded_files):
+            return jsonify({'error': 'No files provided'}), 400
+        
+        results = []
+        errors = []
+        
+        # Process each uploaded file
+        for file in uploaded_files:
+            if file.filename != '':
+                # Add metadata
+                metadata = {
+                    'uploader_ip': request.remote_addr,
+                    'user_agent': request.headers.get('User-Agent', ''),
+                    'photo_type': photo_type,
+                    'job_id': job_id
+                }
+                
+                result = photo_service.save_photo(file, job_id, photo_type, metadata)
+                
+                if result.get('success'):
+                    results.append({
+                        'filename': result['filename'],
+                        'file_size': result['file_size'],
+                        'upload_date': datetime.now().isoformat()
+                    })
+                else:
+                    errors.append(f"{file.filename}: {result.get('error')}")
+        
+        # Send inquiry alert for photo uploads
+        try:
+            from notification_service import NotificationService
+            notification_service = NotificationService()
+            notification_service.send_inquiry_alert(
+                inquiry_type='photo_upload',
+                customer_name=f'Job {job_id}',
+                phone_number='(808) 452-9779',  # Admin phone
+                email='spank808@gmail.com',
+                service_type=f'{photo_type} photos uploaded'
+            )
+        except Exception as e:
+            logging.warning(f"Could not send photo upload notification: {e}")
+        
+        response_data = {
+            'message': f'Upload completed for job {job_id}',
+            'job_id': job_id,
+            'photo_type': photo_type,
+            'uploaded_files': results,
+            'success_count': len(results),
+            'error_count': len(errors)
+        }
+        
+        if errors:
+            response_data['errors'] = errors
+        
+        return jsonify(response_data), 201 if results else 400
+        
+    except Exception as e:
+        logging.error(f"Error uploading photos: {e}")
+        return jsonify({'error': f'Upload failed: {str(e)}'}), 500
+
+@app.route('/photos/<job_id>')
+@app.route('/photos/<job_id>/<photo_type>')
+def get_job_photos(job_id, photo_type=None):
+    """Get all photos for a job"""
+    from upload_service import photo_service
+    
+    try:
+        photos = photo_service.get_job_photos(job_id, photo_type)
+        return jsonify({
+            'job_id': job_id,
+            'photos': photos
+        })
+        
+    except Exception as e:
+        logging.error(f"Error getting job photos: {e}")
+        return jsonify({'error': f'Failed to get photos: {str(e)}'}), 500
+
+@app.route('/photo/<job_id>/<photo_type>/<filename>')
+def serve_photo(job_id, photo_type, filename):
+    """Serve uploaded photo files"""
+    from upload_service import photo_service
+    import os
+    from flask import send_file
+    
+    try:
+        file_path = os.path.join(photo_service.get_job_directory(job_id, photo_type), filename)
+        
+        if os.path.exists(file_path):
+            return send_file(file_path)
+        else:
+            return jsonify({'error': 'Photo not found'}), 404
+            
+    except Exception as e:
+        logging.error(f"Error serving photo: {e}")
+        return jsonify({'error': f'Failed to serve photo: {str(e)}'}), 500
+
+@app.route('/photo/<job_id>/<photo_type>/<filename>', methods=['DELETE'])
+def delete_job_photo(job_id, photo_type, filename):
+    """Delete a specific job photo"""
+    from upload_service import photo_service
+    
+    try:
+        result = photo_service.delete_photo(job_id, photo_type, filename)
+        
+        if result.get('success'):
+            return jsonify({'message': 'Photo deleted successfully'})
+        else:
+            return jsonify({'error': result.get('error', 'Delete failed')}), 400
+            
+    except Exception as e:
+        logging.error(f"Error deleting photo: {e}")
+        return jsonify({'error': f'Failed to delete photo: {str(e)}'}), 500
+
+@app.route('/job-photos/<job_id>')
+def job_photos_interface(job_id):
+    """Job photo upload and management interface"""
+    from upload_service import photo_service
+    
+    # Get existing photos
+    existing_photos = photo_service.get_job_photos(job_id)
+    
+    return render_template('job_photos.html', 
+                         job_id=job_id, 
+                         existing_photos=existing_photos)
