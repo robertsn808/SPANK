@@ -1,1 +1,36 @@
-[]
+[
+  {
+    "appointment_id": "2fd03104-496a-448d-a41c-23b5aace5785",
+    "client_id": "CLI001",
+    "job_id": "JOB001",
+    "project_name": "Flooring Installation Project",
+    "client_name": "Sarah Johnson",
+    "client_phone": "(808) 555-0199",
+    "client_email": "sarah.johnson@email.com",
+    "service_type": "Flooring Installation",
+    "scheduled_date": "2025-06-24",
+    "scheduled_time": "10:00",
+    "estimated_duration": 120,
+    "status": "tentative",
+    "priority": "normal",
+    "assigned_staff": [],
+    "location": "",
+    "notes": "Auto-created from contact form. Subject: Kitchen Flooring Installation. Message: Hi, I need flooring installation in my kitchen. Looking for vinyl plank flooring installation. Can you provide an estimate?",
+    "quote_id": null,
+    "booking_reference": "d0ff9fa2-5b9e-4538-84be-3fa76406cbbc",
+    "created_at": "2025-06-22T00:22:19.394308-10:00",
+    "created_by": "system_auto",
+    "updated_at": "2025-06-22T00:22:19.394308-10:00",
+    "tags": [
+      "contact_form",
+      "auto_created"
+    ],
+    "materials_needed": [],
+    "special_instructions": "",
+    "customer_portal_access": true,
+    "staff_portal_access": true,
+    "is_returning_client": false,
+    "project_phase": "initial",
+    "related_jobs": []
+  }
+]
