@@ -924,7 +924,8 @@ import uuid
 from datetime import datetime, timedelta
 import pytz
 from models import Contact, Job, Quote, Invoice
-from pdf_service import PDFService
+# PDF service functions imported directly
+from pdf_service import generate_quote_pdf, generate_invoice_pdf
 from upload_service import upload_service
 from notification_service import notification_service
 from analytics_service import analytics_service
@@ -2420,10 +2421,14 @@ def client_portal(client_id, job_id):
         flash('Please log in to access the portal', 'error')
         return redirect(url_for('portal_login_page'))
     
-    client_data = session.get('client_data')
+    # Get fresh client data from auth service database
+    client_data = auth_service.find_client(client_id, job_id)
     if not client_data:
-        flash('Session expired. Please log in again.', 'error')
+        flash('Client data not found. Please contact support.', 'error')
         return redirect(url_for('portal_login_page'))
+    
+    # Update session with fresh data
+    session['client_data'] = client_data
     
     return render_template('client_portal.html', client=client_data)
 
@@ -2436,10 +2441,15 @@ def staff_portal(job_id):
         flash('Staff access required. Please log in with your PIN.', 'error')
         return redirect(url_for('portal_login_page'))
     
-    client_data = session.get('client_data')
+    # Get fresh client data from auth service database
+    client_id = session.get('client_id')
+    client_data = auth_service.find_client(client_id, job_id)
     if not client_data:
-        flash('Session expired. Please log in again.', 'error')
+        flash('Client data not found. Please contact support.', 'error')
         return redirect(url_for('portal_login_page'))
+    
+    # Update session with fresh data
+    session['client_data'] = client_data
     
     return render_template('staff_portal.html', client=client_data)
 

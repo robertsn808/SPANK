@@ -325,9 +325,14 @@
 
         // Refresh client information display
         function refreshClientInfo() {
+            console.log(`Fetching client info for ${clientId}/${jobId}`);
             fetch(`/api/client/${clientId}/${jobId}/info`)
-                .then(response => response.json())
+                .then(response => {
+                    console.log('API Response status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('API Response data:', data);
                     if (data.success && data.client) {
                         // Update client info displays
                         const clientData = data.client;
