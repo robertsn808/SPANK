@@ -1,0 +1,281 @@
+<!-- Dynamic Sidebar Navigation Component -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="d-flex align-items-center">
+            <img src="{{ url_for('static', filename='images/spank-logo.png') }}" alt="SPANKKS" class="sidebar-logo">
+            <div class="ms-2">
+                <h6 class="mb-0 text-white">SPANKKS</h6>
+                <small class="text-light opacity-75">Construction</small>
+            </div>
+        </div>
+        <button class="btn btn-link text-white p-0 sidebar-toggle d-lg-none" onclick="toggleSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-content">
+        <!-- User Info -->
+        <div class="user-info">
+            {% if session.admin_logged_in %}
+                <div class="d-flex align-items-center mb-3">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="ms-2">
+                        <div class="user-name">Admin</div>
+                        <div class="user-role">System Administrator</div>
+                    </div>
+                </div>
+            {% elif session.staff_logged_in %}
+                <div class="d-flex align-items-center mb-3">
+                    <div class="user-avatar">
+                        <i class="fas fa-hard-hat"></i>
+                    </div>
+                    <div class="ms-2">
+                        <div class="user-name">{{ session.staff_name or 'Staff Member' }}</div>
+                        <div class="user-role">{{ session.staff_role or 'Crew Member' }}</div>
+                    </div>
+                </div>
+            {% elif session.client_logged_in %}
+                <div class="d-flex align-items-center mb-3">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="ms-2">
+                        <div class="user-name">{{ session.client_name or 'Client' }}</div>
+                        <div class="user-role">Customer</div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="sidebar-nav">
+            {% if session.admin_logged_in %}
+                <!-- Admin Navigation -->
+                <div class="nav-section">
+                    <div class="nav-section-header" onclick="toggleSection('dashboard-section')">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                        <i class="fas fa-chevron-down section-toggle"></i>
+                    </div>
+                    <div class="nav-section-content" id="dashboard-section">
+                        <a href="{{ url_for('admin_dashboard') }}" class="nav-link">
+                            <i class="fas fa-home"></i> Overview
+                        </a>
+                        <a href="{{ url_for('analytics_dashboard') }}" class="nav-link">
+                            <i class="fas fa-chart-line"></i> Analytics
+                        </a>
+                        <a href="{{ url_for('business_intelligence_dashboard') }}" class="nav-link">
+                            <i class="fas fa-brain"></i> Business Intelligence
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-header" onclick="toggleSection('customers-section')">
+                        <i class="fas fa-users"></i>
+                        <span>Customers</span>
+                        <i class="fas fa-chevron-down section-toggle"></i>
+                    </div>
+                    <div class="nav-section-content" id="customers-section">
+                        <a href="{{ url_for('crm_dashboard') }}" class="nav-link">
+                            <i class="fas fa-users-cog"></i> CRM Dashboard
+                        </a>
+                        <a href="{{ url_for('contact_list') }}" class="nav-link">
+                            <i class="fas fa-address-book"></i> Contact Database
+                        </a>
+                        <a href="{{ url_for('client_messaging_dashboard') }}" class="nav-link">
+                            <i class="fas fa-comments"></i> Client Messaging
+                        </a>
+                        <a href="{{ url_for('inquiry_management') }}" class="nav-link">
+                            <i class="fas fa-question-circle"></i> Inquiries
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-header" onclick="toggleSection('jobs-section')">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Jobs & Projects</span>
+                        <i class="fas fa-chevron-down section-toggle"></i>
+                    </div>
+                    <div class="nav-section-content" id="jobs-section">
+                        <a href="{{ url_for('job_schedule') }}" class="nav-link">
+                            <i class="fas fa-calendar-alt"></i> Job Schedule
+                        </a>
+                        <a href="{{ url_for('unified_scheduler_dashboard') }}" class="nav-link">
+                            <i class="fas fa-calendar-check"></i> Advanced Scheduler
+                        </a>
+                        <a href="{{ url_for('project_tracking') }}" class="nav-link">
+                            <i class="fas fa-tasks"></i> Project Tracking
+                        </a>
+                        <a href="{{ url_for('job_tracking_dashboard') }}" class="nav-link">
+                            <i class="fas fa-clipboard-list"></i> Job Tracking
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-header" onclick="toggleSection('quotes-section')">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Quotes & Invoices</span>
+                        <i class="fas fa-chevron-down section-toggle"></i>
+                    </div>
+                    <div class="nav-section-content" id="quotes-section">
+                        <a href="{{ url_for('quote_list') }}" class="nav-link">
+                            <i class="fas fa-file-alt"></i> Quotes
+                        </a>
+                        <a href="{{ url_for('quote_builder') }}" class="nav-link">
+                            <i class="fas fa-plus-circle"></i> Create Quote
+                        </a>
+                        <a href="{{ url_for('invoice_list') }}" class="nav-link">
+                            <i class="fas fa-file-invoice"></i> Invoices
+                        </a>
+                        <a href="{{ url_for('admin_invoice_management') }}" class="nav-link">
+                            <i class="fas fa-money-check-alt"></i> Invoice Management
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-header" onclick="toggleSection('operations-section')">
+                        <i class="fas fa-cogs"></i>
+                        <span>Operations</span>
+                        <i class="fas fa-chevron-down section-toggle"></i>
+                    </div>
+                    <div class="nav-section-content" id="operations-section">
+                        <a href="{{ url_for('staff_management') }}" class="nav-link">
+                            <i class="fas fa-users-cog"></i> Staff Management
+                        </a>
+                        <a href="{{ url_for('inventory_dashboard') }}" class="nav-link">
+                            <i class="fas fa-boxes"></i> Inventory
+                        </a>
+                        <a href="{{ url_for('checklist_management') }}" class="nav-link">
+                            <i class="fas fa-check-square"></i> Checklists
+                        </a>
+                        <a href="{{ url_for('financial_reports_dashboard') }}" class="nav-link">
+                            <i class="fas fa-chart-pie"></i> Financial Reports
+                        </a>
+                    </div>
+                </div>
+
+            {% elif session.staff_logged_in %}
+                <!-- Staff Navigation -->
+                <div class="nav-section">
+                    <div class="nav-section-header" onclick="toggleSection('staff-dashboard-section')">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>My Dashboard</span>
+                        <i class="fas fa-chevron-down section-toggle"></i>
+                    </div>
+                    <div class="nav-section-content" id="staff-dashboard-section">
+                        <a href="{{ url_for('staff_member_portal', staff_id=session.staff_id) }}" class="nav-link">
+                            <i class="fas fa-home"></i> My Portal
+                        </a>
+                        <a href="{{ url_for('staff_portal', job_id=session.current_job_id or 'none') }}" class="nav-link">
+                            <i class="fas fa-briefcase"></i> Current Job
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-header" onclick="toggleSection('staff-tools-section')">
+                        <i class="fas fa-tools"></i>
+                        <span>Tools</span>
+                        <i class="fas fa-chevron-down section-toggle"></i>
+                    </div>
+                    <div class="nav-section-content" id="staff-tools-section">
+                        <a href="{{ url_for('quote_generator') }}" class="nav-link">
+                            <i class="fas fa-file-alt"></i> Generate Quote
+                        </a>
+                        <a href="{{ url_for('invoice_generator') }}" class="nav-link">
+                            <i class="fas fa-file-invoice"></i> Generate Invoice
+                        </a>
+                    </div>
+                </div>
+
+            {% elif session.client_logged_in %}
+                <!-- Client Navigation -->
+                <div class="nav-section">
+                    <div class="nav-section-header" onclick="toggleSection('client-dashboard-section')">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>My Account</span>
+                        <i class="fas fa-chevron-down section-toggle"></i>
+                    </div>
+                    <div class="nav-section-content" id="client-dashboard-section">
+                        <a href="{{ url_for('client_portal', client_id=session.client_id, job_id=session.job_id) }}" class="nav-link">
+                            <i class="fas fa-home"></i> My Project
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-header" onclick="toggleSection('client-project-section')">
+                        <i class="fas fa-folder"></i>
+                        <span>Project Details</span>
+                        <i class="fas fa-chevron-down section-toggle"></i>
+                    </div>
+                    <div class="nav-section-content" id="client-project-section">
+                        <a href="#quotes" class="nav-link" onclick="scrollToSection('quotes')">
+                            <i class="fas fa-file-alt"></i> My Quotes
+                        </a>
+                        <a href="#invoices" class="nav-link" onclick="scrollToSection('invoices')">
+                            <i class="fas fa-file-invoice"></i> My Invoices
+                        </a>
+                        <a href="#photos" class="nav-link" onclick="scrollToSection('photos')">
+                            <i class="fas fa-images"></i> Project Photos
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </nav>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="nav-section-header">
+                <i class="fas fa-bolt"></i>
+                <span>Quick Actions</span>
+            </div>
+            {% if session.admin_logged_in %}
+                <a href="{{ url_for('quote_builder') }}" class="nav-link quick-action">
+                    <i class="fas fa-plus"></i> New Quote
+                </a>
+                <a href="{{ url_for('add_contact') }}" class="nav-link quick-action">
+                    <i class="fas fa-user-plus"></i> Add Contact
+                </a>
+                <a href="{{ url_for('create_job') }}" class="nav-link quick-action">
+                    <i class="fas fa-briefcase"></i> New Job
+                </a>
+            {% elif session.staff_logged_in %}
+                <a href="{{ url_for('quote_generator') }}" class="nav-link quick-action">
+                    <i class="fas fa-plus"></i> New Quote
+                </a>
+            {% elif session.client_logged_in %}
+                <a href="{{ url_for('contact') }}" class="nav-link quick-action">
+                    <i class="fas fa-phone"></i> Contact Us
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+        {% if session.admin_logged_in %}
+            <a href="{{ url_for('admin_logout') }}" class="nav-link logout-link">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        {% elif session.staff_logged_in or session.client_logged_in %}
+            <a href="{{ url_for('portal_logout') }}" class="nav-link logout-link">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        {% endif %}
+        
+        <div class="company-info">
+            <small class="text-muted d-block">SPANKKS Construction</small>
+            <small class="text-muted">(808) 778-9132</small>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>

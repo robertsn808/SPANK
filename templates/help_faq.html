@@ -1,0 +1,672 @@
+{% extends "base.html" %}
+
+{% block title %}Help & FAQ - SPANKKS Construction{% endblock %}
+
+{% block extra_css %}
+<style>
+.help-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 60px 0;
+    text-align: center;
+}
+
+.help-search {
+    max-width: 600px;
+    margin: 30px auto 0;
+}
+
+.faq-section {
+    padding: 60px 0;
+}
+
+.faq-category {
+    margin-bottom: 40px;
+}
+
+.faq-category h3 {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.faq-item {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.faq-question {
+    background: #f8f9fa;
+    padding: 20px;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    font-weight: 600;
+    color: #495057;
+    transition: background-color 0.2s ease;
+}
+
+.faq-question:hover {
+    background: #e9ecef;
+}
+
+.faq-question.active {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.faq-answer {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.faq-answer.show {
+    padding: 20px;
+    max-height: 500px;
+}
+
+.faq-answer p, .faq-answer li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.faq-toggle {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+.faq-toggle.rotate {
+    transform: rotate(180deg);
+}
+
+.contact-help {
+    background: #f8f9fa;
+    padding: 40px 0;
+    text-align: center;
+}
+
+.help-card {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.help-card i {
+    font-size: 48px;
+    color: #3498db;
+    margin-bottom: 20px;
+}
+
+.help-card h5 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.quick-links {
+    background: #e9ecef;
+    padding: 40px 0;
+}
+
+.quick-link-item {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    transition: transform 0.2s ease;
+}
+
+.quick-link-item:hover {
+    transform: translateY(-2px);
+}
+
+.quick-link-item i {
+    font-size: 32px;
+    color: #3498db;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .help-hero {
+        padding: 40px 0;
+    }
+    
+    .faq-question {
+        padding: 15px;
+        font-size: 14px;
+    }
+    
+    .faq-answer.show {
+        padding: 15px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Help Hero Section -->
+<div class="help-hero">
+    <div class="container">
+        <h1>Help & Support Center</h1>
+        <p class="lead">Find answers to your questions about SPANKKS Construction services</p>
+        
+        <div class="help-search">
+            <div class="input-group">
+                <input type="text" class="form-control form-control-lg" id="searchInput" 
+                       placeholder="Search for help topics...">
+                <button class="btn btn-light" type="button" onclick="searchFAQ()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Help Cards -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="help-card">
+                <i class="fas fa-phone"></i>
+                <h5>Call Us</h5>
+                <p>Speak directly with our team for immediate assistance</p>
+                <a href="tel:+18087789132" class="btn btn-primary">(808) 778-9132</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="help-card">
+                <i class="fas fa-envelope"></i>
+                <h5>Email Support</h5>
+                <p>Send us your questions and we'll respond within 24 hours</p>
+                <a href="mailto:spank808@gmail.com" class="btn btn-primary">spank808@gmail.com</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="help-card">
+                <i class="fas fa-calendar-alt"></i>
+                <h5>Schedule Consultation</h5>
+                <p>Book a free consultation to discuss your project</p>
+                <a href="{{ url_for('consultation') }}" class="btn btn-primary">Schedule Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="faq-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2>Frequently Asked Questions</h2>
+            <p class="lead">Quick answers to common questions about our services</p>
+        </div>
+
+        <!-- Getting Started -->
+        <div class="faq-category">
+            <h3><i class="fas fa-play-circle"></i> Getting Started</h3>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How do I get a quote for my project?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Getting a quote is easy! You can:</p>
+                    <ul>
+                        <li><strong>Call us at (808) 778-9132</strong> - We'll discuss your project and schedule a site visit</li>
+                        <li><strong>Schedule a consultation</strong> - Use our online booking system for a free estimate</li>
+                        <li><strong>Email us at spank808@gmail.com</strong> - Send project details and photos</li>
+                    </ul>
+                    <p>We provide detailed written quotes within 24-48 hours of our site visit.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What areas do you serve?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>We proudly serve the entire island of O'ahu, including:</p>
+                    <ul>
+                        <li>Honolulu and downtown areas</li>
+                        <li>Waikiki and Diamond Head</li>
+                        <li>Pearl City and Aiea</li>
+                        <li>Kaneohe and Kailua</li>
+                        <li>North Shore communities</li>
+                        <li>West O'ahu (Kapolei, Ewa Beach)</li>
+                    </ul>
+                    <p>Contact us to confirm service availability in your specific area.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Are you licensed and insured?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes! SPANKKS Construction is fully licensed and insured in Hawaii. We carry:</p>
+                    <ul>
+                        <li>Hawaii Contractor's License</li>
+                        <li>General Liability Insurance</li>
+                        <li>Workers' Compensation Coverage</li>
+                        <li>All required business licenses and permits</li>
+                    </ul>
+                    <p>We can provide copies of our licensing and insurance documentation upon request.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services -->
+        <div class="faq-category">
+            <h3><i class="fas fa-tools"></i> Our Services</h3>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What types of projects do you handle?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>We specialize in a wide range of construction and home improvement services:</p>
+                    <ul>
+                        <li><strong>Drywall:</strong> Installation, repair, texturing, and painting</li>
+                        <li><strong>Flooring:</strong> Tile, laminate, vinyl, and hardwood installation</li>
+                        <li><strong>Fencing:</strong> Privacy, security, and decorative fencing</li>
+                        <li><strong>General Repairs:</strong> Plumbing fixes, electrical work, carpentry</li>
+                        <li><strong>Home Renovations:</strong> Kitchen, bathroom, and room upgrades</li>
+                        <li><strong>Maintenance:</strong> Regular upkeep and preventive care</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Do you provide materials or do I need to buy them?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>We offer flexible options for materials:</p>
+                    <ul>
+                        <li><strong>Full-Service:</strong> We source and provide all materials (most common)</li>
+                        <li><strong>Client-Supplied:</strong> You purchase materials, we provide labor</li>
+                        <li><strong>Hybrid:</strong> We handle some materials, you provide specialty items</li>
+                    </ul>
+                    <p>Our quotes will specify exactly what's included. We often get better pricing through our supplier relationships.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How long do projects typically take?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Project timelines vary based on scope and complexity:</p>
+                    <ul>
+                        <li><strong>Small repairs:</strong> 1-2 days</li>
+                        <li><strong>Drywall projects:</strong> 3-7 days</li>
+                        <li><strong>Flooring installation:</strong> 2-5 days</li>
+                        <li><strong>Fence construction:</strong> 1-3 days</li>
+                        <li><strong>Room renovations:</strong> 1-3 weeks</li>
+                        <li><strong>Major renovations:</strong> 3-8 weeks</li>
+                    </ul>
+                    <p>We provide detailed timelines in our quotes and keep you updated throughout the project.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing & Payment -->
+        <div class="faq-category">
+            <h3><i class="fas fa-dollar-sign"></i> Pricing & Payment</h3>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How much do your services cost?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Our pricing varies by project type and scope. Here are typical ranges:</p>
+                    <ul>
+                        <li><strong>Hourly Rate:</strong> $90-$200 per hour</li>
+                        <li><strong>Drywall:</strong> $155-$600 per project</li>
+                        <li><strong>Flooring:</strong> $3-$8 per square foot</li>
+                        <li><strong>Fencing:</strong> $35-$70 per linear foot</li>
+                        <li><strong>General Repairs:</strong> $90-$200 per visit</li>
+                    </ul>
+                    <p>All prices include Hawaii GET tax (4.712%). We provide detailed written estimates for all projects.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What payment methods do you accept?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>We accept multiple payment methods for your convenience:</p>
+                    <ul>
+                        <li>Cash</li>
+                        <li>Personal or business checks</li>
+                        <li>Venmo (@SPANKKS-Construction)</li>
+                        <li>Zelle (spank808@gmail.com)</li>
+                        <li>Bank transfers</li>
+                    </ul>
+                    <p>Payment terms are typically Net 30 days. We may require a deposit for larger projects.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Do you offer financing or payment plans?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>For larger projects, we can discuss flexible payment options:</p>
+                    <ul>
+                        <li>Progress payments tied to project milestones</li>
+                        <li>Extended payment terms for qualified customers</li>
+                        <li>Seasonal payment arrangements</li>
+                    </ul>
+                    <p>Contact us to discuss payment options that work for your budget.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scheduling & Process -->
+        <div class="faq-category">
+            <h3><i class="fas fa-calendar-check"></i> Scheduling & Process</h3>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How far in advance should I book?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Booking timelines depend on the season and project complexity:</p>
+                    <ul>
+                        <li><strong>Emergency repairs:</strong> Same day or next day</li>
+                        <li><strong>Small projects:</strong> 1-2 weeks advance notice</li>
+                        <li><strong>Large projects:</strong> 2-4 weeks advance notice</li>
+                        <li><strong>Peak season (spring/summer):</strong> 4-6 weeks recommended</li>
+                    </ul>
+                    <p>Contact us as soon as you're ready to start planning your project.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What happens during the initial consultation?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Our consultation process includes:</p>
+                    <ul>
+                        <li>Site visit and project assessment</li>
+                        <li>Discussion of your goals and preferences</li>
+                        <li>Review of material options and finishes</li>
+                        <li>Timeline and scheduling discussion</li>
+                        <li>Detailed written estimate within 24-48 hours</li>
+                    </ul>
+                    <p>Consultations are free and typically take 30-60 minutes.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Can I make changes once work has started?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes, but changes should be discussed as early as possible:</p>
+                    <ul>
+                        <li>Minor changes can often be accommodated</li>
+                        <li>Major changes may affect timeline and cost</li>
+                        <li>All changes must be agreed to in writing</li>
+                        <li>We'll provide updated pricing for any additions</li>
+                    </ul>
+                    <p>Clear communication helps ensure your project meets your expectations.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SPANKKS SKOOL -->
+        <div class="faq-category">
+            <h3><i class="fas fa-graduation-cap"></i> SPANKKS SKOOL</h3>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What is SPANKKS SKOOL?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>SPANKKS SKOOL is our free educational platform offering:</p>
+                    <ul>
+                        <li>Step-by-step DIY tutorials</li>
+                        <li>Home maintenance guides</li>
+                        <li>Tool and material recommendations</li>
+                        <li>Safety tips and best practices</li>
+                        <li>SPANK Buck rewards for course completion</li>
+                    </ul>
+                    <p>Visit our <a href="{{ url_for('spank_school') }}">SPANKKS SKOOL page</a> to start learning!</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What are SPANK Bucks?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>SPANK Bucks are rewards you can earn and use toward our services:</p>
+                    <ul>
+                        <li><strong>Earn:</strong> Complete courses, refer friends, participate in promotions</li>
+                        <li><strong>Values:</strong> $5-$25 per reward</li>
+                        <li><strong>Use:</strong> Apply toward any SPANKKS Construction service</li>
+                        <li><strong>Delivery:</strong> Sent via email with instructions</li>
+                    </ul>
+                    <p>SPANK Bucks never expire and can be combined with other offers.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warranty & Support -->
+        <div class="faq-category">
+            <h3><i class="fas fa-shield-alt"></i> Warranty & Support</h3>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What warranty do you provide?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>We stand behind our work with comprehensive warranties:</p>
+                    <ul>
+                        <li><strong>Workmanship:</strong> 1 year warranty on all labor</li>
+                        <li><strong>Materials:</strong> Manufacturer warranty (varies by product)</li>
+                        <li><strong>Coverage:</strong> Defects in installation or workmanship</li>
+                        <li><strong>Response:</strong> We'll return to fix any covered issues</li>
+                    </ul>
+                    <p>Warranty details are included in your project contract.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What if I'm not satisfied with the work?
+                    <i class="fas fa-chevron-down faq-toggle"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Your satisfaction is our priority. If you're not happy:</p>
+                    <ul>
+                        <li>Contact us immediately to discuss concerns</li>
+                        <li>We'll assess the issue and propose solutions</li>
+                        <li>We'll make necessary corrections at no charge</li>
+                        <li>We work with you until you're completely satisfied</li>
+                    </ul>
+                    <p>Open communication helps us deliver the quality you expect.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Links -->
+<div class="quick-links">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2>Popular Help Topics</h2>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="quick-link-item">
+                    <i class="fas fa-calculator"></i>
+                    <h6>Get a Quote</h6>
+                    <p>Request a free estimate for your project</p>
+                    <a href="{{ url_for('consultation') }}" class="btn btn-sm btn-primary">Start Here</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="quick-link-item">
+                    <i class="fas fa-list-alt"></i>
+                    <h6>Our Services</h6>
+                    <p>Browse our complete service offerings</p>
+                    <a href="{{ url_for('services') }}" class="btn btn-sm btn-primary">View Services</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="quick-link-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h6>Pricing Guide</h6>
+                    <p>See our transparent pricing structure</p>
+                    <a href="{{ url_for('pricing') }}" class="btn btn-sm btn-primary">View Pricing</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="quick-link-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h6>DIY Learning</h6>
+                    <p>Learn with SPANKKS SKOOL courses</p>
+                    <a href="{{ url_for('spank_school') }}" class="btn btn-sm btn-primary">Start Learning</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Help -->
+<div class="contact-help">
+    <div class="container">
+        <h2>Still Need Help?</h2>
+        <p class="lead">Our team is here to assist you with any questions</p>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <a href="tel:+18087789132" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-phone"></i> Call (808) 778-9132
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="mailto:spank808@gmail.com" class="btn btn-outline-primary btn-lg w-100">
+                            <i class="fas fa-envelope"></i> Email Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleFAQ(element) {
+    const answer = element.nextElementSibling;
+    const toggle = element.querySelector('.faq-toggle');
+    
+    // Close all other FAQs
+    document.querySelectorAll('.faq-answer.show').forEach(item => {
+        if (item !== answer) {
+            item.classList.remove('show');
+            item.previousElementSibling.classList.remove('active');
+            item.previousElementSibling.querySelector('.faq-toggle').classList.remove('rotate');
+        }
+    });
+    
+    // Toggle current FAQ
+    answer.classList.toggle('show');
+    element.classList.toggle('active');
+    toggle.classList.toggle('rotate');
+}
+
+function searchFAQ() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const faqItems = document.querySelectorAll('.faq-item');
+    let found = false;
+    
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question').textContent.toLowerCase();
+        const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+        
+        if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+            item.style.display = 'block';
+            if (searchTerm.length > 2) {
+                // Auto-expand matching items
+                const answerDiv = item.querySelector('.faq-answer');
+                const questionBtn = item.querySelector('.faq-question');
+                const toggle = questionBtn.querySelector('.faq-toggle');
+                
+                answerDiv.classList.add('show');
+                questionBtn.classList.add('active');
+                toggle.classList.add('rotate');
+            }
+            found = true;
+        } else {
+            item.style.display = searchTerm ? 'none' : 'block';
+        }
+    });
+    
+    // Show "no results" message if needed
+    if (!found && searchTerm) {
+        // You could add a "no results" message here
+        console.log('No matching FAQ items found');
+    }
+}
+
+// Enable search on Enter key
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        searchFAQ();
+    }
+});
+
+// Clear search
+document.getElementById('searchInput').addEventListener('input', function() {
+    if (this.value === '') {
+        // Reset all FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.style.display = 'block';
+        });
+        
+        // Close all expanded items
+        document.querySelectorAll('.faq-answer.show').forEach(item => {
+            item.classList.remove('show');
+            item.previousElementSibling.classList.remove('active');
+            item.previousElementSibling.querySelector('.faq-toggle').classList.remove('rotate');
+        });
+    }
+});
+</script>
+{% endblock %}

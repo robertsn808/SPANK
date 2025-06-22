@@ -40,6 +40,11 @@ except ImportError as e:
 try:
     handyman_storage = HandymanStorage()
     notification_service = NotificationService()
+    
+    # Initialize file storage service
+    from file_storage_service import FileStorageService
+    file_storage = FileStorageService()
+    
     logging.info("Notification service initialized for manual admin dashboard notifications")
 except Exception as e:
     logging.error(f"Service initialization error: {e}")
