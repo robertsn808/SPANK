@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SPANKKS - Generate Quote/Invoice</title>
+  <style>
+    body { font-family: sans-serif; margin: 40px; max-width: 600px; }
+    label { font-weight: bold; display: block; margin-top: 15px; }
+    input, select { width: 100%; padding: 8px; margin-top: 5px; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>SPANKKS Form: Quote / Invoice Generator</h1>
+
+  <form id="docForm">
+    <label>Client ID</label>
+    <input type="text" name="clientId" required>
+
+    <label>Job ID</label>
+    <input type="text" name="jobId" required>
+
+    <label>Customer Name</label>
+    <input type="text" name="customer" required>
+
+    <label>Phone Number</label>
+    <input type="text" name="phone" required>
+
+    <label>Service Type</label>
+    <select name="serviceType" required>
+      <option value="Drywall">Drywall</option>
+      <option value="Flooring">Flooring</option>
+      <option value="Fence">Fence</option>
+      <option value="Renovation">Renovation</option>
+    </select>
+
+    <label>Total Price ($)</label>
+    <input type="number" name="price" required>
+
+    <label>Generate</label>
+    <select name="docType" required>
+      <option value="quote">Quote</option>
+      <option value="invoice">Invoice</option>
+    </select>
+
+    <button type="submit">Generate PDF</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('docForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+      const route = payload.docType === 'quote' ? '/generate-quote' : '/generate-invoice';
+
+      const res = await fetch(route, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (data.path) {
+        window.location.href = data.path; // Download the PDF
+      } else {
+        alert('Something went wrong generating the PDF.');
+      }
+    });
+  </script>
+</body>
+</html>

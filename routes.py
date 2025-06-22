@@ -2003,3 +2003,8 @@ def download_invoice_api(invoice_id):
     except Exception as e:
         logging.error(f"Error downloading invoice via API: {e}")
         return jsonify({'error': 'Failed to download invoice', 'details': str(e)}), 500
+
+@app.route('/quote-invoice-generator')
+def quote_invoice_generator():
+    """Professional quote and invoice generation form"""
+    return render_template('quote_invoice_generator.html')
