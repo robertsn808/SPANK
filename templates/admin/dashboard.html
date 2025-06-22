@@ -121,6 +121,30 @@
         }
     }
 
+    /* Desktop quick action button optimizations */
+    @media (min-width: 1200px) {
+        .quick-action-btn {
+            max-width: 180px;
+            margin: 0 auto;
+        }
+        
+        .quick-action-btn .fa-2x {
+            font-size: 1.75rem !important;
+        }
+        
+        .quick-action-btn span {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    }
+    
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .quick-action-btn {
+            max-width: 160px;
+            margin: 0 auto;
+        }
+    }
+
     /* Touch-friendly enhancements */
     .touch-friendly {
         min-height: 44px;
@@ -363,37 +387,37 @@
                     <div class="card-body p-4">
                         <div class="row g-3 justify-content-center">
                             <div class="col-xl-2 col-lg-3 col-md-4 col-6">
-                                <a href="/admin/quote-builder" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3" style="min-height: 120px;">
+                                <a href="/admin/quote-builder" class="quick-action-btn btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3" style="min-height: 120px;">
                                     <i class="fas fa-plus-circle fa-2x mb-2"></i>
                                     <span>New Quote</span>
                                 </a>
                             </div>
                             <div class="col-xl-2 col-lg-3 col-md-4 col-6">
-                                <a href="/admin/scheduler" class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3" style="min-height: 120px;">
+                                <a href="/admin/scheduler" class="quick-action-btn btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3" style="min-height: 120px;">
                                     <i class="fas fa-calendar-plus fa-2x mb-2"></i>
                                     <span>Schedule Job</span>
                                 </a>
                             </div>
                             <div class="col-xl-2 col-lg-3 col-md-4 col-6">
-                                <a href="/admin/invoices" class="btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3" style="min-height: 120px;">
+                                <a href="/admin/invoices" class="quick-action-btn btn btn-outline-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3" style="min-height: 120px;">
                                     <i class="fas fa-receipt fa-2x mb-2"></i>
                                     <span>Create Invoice</span>
                                 </a>
                             </div>
                             <div class="col-xl-2 col-lg-3 col-md-4 col-6">
-                                <a href="/admin/crm" class="btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3" style="min-height: 120px;">
+                                <a href="/admin/crm" class="quick-action-btn btn btn-outline-info w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3" style="min-height: 120px;">
                                     <i class="fas fa-user-plus fa-2x mb-2"></i>
                                     <span>Add Client</span>
                                 </a>
                             </div>
                             <div class="col-xl-2 col-lg-3 col-md-4 col-6">
-                                <a href="/admin/analytics" class="btn btn-outline-purple w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3" style="min-height: 120px;">
+                                <a href="/admin/analytics" class="quick-action-btn btn btn-outline-purple w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3" style="min-height: 120px;">
                                     <i class="fas fa-chart-bar fa-2x mb-2"></i>
                                     <span>Analytics</span>
                                 </a>
                             </div>
                             <div class="col-xl-2 col-lg-3 col-md-4 col-6">
-                                <a href="/admin/business-intelligence" class="btn btn-outline-orange w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3" style="min-height: 120px;">
+                                <a href="/admin/business-intelligence" class="quick-action-btn btn btn-outline-orange w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3" style="min-height: 120px;">
                                     <i class="fas fa-brain fa-2x mb-2"></i>
                                     <span>AI Insights</span>
                                 </a>
