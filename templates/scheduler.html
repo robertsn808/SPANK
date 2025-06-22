@@ -194,16 +194,9 @@
                     <h6><i class="fas fa-user-check"></i> Staff Status</h6>
                     {% for member in staff %}
                         {% if member.status == 'active' %}
-                            {% set today = moment().format('dddd').lower() %}
-                            {% if member.availability[today] %}
-                                <span class="staff-badge staff-active">
-                                    <i class="fas fa-check-circle"></i> {{ member.name }}
-                                </span>
-                            {% else %}
-                                <span class="staff-badge staff-busy">
-                                    <i class="fas fa-times-circle"></i> {{ member.name }}
-                                </span>
-                            {% endif %}
+                            <span class="staff-badge staff-active">
+                                <i class="fas fa-check-circle"></i> {{ member.name }} - {{ member.role }}
+                            </span>
                         {% endif %}
                     {% endfor %}
                 </div>
