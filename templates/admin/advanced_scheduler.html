@@ -4,9 +4,114 @@
 
 {% block extra_css %}
 <style>
+/* Hamburger Menu Styles */
+.hamburger-menu {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    z-index: 1000;
+    background: #28a745;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    transition: all 0.3s ease;
+}
+
+.hamburger-menu:hover {
+    background: #218838;
+    transform: scale(1.1);
+}
+
+.expanding-sidebar {
+    position: fixed;
+    top: 0;
+    right: -350px;
+    width: 350px;
+    height: 100vh;
+    background: white;
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+    padding: 80px 20px 20px;
+}
+
+.expanding-sidebar.open {
+    right: 0;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+.sidebar-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.sidebar-section:last-child {
+    border-bottom: none;
+}
+
+.sidebar-section h6 {
+    color: #28a745;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quick-action-card {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.quick-action-card:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+    border-left: 4px solid #28a745;
+}
+
 .scheduler-container {
     display: grid;
-    grid-template-columns: 300px 1fr 300px;
+    grid-template-columns: 300px 1fr;
     gap: 1.5rem;
     height: calc(100vh - 140px);
 }
@@ -256,6 +361,106 @@
 {% endblock %}
 
 {% block content %}
+<!-- Hamburger Menu Button -->
+<button class="hamburger-menu" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- Expanding Sidebar -->
+<div class="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="expanding-sidebar" id="expandingSidebar">
+    <button class="sidebar-close" onclick="closeSidebar()">
+        <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Quick Actions Section -->
+    <div class="sidebar-section">
+        <h6><i class="fas fa-bolt"></i>Quick Actions</h6>
+        
+        <div class="quick-action-card" onclick="window.location.href='{{ url_for('crm_dashboard') }}'">
+            <i class="fas fa-users text-primary me-2"></i>
+            <strong>CRM Dashboard</strong>
+            <div class="small text-muted">Manage customer relationships</div>
+        </div>
+        
+        <div class="quick-action-card" onclick="window.location.href='{{ url_for('invoice_management') }}'">
+            <i class="fas fa-file-invoice text-success me-2"></i>
+            <strong>Invoice Management</strong>
+            <div class="small text-muted">Handle billing and payments</div>
+        </div>
+        
+        <div class="quick-action-card" onclick="window.location.href='{{ url_for('generate_quote_form') }}'">
+            <i class="fas fa-calculator text-warning me-2"></i>
+            <strong>Quote Builder</strong>
+            <div class="small text-muted">Create new quotes</div>
+        </div>
+        
+        <div class="quick-action-card" onclick="window.location.href='{{ url_for('job_scheduler') }}'">
+            <i class="fas fa-calendar-check text-info me-2"></i>
+            <strong>Job Scheduler</strong>
+            <div class="small text-muted">Schedule and track jobs</div>
+        </div>
+        
+        <div class="quick-action-card" onclick="window.location.href='{{ url_for('contact_database') }}'">
+            <i class="fas fa-address-book text-secondary me-2"></i>
+            <strong>Contact Database</strong>
+            <div class="small text-muted">Manage customer contacts</div>
+        </div>
+        
+        <div class="quick-action-card" onclick="window.location.href='{{ url_for('analytics_dashboard') }}'">
+            <i class="fas fa-chart-line text-purple me-2"></i>
+            <strong>Analytics Command Center</strong>
+            <div class="small text-muted">Business intelligence</div>
+        </div>
+    </div>
+    
+    <!-- Business Intelligence Section -->
+    <div class="sidebar-section">
+        <h6><i class="fas fa-brain"></i>Business Intelligence</h6>
+        
+        <div class="quick-action-card" onclick="window.location.href='{{ url_for('ml_insights_dashboard') }}'">
+            <i class="fas fa-robot text-primary me-2"></i>
+            <strong>ML Insights</strong>
+            <div class="small text-muted">AI-powered analytics</div>
+        </div>
+        
+        <div class="quick-action-card" onclick="window.location.href='{{ url_for('unified_scheduler_dashboard') }}'">
+            <i class="fas fa-calendar-alt text-success me-2"></i>
+            <strong>Unified Scheduler</strong>
+            <div class="small text-muted">Advanced scheduling</div>
+        </div>
+        
+        <div class="quick-action-card" onclick="window.location.href='{{ url_for('advanced_scheduler') }}'">
+            <i class="fas fa-cog text-warning me-2"></i>
+            <strong>Advanced Scheduler</strong>
+            <div class="small text-muted">Scheduler settings</div>
+        </div>
+    </div>
+    
+    <!-- Staff Management Section -->
+    <div class="sidebar-section">
+        <h6><i class="fas fa-users-cog"></i>Staff Management</h6>
+        
+        <div class="quick-action-card" onclick="window.location.href='{{ url_for('inventory_management') }}'">
+            <i class="fas fa-boxes text-info me-2"></i>
+            <strong>Inventory Management</strong>
+            <div class="small text-muted">Track materials and supplies</div>
+        </div>
+        
+        <div class="quick-action-card" onclick="window.location.href='{{ url_for('job_checklists') }}'">
+            <i class="fas fa-tasks text-secondary me-2"></i>
+            <strong>Job Checklists</strong>
+            <div class="small text-muted">Track job completion</div>
+        </div>
+        
+        <div class="quick-action-card" onclick="window.location.href='{{ url_for('communication_settings') }}'">
+            <i class="fas fa-comments text-orange me-2"></i>
+            <strong>Communication Settings</strong>
+            <div class="small text-muted">Configure notifications</div>
+        </div>
+    </div>
+</div>
+
 <div class="container-fluid">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -386,53 +591,7 @@
             </div>
         </div>
 
-        <!-- Right Sidebar - Reminders -->
-        <div class="sidebar">
-            <h5 class="mb-3">
-                <i class="fas fa-bell me-2"></i>Reminders
-            </h5>
-            
-            <h6 class="text-danger">Due Now (2 hours)</h6>
-            {% for reminder in reminders_2h %}
-            <div class="reminder-item reminder-urgent">
-                <div class="fw-bold">{{ reminder.appointment.client_name }}</div>
-                <div class="small">{{ reminder.appointment.service_type }}</div>
-                <div class="small text-muted">{{ reminder.appointment.scheduled_time }}</div>
-                <button type="button" class="btn btn-sm btn-danger mt-2" 
-                        onclick="sendReminder('{{ reminder.appointment.appointment_id }}', 2)">
-                    <i class="fas fa-sms me-1"></i>Send SMS
-                </button>
-            </div>
-            {% endfor %}
-            
-            <h6 class="text-warning mt-3">Tomorrow (24 hours)</h6>
-            {% for reminder in reminders_24h %}
-            <div class="reminder-item">
-                <div class="fw-bold">{{ reminder.appointment.client_name }}</div>
-                <div class="small">{{ reminder.appointment.service_type }}</div>
-                <div class="small text-muted">{{ reminder.appointment.scheduled_date }} at {{ reminder.appointment.scheduled_time }}</div>
-                <button type="button" class="btn btn-sm btn-warning mt-2" 
-                        onclick="sendReminder('{{ reminder.appointment.appointment_id }}', 24)">
-                    <i class="fas fa-envelope me-1"></i>Send Email
-                </button>
-            </div>
-            {% endfor %}
 
-            <div class="mt-4">
-                <h6>Quick Actions</h6>
-                <div class="d-grid gap-2">
-                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="bulkReschedule()">
-                        <i class="fas fa-calendar-alt me-1"></i>Bulk Reschedule
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-success" onclick="optimizeDay()">
-                        <i class="fas fa-route me-1"></i>Optimize Routes
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-info" onclick="generateReport()">
-                        <i class="fas fa-chart-line me-1"></i>Generate Report
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -816,5 +975,29 @@ function optimizeDay() {
 function generateReport() {
     alert('Report generation feature coming soon...');
 }
+
+// Hamburger Menu Functions
+function toggleSidebar() {
+    const sidebar = document.getElementById('expandingSidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
+}
+
+function closeSidebar() {
+    const sidebar = document.getElementById('expandingSidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+}
+
+// Close sidebar on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeSidebar();
+    }
+});
 </script>
 {% endblock %}
