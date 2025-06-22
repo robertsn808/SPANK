@@ -296,7 +296,9 @@ class MicroInteractions {
             });
         }
 
-        // Scroll-triggered navbar changes
+        // Scroll-triggered navbar changes - DISABLED per user preference
+        // User doesn't like navbar color changing on scroll
+        /*
         let lastScroll = 0;
         window.addEventListener('scroll', () => {
             const currentScroll = window.pageYOffset;
@@ -312,6 +314,7 @@ class MicroInteractions {
             
             lastScroll = currentScroll;
         });
+        */
     }
 
     // =====================================================================

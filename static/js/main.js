@@ -65,10 +65,10 @@ function initMobileOptimizations() {
     // Improve touch responsiveness
     document.addEventListener('touchstart', function() {}, { passive: true });
     
-    // Optimize scroll performance on mobile
+    // Optimize scroll performance on mobile - navbar scroll effects disabled per user preference
     let ticking = false;
     function updateOnScroll() {
-        updateNavbarOnScroll();
+        // updateNavbarOnScroll(); // Disabled - user doesn't like navbar color changing
         ticking = false;
     }
     
@@ -1228,8 +1228,8 @@ function initEventDebouncing() {
         }
         
         scrollTimeout = setTimeout(() => {
-            // Handle scroll events here
-            updateNavbarOnScroll();
+            // Handle scroll events here - navbar scroll disabled per user preference
+            // updateNavbarOnScroll(); // Disabled
         }, 10);
     });
     
@@ -1247,19 +1247,11 @@ function initEventDebouncing() {
 }
 
 /**
- * Update navbar appearance on scroll
+ * Update navbar appearance on scroll - DISABLED per user preference
  */
 function updateNavbarOnScroll() {
-    const navbar = document.querySelector('.navbar');
-    if (!navbar) return;
-    
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    
-    if (scrollTop > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
-    }
+    // Disabled - user doesn't like navbar color changing on scroll
+    return;
 }
 
 /**
