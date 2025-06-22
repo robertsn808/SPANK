@@ -1,0 +1,20 @@
+[
+  {
+    "clientId": "ABC123",
+    "name": "Marlon Barut",
+    "jobId": "23456",
+    "phone": "808-555-0123",
+    "email": "mbarut1975@outlook.com",
+    "address": "123 Kalani St, Honolulu, HI",
+    "isStaff": false
+  },
+  {
+    "clientId": "SPK001",
+    "name": "Troy N.",
+    "jobId": "30078",
+    "phone": "808-555-9876",
+    "email": "crew@spankks.com",
+    "address": "123 Spankks Yard, Oahu, HI",
+    "isStaff": true
+  }
+]

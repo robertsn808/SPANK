@@ -6,6 +6,7 @@ from app import app
 from models import HandymanStorage
 from ai_service import ai_service
 from notification_service import notification_service, NotificationService
+from auth_service import auth_service
 import pytz
 
 # Initialize handyman storage
