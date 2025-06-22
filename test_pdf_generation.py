@@ -78,7 +78,7 @@ def create_sample_data():
         'quote_id': quote.id,
         'items': quote_items,
         'subtotal': total_amount,
-        'tax_rate': 0.04712,  # Hawaii GET tax
+        'tax_rate': 0.045,  # Hawaii GET tax (4.5% O'ahu rate)
         'payment_terms': 'Net 30'
     }
     

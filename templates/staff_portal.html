@@ -172,10 +172,10 @@
             <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
             <div class="row">
                 <div class="col-md-12">
-                    <a href="{{ url_for('quote_invoice_generator') }}" class="btn-staff">
+                    <a href="{{ url_for('quote_invoice_generator') }}?clientId={{ client.clientId }}&jobId={{ client.jobId }}" class="btn-staff">
                         <i class="fas fa-file-invoice me-2"></i>Generate Quote
                     </a>
-                    <a href="{{ url_for('quote_invoice_generator') }}" class="btn-staff btn-warning">
+                    <a href="{{ url_for('quote_invoice_generator') }}?clientId={{ client.clientId }}&jobId={{ client.jobId }}" class="btn-staff btn-warning">
                         <i class="fas fa-receipt me-2"></i>Create Invoice
                     </a>
                     <a href="/job-photos/{{ client.jobId }}" class="btn-staff btn-info">

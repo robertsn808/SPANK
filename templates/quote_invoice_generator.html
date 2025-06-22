@@ -554,7 +554,7 @@
       });
     }
 
-    // Update pricing summary
+    // Update pricing summary with automatic Hawaii GET tax calculation
     function updateSummary() {
       const items = document.querySelectorAll('.line-item');
       let subtotal = 0;
@@ -568,13 +568,24 @@
       });
       
       const discount = parseFloat(document.getElementById('totalDiscount')?.value) || 0;
-      const tax = parseFloat(document.getElementById('totalTax')?.value) || 0;
-      const total = subtotal - discount + tax;
+      const discountedSubtotal = subtotal - discount;
+      
+      // Auto-calculate Hawaii GET tax at 4.5% O'ahu rate
+      const hawaiiTaxRate = 0.045;
+      const autoTax = discountedSubtotal * hawaiiTaxRate;
+      
+      // Update tax field automatically
+      const taxInput = document.getElementById('totalTax');
+      if (taxInput) {
+        taxInput.value = autoTax.toFixed(2);
+      }
+      
+      const total = discountedSubtotal + autoTax;
       
       // Update summary display
       document.getElementById('summarySubtotal').textContent = `$${subtotal.toFixed(2)}`;
       document.getElementById('summaryDiscount').textContent = `$${discount.toFixed(2)}`;
-      document.getElementById('summaryTax').textContent = `$${tax.toFixed(2)}`;
+      document.getElementById('summaryTax').textContent = `$${autoTax.toFixed(2)}`;
       document.getElementById('summaryTotal').textContent = `$${total.toFixed(2)}`;
       
       // Show/hide summary based on items
@@ -589,8 +600,26 @@
     document.getElementById('totalDiscount')?.addEventListener('input', updateSummary);
     document.getElementById('totalTax')?.addEventListener('input', updateSummary);
 
-    // Initialize with one item
+    // Auto-populate from URL parameters (when accessed from job portal)
+    function autoPopulateFromPortal() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const clientId = urlParams.get('clientId');
+      const jobId = urlParams.get('jobId');
+      
+      if (clientId) {
+        document.getElementById('clientId').value = clientId;
+        document.getElementById('clientId').setAttribute('readonly', true);
+      }
+      
+      if (jobId) {
+        document.getElementById('jobId').value = jobId;
+        document.getElementById('jobId').setAttribute('readonly', true);
+      }
+    }
+
+    // Initialize with one item and auto-populate
     addItem();
+    autoPopulateFromPortal();
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
