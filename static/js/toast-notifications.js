@@ -277,6 +277,28 @@ class ToastNotifications {
             method: 'POST',
             body: formData
         })
+        .then(response => {
+            this.hide(loadingToast);
+            
+            if (response.ok) {
+                return response.json().then(data => {
+                    this.success(data.message || 'Request completed successfully');
+                    return data;
+                });
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+        })
+        .catch(error => {
+            this.hide(loadingToast);
+            this.error(error.message || 'Request failed');
+            throw error;
+        });
+    }
+}
+
+// Initialize toast system
+window.toastManager = new ToastNotificationManager();
         .then(response => response.json())
         .then(data => {
             // Hide loading toast

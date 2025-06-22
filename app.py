@@ -11,12 +11,14 @@ logging.basicConfig(
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "triton-concrete-coating-secret-key-2025")
 
-# Print startup message
-print("\n🏗️ Spankks Construction")
-print("🏝️ Professional construction and home improvements across O'ahu")
-print("📞 Contact: (808) 778-9132")
-print("🌐 Licensed & Insured")
-print("\nBuilt with ❤️ for the local community\n")
+# Print startup message only for admin routes
+import os
+if os.environ.get('FLASK_ENV') == 'development' or '/admin' in os.environ.get('REQUEST_URI', ''):
+    print("\n🏗️ Spankks Construction")
+    print("🏝️ Professional construction and home improvements across O'ahu") 
+    print("📞 Contact: (808) 778-9132")
+    print("🌐 Licensed & Insured")
+    print("\nBuilt with ❤️ for the local community\n")
 
 # Register template helpers
 try:

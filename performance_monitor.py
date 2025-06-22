@@ -35,7 +35,7 @@ class PerformanceMonitor:
             'completion_time': business_report['operations']['avg_completion_time_days'],
             'customer_retention': business_report['customers']['repeat_customer_rate'],
             'capacity_utilization': business_report['operations']['completion_rate'],
-            'outstanding_ratio': (cash_flow['outstanding_invoice_value'] / cash_flow['current_month_revenue']) * 100 if cash_flow['current_month_revenue'] > 0 else 0,
+            'outstanding_ratio': (cash_flow.get('outstanding_invoice_value', 0) / max(1, cash_flow.get('current_month_revenue', 1))) * 100 if cash_flow.get('current_month_revenue', 0) > 0 else 0,
             'pipeline_health': cash_flow['total_pipeline_value'],
             'revenue_trend': business_report['growth']['monthly_revenue_growth']
         }

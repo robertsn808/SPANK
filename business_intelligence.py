@@ -19,8 +19,11 @@ class BusinessIntelligence:
         # Service pricing analysis
         service_pricing = defaultdict(list)
         for quote in quotes:
-            if hasattr(quote, 'service_type') and hasattr(quote, 'total_amount'):
-                service_pricing[quote.service_type].append(quote.total_amount)
+            service_type = getattr(quote, 'service_type', None) if hasattr(quote, 'service_type') else quote.get('service_type') if isinstance(quote, dict) else None
+            total_amount = getattr(quote, 'total_amount', None) if hasattr(quote, 'total_amount') else quote.get('total_amount') if isinstance(quote, dict) else None
+            
+            if service_type and total_amount:
+                service_pricing[service_type].append(float(total_amount))
         
         # Calculate average pricing per service
         avg_pricing = {}
@@ -36,15 +39,21 @@ class BusinessIntelligence:
         total_customers = len(contacts)
         monthly_acquisition = defaultdict(int)
         for contact in contacts:
+            created_date = None
             if hasattr(contact, 'created_date'):
+                created_date = contact.created_date
+            elif isinstance(contact, dict) and 'created_date' in contact:
+                created_date = contact['created_date']
+            
+            if created_date:
                 try:
-                    if isinstance(contact.created_date, str):
-                        date_obj = datetime.fromisoformat(contact.created_date.replace('Z', '+00:00'))
+                    if isinstance(created_date, str):
+                        date_obj = datetime.fromisoformat(created_date.replace('Z', '+00:00'))
                     else:
-                        date_obj = contact.created_date
+                        date_obj = created_date
                     month_key = date_obj.strftime('%Y-%m')
                     monthly_acquisition[month_key] += 1
-                except:
+                except Exception as e:
                     month_key = datetime.now().strftime('%Y-%m')
                     monthly_acquisition[month_key] += 1
         

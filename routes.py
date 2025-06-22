@@ -41,20 +41,48 @@ try:
     from file_storage_service import FileStorageService
     file_storage = FileStorageService()
     
-    # Initialize all required services
-    from storage_service import StorageService
-    from reminder_service import ReminderService
-    from job_tracking_service import JobTrackingService
-    from financial_reporting_service import FinancialReportingService
-    from inventory_service import InventoryService
-    from checklist_service import ChecklistService
-    
-    storage_service = StorageService()
-    reminder_service = ReminderService()
-    job_tracking_service = JobTrackingService()
-    financial_reporting_service = FinancialReportingService()
-    inventory_service = InventoryService()
-    checklist_service = ChecklistService()
+    # Initialize all required services with error handling
+    try:
+        from storage_service import StorageService
+        storage_service = StorageService()
+    except Exception as e:
+        logging.warning(f"StorageService initialization failed: {e}")
+        storage_service = None
+        
+    try:
+        from reminder_service import ReminderService
+        reminder_service = ReminderService()
+    except Exception as e:
+        logging.warning(f"ReminderService initialization failed: {e}")
+        reminder_service = None
+        
+    try:
+        from job_tracking_service import JobTrackingService
+        job_tracking_service = JobTrackingService()
+    except Exception as e:
+        logging.warning(f"JobTrackingService initialization failed: {e}")
+        job_tracking_service = None
+        
+    try:
+        from financial_reporting_service import FinancialReportingService
+        financial_reporting_service = FinancialReportingService()
+    except Exception as e:
+        logging.warning(f"FinancialReportingService initialization failed: {e}")
+        financial_reporting_service = None
+        
+    try:
+        from inventory_service import InventoryService
+        inventory_service = InventoryService()
+    except Exception as e:
+        logging.warning(f"InventoryService initialization failed: {e}")
+        inventory_service = None
+        
+    try:
+        from checklist_service import ChecklistService
+        checklist_service = ChecklistService()
+    except Exception as e:
+        logging.warning(f"ChecklistService initialization failed: {e}")
+        checklist_service = None
     
     logging.info("All services initialized successfully")
 except Exception as e:
