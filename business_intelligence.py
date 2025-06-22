@@ -37,8 +37,16 @@ class BusinessIntelligence:
         monthly_acquisition = defaultdict(int)
         for contact in contacts:
             if hasattr(contact, 'created_date'):
-                month_key = contact.created_date.strftime('%Y-%m')
-                monthly_acquisition[month_key] += 1
+                try:
+                    if isinstance(contact.created_date, str):
+                        date_obj = datetime.fromisoformat(contact.created_date.replace('Z', '+00:00'))
+                    else:
+                        date_obj = contact.created_date
+                    month_key = date_obj.strftime('%Y-%m')
+                    monthly_acquisition[month_key] += 1
+                except:
+                    month_key = datetime.now().strftime('%Y-%m')
+                    monthly_acquisition[month_key] += 1
         
         # Market opportunity scoring
         opportunities = []

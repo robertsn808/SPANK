@@ -150,12 +150,28 @@ class BusinessAnalytics:
         
         for invoice in invoices:
             if invoice.status == 'paid':
-                month_key = invoice.created_date.strftime('%Y-%m')
-                monthly_data[month_key]['revenue'] += invoice.total_amount
+                try:
+                    if isinstance(invoice.created_date, str):
+                        date_obj = datetime.fromisoformat(invoice.created_date.replace('Z', '+00:00'))
+                    else:
+                        date_obj = invoice.created_date
+                    month_key = date_obj.strftime('%Y-%m')
+                    monthly_data[month_key]['revenue'] += invoice.total_amount
+                except:
+                    month_key = datetime.now().strftime('%Y-%m')
+                    monthly_data[month_key]['revenue'] += invoice.total_amount
         
         for contact in contacts:
-            month_key = contact.created_date.strftime('%Y-%m')
-            monthly_data[month_key]['customers'] += 1
+            try:
+                if isinstance(contact.created_date, str):
+                    date_obj = datetime.fromisoformat(contact.created_date.replace('Z', '+00:00'))
+                else:
+                    date_obj = contact.created_date
+                month_key = date_obj.strftime('%Y-%m')
+                monthly_data[month_key]['customers'] += 1
+            except:
+                month_key = datetime.now().strftime('%Y-%m')
+                monthly_data[month_key]['customers'] += 1
         
         # Calculate growth rates
         sorted_months = sorted(monthly_data.keys())
