@@ -3313,6 +3313,128 @@ def get_job_notes(job_id):
     return jsonify({'notes': [], 'count': 0})
 
 # ===============================
+# LEGAL AND SUPPORT PAGES
+# ===============================
+
+@app.route('/terms-of-service')
+def terms_of_service():
+    """Terms of Service page"""
+    return render_template('terms_of_service.html')
+
+@app.route('/privacy-policy')
+def privacy_policy():
+    """Privacy Policy page"""
+    return render_template('privacy_policy.html')
+
+@app.route('/help-faq')
+def help_faq():
+    """Help & FAQ page"""
+    return render_template('help_faq.html')
+
+# Note: send_client_message route exists elsewhere in file - duplicate removed
+        return jsonify({'success': False, 'error': 'Contact not found'})
+    
+    try:
+        # Log the communication attempt
+        communication_record = {
+            'id': f"comm_{int(datetime.now().timestamp())}",
+            'contact_id': contact_id,
+            'contact_name': contact.name,
+            'type': message_type,
+            'subject': subject,
+            'message': message,
+            'sent_date': datetime.now().isoformat(),
+            'status': 'sent',
+            'sent_by': 'admin'
+        }
+        
+        # Save communication record
+        communications_file = 'data/communications.json'
+        communications = []
+        if os.path.exists(communications_file):
+            try:
+                with open(communications_file, 'r') as f:
+                    communications = json.load(f)
+            except:
+                communications = []
+        
+        communications.append(communication_record)
+        
+        # Keep only last 1000 communications
+        if len(communications) > 1000:
+            communications = communications[-1000:]
+        
+        with open(communications_file, 'w') as f:
+            json.dump(communications, f, indent=2)
+        
+        notification_text = f"Message sent to {contact.name} ({message_type}): {subject}"
+        
+        return jsonify({
+            'success': True,
+            'message': f'{message_type.upper()} message logged successfully',
+            'communication_id': communication_record['id']
+        })
+        
+    except Exception as e:
+        logging.error(f"Error sending message: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+# ===============================
+# FILE STORAGE MANAGEMENT
+# ===============================
+
+@app.route('/admin/file-storage')
+def file_storage_dashboard():
+    """File storage management dashboard"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    # Get storage statistics
+    stats = file_storage.get_storage_statistics()
+    
+    # Get recent files
+    recent_files = []
+    for category in ['invoice', 'quote', 'photo_before', 'photo_after', 'contract']:
+        category_files = file_storage.get_files_by_category(category, limit=10)
+        recent_files.extend(category_files)
+    
+    # Sort by upload date
+    recent_files.sort(key=lambda x: x.get('upload_date', ''), reverse=True)
+    recent_files = recent_files[:20]
+    
+    return render_template('admin/file_storage.html',
+                         storage_stats=stats,
+                         recent_files=recent_files)
+
+@app.route('/admin/create-backup', methods=['POST'])
+def create_backup():
+    """Create a system backup"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 401
+    
+    data = request.get_json()
+    backup_type = data.get('type', 'manual')
+    
+    try:
+        result = file_storage.create_backup(backup_type)
+        
+        if result['success']:
+            return jsonify({
+                'success': True,
+                'message': 'Backup created successfully',
+                'backup_info': result['backup_info']
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': result.get('error', 'Unknown error')
+            })
+            
+    except Exception as e:
+        logging.error(f"Error creating backup: {e}")
+        return jsonify({'success': False, 'error': str(e)})
+
+# ===============================
 # SCHEDULER & CALENDAR SYSTEM
 # ===============================
 

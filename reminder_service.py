@@ -1,6 +1,6 @@
 """
-Automated Reminder Service for SPANKKS Construction
-Handles email and SMS reminders for appointments, invoices, and follow-ups
+Reminder Service for SPANKKS Construction
+Handles automated email and SMS reminders for appointments and payments
 """
 
 import json
@@ -9,444 +9,358 @@ import os
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 import pytz
-from notification_service import NotificationService
 
 class ReminderService:
-    """Manages automated reminders for appointments, payments, and follow-ups"""
+    """Automated reminder system for appointments and payments"""
     
     def __init__(self):
-        self.notification_service = NotificationService()
         self.hawaii_tz = pytz.timezone('Pacific/Honolulu')
-        self.reminder_file = 'data/reminders.json'
+        self.reminders_file = 'data/reminders.json'
         self._ensure_data_files()
     
     def _ensure_data_files(self):
         """Ensure reminder data files exist"""
         os.makedirs('data', exist_ok=True)
         
-        if not os.path.exists(self.reminder_file):
-            with open(self.reminder_file, 'w') as f:
+        if not os.path.exists(self.reminders_file):
+            with open(self.reminders_file, 'w') as f:
                 json.dump([], f, indent=2)
     
-    def schedule_appointment_reminder(self, appointment_data: Dict) -> bool:
-        """Schedule appointment reminders (24h email, 2h SMS)"""
+    def schedule_appointment_reminders(self, appointment_data: Dict) -> Dict:
+        """Schedule automated reminders for an appointment"""
         try:
-            appointment_time = datetime.fromisoformat(appointment_data.get('scheduled_datetime'))
-            customer_phone = appointment_data.get('customer_phone')
-            customer_email = appointment_data.get('customer_email')
+            appointment_date = datetime.fromisoformat(appointment_data.get('date', ''))
+            client_name = appointment_data.get('client_name', '')
+            client_email = appointment_data.get('client_email', '')
+            client_phone = appointment_data.get('client_phone', '')
+            service_type = appointment_data.get('service_type', '')
             
-            # Schedule 24-hour email reminder
-            email_reminder_time = appointment_time - timedelta(hours=24)
-            self._schedule_reminder({
-                'id': f"email_appt_{appointment_data.get('id')}_{int(datetime.now().timestamp())}",
-                'type': 'appointment_email',
-                'scheduled_time': email_reminder_time.isoformat(),
-                'recipient_email': customer_email,
-                'recipient_phone': customer_phone,
-                'appointment_data': appointment_data,
-                'status': 'pending'
-            })
+            reminders = []
             
-            # Schedule 2-hour SMS reminder
-            sms_reminder_time = appointment_time - timedelta(hours=2)
-            self._schedule_reminder({
-                'id': f"sms_appt_{appointment_data.get('id')}_{int(datetime.now().timestamp())}",
-                'type': 'appointment_sms',
-                'scheduled_time': sms_reminder_time.isoformat(),
-                'recipient_email': customer_email,
-                'recipient_phone': customer_phone,
-                'appointment_data': appointment_data,
-                'status': 'pending'
-            })
+            # 24-hour email reminder
+            email_reminder_time = appointment_date - timedelta(hours=24)
+            if email_reminder_time > datetime.now():
+                email_reminder = {
+                    'id': f"reminder_email_{int(datetime.now().timestamp())}",
+                    'type': 'appointment_email',
+                    'scheduled_time': email_reminder_time.isoformat(),
+                    'recipient_name': client_name,
+                    'recipient_email': client_email,
+                    'appointment_date': appointment_data.get('date'),
+                    'service_type': service_type,
+                    'status': 'scheduled',
+                    'created_date': datetime.now().isoformat()
+                }
+                reminders.append(email_reminder)
             
-            logging.info(f"Scheduled appointment reminders for {appointment_data.get('id')}")
-            return True
+            # 2-hour SMS reminder
+            sms_reminder_time = appointment_date - timedelta(hours=2)
+            if sms_reminder_time > datetime.now() and client_phone:
+                sms_reminder = {
+                    'id': f"reminder_sms_{int(datetime.now().timestamp())}",
+                    'type': 'appointment_sms',
+                    'scheduled_time': sms_reminder_time.isoformat(),
+                    'recipient_name': client_name,
+                    'recipient_phone': client_phone,
+                    'appointment_date': appointment_data.get('date'),
+                    'service_type': service_type,
+                    'status': 'scheduled',
+                    'created_date': datetime.now().isoformat()
+                }
+                reminders.append(sms_reminder)
+            
+            # Save reminders
+            self._save_reminders(reminders)
+            
+            logging.info(f"Scheduled {len(reminders)} reminders for appointment on {appointment_date}")
+            
+            return {
+                'success': True,
+                'reminders_scheduled': len(reminders),
+                'reminder_ids': [r['id'] for r in reminders]
+            }
             
         except Exception as e:
-            logging.error(f"Error scheduling appointment reminder: {e}")
-            return False
+            logging.error(f"Error scheduling appointment reminders: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
     
-    def schedule_invoice_reminder(self, invoice_data: Dict) -> bool:
-        """Schedule invoice payment reminders"""
+    def schedule_payment_reminders(self, invoice_data: Dict) -> Dict:
+        """Schedule automated payment reminders for an invoice"""
         try:
-            due_date = datetime.fromisoformat(invoice_data.get('due_date'))
-            customer_phone = invoice_data.get('customer_phone')
-            customer_email = invoice_data.get('customer_email')
+            due_date = datetime.fromisoformat(invoice_data.get('due_date', ''))
+            client_name = invoice_data.get('client_name', '')
+            client_email = invoice_data.get('client_email', '')
+            client_phone = invoice_data.get('client_phone', '')
+            invoice_number = invoice_data.get('invoice_number', '')
+            amount = invoice_data.get('amount', 0)
             
-            # Schedule 7-day before due date reminder
-            early_reminder = due_date - timedelta(days=7)
-            self._schedule_reminder({
-                'id': f"invoice_early_{invoice_data.get('id')}_{int(datetime.now().timestamp())}",
-                'type': 'invoice_early',
-                'scheduled_time': early_reminder.isoformat(),
-                'recipient_email': customer_email,
-                'recipient_phone': customer_phone,
-                'invoice_data': invoice_data,
-                'status': 'pending'
-            })
+            reminders = []
             
-            # Schedule due date reminder
-            due_reminder = due_date
-            self._schedule_reminder({
-                'id': f"invoice_due_{invoice_data.get('id')}_{int(datetime.now().timestamp())}",
-                'type': 'invoice_due',
-                'scheduled_time': due_reminder.isoformat(),
-                'recipient_email': customer_email,
-                'recipient_phone': customer_phone,
-                'invoice_data': invoice_data,
-                'status': 'pending'
-            })
+            # 3-day email reminder before due date
+            email_reminder_time = due_date - timedelta(days=3)
+            if email_reminder_time > datetime.now():
+                email_reminder = {
+                    'id': f"payment_email_{int(datetime.now().timestamp())}",
+                    'type': 'payment_email',
+                    'scheduled_time': email_reminder_time.isoformat(),
+                    'recipient_name': client_name,
+                    'recipient_email': client_email,
+                    'invoice_number': invoice_number,
+                    'amount': amount,
+                    'due_date': invoice_data.get('due_date'),
+                    'status': 'scheduled',
+                    'created_date': datetime.now().isoformat()
+                }
+                reminders.append(email_reminder)
             
-            # Schedule overdue reminder (3 days after due date)
-            overdue_reminder = due_date + timedelta(days=3)
-            self._schedule_reminder({
-                'id': f"invoice_overdue_{invoice_data.get('id')}_{int(datetime.now().timestamp())}",
-                'type': 'invoice_overdue',
-                'scheduled_time': overdue_reminder.isoformat(),
-                'recipient_email': customer_email,
-                'recipient_phone': customer_phone,
-                'invoice_data': invoice_data,
-                'status': 'pending'
-            })
+            # Day-of SMS reminder
+            sms_reminder_time = due_date.replace(hour=10, minute=0, second=0, microsecond=0)
+            if sms_reminder_time > datetime.now() and client_phone:
+                sms_reminder = {
+                    'id': f"payment_sms_{int(datetime.now().timestamp())}",
+                    'type': 'payment_sms',
+                    'scheduled_time': sms_reminder_time.isoformat(),
+                    'recipient_name': client_name,
+                    'recipient_phone': client_phone,
+                    'invoice_number': invoice_number,
+                    'amount': amount,
+                    'due_date': invoice_data.get('due_date'),
+                    'status': 'scheduled',
+                    'created_date': datetime.now().isoformat()
+                }
+                reminders.append(sms_reminder)
             
-            logging.info(f"Scheduled invoice reminders for {invoice_data.get('id')}")
-            return True
+            # Save reminders
+            self._save_reminders(reminders)
+            
+            logging.info(f"Scheduled {len(reminders)} payment reminders for invoice {invoice_number}")
+            
+            return {
+                'success': True,
+                'reminders_scheduled': len(reminders),
+                'reminder_ids': [r['id'] for r in reminders]
+            }
             
         except Exception as e:
-            logging.error(f"Error scheduling invoice reminder: {e}")
-            return False
+            logging.error(f"Error scheduling payment reminders: {e}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
     
-    def schedule_follow_up_reminder(self, contact_data: Dict, days_ahead: int = 3) -> bool:
-        """Schedule follow-up reminders for quotes and inquiries"""
+    def get_pending_reminders(self) -> List[Dict]:
+        """Get all pending reminders that should be sent"""
         try:
-            follow_up_time = datetime.now() + timedelta(days=days_ahead)
-            
-            self._schedule_reminder({
-                'id': f"followup_{contact_data.get('id')}_{int(datetime.now().timestamp())}",
-                'type': 'follow_up',
-                'scheduled_time': follow_up_time.isoformat(),
-                'recipient_email': contact_data.get('email'),
-                'recipient_phone': contact_data.get('phone'),
-                'contact_data': contact_data,
-                'status': 'pending'
-            })
-            
-            logging.info(f"Scheduled follow-up reminder for {contact_data.get('id')}")
-            return True
-            
-        except Exception as e:
-            logging.error(f"Error scheduling follow-up reminder: {e}")
-            return False
-    
-    def _schedule_reminder(self, reminder_data: Dict):
-        """Add reminder to schedule"""
-        reminders = []
-        if os.path.exists(self.reminder_file):
-            with open(self.reminder_file, 'r') as f:
-                reminders = json.load(f)
-        
-        reminders.append(reminder_data)
-        
-        with open(self.reminder_file, 'w') as f:
-            json.dump(reminders, f, indent=2)
-    
-    def process_pending_reminders(self) -> List[Dict]:
-        """Process all pending reminders that are due"""
-        processed_reminders = []
-        
-        try:
-            if not os.path.exists(self.reminder_file):
-                return processed_reminders
-            
-            with open(self.reminder_file, 'r') as f:
-                reminders = json.load(f)
-            
-            now = datetime.now()
-            updated_reminders = []
+            reminders = self._load_reminders()
+            pending = []
+            current_time = datetime.now()
             
             for reminder in reminders:
-                if reminder.get('status') != 'pending':
-                    updated_reminders.append(reminder)
-                    continue
-                
-                scheduled_time = datetime.fromisoformat(reminder.get('scheduled_time'))
-                
-                if now >= scheduled_time:
-                    # Process the reminder
-                    success = self._send_reminder(reminder)
-                    
-                    if success:
-                        reminder['status'] = 'sent'
-                        reminder['sent_time'] = now.isoformat()
-                        processed_reminders.append(reminder)
-                    else:
-                        reminder['status'] = 'failed'
-                        reminder['failed_time'] = now.isoformat()
-                
-                updated_reminders.append(reminder)
+                if reminder.get('status') == 'scheduled':
+                    scheduled_time = datetime.fromisoformat(reminder.get('scheduled_time', ''))
+                    if scheduled_time <= current_time:
+                        pending.append(reminder)
             
-            # Save updated reminders
-            with open(self.reminder_file, 'w') as f:
-                json.dump(updated_reminders, f, indent=2)
-            
-            return processed_reminders
+            return pending
             
         except Exception as e:
-            logging.error(f"Error processing reminders: {e}")
+            logging.error(f"Error getting pending reminders: {e}")
             return []
     
-    def _send_reminder(self, reminder: Dict) -> bool:
-        """Send individual reminder based on type"""
+    def mark_reminder_sent(self, reminder_id: str) -> bool:
+        """Mark a reminder as sent"""
         try:
-            reminder_type = reminder.get('type')
+            reminders = self._load_reminders()
             
-            if reminder_type == 'appointment_email':
-                return self._send_appointment_email_reminder(reminder)
-            elif reminder_type == 'appointment_sms':
-                return self._send_appointment_sms_reminder(reminder)
-            elif reminder_type in ['invoice_early', 'invoice_due', 'invoice_overdue']:
-                return self._send_invoice_reminder(reminder)
-            elif reminder_type == 'follow_up':
-                return self._send_follow_up_reminder(reminder)
+            for reminder in reminders:
+                if reminder['id'] == reminder_id:
+                    reminder['status'] = 'sent'
+                    reminder['sent_date'] = datetime.now().isoformat()
+                    break
             
-            return False
+            with open(self.reminders_file, 'w') as f:
+                json.dump(reminders, f, indent=2)
+            
+            return True
             
         except Exception as e:
-            logging.error(f"Error sending reminder: {e}")
+            logging.error(f"Error marking reminder as sent: {e}")
             return False
-    
-    def _send_appointment_email_reminder(self, reminder: Dict) -> bool:
-        """Send appointment email reminder"""
-        appointment = reminder.get('appointment_data', {})
-        email = reminder.get('recipient_email')
-        
-        if not email:
-            return False
-        
-        subject = "Appointment Reminder - SPANKKS Construction"
-        
-        # Format appointment time
-        appt_time = datetime.fromisoformat(appointment.get('scheduled_datetime', ''))
-        formatted_time = appt_time.strftime('%A, %B %d, %Y at %I:%M %p')
-        
-        message = f"""
-Dear {appointment.get('customer_name', 'Valued Customer')},
-
-This is a friendly reminder about your upcoming appointment with SPANKKS Construction.
-
-Appointment Details:
-• Date & Time: {formatted_time}
-• Service: {appointment.get('service_type', 'Construction Services')}
-• Location: {appointment.get('address', 'To be confirmed')}
-
-If you need to reschedule or have any questions, please contact us at (808) 778-9132.
-
-We look forward to working with you!
-
-Best regards,
-SPANKKS Construction Team
-(808) 778-9132
-spank808@gmail.com
-
-Licensed & Insured • Serving O'ahu with Pride
-"""
-        
-        return self.notification_service.send_email(email, subject, message)
-    
-    def _send_appointment_sms_reminder(self, reminder: Dict) -> bool:
-        """Send appointment SMS reminder"""
-        appointment = reminder.get('appointment_data', {})
-        phone = reminder.get('recipient_phone')
-        
-        if not phone:
-            return False
-        
-        # Format appointment time
-        appt_time = datetime.fromisoformat(appointment.get('scheduled_datetime', ''))
-        formatted_time = appt_time.strftime('%m/%d at %I:%M %p')
-        
-        message = f"SPANKKS Construction: Your appointment is scheduled for {formatted_time}. Please call (808) 778-9132 if you need to reschedule. Thank you!"
-        
-        return self.notification_service.send_sms(phone, message)
-    
-    def _send_invoice_reminder(self, reminder: Dict) -> bool:
-        """Send invoice payment reminder"""
-        invoice = reminder.get('invoice_data', {})
-        email = reminder.get('recipient_email')
-        phone = reminder.get('recipient_phone')
-        reminder_type = reminder.get('type')
-        
-        # Determine message based on reminder type
-        if reminder_type == 'invoice_early':
-            subject = "Payment Due Soon - SPANKKS Construction"
-            urgency = "in 7 days"
-        elif reminder_type == 'invoice_due':
-            subject = "Payment Due Today - SPANKKS Construction"
-            urgency = "today"
-        else:  # overdue
-            subject = "Overdue Payment - SPANKKS Construction"
-            urgency = "is now overdue"
-        
-        if email:
-            message = f"""
-Dear {invoice.get('customer_name', 'Valued Customer')},
-
-Your invoice {invoice.get('id')} {urgency}.
-
-Invoice Details:
-• Invoice #: {invoice.get('id')}
-• Amount Due: ${invoice.get('total_amount', '0.00')}
-• Service: {invoice.get('service_type', 'Construction Services')}
-• Due Date: {invoice.get('due_date', 'N/A')}
-
-Please remit payment at your earliest convenience. You can pay by cash, check, Venmo, or Zelle.
-
-For questions about your invoice, please contact us at (808) 778-9132.
-
-Thank you for choosing SPANKKS Construction!
-
-Best regards,
-SPANKKS Construction Team
-(808) 778-9132
-spank808@gmail.com
-"""
-            self.notification_service.send_email(email, subject, message)
-        
-        # Also send SMS for overdue invoices
-        if reminder_type == 'invoice_overdue' and phone:
-            sms_message = f"SPANKKS Construction: Invoice {invoice.get('id')} for ${invoice.get('total_amount', '0.00')} is overdue. Please call (808) 778-9132 to arrange payment."
-            self.notification_service.send_sms(phone, sms_message)
-        
-        return True
-    
-    def _send_follow_up_reminder(self, reminder: Dict) -> bool:
-        """Send follow-up reminder for quotes and inquiries"""
-        contact = reminder.get('contact_data', {})
-        email = contact.get('email')
-        
-        if not email:
-            return False
-        
-        subject = "Follow-up on Your SPANKKS Construction Inquiry"
-        
-        message = f"""
-Dear {contact.get('name', 'Valued Customer')},
-
-We wanted to follow up on your recent inquiry with SPANKKS Construction.
-
-We're here to help with your construction and home improvement needs. Our team is ready to provide you with:
-• Professional consultation
-• Detailed quotes
-• Quality workmanship
-• Licensed & insured services
-
-If you're ready to move forward or have any questions, please don't hesitate to contact us:
-• Phone: (808) 778-9132
-• Email: spank808@gmail.com
-
-We look forward to working with you on your project!
-
-Best regards,
-SPANKKS Construction Team
-
-Licensed & Insured • Serving O'ahu with Pride
-"""
-        
-        return self.notification_service.send_email(email, subject, message)
     
     def get_reminder_statistics(self) -> Dict:
-        """Get reminder statistics for admin dashboard"""
+        """Get reminder system statistics"""
         try:
-            if not os.path.exists(self.reminder_file):
-                return {
-                    'total_scheduled': 0,
-                    'sent_today': 0,
-                    'pending': 0,
-                    'failed': 0
-                }
+            reminders = self._load_reminders()
             
-            with open(self.reminder_file, 'r') as f:
-                reminders = json.load(f)
-            
-            today = datetime.now().date()
             stats = {
-                'total_scheduled': len(reminders),
-                'sent_today': 0,
-                'pending': 0,
-                'failed': 0
+                'total_reminders': len(reminders),
+                'scheduled': 0,
+                'sent': 0,
+                'failed': 0,
+                'by_type': {
+                    'appointment_email': 0,
+                    'appointment_sms': 0,
+                    'payment_email': 0,
+                    'payment_sms': 0
+                }
             }
             
             for reminder in reminders:
-                if reminder.get('status') == 'pending':
-                    stats['pending'] += 1
-                elif reminder.get('status') == 'failed':
-                    stats['failed'] += 1
-                elif reminder.get('status') == 'sent':
-                    sent_date = datetime.fromisoformat(reminder.get('sent_time', '')).date()
-                    if sent_date == today:
-                        stats['sent_today'] += 1
+                status = reminder.get('status', 'unknown')
+                reminder_type = reminder.get('type', 'unknown')
+                
+                if status in stats:
+                    stats[status] += 1
+                
+                if reminder_type in stats['by_type']:
+                    stats['by_type'][reminder_type] += 1
             
             return stats
             
         except Exception as e:
             logging.error(f"Error getting reminder statistics: {e}")
             return {
-                'total_scheduled': 0,
-                'sent_today': 0,
-                'pending': 0,
-                'failed': 0
+                'total_reminders': 0,
+                'scheduled': 0,
+                'sent': 0,
+                'failed': 0,
+                'by_type': {}
             }
     
-    def cancel_reminders_for_appointment(self, appointment_id: str) -> bool:
-        """Cancel all reminders for a specific appointment"""
+    def generate_email_content(self, reminder: Dict) -> Dict:
+        """Generate email content for a reminder"""
         try:
-            if not os.path.exists(self.reminder_file):
-                return True
-            
-            with open(self.reminder_file, 'r') as f:
-                reminders = json.load(f)
-            
-            updated_reminders = []
-            for reminder in reminders:
-                if (reminder.get('type', '').startswith('appointment_') and 
-                    reminder.get('appointment_data', {}).get('id') == appointment_id):
-                    reminder['status'] = 'cancelled'
-                    reminder['cancelled_time'] = datetime.now().isoformat()
+            if reminder['type'] == 'appointment_email':
+                subject = f"Reminder: Your SPANKKS Construction appointment tomorrow"
                 
-                updated_reminders.append(reminder)
+                # Format appointment date
+                appointment_date = datetime.fromisoformat(reminder['appointment_date'])
+                formatted_date = appointment_date.strftime('%A, %B %d, %Y at %I:%M %p')
+                
+                body = f"""
+Dear {reminder['recipient_name']},
+
+This is a friendly reminder about your upcoming appointment with SPANKKS Construction.
+
+Appointment Details:
+• Service: {reminder['service_type']}
+• Date & Time: {formatted_date}
+• Location: Your property
+
+What to expect:
+• Our team will arrive promptly at the scheduled time
+• We'll review the project scope and answer any questions
+• All necessary materials and tools will be provided
+
+Need to reschedule or have questions?
+Call us at (808) 778-9132 or email spank808@gmail.com
+
+Thank you for choosing SPANKKS Construction!
+
+Best regards,
+The SPANKKS Construction Team
+Licensed & Insured in Hawaii
+"""
+                
+            elif reminder['type'] == 'payment_email':
+                subject = f"Payment Reminder: Invoice {reminder['invoice_number']} due soon"
+                
+                # Format due date
+                due_date = datetime.fromisoformat(reminder['due_date'])
+                formatted_due = due_date.strftime('%A, %B %d, %Y')
+                
+                body = f"""
+Dear {reminder['recipient_name']},
+
+This is a friendly reminder that payment for Invoice {reminder['invoice_number']} is due on {formatted_due}.
+
+Invoice Details:
+• Invoice Number: {reminder['invoice_number']}
+• Amount Due: ${reminder['amount']:.2f}
+• Due Date: {formatted_due}
+
+Payment Options:
+• Venmo: @SPANKKS-Construction
+• Zelle: spank808@gmail.com
+• Check or Cash
+• Call us to arrange payment: (808) 778-9132
+
+Thank you for your prompt payment. We appreciate your business!
+
+Questions about this invoice?
+Contact us at (808) 778-9132 or spank808@gmail.com
+
+Best regards,
+SPANKKS Construction LLC
+Licensed & Insured in Hawaii
+"""
             
-            with open(self.reminder_file, 'w') as f:
-                json.dump(updated_reminders, f, indent=2)
+            else:
+                raise ValueError(f"Unknown reminder type: {reminder['type']}")
             
-            return True
+            return {
+                'subject': subject,
+                'body': body.strip(),
+                'recipient_email': reminder['recipient_email']
+            }
             
         except Exception as e:
-            logging.error(f"Error cancelling reminders: {e}")
-            return False
+            logging.error(f"Error generating email content: {e}")
+            return {
+                'subject': 'Reminder from SPANKKS Construction',
+                'body': 'Please contact us at (808) 778-9132 for details.',
+                'recipient_email': reminder.get('recipient_email', '')
+            }
     
-    def cancel_reminders_for_invoice(self, invoice_id: str) -> bool:
-        """Cancel all reminders for a specific invoice (when paid)"""
+    def generate_sms_content(self, reminder: Dict) -> Dict:
+        """Generate SMS content for a reminder"""
         try:
-            if not os.path.exists(self.reminder_file):
-                return True
-            
-            with open(self.reminder_file, 'r') as f:
-                reminders = json.load(f)
-            
-            updated_reminders = []
-            for reminder in reminders:
-                if (reminder.get('type', '').startswith('invoice_') and 
-                    reminder.get('invoice_data', {}).get('id') == invoice_id):
-                    reminder['status'] = 'cancelled'
-                    reminder['cancelled_time'] = datetime.now().isoformat()
+            if reminder['type'] == 'appointment_sms':
+                appointment_date = datetime.fromisoformat(reminder['appointment_date'])
+                time_str = appointment_date.strftime('%I:%M %p')
                 
-                updated_reminders.append(reminder)
+                message = f"SPANKKS Construction reminder: Your {reminder['service_type']} appointment is in 2 hours at {time_str}. Questions? Call (808) 778-9132"
+                
+            elif reminder['type'] == 'payment_sms':
+                message = f"SPANKKS Construction: Invoice {reminder['invoice_number']} for ${reminder['amount']:.2f} is due today. Pay via Venmo @SPANKKS-Construction or call (808) 778-9132"
+                
+            else:
+                raise ValueError(f"Unknown reminder type: {reminder['type']}")
             
-            with open(self.reminder_file, 'w') as f:
-                json.dump(updated_reminders, f, indent=2)
-            
-            return True
+            return {
+                'message': message,
+                'recipient_phone': reminder['recipient_phone']
+            }
             
         except Exception as e:
-            logging.error(f"Error cancelling invoice reminders: {e}")
-            return False
+            logging.error(f"Error generating SMS content: {e}")
+            return {
+                'message': 'SPANKKS Construction reminder. Call (808) 778-9132 for details.',
+                'recipient_phone': reminder.get('recipient_phone', '')
+            }
+    
+    def _load_reminders(self) -> List[Dict]:
+        """Load reminders from JSON file"""
+        try:
+            with open(self.reminders_file, 'r') as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return []
+    
+    def _save_reminders(self, new_reminders: List[Dict]):
+        """Save new reminders to JSON file"""
+        existing_reminders = self._load_reminders()
+        existing_reminders.extend(new_reminders)
+        
+        # Keep only last 1000 reminders to prevent file bloat
+        if len(existing_reminders) > 1000:
+            existing_reminders = existing_reminders[-1000:]
+        
+        with open(self.reminders_file, 'w') as f:
+            json.dump(existing_reminders, f, indent=2)
+
+# Initialize global reminder service
+reminder_service = ReminderService()
