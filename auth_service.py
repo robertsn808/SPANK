@@ -105,6 +105,34 @@ class AuthService:
         """Check if the client ID/job ID combination belongs to a staff member"""
         client = self.find_client(client_id, job_id)
         return bool(client and client.get('isStaff', False))
+    
+    def update_client(self, client_id: str, job_id: str, updates: Dict) -> bool:
+        """Update client information in the database"""
+        try:
+            if not self.clients_cache:
+                self.load_clients()
+            
+            # Find and update the client
+            for client in self.clients_cache:
+                if client.get('clientId') == client_id and client.get('jobId') == job_id:
+                    # Update only provided fields
+                    for key, value in updates.items():
+                        if value is not None:
+                            client[key] = value
+                    
+                    # Save to file
+                    with open(self.clients_file, 'w') as f:
+                        json.dump(self.clients_cache, f, indent=2)
+                    
+                    logger.info(f"Updated client {client_id}/{job_id}")
+                    return True
+            
+            logger.warning(f"Client {client_id}/{job_id} not found for update")
+            return False
+            
+        except Exception as e:
+            logger.error(f"Error updating client: {e}")
+            return False
 
 # Global authentication service instance
 auth_service = AuthService()

@@ -563,18 +563,40 @@
             const newEmail = document.getElementById('editEmail').value;
             const newAddress = document.getElementById('editAddress').value;
             
-            // Update display
-            document.getElementById('displayName').textContent = newName;
-            document.getElementById('displayPhone').textContent = newPhone;
-            document.getElementById('displayEmail').textContent = newEmail;
-            document.getElementById('displayAddress').textContent = newAddress;
-            
-            // In a real implementation, this would send the data to the server
-            // For now, we'll just show a success message
-            alert('Client information updated successfully!\n\nNote: Changes are saved locally for this session.');
-            
-            // Exit edit mode
-            toggleClientEdit();
+            // Send update to server
+            fetch(`/api/client/${clientId}/${jobId}/update`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: newName,
+                    phone: newPhone,
+                    email: newEmail,
+                    address: newAddress
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update display
+                    document.getElementById('displayName').textContent = newName;
+                    document.getElementById('displayPhone').textContent = newPhone;
+                    document.getElementById('displayEmail').textContent = newEmail;
+                    document.getElementById('displayAddress').textContent = newAddress;
+                    
+                    alert('Client information updated successfully!');
+                    
+                    // Exit edit mode
+                    toggleClientEdit();
+                } else {
+                    alert('Failed to update client information: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error updating client info:', error);
+                alert('Failed to update client information. Please try again.');
+            });
         }
 
         // Enter key support for inputs

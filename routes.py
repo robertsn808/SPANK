@@ -1046,6 +1046,36 @@ def api_clear_analytics_cache():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/client/<client_id>/<job_id>/update', methods=['POST'])
+def update_client_info(client_id, job_id):
+    """Update client information in the database"""
+    if not session.get('portal_authenticated'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    # Only allow staff to update client information
+    if session.get('access_level') != 'staff':
+        return jsonify({'error': 'Staff access required'}), 403
+    
+    try:
+        data = request.get_json()
+        
+        # Update client in auth_service
+        success = auth_service.update_client(client_id, job_id, {
+            'name': data.get('name'),
+            'phone': data.get('phone'),
+            'email': data.get('email'),
+            'address': data.get('address')
+        })
+        
+        if success:
+            return jsonify({'success': True, 'message': 'Client information updated successfully'})
+        else:
+            return jsonify({'error': 'Client not found'}), 404
+            
+    except Exception as e:
+        logging.error(f"Error updating client info: {e}")
+        return jsonify({'error': 'Failed to update client information'}), 500
+
 @app.route('/admin/integrated-analytics')
 def integrated_analytics():
     """Comprehensive integrated analytics dashboard"""
