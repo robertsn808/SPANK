@@ -1,11 +1,11 @@
 [
   {
     "id": 1,
-    "contact_id": 5,
-    "quote_id": 11,
-    "subtotal": 499.99999999999994,
+    "contact_id": 7,
+    "quote_id": 13,
+    "subtotal": 299.984719993888,
     "tax_rate": 0.04712,
-    "total_amount": 523.56,
+    "total_amount": 314.12,
     "created_date": "2025-06-22",
     "due_date": "2025-07-22",
     "status": "pending",
@@ -14,7 +14,7 @@
       {
         "description": "Services Rendered",
         "quantity": 1.0,
-        "unit_price": 499.99999999999994,
+        "unit_price": 299.984719993888,
         "unit": "job"
       }
     ]

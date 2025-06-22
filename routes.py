@@ -122,6 +122,21 @@ def spank_school():
     """Spank School - Educational DIY learning platform"""
     return render_template('spank_school.html')
 
+@app.route('/reviews')
+def reviews():
+    """Customer reviews and testimonials page"""
+    return render_template('reviews.html')
+
+@app.route('/admin')
+def admin_redirect():
+    """Redirect to admin login"""
+    return redirect(url_for('admin_login'))
+
+@app.route('/staff-portal')
+def staff_portal_redirect():
+    """Redirect to staff portal login"""
+    return redirect(url_for('portal_login'))
+
 @app.route('/test-email-interface')
 def test_email_interface():
     """Email testing interface for SPANK Buck rewards"""
