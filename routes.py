@@ -393,8 +393,6 @@ def admin_login():
         password = request.form.get('password', '').strip()
 
         # Check admin credentials
-        logging.info(f"Login attempt - Username: '{username}', Expected: '{ADMIN_USERNAME}'")
-        logging.info(f"Login attempt - Password match: {password == ADMIN_PASSWORD}")
         if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             session['admin_logged_in'] = True
             session['user_role'] = 'admin'
