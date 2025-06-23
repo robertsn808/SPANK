@@ -2147,13 +2147,18 @@ def quote_list():
     
     return render_template('admin/quotes.html', quotes=quotes, contacts=contacts)
 
+@app.route('/admin/quote-builder')
 @app.route('/admin/crm/quotes/builder')
 def quote_builder():
     """Interactive quote builder"""
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
     
-    contacts = handyman_storage.get_all_contacts()
+    try:
+        contacts = storage_service.get_all_contacts() if storage_service else []
+    except Exception as e:
+        logging.error(f"Error loading contacts for quote builder: {e}")
+        contacts = []
     
     # Service templates for quick quote building
     service_templates = {
