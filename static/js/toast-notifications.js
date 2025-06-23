@@ -299,26 +299,6 @@ class ToastNotifications {
 
 // Initialize toast system
 window.toastManager = new ToastNotificationManager();
-                }
-            } else {
-                this.error(options.errorMessage || data.error || 'Operation failed');
-                if (options.onError) {
-                    options.onError(data);
-                }
-            }
-            
-            return data;
-        })
-        .catch(error => {
-            bootstrap.Toast.getInstance(loadingToast).hide();
-            this.error(options.errorMessage || 'Request failed. Please try again.');
-            if (options.onError) {
-                options.onError(error);
-            }
-            throw error;
-        });
-    }
-}
 
 // CSS for toast notifications and progress bars
 const toastStyles = `
