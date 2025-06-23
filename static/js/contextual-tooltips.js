@@ -127,42 +127,52 @@ class ContextualTooltips {
     bindEvents() {
         // Handle help trigger buttons
         document.addEventListener('click', (e) => {
-            if (e.target.matches('.help-trigger') || e.target.closest('.help-trigger')) {
-                e.preventDefault();
-                e.stopPropagation();
-                const trigger = e.target.closest('.help-trigger') || e.target;
-                this.toggleTooltip(trigger);
+            if (e.target && e.target.nodeType === Node.ELEMENT_NODE) {
+                if (e.target.matches('.help-trigger') || e.target.closest('.help-trigger')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const trigger = e.target.closest('.help-trigger') || e.target;
+                    this.toggleTooltip(trigger);
+                }
             }
         });
 
         // Handle hover events for elements with data-help attribute
         document.addEventListener('mouseenter', (e) => {
-            const helpElement = e.target.closest('[data-help]');
-            if (helpElement && !helpElement.hasAttribute('data-help-click-only')) {
-                this.showTooltip(helpElement, true);
+            if (e.target && e.target.nodeType === Node.ELEMENT_NODE) {
+                const helpElement = e.target.closest('[data-help]');
+                if (helpElement && !helpElement.hasAttribute('data-help-click-only')) {
+                    this.showTooltip(helpElement, true);
+                }
             }
         }, true);
 
         document.addEventListener('mouseleave', (e) => {
-            const helpElement = e.target.closest('[data-help]');
-            if (helpElement && !helpElement.hasAttribute('data-help-click-only')) {
-                this.hideTooltip(helpElement);
+            if (e.target && e.target.nodeType === Node.ELEMENT_NODE) {
+                const helpElement = e.target.closest('[data-help]');
+                if (helpElement && !helpElement.hasAttribute('data-help-click-only')) {
+                    this.hideTooltip(helpElement);
+                }
             }
         }, true);
 
         // Handle click events for click-only tooltips
         document.addEventListener('click', (e) => {
-            const helpElement = e.target.closest('[data-help][data-help-click-only]');
-            if (helpElement) {
-                e.preventDefault();
-                this.toggleTooltip(helpElement);
+            if (e.target && e.target.nodeType === Node.ELEMENT_NODE) {
+                const helpElement = e.target.closest('[data-help][data-help-click-only]');
+                if (helpElement) {
+                    e.preventDefault();
+                    this.toggleTooltip(helpElement);
+                }
             }
         });
 
         // Hide tooltips when clicking outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.contextual-tooltip') && !e.target.closest('[data-help]') && !e.target.closest('.help-trigger')) {
-                this.hideAllTooltips();
+            if (e.target && e.target.nodeType === Node.ELEMENT_NODE) {
+                if (!e.target.closest('.contextual-tooltip') && !e.target.closest('[data-help]') && !e.target.closest('.help-trigger')) {
+                    this.hideAllTooltips();
+                }
             }
         });
 
