@@ -1,15 +1,13 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 
-{% block title %}Admin Dashboard - SPANK Handyman Services{% endblock %}
+{% block title %}Admin Dashboard - SPANKKS Construction{% endblock %}
 
 {% block head %}
 <style>
-    .admin-header {
-        background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+    .dashboard-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         color: white;
-        margin-top: -76px;
-        padding-top: 100px;
-        padding-bottom: 2rem;
+        padding: 2rem 0;
     }
 
     .stats-card {
@@ -237,8 +235,8 @@
 {% endblock %}
 
 {% block content %}
-<!-- Admin Header -->
-<section class="admin-header">
+<!-- Dashboard Header -->
+<section class="dashboard-header">
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -247,7 +245,7 @@
                         <h1 class="fw-bold mb-2">
                             <i class="fas fa-tachometer-alt me-3"></i>Admin Dashboard
                         </h1>
-                        <p class="mb-0 opacity-75">Consultation Booking Management</p>
+                        <p class="mb-0 opacity-75">SPANKKS Construction Management</p>
                     </div>
                     <div>
                         <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-light">
