@@ -1,12 +1,1 @@
-[
-  {
-    "id": 1,
-    "contact_id": 3,
-    "interaction_type": "quote_request",
-    "details": "Customer requested quote for workflow test project",
-    "timestamp": "2025-06-22 08:02:21",
-    "date": "2025-06-22",
-    "engagement_score": 8,
-    "follow_up_needed": true
-  }
-]
+[]
