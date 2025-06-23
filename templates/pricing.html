@@ -5,16 +5,17 @@
   <meta name="description" content="Professional construction and repair pricing for O'ahu. Transparent rates from Spankks Construction.">
   <meta name="keywords" content="construction pricing, Hawaii building rates, Spankks Construction costs">
   <style>
-    /* Pricing page mobile optimizations */
-    @media (max-width: 768px) {
+    /* Mobile optimizations (up to 767px) */
+    @media (max-width: 767px) {
         .hero-section {
-            padding: 80px 0 40px !important;
-            min-height: 50vh !important;
+            padding: 60px 0 30px !important;
+            min-height: 40vh !important;
         }
         
         .alert {
-            font-size: 0.9rem;
-            padding: 0.75rem;
+            font-size: 0.85rem;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
         }
         
         .pricing-table {
@@ -23,51 +24,109 @@
         }
         
         .pricing-table table {
-            min-width: 600px;
+            min-width: 500px;
+            font-size: 0.85rem;
         }
         
         .pricing-table th,
         .pricing-table td {
-            padding: 0.5rem;
-            font-size: 0.9rem;
+            padding: 0.4rem;
+            font-size: 0.8rem;
         }
         
         .membership-card {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
         
         .membership-card .card-body {
-            padding: 1.25rem;
+            padding: 1rem;
         }
         
         .membership-card .display-6 {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
         }
         
         .btn-block {
             width: 100%;
             margin-bottom: 0.5rem;
         }
-    }
-
-    /* Desktop card sizing optimizations */
-    @media (min-width: 1200px) {
-        .pricing-notes-card {
-            max-width: 100%;
-            margin: 0 auto;
-        }
         
-        .pricing-notes-card .card-body {
-            padding: 1.5rem;
+        /* Mobile-specific card adjustments */
+        .pricing-notes-card {
+            padding: 1rem !important;
+            margin-bottom: 1rem;
         }
         
         .pricing-notes-card .fa-2x {
-            font-size: 2rem !important;
+            font-size: 1.25rem !important;
+        }
+        
+        .pricing-notes-card h6 {
+            font-size: 0.85rem !important;
+            margin: 0.25rem 0 !important;
+        }
+        
+        .pricing-notes-card .h5 {
+            font-size: 1rem !important;
+        }
+        
+        .pricing-notes-card small {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Tablet optimizations (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .hero-section {
+            padding: 80px 0 40px !important;
+            min-height: 50vh !important;
+        }
+        
+        .pricing-notes-card {
+            padding: 1.25rem !important;
+        }
+        
+        .pricing-notes-card .fa-2x {
+            font-size: 1.75rem !important;
         }
         
         .pricing-notes-card h6 {
             font-size: 0.95rem;
-            margin: 0.75rem 0 0.5rem 0;
+        }
+        
+        .pricing-notes-card .h5 {
+            font-size: 1.2rem;
+        }
+    }
+
+    /* Mobile First - Small screens (up to 576px) */
+    .pricing-notes-card {
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 1rem;
+    }
+    
+    .pricing-notes-card .fa-2x {
+        font-size: 1.5rem !important;
+    }
+    
+    .pricing-notes-card h6 {
+        font-size: 0.9rem;
+        margin: 0.5rem 0;
+    }
+    
+    .pricing-notes-card .h5 {
+        font-size: 1.1rem;
+    }
+    
+    /* Small devices (phones, 576px and up) */
+    @media (min-width: 576px) {
+        .pricing-notes-card .fa-2x {
+            font-size: 1.75rem !important;
+        }
+        
+        .pricing-notes-card h6 {
+            font-size: 1rem;
         }
         
         .pricing-notes-card .h5 {
@@ -75,33 +134,78 @@
         }
     }
     
-    @media (min-width: 992px) and (max-width: 1199px) {
-        .pricing-notes-card {
-            max-width: 100%;
-            margin: 0 auto;
+    /* Medium devices (tablets, 768px and up) */
+    @media (min-width: 768px) {
+        .row.g-4 > [class*="col-"] {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            margin-bottom: 1.5rem;
         }
         
+        .pricing-notes-card {
+            min-height: 180px;
+        }
+    }
+    
+    /* Large devices (desktops, 992px and up) */
+    @media (min-width: 992px) {
         .row.g-4 > [class*="col-"] {
             padding-left: 1rem;
             padding-right: 1rem;
         }
+        
+        .pricing-notes-card {
+            min-height: 190px;
+        }
+        
+        .pricing-notes-card .fa-2x {
+            font-size: 2rem !important;
+        }
     }
     
-    /* Prevent card overlap on all screen sizes */
-    .pricing-notes-card {
-        width: 100%;
-        box-sizing: border-box;
+    /* Extra large devices (large desktops, 1200px and up) */
+    @media (min-width: 1200px) {
+        .pricing-notes-card {
+            min-height: 200px;
+        }
+        
+        .pricing-notes-card h6 {
+            font-size: 1rem;
+            margin: 0.75rem 0 0.5rem 0;
+        }
+        
+        .pricing-notes-card .h5 {
+            font-size: 1.35rem;
+        }
     }
     
+    /* Ultra wide screens (1400px and up) */
+    @media (min-width: 1400px) {
+        .pricing-notes-card {
+            max-width: 280px;
+            margin: 0 auto;
+        }
+        
+        .pricing-notes-card .fa-2x {
+            font-size: 2.25rem !important;
+        }
+        
+        .pricing-notes-card .h5 {
+            font-size: 1.5rem;
+        }
+    }
+    
+    /* Prevent card overlap and ensure proper spacing */
     .row.g-4 {
-        margin-left: -1rem;
-        margin-right: -1rem;
+        --bs-gutter-x: 2rem;
+        --bs-gutter-y: 1.5rem;
     }
     
-    .row.g-4 > [class*="col-"] {
-        padding-left: 1rem;
-        padding-right: 1rem;
-        margin-bottom: 1.5rem;
+    @media (max-width: 767px) {
+        .row.g-4 {
+            --bs-gutter-x: 1rem;
+            --bs-gutter-y: 1rem;
+        }
     }
     }
     
@@ -561,8 +665,8 @@
                     </div>
                     <div class="card-body">
                         <div class="row g-4 justify-content-center">
-                            <div class="col-sm-6 col-lg-6 col-xl-3">
-                                <div class="pricing-notes-card text-center p-3 bg-light rounded shadow-sm h-100" style="min-height: 200px;">
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                                <div class="pricing-notes-card text-center p-3 bg-light rounded shadow-sm h-100">
                                     <div class="mb-2">
                                         <i class="fas fa-clock fa-2x text-warning"></i>
                                     </div>
@@ -571,8 +675,8 @@
                                     <small class="text-muted">(1 hour of work)</small>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-lg-6 col-xl-3">
-                                <div class="pricing-notes-card text-center p-3 bg-light rounded shadow-sm h-100" style="min-height: 200px;">
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                                <div class="pricing-notes-card text-center p-3 bg-light rounded shadow-sm h-100">
                                     <div class="mb-2">
                                         <i class="fas fa-calendar-day fa-2x text-primary"></i>
                                     </div>
@@ -581,8 +685,8 @@
                                     <small class="text-muted">(up to 8 hours, non-reno)</small>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-lg-6 col-xl-3">
-                                <div class="pricing-notes-card text-center p-3 bg-light rounded shadow-sm h-100" style="min-height: 200px;">
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                                <div class="pricing-notes-card text-center p-3 bg-light rounded shadow-sm h-100">
                                     <div class="mb-2">
                                         <i class="fas fa-percentage fa-2x text-success"></i>
                                     </div>
@@ -591,8 +695,8 @@
                                     <small class="text-muted">2+ Services bundled</small>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-lg-6 col-xl-3">
-                                <div class="pricing-notes-card text-center p-3 bg-warning bg-opacity-10 rounded border border-warning shadow-sm h-100" style="min-height: 200px;">
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                                <div class="pricing-notes-card text-center p-3 bg-warning bg-opacity-10 rounded border border-warning shadow-sm h-100">
                                     <div class="mb-2">
                                         <i class="fas fa-graduation-cap fa-2x text-warning"></i>
                                     </div>
