@@ -271,8 +271,38 @@ def consultation():
             flash('Please fill in all required fields.', 'error')
             return render_template('consultation.html')
 
-        # Store booking
+        # Check if client already exists in database (by phone number as unique identifier)
         try:
+            existing_contacts = handyman_storage.get_all_contacts()
+            existing_client = None
+            
+            for contact in existing_contacts:
+                if contact.phone == phone:
+                    existing_client = contact
+                    break
+            
+            # Create new client if doesn't exist
+            if not existing_client:
+                client_data = {
+                    'name': name,
+                    'email': email,
+                    'phone': phone,
+                    'address': '',  # Will be filled in later during service
+                    'notes': f"Created from consultation request. Project: {project_type}. Consultation type: {consultation_type}. Sq ft: {square_footage}",
+                    'tags': ['consultation_client', 'new_lead']
+                }
+                new_client = handyman_storage.add_contact(client_data)
+                client_id = new_client.id if hasattr(new_client, 'id') else len(existing_contacts) + 1
+                logging.info(f"New client created: {name} (ID: {client_id})")
+            else:
+                client_id = existing_client.id
+                # Update existing client notes with new consultation info
+                existing_notes = getattr(existing_client, 'notes', '')
+                updated_notes = f"{existing_notes}\n[{datetime.now().strftime('%Y-%m-%d')}] New consultation: {project_type}, {consultation_type}, {square_footage} sq ft"
+                # Note: Update functionality would need to be implemented in storage service
+                logging.info(f"Existing client found: {name} (ID: {client_id})")
+
+            # Store service request
             request_id = handyman_storage.add_service_request({
                 'name': name,
                 'email': email,
@@ -281,37 +311,48 @@ def consultation():
                 'preferred_date': preferred_date,
                 'preferred_time': preferred_time,
                 'location': f"{consultation_type} consultation" if consultation_type else None,
-                'description': f"{message}. Project type: {project_type}. Square footage: {square_footage}" if message else f"Project type: {project_type}. Square footage: {square_footage}",
-                'budget_range': None
+                'description': f"Project: {project_type}. Consultation: {consultation_type}. Square footage: {square_footage}. Message: {message}",
+                'budget_range': None,
+                'client_id': client_id
             })
 
-            # Automatically create unified appointment with client/job IDs
+            # Create unified appointment with proper client/job IDs
             appointment_data = {
                 'client_name': name,
-                'client_phone': phone_formatter.format_phone(phone),
+                'client_phone': phone,
                 'client_email': email,
                 'service_type': service,
                 'scheduled_date': preferred_date if preferred_date else (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d'),
                 'scheduled_time': preferred_time if preferred_time else '09:00',
-                'status': 'tentative',
+                'status': 'pending',
                 'priority': 'normal',
                 'location': f"{consultation_type} consultation" if consultation_type else '',
-                'notes': f"Auto-created from consultation request. {message}. Project: {project_type}. Sq ft: {square_footage}",
+                'notes': f"Consultation request: {project_type}. Type: {consultation_type}. Sq ft: {square_footage}. Details: {message}",
                 'booking_reference': request_id,
-                'created_by': 'system_auto',
-                'tags': ['consultation', 'auto_created']
+                'created_by': 'consultation_form',
+                'tags': ['consultation', 'new_request'],
+                'client_id': client_id
             }
             
-            appointment = unified_scheduler.create_appointment(appointment_data)
+            appointment_result = unified_scheduler.create_appointment(appointment_data)
             
-            # Send inquiry alert to admin with appointment details
+            # Handle appointment result properly (it may return different formats)
+            appointment_info = ""
+            if appointment_result and isinstance(appointment_result, dict):
+                client_ref = appointment_result.get('client_id', f'CLI{client_id:03d}')
+                job_ref = appointment_result.get('job_id', request_id)
+                appointment_info = f"Appointment created: {client_ref}/{job_ref}"
+            else:
+                appointment_info = f"Appointment created for client ID: {client_id}"
+            
+            # Send inquiry alert to admin
             notification_service.send_inquiry_alert(
                 inquiry_type="consultation",
                 customer_name=name,
                 phone_number=phone,
                 email=email,
                 service_type=service,
-                additional_info=f"Auto-scheduled: {appointment['client_id']}/{appointment['job_id']} for {preferred_date or 'next day'}"
+                additional_info=f"{appointment_info} for {preferred_date or 'next available day'}. Project: {project_type}, {consultation_type}, {square_footage} sq ft"
             )
             
             # Automatically add customer to MailerLite leads list
