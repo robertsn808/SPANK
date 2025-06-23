@@ -689,7 +689,7 @@
                                     <tr>
                                         <td>{{ request.name if request.name is defined else request.get('name', 'Unknown') if request.get is defined else 'Unknown' }}</td>
                                         <td>{{ request.service if request.service is defined else request.get('service', 'General Service') if request.get is defined else 'General Service' }}</td>
-                                        <td>{{ request.created_at.strftime('%m/%d/%Y') if request.created_at is defined else request.get('created_at', 'N/A') if request.get is defined else 'N/A' }}</td>
+                                        <td>{{ request.created_at if request.created_at is defined else request.get('created_at', 'N/A') if request.get is defined else 'N/A' }}</td>
                                         <td>{{ request.phone if request.phone is defined else request.get('phone', 'N/A') if request.get is defined else 'N/A' }}</td>
                                         <td>
                                             <button class="btn btn-sm btn-success" onclick="updateRequestStatus('{{ request.id if request.id is defined else request.get('id', loop.index) if request.get is defined else loop.index }}', 'confirmed')">
