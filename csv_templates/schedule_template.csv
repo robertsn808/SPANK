@@ -1,0 +1,4 @@
+client_name,client_phone,client_email,appointment_date,appointment_time,duration_minutes,service_type,description,location,priority,status,assigned_staff,notes
+"John Smith","(808) 555-0123","john.smith@email.com","2025-06-25","09:00","180","Drywall Services","Kitchen wall patch repair","123 Main St, Honolulu, HI 96814","medium","scheduled","Mike Torres","Bring drywall compound and primer"
+"Pacific Properties LLC","(808) 555-0456","contact@pacificprops.com","2025-06-26","08:00","480","Flooring Installation","Conference room vinyl plank installation","456 Business Ave, Pearl City, HI 96782","high","confirmed","Jake Nakamura, Tom Wilson","Early morning start requested"
+"Maria Rodriguez","(808) 555-0789","maria.r@gmail.com","2025-06-27","14:00","120","Consultation","Property assessment for vacation rental","789 Ocean View Dr, Kaneohe, HI 96744","low","tentative","","Initial consultation only"

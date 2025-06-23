@@ -1,0 +1,11 @@
+service_name,category,base_hourly_rate,unit_type,unit_price,estimated_hours,description,materials_included,equipment_required,skill_level
+"Drywall Patch - Small","Drywall Services","95.00","patch","155.00","2","Patch holes under 12 inches","Compound, tape, primer","Basic hand tools","beginner"
+"Drywall Patch - Medium","Drywall Services","95.00","patch","275.00","3","Patch holes 12-24 inches","Compound, tape, primer, texture","Hand tools, spray gun","intermediate"
+"Drywall Patch - Large","Drywall Services","95.00","patch","425.00","5","Patch holes over 24 inches","Drywall sheet, compound, tape, primer","Hand tools, saw, spray gun","advanced"
+"Vinyl Plank Flooring","Flooring Installation","95.00","sq ft","4.50","8","Professional vinyl plank installation","Underlayment, transition strips","Saw, spacers, tapping block","intermediate"
+"Tile Installation","Flooring Installation","95.00","sq ft","6.75","10","Ceramic or porcelain tile installation","Adhesive, grout, spacers","Tile saw, trowel, level","advanced"
+"Wood Fence Installation","Fence Building","95.00","linear ft","45.00","12","Privacy fence installation","Posts, panels, hardware","Post hole digger, level, drill","intermediate"
+"Vinyl Fence Installation","Fence Building","95.00","linear ft","55.00","10","Low maintenance vinyl fencing","Posts, panels, hardware","Post hole digger, level, drill","intermediate"
+"Chain Link Fence","Fence Building","95.00","linear ft","35.00","8","Security chain link fencing","Posts, mesh, hardware","Post hole digger, tensioning tools","beginner"
+"General Handyman","General Handyman","95.00","hour","95.00","4","General repair and maintenance work","Basic supplies included","Standard hand tools","beginner"
+"Emergency Service","General Handyman","125.00","hour","125.00","2","After hours emergency repairs","Basic supplies","Emergency tool kit","intermediate"
