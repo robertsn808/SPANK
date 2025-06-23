@@ -1520,11 +1520,19 @@ def create_appointment_api():
     try:
         data = request.get_json()
         
-        # Validate required fields
-        required_fields = ['date', 'time', 'client_name', 'client_phone', 'service_type']
+        # Support both parameter formats for compatibility
+        required_fields = ['client_name', 'client_phone', 'service_type']
+        date_field = data.get('scheduled_date') or data.get('date')
+        time_field = data.get('scheduled_time') or data.get('time')
+        
         for field in required_fields:
             if not data.get(field):
                 return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        if not date_field:
+            return jsonify({'error': 'Missing required field: date (scheduled_date or date)'}), 400
+        if not time_field:
+            return jsonify({'error': 'Missing required field: time (scheduled_time or time)'}), 400
         
         # Initialize unified scheduler
         from unified_scheduler import UnifiedScheduler
@@ -1541,26 +1549,26 @@ def create_appointment_api():
             'client_phone': formatted_phone,
             'client_email': data.get('client_email', ''),
             'service_type': data['service_type'],
-            'service_description': data.get('service_description', ''),
-            'preferred_date': data['date'],
-            'preferred_time': data['time'],
-            'estimated_duration': int(data.get('estimated_duration', 2)),
-            'source': 'admin_dashboard',
-            'priority': 'normal',
+            'scheduled_date': date_field,
+            'scheduled_time': time_field,
+            'estimated_duration': int(data.get('estimated_duration', 120)),
+            'notes': data.get('notes', ''),
+            'priority': data.get('priority', 'normal'),
             'status': 'scheduled'
         }
         
         # Create the appointment
-        appointment_id = unified_scheduler.create_appointment(appointment_data)
+        appointment = unified_scheduler.create_appointment(appointment_data)
         
-        if appointment_id:
+        if appointment:
             # Log the successful creation
-            hawaii_time = get_hawaii_time()
-            logging.info(f"Admin created appointment {appointment_id} for {data['client_name']} on {data['date']} at {data['time']}")
+            logging.info(f"Admin created appointment {appointment['appointment_id']} for {data['client_name']} on {date_field} at {time_field}")
             
             return jsonify({
                 'success': True,
-                'appointment_id': appointment_id,
+                'appointment_id': appointment['appointment_id'],
+                'client_id': appointment['client_id'],
+                'job_id': appointment['job_id'],
                 'message': 'Appointment created successfully'
             })
         else:
@@ -4826,6 +4834,56 @@ def get_staff_workload_api():
     except Exception as e:
         logging.error(f"Error getting staff workload: {e}")
         return jsonify({'error': str(e)}), 500
+
+
+
+@app.route('/admin/create-appointment', methods=['POST'])
+def create_appointment_form():
+    """Form-based appointment creation endpoint"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get form data
+        client_name = request.form.get('client_name')
+        client_phone = request.form.get('client_phone')
+        client_email = request.form.get('client_email', '')
+        service_type = request.form.get('service_type')
+        scheduled_date = request.form.get('scheduled_date')
+        scheduled_time = request.form.get('scheduled_time')
+        estimated_duration = int(request.form.get('estimated_duration', 2))
+        notes = request.form.get('notes', '')
+        priority = request.form.get('priority', 'medium')
+        
+        # Validate required fields
+        if not all([client_name, client_phone, service_type, scheduled_date, scheduled_time]):
+            flash('Please fill in all required fields.', 'error')
+            return redirect(url_for('admin_dashboard'))
+        
+        # Create appointment
+        appointment_id = unified_scheduler.create_appointment(
+            client_name=client_name,
+            client_phone=client_phone,
+            client_email=client_email,
+            service_type=service_type,
+            scheduled_date=scheduled_date,
+            scheduled_time=scheduled_time,
+            estimated_duration=estimated_duration,
+            notes=notes,
+            priority=priority
+        )
+        
+        if appointment_id:
+            flash(f'Appointment {appointment_id} created successfully!', 'success')
+        else:
+            flash('Failed to create appointment. Please try again.', 'error')
+            
+        return redirect(url_for('admin_dashboard'))
+        
+    except Exception as e:
+        logging.error(f"Error creating appointment via form: {e}")
+        flash('Error creating appointment. Please try again.', 'error')
+        return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/scheduler/advanced')
 def advanced_scheduler_dashboard():
