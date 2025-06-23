@@ -1,42 +1,148 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Login - SPANK Handyman Services{% endblock %}
+{% block title %}Admin Login - SPANKKS Construction{% endblock %}
 {% block extra_head %}
-  <meta name="description" content="Contact SPANK Handyman Services to schedule your next repair or consultation.">
-  <meta name="keywords" content="contact handyman, Hawaii repair services, SPANK contact info">
+  <meta name="description" content="Admin portal for SPANKKS Construction management system.">
+  <meta name="keywords" content="admin portal, construction management, SPANKKS admin">
+  <style>
+    .admin-login-hero {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 73, 94, 0.95)), 
+                    url('{{ url_for('static', filename='images/spankks-fence-hero.png') }}') center/cover no-repeat;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+    
+    .admin-login-card {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .admin-brand {
+        color: #2c5530;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .admin-subtitle {
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .form-control {
+        border-radius: 12px;
+        border: 2px solid #e9ecef;
+        padding: 15px 20px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #2c5530;
+        box-shadow: 0 0 0 0.2rem rgba(44, 85, 48, 0.25);
+    }
+    
+    .btn-admin {
+        background: linear-gradient(135deg, #2c5530, #4a7c59);
+        border: none;
+        border-radius: 12px;
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .btn-admin:hover {
+        background: linear-gradient(135deg, #1e3a21, #3a6140);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(44, 85, 48, 0.4);
+        color: white;
+    }
+    
+    .shield-icon {
+        color: #2c5530;
+        filter: drop-shadow(0 4px 8px rgba(44, 85, 48, 0.3));
+    }
+    
+    @media (max-width: 768px) {
+        .admin-login-hero {
+            min-height: 100vh;
+            padding: 20px 15px;
+        }
+        
+        .admin-login-card {
+            margin: 20px 0;
+        }
+    }
+  </style>
 {% endblock %}
 
-
 {% block content %}
-<section class="py-5">
+<section class="admin-login-hero">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-8">
-                <div class="card border-0 shadow">
-                    <div class="card-body p-5">
-                        <div class="text-center mb-4">
-                            <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
-                            <h2 class="fw-bold">Admin Access</h2>
-                            <p class="text-muted">SPANK Handyman Services Dashboard</p>
+            <div class="col-lg-5 col-md-7 col-sm-9">
+                <div class="admin-login-card p-5">
+                    <div class="text-center mb-5">
+                        <i class="fas fa-shield-alt fa-4x shield-icon mb-4"></i>
+                        <h1 class="admin-brand mb-2">SPANKKS Construction</h1>
+                        <h3 class="admin-subtitle">Admin Portal</h3>
+                        <p class="text-muted mt-3">Secure access to business management system</p>
+                    </div>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" action="{{ url_for('admin_login') }}">
+                        <div class="mb-4">
+                            <label for="username" class="form-label fw-semibold">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-user text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" id="username" name="username" 
+                                       placeholder="Enter your username" required autocomplete="username">
+                            </div>
                         </div>
                         
-                        <form method="POST" action="{{ url_for('admin_login') }}">
-                            <div class="mb-4">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control form-control-lg" id="username" name="username" required>
+                        <div class="mb-5">
+                            <label for="password" class="form-label fw-semibold">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                <input type="password" class="form-control border-start-0" id="password" name="password" 
+                                       placeholder="Enter your password" required autocomplete="current-password">
                             </div>
-                            
-                            <div class="mb-4">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control form-control-lg" id="password" name="password" required>
-                            </div>
-                            
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-sign-in-alt me-2"></i>Login
-                                </button>
-                            </div>
-                        </form>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-admin">
+                                <i class="fas fa-sign-in-alt me-2"></i>Access Dashboard
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <small class="text-muted">
+                            <i class="fas fa-lock me-1"></i>
+                            Secure connection protected by SSL encryption
+                        </small>
                     </div>
                 </div>
             </div>
