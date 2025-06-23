@@ -21,8 +21,8 @@ class BusinessIntelligence:
         # Service pricing analysis
         service_pricing = defaultdict(list)
         for quote in quotes:
-            service_type = getattr(quote, 'service_type', None) if hasattr(quote, 'service_type') else quote.get('service_type') if isinstance(quote, dict) else None
-            total_amount = getattr(quote, 'total_amount', None) if hasattr(quote, 'total_amount') else quote.get('total_amount') if isinstance(quote, dict) else None
+            service_type = getattr(quote, 'service_type', None) if quote.get('service_type') is not None else quote.get('service_type') if isinstance(quote, dict) else None
+            total_amount = getattr(quote, 'total_amount', None) if quote.get('total_amount') is not None else quote.get('total_amount') if isinstance(quote, dict) else None
 
             if service_type and total_amount:
                 service_pricing[service_type].append(float(total_amount))
@@ -42,7 +42,7 @@ class BusinessIntelligence:
         monthly_acquisition = defaultdict(int)
         for contact in contacts:
             created_date = None
-            if hasattr(contact, 'created_date'):
+            if contact.get('created_date') is not None:
                 created_date = contact.created_date
             elif isinstance(contact, dict) and 'created_date' in contact:
                 created_date = contact['created_date']
@@ -92,8 +92,8 @@ class BusinessIntelligence:
         # Job completion timeline analysis
         completion_times = []
         for job in jobs:
-            if hasattr(job, 'status') and job.status == 'completed':
-                if hasattr(job, 'created_date') and hasattr(job, 'updated_date'):
+            if job.get('status') == 'completed':
+                if job.get('created_date') is not None and job.get('updated_date') is not None:
                     days = (job.updated_date - job.created_date).days
                     completion_times.append(days)
 
@@ -102,11 +102,11 @@ class BusinessIntelligence:
         service_complexity = defaultdict(list)
 
         for job in jobs:
-            if hasattr(job, 'created_date'):
+            if job.get('created_date') is not None:
                 month_key = job.created_date.strftime('%Y-%m')
                 monthly_job_volume[month_key] += 1
 
-            if hasattr(job, 'service_type') and hasattr(job, 'estimated_hours'):
+            if job.get('service_type') is not None and job.get('estimated_hours') is not None:
                 service_complexity[job.service_type].append(job.estimated_hours)
 
         # Efficiency scoring
@@ -281,7 +281,7 @@ class BusinessIntelligence:
 
         # Request Management Health (0-25 points)
         total_requests = len(service_requests)
-        pending_requests = len([r for r in service_requests if hasattr(r, 'status') and r.status == 'pending'])
+        pending_requests = len([r for r in service_requests if r.get('status') == 'pending'])
 
         if total_requests == 0:
             request_health = 10  # New business, neutral score
@@ -296,7 +296,7 @@ class BusinessIntelligence:
 
         # Response Management Health (0-25 points)
         total_messages = len(contact_messages)
-        unread_messages = len([m for m in contact_messages if hasattr(m, 'status') and m.status == 'unread'])
+        unread_messages = len([m for m in contact_messages if m.get('status') == 'unread'])
 
         if total_messages == 0:
             response_health = 15  # No messages yet
@@ -311,7 +311,7 @@ class BusinessIntelligence:
 
         # Contact Management Health (0-25 points)
         total_contacts = len(contacts)
-        active_quotes = len([q for q in quotes if hasattr(q, 'status') and q.status == 'pending'])
+        active_quotes = len([q for q in quotes if q.get('status') == 'pending'])
 
         if total_contacts > 20:
             contact_health = 25
@@ -323,8 +323,8 @@ class BusinessIntelligence:
             contact_health = max(5, total_contacts * 2)
 
         # System Utilization Health (0-25 points)
-        active_jobs = len([j for j in jobs if hasattr(j, 'status') and j.status in ['scheduled', 'in_progress']])
-        completed_jobs = len([j for j in jobs if hasattr(j, 'status') and j.status == 'completed'])
+        active_jobs = len([j for j in jobs if j.get('status') is not None and j.status in ['scheduled', 'in_progress']])
+        completed_jobs = len([j for j in jobs if j.get('status') == 'completed'])
 
         if active_jobs + completed_jobs > 15:
             system_health = 25
@@ -388,8 +388,8 @@ class BusinessIntelligence:
         """Generate critical actions based on actual business data"""
         actions = []
 
-        pending_count = len([r for r in service_requests if hasattr(r, 'status') and r.status == 'pending'])
-        unread_count = len([m for m in contact_messages if hasattr(m, 'status') and m.status == 'unread'])
+        pending_count = len([r for r in service_requests if r.get('status') == 'pending'])
+        unread_count = len([m for m in contact_messages if m.get('status') == 'unread'])
 
         if component_scores['request_management'] < 15 and pending_count > 0:
             actions.append({
@@ -441,13 +441,13 @@ class BusinessIntelligence:
             contact_messages = storage.get_all_contact_messages()
 
             # Calculate metrics from real data only - verify data integrity
-            real_service_requests = [r for r in service_requests if hasattr(r, 'id') and hasattr(r, 'name')]
-            real_contact_messages = [m for m in contact_messages if hasattr(m, 'id') and hasattr(m, 'name')]
+            real_service_requests = [r for r in service_requests if r.get('id') is not None and r.get('name') is not None]
+            real_contact_messages = [m for m in contact_messages if m.get('id') is not None and m.get('name') is not None]
 
             total_inquiries = len(real_contact_messages)
             total_requests = len(real_service_requests)
-            completed_jobs = len([r for r in real_service_requests if hasattr(r, 'status') and r.status == 'completed'])
-            pending_jobs = len([r for r in real_service_requests if hasattr(r, 'status') and r.status == 'pending'])
+            completed_jobs = len([r for r in real_service_requests if r.get('status') == 'completed'])
+            pending_jobs = len([r for r in real_service_requests if r.get('status') == 'pending'])
 
             # Revenue calculation from actual completed jobs only
             estimated_revenue = completed_jobs * 850 if completed_jobs > 0 else 0
@@ -502,8 +502,8 @@ class BusinessIntelligence:
             contact_messages = storage_service.get_all_contact_messages()
 
             # Validate data authenticity
-            verified_requests = [req for req in service_requests if hasattr(req, 'name') and hasattr(req, 'service')]
-            verified_messages = [msg for msg in contact_messages if hasattr(msg, 'name') and hasattr(msg, 'message')]
+            verified_requests = [req for req in service_requests if req.get('name') is not None and req.get('service') is not None]
+            verified_messages = [msg for msg in contact_messages if msg.get('name') is not None and msg.get('message') is not None]
 
             # Only process verified authentic data
             if not verified_requests and not verified_messages:
@@ -546,7 +546,7 @@ class BusinessIntelligence:
 
         for request in requests:
             # Verify this is authentic data with required fields
-            if not hasattr(request, 'service') or not request.service:
+            if not request.get('service') is not None or not request.service:
                 continue
 
             # Service type analysis (authenticated data only)
@@ -586,9 +586,9 @@ class BusinessIntelligence:
         for request in real_service_requests:
             try:
                 # Handle both datetime objects and string dates
-                if hasattr(request, 'created_at'):
+                if request.get('created_at') is not None:
                     date_obj = request.created_at
-                elif hasattr(request, 'preferred_date') and request.preferred_date:
+                elif request.get('preferred_date') is not None and request.preferred_date:
                     date_obj = datetime.strptime(request.preferred_date, '%Y-%m-%d')
                 else:
                     continue

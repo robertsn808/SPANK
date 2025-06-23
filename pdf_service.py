@@ -248,7 +248,7 @@ class PDFGenerator:
 
         # Add items
         for i, item in enumerate(items, 1):
-            if hasattr(item, 'description'):  # Quote/Invoice item object
+            if item.get('description') is not None:  # Quote/Invoice item object
                 data.append([
                     str(i),
                     item.description,

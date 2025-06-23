@@ -159,17 +159,17 @@ class PerformanceMonitor:
         week_ago = today - timedelta(days=7)
         
         # Today's metrics
-        todays_jobs = [j for j in jobs if hasattr(j, 'created_date') and j.created_date.date() == today]
-        todays_quotes = [q for q in quotes if hasattr(q, 'created_date') and q.created_date.date() == today]
-        todays_contacts = [c for c in contacts if hasattr(c, 'created_date') and c.created_date.date() == today]
+        todays_jobs = [j for j in jobs if j.get('created_date') is not None and j.created_date.date() == today]
+        todays_quotes = [q for q in quotes if q.get('created_date') is not None and q.created_date.date() == today]
+        todays_contacts = [c for c in contacts if c.get('created_date') is not None and c.created_date.date() == today]
         
         # Yesterday's metrics
-        yesterdays_jobs = [j for j in jobs if hasattr(j, 'created_date') and j.created_date.date() == yesterday]
-        yesterdays_quotes = [q for q in quotes if hasattr(q, 'created_date') and q.created_date.date() == yesterday]
+        yesterdays_jobs = [j for j in jobs if j.get('created_date') is not None and j.created_date.date() == yesterday]
+        yesterdays_quotes = [q for q in quotes if q.get('created_date') is not None and q.created_date.date() == yesterday]
         
         # Weekly metrics
-        week_jobs = [j for j in jobs if hasattr(j, 'created_date') and j.created_date.date() >= week_ago]
-        week_quotes = [q for q in quotes if hasattr(q, 'created_date') and q.created_date.date() >= week_ago]
+        week_jobs = [j for j in jobs if j.get('created_date') is not None and j.created_date.date() >= week_ago]
+        week_quotes = [q for q in quotes if q.get('created_date') is not None and q.created_date.date() >= week_ago]
         
         daily_performance = {
             'date': today.strftime('%Y-%m-%d'),
@@ -177,7 +177,7 @@ class PerformanceMonitor:
                 'jobs_created': len(todays_jobs),
                 'quotes_generated': len(todays_quotes),
                 'new_contacts': len(todays_contacts),
-                'completed_jobs': len([j for j in todays_jobs if hasattr(j, 'status') and j.status == 'completed'])
+                'completed_jobs': len([j for j in todays_jobs if j.get('status') is not None and j.status == 'completed'])
             },
             'yesterday_comparison': {
                 'jobs_change': len(todays_jobs) - len(yesterdays_jobs),
@@ -200,7 +200,7 @@ class PerformanceMonitor:
         
         # Analyze job completion patterns
         productivity_metrics = {
-            'jobs_in_progress': len([j for j in jobs if hasattr(j, 'status') and j.status == 'in_progress']),
+            'jobs_in_progress': len([j for j in jobs if j.get('status') is not None and j.status == 'in_progress']),
             'jobs_completed_today': 0,
             'average_completion_rate': 0,
             'crew_utilization': 0,
@@ -208,17 +208,17 @@ class PerformanceMonitor:
         }
         
         today = datetime.now(self.hawaii_tz).date()
-        completed_today = [j for j in jobs if hasattr(j, 'status') and j.status == 'completed' and 
-                          hasattr(j, 'updated_date') and j.updated_date.date() == today]
+        completed_today = [j for j in jobs if j.get('status') is not None and j.status == 'completed' and 
+                          j.get('updated_date') is not None and j.updated_date.date() == today]
         
         productivity_metrics['jobs_completed_today'] = len(completed_today)
         
         # Analyze service type completion rates
         service_completion = defaultdict(lambda: {'total': 0, 'completed': 0})
         for job in jobs:
-            if hasattr(job, 'service_type'):
+            if job.get('service_type') is not None:
                 service_completion[job.service_type]['total'] += 1
-                if hasattr(job, 'status') and job.status == 'completed':
+                if job.get('status') is not None and job.status == 'completed':
                     service_completion[job.service_type]['completed'] += 1
         
         # Identify bottlenecks

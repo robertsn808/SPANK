@@ -70,14 +70,14 @@ class MLAnalytics:
         acceptance_rates = defaultdict(lambda: {'accepted': 0, 'total': 0})
         
         for quote in quotes:
-            if hasattr(quote, 'service_type') and hasattr(quote, 'total_amount'):
+            if quote.get('service_type') is not None and quote.get('total_amount') is not None:
                 service = quote.service_type
                 price = quote.total_amount
                 
                 service_pricing[service].append(price)
                 acceptance_rates[service]['total'] += 1
                 
-                if hasattr(quote, 'status') and quote.status == 'accepted':
+                if quote.get('status') is not None and quote.status == 'accepted':
                     acceptance_rates[service]['accepted'] += 1
         
         # Calculate optimal pricing
@@ -133,14 +133,14 @@ class MLAnalytics:
         customer_values = defaultdict(lambda: {'total_spent': 0.0, 'jobs_count': 0, 'avg_job_value': 0.0, 'recency': 0})
         
         for invoice in invoices:
-            if hasattr(invoice, 'contact_id') and hasattr(invoice, 'total_amount'):
+            if invoice.get('contact_id') is not None and invoice.get('total_amount') is not None:
                 contact_id = invoice.contact_id
                 amount = invoice.total_amount
                 
                 customer_values[contact_id]['total_spent'] += amount
                 customer_values[contact_id]['jobs_count'] += 1
                 
-                if hasattr(invoice, 'created_date'):
+                if invoice.get('created_date') is not None:
                     days_since = (datetime.now() - invoice.created_date).days
                     customer_values[contact_id]['recency'] = int(days_since)
         
@@ -214,13 +214,13 @@ class MLAnalytics:
         service_duration = defaultdict(list)
         
         for job in jobs:
-            if hasattr(job, 'scheduled_date') and job.scheduled_date:
+            if job.get('scheduled_date') is not None and job.scheduled_date:
                 try:
-                    date_str = job.scheduled_date.strftime('%Y-%m-%d') if hasattr(job.scheduled_date, 'strftime') else job.scheduled_date
+                    date_str = job.scheduled_date.strftime('%Y-%m-%d') if job.scheduled_date.get('strftime') is not None else job.scheduled_date
                     daily_workload[date_str]['job_count'] += 1
                     
                     # Estimate hours based on service type
-                    if hasattr(job, 'service_type'):
+                    if job.get('service_type') is not None:
                         hours = self._estimate_service_hours(job.service_type)
                         daily_workload[date_str]['estimated_hours'] += hours
                         service_duration[job.service_type].append(hours)
