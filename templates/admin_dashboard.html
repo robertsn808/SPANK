@@ -439,7 +439,9 @@
     </div>
 
     <!-- Quick Actions Toggle Button -->
-    <button class="quick-actions-toggle" id="quickActionsToggle" onclick="toggleSideMenu()">
+    <button class="quick-actions-toggle" id="quickActionsToggle" onclick="toggleSideMenu()" 
+            data-help="quick-actions-toggle" 
+            data-help-click-only="true">
         <i class="fas fa-bolt"></i>
     </button>
 
@@ -463,7 +465,8 @@
             <div class="menu-section">
                 <div class="menu-section-title">Core Business</div>
                 
-                <a href="{{ url_for('quote_invoice_generator') }}" class="menu-item">
+                <a href="{{ url_for('quote_invoice_generator') }}" class="menu-item" 
+                   data-help="quote-builder">
                     <i class="fas fa-file-invoice-dollar text-success"></i>
                     <div>
                         <div class="menu-item-text">Quote Builder</div>
@@ -471,7 +474,9 @@
                     </div>
                 </a>
                 
-                <a href="javascript:void(0)" onclick="showPaymentModal()" class="menu-item">
+                <a href="javascript:void(0)" onclick="showPaymentModal()" class="menu-item"
+                   data-help-content="Track and record customer payments for invoices. Supports multiple payment methods including cash, check, Venmo, and Zelle."
+                   data-help-illustration="quote">
                     <i class="fas fa-dollar-sign text-warning"></i>
                     <div>
                         <div class="menu-item-text">Mark Payment</div>
@@ -479,7 +484,8 @@
                     </div>
                 </a>
                 
-                <a href="/admin/scheduler/unified" class="menu-item">
+                <a href="/admin/scheduler/unified" class="menu-item" 
+                   data-help="scheduler">
                     <i class="fas fa-calendar-alt text-info"></i>
                     <div>
                         <div class="menu-item-text">Enhanced Calendar</div>
@@ -492,7 +498,8 @@
             <div class="menu-section">
                 <div class="menu-section-title">Operations</div>
                 
-                <a href="/admin/staff" class="menu-item">
+                <a href="/admin/staff" class="menu-item" 
+                   data-help="staff-management">
                     <i class="fas fa-hard-hat text-warning"></i>
                     <div>
                         <div class="menu-item-text">Staff Management</div>
@@ -500,7 +507,8 @@
                     </div>
                 </a>
                 
-                <a href="/admin/inventory" class="menu-item">
+                <a href="/admin/inventory" class="menu-item" 
+                   data-help="inventory-dashboard">
                     <i class="fas fa-boxes text-info"></i>
                     <div>
                         <div class="menu-item-text">Inventory</div>
@@ -508,7 +516,8 @@
                     </div>
                 </a>
                 
-                <a href="/admin/checklists" class="menu-item">
+                <a href="/admin/checklists" class="menu-item" 
+                   data-help="checklist-management">
                     <i class="fas fa-tasks text-secondary"></i>
                     <div>
                         <div class="menu-item-text">Job Checklists</div>
@@ -523,7 +532,8 @@
             <div class="menu-section">
                 <div class="menu-section-title">Analytics & Intelligence</div>
                 
-                <a href="/admin/analytics-dashboard" class="menu-item">
+                <a href="/admin/analytics-dashboard" class="menu-item" 
+                   data-help="analytics-dashboard">
                     <i class="fas fa-chart-bar text-info"></i>
                     <div>
                         <div class="menu-item-text">Analytics Dashboard</div>
@@ -531,7 +541,8 @@
                     </div>
                 </a>
                 
-                <a href="/admin/business-intelligence" class="menu-item">
+                <a href="/admin/business-intelligence" class="menu-item" 
+                   data-help="business-intelligence">
                     <i class="fas fa-brain text-success"></i>
                     <div>
                         <div class="menu-item-text">Business Intelligence</div>
@@ -539,7 +550,8 @@
                     </div>
                 </a>
                 
-                <a href="/admin/ml-insights" class="menu-item">
+                <a href="/admin/ml-insights" class="menu-item" 
+                   data-help="ml-insights">
                     <i class="fas fa-magic text-warning"></i>
                     <div>
                         <div class="menu-item-text">ML Insights</div>
