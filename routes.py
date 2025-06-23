@@ -3006,6 +3006,38 @@ def generate_quote_api():
         except Exception as e:
             logging.warning(f"Could not send notification: {e}")
         
+        # Automatically send quote follow-up email via MailerLite
+        if mailerlite_service and contact.email and not contact.email.endswith('@tempmail.com'):
+            try:
+                # Add customer to leads list if they have a real email
+                subscriber_result = mailerlite_service.add_subscriber(
+                    email=contact.email,
+                    name=contact.name,
+                    phone=contact.phone,
+                    list_name="customers",
+                    custom_fields={
+                        "service_interest": service_type,
+                        "quote_amount": price,
+                        "quote_id": f"Q{quote.id:04d}",
+                        "inquiry_date": datetime.now().strftime("%Y-%m-%d"),
+                        "source": "api_quote_generation"
+                    }
+                )
+                
+                # Send quote follow-up email with SPANK Buck incentives
+                email_result = mailerlite_service.send_quote_follow_up(
+                    email=contact.email,
+                    name=contact.name,
+                    quote_id=f"Q{quote.id:04d}",
+                    amount=price
+                )
+                
+                if email_result.get('success'):
+                    logging.info(f"MailerLite quote follow-up sent to {contact.email} for Q{quote.id:04d}")
+                    
+            except Exception as e:
+                logging.warning(f"Failed to send MailerLite quote follow-up: {e}")
+        
         return jsonify({
             'message': 'Quote generated successfully',
             'quoteId': f"Q{quote.id:04d}",
