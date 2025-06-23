@@ -1,0 +1,276 @@
+<!-- Quick Actions Navigation Component -->
+<div class="quick-actions-nav mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <!-- Home Button -->
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-success">
+            <i class="fas fa-home me-2"></i>Dashboard Home
+        </a>
+        
+        <!-- Quick Actions Toggle -->
+        <button class="btn btn-success quick-actions-toggle-btn" type="button" onclick="openSideMenu()">
+            <i class="fas fa-th-large me-2"></i>Quick Actions
+        </button>
+    </div>
+</div>
+
+<!-- Quick Actions Side Menu (copied from admin_dashboard.html) -->
+<div class="side-menu-overlay" id="sideMenuOverlay" onclick="closeSideMenu()"></div>
+<div class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Quick Actions</h5>
+            <button class="side-menu-close" onclick="closeSideMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="side-menu-content">
+        <!-- Core Business Section -->
+        <div class="menu-section">
+            <div class="menu-section-title">Core Business</div>
+            
+            <a href="/admin/enhanced-quote-builder" class="menu-item">
+                <i class="fas fa-file-invoice-dollar text-success"></i>
+                <div>
+                    <div class="menu-item-text">Quote Builder</div>
+                    <div class="menu-item-desc">Create professional quotes</div>
+                </div>
+            </a>
+            
+            <a href="javascript:void(0)" onclick="showPaymentModal()" class="menu-item">
+                <i class="fas fa-dollar-sign text-warning"></i>
+                <div>
+                    <div class="menu-item-text">Mark Payment</div>
+                    <div class="menu-item-desc">Track invoice payments</div>
+                </div>
+            </a>
+            
+            <a href="/admin/scheduler/unified" class="menu-item">
+                <i class="fas fa-calendar-alt text-info"></i>
+                <div>
+                    <div class="menu-item-text">Enhanced Calendar</div>
+                    <div class="menu-item-desc">Color-coded scheduling system</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Operations Section -->
+        <div class="menu-section">
+            <div class="menu-section-title">Operations</div>
+            
+            <a href="/admin/staff" class="menu-item">
+                <i class="fas fa-hard-hat text-warning"></i>
+                <div>
+                    <div class="menu-item-text">Staff Management</div>
+                    <div class="menu-item-desc">Manage crew and assignments</div>
+                </div>
+            </a>
+            
+            <a href="/admin/inventory" class="menu-item">
+                <i class="fas fa-boxes text-info"></i>
+                <div>
+                    <div class="menu-item-text">Inventory</div>
+                    <div class="menu-item-desc">Track materials and supplies</div>
+                </div>
+            </a>
+            
+            <a href="/admin/checklists" class="menu-item">
+                <i class="fas fa-tasks text-secondary"></i>
+                <div>
+                    <div class="menu-item-text">Job Checklists</div>
+                    <div class="menu-item-desc">Track job completion</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="menu-section">
+            <div class="menu-section-title">Analytics & Intelligence</div>
+            
+            <a href="/admin/analytics-dashboard" class="menu-item">
+                <i class="fas fa-chart-bar text-info"></i>
+                <div>
+                    <div class="menu-item-text">Analytics Dashboard</div>
+                    <div class="menu-item-desc">Business performance metrics</div>
+                </div>
+            </a>
+            
+            <a href="/admin/business-intelligence" class="menu-item">
+                <i class="fas fa-brain text-success"></i>
+                <div>
+                    <div class="menu-item-text">Business Intelligence</div>
+                    <div class="menu-item-desc">Strategic insights and recommendations</div>
+                </div>
+            </a>
+            
+            <a href="/admin/ml-insights" class="menu-item">
+                <i class="fas fa-magic text-warning"></i>
+                <div>
+                    <div class="menu-item-text">ML Insights</div>
+                    <div class="menu-item-desc">AI-powered analytics</div>
+                </div>
+            </a>
+            
+            <a href="/admin/integrated-analytics" class="menu-item">
+                <i class="fas fa-chart-line text-dark"></i>
+                <div>
+                    <div class="menu-item-text">Analytics Command</div>
+                    <div class="menu-item-desc">Integrated analytics platform</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Advanced Tools Section -->
+        <div class="menu-section">
+            <div class="menu-section-title">Advanced Tools</div>
+            
+            <a href="/admin/scheduler/advanced" class="menu-item">
+                <i class="fas fa-calendar-alt text-dark"></i>
+                <div>
+                    <div class="menu-item-text">Advanced Scheduler</div>
+                    <div class="menu-item-desc">Professional scheduling interface</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Quick Actions Navigation Styles */
+.quick-actions-toggle-btn {
+    position: relative;
+    z-index: 999;
+}
+
+/* Side Menu Styles */
+.side-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    display: none;
+}
+
+.side-menu {
+    position: fixed;
+    top: 0;
+    right: -350px;
+    width: 350px;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1050;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+}
+
+.side-menu.active {
+    right: 0;
+}
+
+.side-menu-header {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.side-menu-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.side-menu-content {
+    padding: 1rem;
+}
+
+.menu-section {
+    margin-bottom: 1.5rem;
+}
+
+.menu-section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    color: #495057;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+    background: #f8f9fa;
+    color: #28a745;
+    text-decoration: none;
+    transform: translateX(5px);
+}
+
+.menu-item i {
+    width: 20px;
+    margin-right: 0.75rem;
+    font-size: 1rem;
+}
+
+.menu-item-text {
+    font-weight: 500;
+}
+
+.menu-item-desc {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .side-menu {
+        width: 100%;
+        right: -100%;
+    }
+}
+</style>
+
+<script>
+function openSideMenu() {
+    document.getElementById('sideMenu').classList.add('active');
+    document.getElementById('sideMenuOverlay').style.display = 'block';
+}
+
+function closeSideMenu() {
+    document.getElementById('sideMenu').classList.remove('active');
+    document.getElementById('sideMenuOverlay').style.display = 'none';
+}
+
+// Close menu on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeSideMenu();
+    }
+});
+</script>
