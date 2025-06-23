@@ -3390,16 +3390,23 @@ def get_available_dates():
             'error': 'Failed to load available dates'
         }), 500
 
-@app.route('/api/availability/slots/<date>', methods=['GET'])
-def get_available_slots(date):
+@app.route('/api/availability/slots', methods=['GET'])
+def get_available_slots():
     """Get available time slots for a specific date"""
     try:
+        date = request.args.get('date')
+        if not date:
+            return jsonify({
+                'success': False,
+                'error': 'Date parameter is required'
+            }), 400
+            
         if real_time_scheduler:
             slots = real_time_scheduler.get_available_slots(date)
             return jsonify({
                 'success': True,
                 'date': date,
-                'available_slots': slots,
+                'slots': slots,
                 'total_slots': len(slots)
             })
         else:
