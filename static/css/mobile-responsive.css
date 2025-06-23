@@ -10,59 +10,59 @@
         padding-left: 8px !important;
         padding-right: 8px !important;
     }
-    
+
     .row.g-4 {
         --bs-gutter-x: 0.5rem;
         --bs-gutter-y: 0.5rem;
     }
-    
+
     /* Admin Dashboard Mobile Fixes */
     .admin-main {
         padding-top: 10px;
         min-height: calc(100vh - 120px);
     }
-    
+
     /* Stats Cards Mobile Layout */
     .stats-card {
         margin-bottom: 0.75rem;
         min-height: auto;
     }
-    
+
     .stats-card .card-body {
         padding: 1rem 0.75rem;
         text-align: center;
     }
-    
+
     .stats-card h3 {
         font-size: 1.5rem !important;
         margin-bottom: 0.25rem;
     }
-    
+
     .stats-card p {
         font-size: 0.75rem;
         margin-bottom: 0;
     }
-    
+
     .stats-card i {
         font-size: 1.25rem !important;
     }
-    
+
     /* Card Layouts */
     .card {
         margin-bottom: 1rem;
         border-radius: 12px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    
+
     .card-header {
         padding: 1rem;
         border-radius: 12px 12px 0 0 !important;
     }
-    
+
     .card-body {
         padding: 1rem;
     }
-    
+
     /* Form Optimizations */
     .form-control, .form-select {
         font-size: 16px; /* Prevents zoom on iOS */
@@ -70,22 +70,22 @@
         border-radius: 8px;
         min-height: 48px; /* Touch-friendly */
     }
-    
+
     .form-label {
         font-weight: 600;
         margin-bottom: 8px;
         font-size: 14px;
     }
-    
+
     .input-group {
         margin-bottom: 1rem;
     }
-    
+
     .input-group-text {
         padding: 12px 16px;
         font-size: 16px;
     }
-    
+
     /* Button Optimizations */
     .btn {
         min-height: 48px;
@@ -94,189 +94,266 @@
         border-radius: 8px;
         font-weight: 500;
     }
-    
+
     .btn-sm {
         min-height: 40px;
         padding: 8px 16px;
         font-size: 14px;
     }
-    
+
     .btn-lg {
         min-height: 56px;
         padding: 16px 24px;
         font-size: 18px;
     }
-    
+
     /* Navigation Optimizations */
     .navbar-nav .nav-link {
         padding: 12px 16px;
         font-size: 16px;
     }
-    
+
     .navbar-brand {
         font-size: 20px;
     }
-    
+
     /* Table Optimizations */
     .table-responsive {
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    
+
     .table {
         margin-bottom: 0;
     }
-    
+
     .table td, .table th {
         padding: 12px 8px;
         font-size: 14px;
         white-space: nowrap;
     }
-    
+
     .table-actions {
         min-width: 120px;
     }
-    
+
     /* Modal Optimizations */
     .modal-dialog {
         margin: 0.5rem;
         max-width: calc(100% - 1rem);
     }
-    
+
     .modal-content {
         border-radius: 12px;
     }
-    
+
     .modal-header {
         padding: 1rem;
         border-radius: 12px 12px 0 0;
     }
-    
+
     .modal-body {
         padding: 1rem;
         max-height: 70vh;
         overflow-y: auto;
     }
-    
+
     .modal-footer {
         padding: 1rem;
         border-radius: 0 0 12px 12px;
     }
-    
+
     /* Stats Cards */
     .stats-card {
         min-height: auto;
         margin-bottom: 1rem;
     }
-    
+
     .stats-card .card-body {
         padding: 1.5rem 1rem;
     }
-    
+
     .icon-circle {
         width: 60px !important;
         height: 60px !important;
         margin: 0 auto 1rem;
     }
-    
+
     .icon-circle i {
         font-size: 1.5rem !important;
     }
-    
+
     /* Dashboard Headers */
     .bg-gradient-primary .d-flex {
         flex-direction: column !important;
         align-items: flex-start !important;
         gap: 1rem;
     }
-    
+
     .bg-gradient-primary .btn {
         width: 100%;
         margin-bottom: 0.5rem;
     }
-    
+
     /* Calendar Optimizations */
     .fc-toolbar {
         flex-direction: column !important;
         gap: 0.5rem;
     }
-    
+
     .fc-toolbar-chunk {
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
         gap: 0.25rem;
     }
-    
+
     .fc-button {
         padding: 8px 12px !important;
         font-size: 14px !important;
     }
-    
+
     .fc-event {
         font-size: 12px;
         padding: 4px 6px;
     }
-    
+
     /* Weekly Schedule Mobile Fixes */
     .time-slot-schedule {
         overflow-x: auto;
         border-radius: 8px;
         margin-bottom: 1rem;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    
+
     .schedule-header,
     .schedule-row {
-        min-width: 600px; /* Ensure horizontal scroll works */
+        min-width: 700px; /* Increased for better visibility */
+        display: flex;
+        align-items: stretch;
     }
-    
+
     .time-column-header {
-        min-width: 60px;
-        font-size: 0.7rem;
-        padding: 8px 4px;
+        min-width: 80px;
+        font-size: 0.75rem;
+        padding: 8px 6px;
+        background: #f8f9fa;
+        border-right: 1px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
     }
-    
+
     .day-column-header {
-        min-width: 70px;
-        padding: 8px 4px;
-        font-size: 0.7rem;
+        min-width: 100px;
+        padding: 8px 6px;
+        font-size: 0.75rem;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        text-align: center;
+        border-right: 1px solid rgba(255,255,255,0.2);
     }
-    
+
     .day-column-header .fw-bold {
-        font-size: 0.7rem;
-    }
-    
-    .day-column-header .h6 {
         font-size: 0.8rem;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .day-column-header .h6 {
+        font-size: 0.7rem;
         margin-bottom: 0;
+        opacity: 0.9;
     }
-    
+
     .appointment-slot {
-        min-width: 70px;
-        min-height: 40px;
-        padding: 2px;
+        min-width: 100px;
+        min-height: 50px;
+        padding: 4px;
+        border-right: 1px solid #dee2e6;
+        border-bottom: 1px solid #dee2e6;
+        background: #fafafa;
+        transition: background-color 0.2s ease;
     }
-    
+
+    .appointment-slot:hover {
+        background: #f0f8ff;
+    }
+
     .appointment-block {
-        font-size: 0.6rem !important;
-        line-height: 1.1;
-        padding: 2px 4px !important;
-        margin: 1px 0;
+        font-size: 0.65rem !important;
+        line-height: 1.2;
+        padding: 3px 5px !important;
+        margin: 2px 0;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
-    
+
+    .appointment-block:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
     .appointment-block .fw-bold {
-        font-size: 0.6rem;
+        font-size: 0.65rem;
+        display: block;
     }
-    
+
     .appointment-block .text-white-50 {
-        font-size: 0.5rem;
+        font-size: 0.55rem;
+        opacity: 0.8;
     }
-    
+
     .appointment-block .badge {
         font-size: 0.5rem;
-        padding: 1px 3px;
+        padding: 2px 4px;
+        margin-top: 2px;
     }
-    
+
+    /* Calendar Day Cards Mobile Enhancement */
+    .calendar-day-card {
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        background: white;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    .calendar-day-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+
+    .day-header {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 0.75rem;
+        font-weight: 600;
+        border-bottom: none;
+        text-align: center;
+    }
+
+    .day-content {
+        padding: 0.75rem;
+        min-height: 80px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .day-content:empty::before {
+        content: "No appointments";
+        color: #6c757d;
+        font-style: italic;
+        font-size: 0.8rem;
+        display: block;
+        text-align: center;
+        padding: 1rem 0;
+    }
+
     /* Quote/Invoice Forms */
     .pricing-summary {
         position: sticky;
@@ -287,7 +364,7 @@
         border-radius: 0 0 12px 12px;
         box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
     }
-    
+
     .line-item {
         background: #f8f9fa;
         border-radius: 8px;
@@ -295,11 +372,11 @@
         margin-bottom: 1rem;
         border: 1px solid #e9ecef;
     }
-    
+
     .line-item .row {
         --bs-gutter-x: 0.5rem;
     }
-    
+
     /* Photo Upload Optimizations */
     .photo-upload-zone {
         min-height: 200px;
@@ -313,18 +390,18 @@
         cursor: pointer;
         transition: all 0.3s ease;
     }
-    
+
     .photo-upload-zone:hover {
         border-color: #007bff;
         background-color: rgba(0,123,255,0.05);
     }
-    
+
     .photo-preview {
         max-width: 100%;
         border-radius: 8px;
         margin-bottom: 1rem;
     }
-    
+
     /* Staff Portal Optimizations */
     .staff-card {
         background: white;
@@ -333,7 +410,7 @@
         margin-bottom: 1rem;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    
+
     .job-card {
         border-left: 4px solid #007bff;
         padding: 1rem;
@@ -342,7 +419,7 @@
         border-radius: 0 8px 8px 0;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    
+
     .job-status {
         display: inline-block;
         padding: 4px 12px;
@@ -351,13 +428,13 @@
         font-weight: 600;
         text-transform: uppercase;
     }
-    
+
     /* Timeline Optimizations */
     .timeline {
         position: relative;
         padding-left: 2rem;
     }
-    
+
     .timeline::before {
         content: '';
         position: absolute;
@@ -367,7 +444,7 @@
         width: 2px;
         background: #dee2e6;
     }
-    
+
     .timeline-item {
         position: relative;
         margin-bottom: 1.5rem;
@@ -376,7 +453,7 @@
         padding: 1rem;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    
+
     .timeline-item::before {
         content: '';
         position: absolute;
@@ -389,7 +466,7 @@
         border: 3px solid white;
         box-shadow: 0 0 0 2px #007bff;
     }
-    
+
     /* Toast Notifications Mobile */
     .toast-container {
         position: fixed !important;
@@ -399,12 +476,12 @@
         max-width: none !important;
         z-index: 9999;
     }
-    
+
     .toast {
         margin-bottom: 0.5rem;
         border-radius: 8px;
     }
-    
+
     /* Client Portal Optimizations */
     .portal-header {
         background: linear-gradient(135deg, #007bff, #0056b3);
@@ -413,33 +490,33 @@
         border-radius: 12px 12px 0 0;
         text-align: center;
     }
-    
+
     .portal-section {
         padding: 1.5rem 1rem;
         border-bottom: 1px solid #e9ecef;
     }
-    
+
     .portal-section:last-child {
         border-bottom: none;
         border-radius: 0 0 12px 12px;
     }
-    
+
     /* Search and Filter Optimizations */
     .search-filter-row {
         margin-bottom: 1rem;
     }
-    
+
     .search-filter-row .col-md-6 {
         margin-bottom: 0.5rem;
     }
-    
+
     .filter-tags {
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
         margin-top: 0.5rem;
     }
-    
+
     .filter-tag {
         display: inline-block;
         padding: 4px 12px;
@@ -448,12 +525,12 @@
         font-size: 12px;
         cursor: pointer;
     }
-    
+
     .filter-tag.active {
         background: #007bff;
         color: white;
     }
-    
+
     /* Accessibility Improvements */
     .sr-only-mobile {
         position: absolute !important;
@@ -466,7 +543,7 @@
         white-space: nowrap !important;
         border: 0 !important;
     }
-    
+
     /* Focus States for Touch */
     .btn:focus,
     .form-control:focus,
@@ -475,7 +552,7 @@
         outline-offset: 2px;
         box-shadow: none;
     }
-    
+
     /* Loading States */
     .loading-overlay {
         position: fixed;
@@ -489,7 +566,7 @@
         justify-content: center;
         z-index: 9998;
     }
-    
+
     .loading-spinner {
         width: 48px;
         height: 48px;
@@ -498,7 +575,7 @@
         border-radius: 50%;
         animation: spin 1s linear infinite;
     }
-    
+
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
@@ -511,30 +588,30 @@
         padding-left: 16px !important;
         padding-right: 16px !important;
     }
-    
+
     .card-columns {
         column-count: 2;
         column-gap: 1rem;
     }
-    
+
     .stats-card {
         break-inside: avoid;
         margin-bottom: 1rem;
     }
-    
+
     /* Table optimizations for tablet */
     .table td, .table th {
         padding: 12px;
         font-size: 15px;
     }
-    
+
     /* Form layouts for tablet */
     .form-row-tablet {
         display: flex;
         gap: 1rem;
         margin-bottom: 1rem;
     }
-    
+
     .form-row-tablet > * {
         flex: 1;
     }
@@ -547,18 +624,18 @@
         gap: 0.5rem;
         flex-wrap: wrap;
     }
-    
+
     .btn-group-mobile .btn {
         flex: 1;
         min-width: 120px;
     }
-    
+
     .card-deck-mobile {
         display: flex;
         flex-direction: column;
         gap: 1rem;
     }
-    
+
     .modal-dialog {
         max-width: 90%;
         margin: 1rem auto;
@@ -577,92 +654,92 @@
         position: fixed !important;
         z-index: 1040 !important;
     }
-    
+
     .side-menu {
         width: 90% !important;
         right: -90% !important;
     }
-    
+
     .side-menu.active {
         right: 5% !important;
     }
-    
+
     .menu-item {
         padding: 1rem 0.75rem;
         margin-bottom: 0.25rem;
     }
-    
+
     .menu-item i {
         font-size: 1.1rem;
         width: 24px;
         margin-right: 0.5rem;
     }
-    
+
     .menu-item-text {
         font-size: 0.9rem;
     }
-    
+
     .menu-item-desc {
         font-size: 0.7rem;
         line-height: 1.2;
     }
-    
+
     .menu-section-title {
         font-size: 0.7rem;
         padding: 0.5rem 0;
     }
-    
+
     /* Calendar Day Cards Mobile */
     .calendar-day-card {
         margin-bottom: 0.5rem;
         min-height: 80px;
     }
-    
+
     .day-header {
         padding: 0.5rem;
         font-size: 0.8rem;
     }
-    
+
     .day-content {
         padding: 0.5rem;
         min-height: 50px;
     }
-    
+
     .appointment-block {
         font-size: 0.65rem;
         padding: 0.25rem;
         margin-bottom: 0.25rem;
         line-height: 1.1;
     }
-    
+
     /* Extended View Mobile */
     #extendedView .row.g-2 {
         --bs-gutter-x: 0.25rem;
         --bs-gutter-y: 0.25rem;
     }
-    
+
     #extendedView .col {
         min-width: 0;
     }
-    
+
     /* Modal Mobile Improvements */
     .modal-dialog {
         margin: 0.5rem;
         max-width: calc(100% - 1rem);
     }
-    
+
     .modal-body {
         padding: 1rem;
         max-height: 60vh;
         overflow-y: auto;
     }
-    
+
     .modal-footer {
         padding: 0.75rem;
         flex-direction: column;
         gap: 0.5rem;
     }
-    
+
     .modal-footer .btn {
         width: 100%;
         margin: 0;
@@ -675,48 +752,48 @@
         padding-left: 4px !important;
         padding-right: 4px !important;
     }
-    
+
     .card {
         border-radius: 8px;
         margin-bottom: 0.5rem;
     }
-    
+
     .card-header {
         padding: 0.75rem;
     }
-    
+
     .card-body {
         padding: 0.75rem;
     }
-    
+
     .btn {
         width: 100%;
         margin-bottom: 0.5rem;
     }
-    
+
     .btn-group-vertical {
         width: 100%;
     }
-    
+
     .table-responsive {
         font-size: 12px;
     }
-    
+
     .table td, .table th {
         padding: 8px 4px;
     }
-    
+
     /* Stack all columns */
     .col-auto-stack {
         width: 100% !important;
         margin-bottom: 1rem;
     }
-    
+
     /* Compact navigation */
     .navbar-nav {
         text-align: center;
     }
-    
+
     .navbar-nav .nav-link {
         padding: 8px 12px;
     }
