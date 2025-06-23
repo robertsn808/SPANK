@@ -423,6 +423,15 @@ def admin_login():
 
     return render_template('admin_login_clean.html')
 
+@app.route('/admin/quote-invoice-form')
+def quote_invoice_form():
+    """Quote and Invoice Form Generator Page"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access the quote/invoice generator.', 'error')
+        return redirect(url_for('admin_login'))
+    
+    return render_template('quote_invoice_form.html')
+
 @app.route('/admin/ai-leads')
 def ai_leads():
     """AI Lead Generator page for analyzing and managing leads"""
