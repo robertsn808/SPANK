@@ -373,6 +373,19 @@
                         <span id="scheduleTitle">Weekly Schedule</span>
                     </h5>
                     <div class="d-flex align-items-center">
+                        <!-- Week Navigation -->
+                        <div class="d-flex align-items-center me-3">
+                            <button type="button" class="btn btn-outline-light btn-sm me-2" id="prevWeek" onclick="changeWeek(-1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-light btn-sm me-2" id="nextWeek" onclick="changeWeek(1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-light btn-sm me-3" id="todayBtn" onclick="goToToday()">
+                                Today
+                            </button>
+                        </div>
+                        
                         <!-- View Switcher -->
                         <div class="btn-group btn-group-sm me-3" role="group">
                             <button type="button" class="btn btn-outline-light active" id="weekView" onclick="switchView('week')">
@@ -476,7 +489,7 @@
                                         </div>
                                         {% endfor %}
                                     {% else %}
-                                        <div class="empty-slot">
+                                        <div class="empty-slot" onclick="openNewAppointmentModal('{{ date.strftime('%Y-%m-%d') }}', '{{ time_value }}')">
                                             <i class="fas fa-plus text-muted"></i>
                                         </div>
                                     {% endif %}
@@ -555,6 +568,87 @@
                         {% endif %}
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Appointment Modal -->
+<div class="modal fade" id="newAppointmentModal" tabindex="-1" aria-labelledby="newAppointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newAppointmentModalLabel">
+                    <i class="fas fa-calendar-plus me-2"></i>New Appointment
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newAppointmentForm">
+                    <div class="mb-3">
+                        <label for="appointmentDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="appointmentDate" required readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="appointmentTime" class="form-label">Time</label>
+                        <select class="form-select" id="appointmentTime" required>
+                            <option value="7:00">7:00 AM</option>
+                            <option value="8:00">8:00 AM</option>
+                            <option value="9:00">9:00 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="12:00">12:00 PM</option>
+                            <option value="13:00">1:00 PM</option>
+                            <option value="14:00">2:00 PM</option>
+                            <option value="15:00">3:00 PM</option>
+                            <option value="16:00">4:00 PM</option>
+                            <option value="17:00">5:00 PM</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clientName" class="form-label">Client Name</label>
+                        <input type="text" class="form-control" id="clientName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clientPhone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="clientPhone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serviceType" class="form-label">Service Type</label>
+                        <select class="form-select" id="serviceType" required>
+                            <option value="">Select Service</option>
+                            <option value="Drywall Services">Drywall Services</option>
+                            <option value="Flooring Installation">Flooring Installation</option>
+                            <option value="Fence Building">Fence Building</option>
+                            <option value="General Handyman">General Handyman</option>
+                            <option value="Plumbing Repair">Plumbing Repair</option>
+                            <option value="Electrical Work">Electrical Work</option>
+                            <option value="Painting">Painting</option>
+                            <option value="Home Renovation">Home Renovation</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="serviceDescription" class="form-label">Service Description</label>
+                        <textarea class="form-control" id="serviceDescription" rows="3" placeholder="Brief description of the work needed"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estimatedDuration" class="form-label">Estimated Duration (hours)</label>
+                        <select class="form-select" id="estimatedDuration">
+                            <option value="1">1 hour</option>
+                            <option value="2">2 hours</option>
+                            <option value="3">3 hours</option>
+                            <option value="4">4 hours</option>
+                            <option value="6">6 hours</option>
+                            <option value="8">8 hours (Full day)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createAppointment()">
+                    <i class="fas fa-save me-1"></i>Create Appointment
+                </button>
             </div>
         </div>
     </div>
@@ -794,6 +888,129 @@ function switchView(viewType) {
         dateRange.innerHTML = '{{ all_weeks[0]["dates"][0].strftime("%B %d") }} - {{ all_weeks[-1]["dates"][6].strftime("%B %d, %Y") }}';
         {% endif %}
     }
+}
+
+// Week navigation functionality
+let currentWeekOffset = 0; // 0 = current week, -1 = last week, 1 = next week
+
+function changeWeek(direction) {
+    currentWeekOffset += direction;
+    
+    // Update the URL with week parameter and reload
+    const url = new URL(window.location);
+    url.searchParams.set('week_offset', currentWeekOffset);
+    window.location.href = url.toString();
+}
+
+function goToToday() {
+    currentWeekOffset = 0;
+    
+    // Remove week_offset parameter and reload
+    const url = new URL(window.location);
+    url.searchParams.delete('week_offset');
+    window.location.href = url.toString();
+}
+
+// Initialize current week offset from URL parameter
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const weekOffset = urlParams.get('week_offset');
+    if (weekOffset) {
+        currentWeekOffset = parseInt(weekOffset);
+    }
+    
+    // Update button states based on current week
+    updateNavigationButtons();
+});
+
+function updateNavigationButtons() {
+    const todayBtn = document.getElementById('todayBtn');
+    
+    // Highlight "Today" button if we're viewing current week
+    if (currentWeekOffset === 0) {
+        todayBtn.classList.add('btn-light');
+        todayBtn.classList.remove('btn-outline-light');
+    } else {
+        todayBtn.classList.remove('btn-light');
+        todayBtn.classList.add('btn-outline-light');
+    }
+}
+
+// Appointment modal functions
+function openNewAppointmentModal(date, time) {
+    // Set the date and time in the modal
+    document.getElementById('appointmentDate').value = date;
+    document.getElementById('appointmentTime').value = time;
+    
+    // Convert time to display format for the time selector
+    const timeOptions = {
+        '7:00': '7:00', '8:00': '8:00', '9:00': '9:00', '10:00': '10:00',
+        '11:00': '11:00', '12:00': '12:00', '13:00': '13:00', '14:00': '14:00',
+        '15:00': '15:00', '16:00': '16:00', '17:00': '17:00'
+    };
+    
+    if (timeOptions[time]) {
+        document.getElementById('appointmentTime').value = time;
+    }
+    
+    // Clear any previous form data
+    document.getElementById('newAppointmentForm').reset();
+    document.getElementById('appointmentDate').value = date;
+    document.getElementById('appointmentTime').value = time;
+    
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('newAppointmentModal'));
+    modal.show();
+}
+
+function createAppointment() {
+    const form = document.getElementById('newAppointmentForm');
+    
+    // Validate form
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    // Collect form data
+    const appointmentData = {
+        date: document.getElementById('appointmentDate').value,
+        time: document.getElementById('appointmentTime').value,
+        client_name: document.getElementById('clientName').value,
+        client_phone: document.getElementById('clientPhone').value,
+        service_type: document.getElementById('serviceType').value,
+        service_description: document.getElementById('serviceDescription').value,
+        estimated_duration: document.getElementById('estimatedDuration').value
+    };
+    
+    // Create appointment via API
+    fetch('/api/appointments/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(appointmentData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newAppointmentModal'));
+            modal.hide();
+            
+            // Show success message
+            alert('Appointment created successfully!');
+            
+            // Reload the page to show the new appointment
+            window.location.reload();
+        } else {
+            alert('Error creating appointment: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error creating appointment. Please try again.');
+    });
 }
 </script>
 {% endblock %}

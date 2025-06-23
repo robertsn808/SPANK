@@ -522,9 +522,12 @@ def admin_dashboard():
 
         # Generate extended schedule dates for calendar using Hawaii timezone
         hawaii_now = get_hawaii_time()
+        
+        # Get week offset from URL parameter for navigation
+        week_offset = int(request.args.get('week_offset', 0))
 
-        # Get the start of the current week (Monday) in Hawaii time
-        start_of_week = hawaii_now - timedelta(days=hawaii_now.weekday())
+        # Get the start of the week (Monday) in Hawaii time with offset
+        start_of_week = hawaii_now - timedelta(days=hawaii_now.weekday()) + timedelta(weeks=week_offset)
         
         # Generate 4 weeks of dates (current week + 3 following weeks)
         all_weeks = []
@@ -1421,6 +1424,65 @@ def health_check():
         })
     except Exception as e:
         return jsonify({'status': 'error', 'error': str(e)}), 500
+
+@app.route('/api/appointments/create', methods=['POST'])
+def create_appointment_api():
+    """API endpoint to create new appointment from admin dashboard"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['date', 'time', 'client_name', 'client_phone', 'service_type']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        # Initialize unified scheduler
+        from unified_scheduler import UnifiedScheduler
+        unified_scheduler = UnifiedScheduler()
+        
+        # Format phone number
+        from phone_formatter import PhoneFormatter
+        phone_formatter = PhoneFormatter()
+        formatted_phone = phone_formatter.format_phone(data['client_phone'])
+        
+        # Create appointment data
+        appointment_data = {
+            'client_name': data['client_name'],
+            'client_phone': formatted_phone,
+            'client_email': data.get('client_email', ''),
+            'service_type': data['service_type'],
+            'service_description': data.get('service_description', ''),
+            'preferred_date': data['date'],
+            'preferred_time': data['time'],
+            'estimated_duration': int(data.get('estimated_duration', 2)),
+            'source': 'admin_dashboard',
+            'priority': 'normal',
+            'status': 'scheduled'
+        }
+        
+        # Create the appointment
+        appointment_id = unified_scheduler.create_appointment(appointment_data)
+        
+        if appointment_id:
+            # Log the successful creation
+            hawaii_time = get_hawaii_time()
+            logging.info(f"Admin created appointment {appointment_id} for {data['client_name']} on {data['date']} at {data['time']}")
+            
+            return jsonify({
+                'success': True,
+                'appointment_id': appointment_id,
+                'message': 'Appointment created successfully'
+            })
+        else:
+            return jsonify({'error': 'Failed to create appointment'}), 500
+            
+    except Exception as e:
+        logging.error(f"Error creating appointment: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/dashboard/metrics')
 def dashboard_metrics():
