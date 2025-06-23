@@ -2,444 +2,230 @@
 
 {% block title %}Admin Dashboard - SPANKKS Construction{% endblock %}
 
-{% block head %}
-<style>
-    .admin-dashboard {
-        background-color: #f8f9fa;
-        min-height: calc(100vh - 100px);
-        padding: 0;
-    }
-
-    .dashboard-header {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        color: white;
-        padding: 1.5rem 0;
-        margin-bottom: 2rem;
-    }
-
-    .header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .dashboard-title {
-        font-size: 1.75rem;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    .header-stats {
-        display: flex;
-        gap: 2rem;
-        align-items: center;
-    }
-
-    .stat-box {
-        text-align: center;
-        color: white;
-    }
-
-    .stat-number {
-        font-size: 1.5rem;
-        font-weight: bold;
-        display: block;
-        line-height: 1;
-    }
-
-    .stat-label {
-        font-size: 0.8rem;
-        opacity: 0.9;
-        margin-top: 0.25rem;
-    }
-
-    .main-content {
-        padding: 0 1rem 2rem;
-    }
-
-    .navigation-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .nav-section {
-        background: white;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        border: 1px solid #e9ecef;
-    }
-
-    .section-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #495057;
-        margin: 0 0 1rem 0;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .section-icon {
-        width: 32px;
-        height: 32px;
-        background: #e8f5e8;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #28a745;
-    }
-
-    .nav-links {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 0.75rem;
-    }
-
-    .nav-link {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 1rem 0.75rem;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        color: #495057;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        background: #fafafa;
-    }
-
-    .nav-link:hover {
-        background: #28a745;
-        color: white;
-        text-decoration: none;
-        border-color: #28a745;
-        transform: translateY(-1px);
-    }
-
-    .nav-link i {
-        font-size: 1.25rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .nav-link span {
-        font-size: 0.85rem;
-        font-weight: 500;
-        line-height: 1.2;
-    }
-
-    .activity-section {
-        background: white;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        border: 1px solid #e9ecef;
-    }
-
-    .activity-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-
-    .activity-item {
-        display: flex;
-        align-items: center;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #f8f9fa;
-    }
-
-    .activity-item:last-child {
-        border-bottom: none;
-    }
-
-    .activity-avatar {
-        width: 40px;
-        height: 40px;
-        background: #e8f5e8;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #28a745;
-        margin-right: 1rem;
-    }
-
-    .activity-content {
-        flex: 1;
-    }
-
-    .activity-title {
-        font-weight: 500;
-        margin: 0 0 0.25rem 0;
-        color: #495057;
-    }
-
-    .activity-subtitle {
-        font-size: 0.8rem;
-        color: #6c757d;
-        margin: 0;
-    }
-
-    .activity-time {
-        font-size: 0.75rem;
-        color: #adb5bd;
-        white-space: nowrap;
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-        .header-stats {
-            display: none;
-        }
-
-        .dashboard-title {
-            font-size: 1.5rem;
-        }
-
-        .main-content {
-            padding: 0 0.75rem 1.5rem;
-        }
-
-        .navigation-grid {
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-
-        .nav-links {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .nav-section {
-            padding: 1rem;
-        }
-
-        .activity-section {
-            padding: 1rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .nav-links {
-            grid-template-columns: 1fr;
-        }
-
-        .nav-link {
-            padding: 0.75rem;
-        }
-
-        .header-content {
-            text-align: center;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="admin-dashboard">
-    <!-- Dashboard Header -->
-    <div class="dashboard-header">
-        <div class="container">
-            <div class="header-content">
-                <h1 class="dashboard-title">SPANKKS Admin Dashboard</h1>
-                
-                <div class="header-stats">
-                    <div class="stat-box">
-                        <span class="stat-number">{{ bookings|length if bookings else 0 }}</span>
-                        <div class="stat-label">Total Jobs</div>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-number">{{ (bookings|selectattr('status', 'equalto', 'pending')|list)|length if bookings else 0 }}</span>
-                        <div class="stat-label">Pending</div>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-number">{{ contact_messages|length if contact_messages else 0 }}</span>
-                        <div class="stat-label">Messages</div>
-                    </div>
+<div class="container-fluid py-3">
+    <!-- Stats Cards Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <i class="fas fa-clipboard-list fa-2x text-primary mb-2"></i>
+                    <h3 class="card-title h4 mb-1">{{ total_jobs | default(0) }}</h3>
+                    <p class="card-text text-muted small">Total Requests</p>
                 </div>
-
-                <div>
-                    <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-light">
-                        <i class="fas fa-sign-out-alt me-2"></i>Logout
-                    </a>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <i class="fas fa-coins fa-2x text-warning mb-2"></i>
+                    <h3 class="card-title h4 mb-1">{{ pending_items | default(0) }}</h3>
+                    <p class="card-text text-muted small">Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <i class="fas fa-envelope fa-2x text-info mb-2"></i>
+                    <h3 class="card-title h4 mb-1">{{ total_messages | default(0) }}</h3>
+                    <p class="card-text text-muted small">Messages</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <i class="fas fa-calendar-week fa-2x text-success mb-2"></i>
+                    <h3 class="card-title h4 mb-1">{{ this_week_jobs | default(0) }}</h3>
+                    <p class="card-text text-muted small">This Week</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="container">
-            <!-- Navigation Grid -->
-            <div class="navigation-grid">
-                <!-- Core Business Functions -->
-                <div class="nav-section">
-                    <h3 class="section-title">
-                        <div class="section-icon">
-                            <i class="fas fa-briefcase"></i>
+    <!-- Main Dashboard Content -->
+    <div class="row g-4">
+        <!-- Left Column - Weekly Schedule -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        Weekly Schedule
+                    </h5>
+                    <small>June 16 - June 22, 2025</small>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Calendar Status Badges -->
+                    <div class="p-3 border-bottom">
+                        <div class="row g-2">
+                            <div class="col-6 col-md-3">
+                                <span class="badge bg-success d-block py-2">
+                                    <i class="fas fa-dollar-sign me-1"></i>
+                                    Invoice Management
+                                </span>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="badge bg-dark d-block py-2">
+                                    <i class="fas fa-users me-1"></i>
+                                    Staff Management
+                                </span>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="badge bg-info d-block py-2">
+                                    <i class="fas fa-tasks me-1"></i>
+                                    Job Tracking
+                                </span>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="badge bg-warning d-block py-2">
+                                    <i class="fas fa-chart-bar me-1"></i>
+                                    Financial Reports
+                                </span>
+                            </div>
                         </div>
-                        Core Business
-                    </h3>
-                    <div class="nav-links">
-                        <a href="/admin/quote-builder" class="nav-link">
-                            <i class="fas fa-plus-circle"></i>
-                            <span>Create Quote</span>
-                        </a>
-                        <a href="/admin/scheduler" class="nav-link">
-                            <i class="fas fa-calendar-plus"></i>
-                            <span>Schedule Job</span>
-                        </a>
-                        <a href="/admin/invoices" class="nav-link">
-                            <i class="fas fa-receipt"></i>
-                            <span>Invoices</span>
-                        </a>
-                        <a href="/admin/crm" class="nav-link">
-                            <i class="fas fa-users"></i>
-                            <span>Customers</span>
-                        </a>
+                    </div>
+
+                    <!-- Calendar Days -->
+                    <div class="p-3">
+                        <div class="row g-2 text-center">
+                            <div class="col">
+                                <div class="p-2 border rounded bg-light">
+                                    <strong>Monday</strong><br>
+                                    <small class="text-muted">16</small><br>
+                                    <i class="fas fa-calendar text-muted"></i><br>
+                                    <small class="text-muted">No appointments</small>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-2 border rounded bg-light">
+                                    <strong>Tuesday</strong><br>
+                                    <small class="text-muted">17</small><br>
+                                    <i class="fas fa-calendar text-muted"></i><br>
+                                    <small class="text-muted">No appointments</small>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-2 border rounded bg-light">
+                                    <strong>Wednesday</strong><br>
+                                    <small class="text-muted">18</small><br>
+                                    <i class="fas fa-calendar text-muted"></i><br>
+                                    <small class="text-muted">No appointments</small>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-2 border rounded bg-light">
+                                    <strong>Thursday</strong><br>
+                                    <small class="text-muted">19</small><br>
+                                    <i class="fas fa-calendar text-muted"></i><br>
+                                    <small class="text-muted">No appointments</small>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-2 border rounded bg-light">
+                                    <strong>Friday</strong><br>
+                                    <small class="text-muted">20</small><br>
+                                    <i class="fas fa-calendar text-muted"></i><br>
+                                    <small class="text-muted">No appointments</small>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="p-2 border rounded bg-light">
+                                    <strong>Saturday</strong><br>
+                                    <small class="text-muted">21</small><br>
+                                    <i class="fas fa-calendar text-muted"></i><br>
+                                    <small class="text-muted">No appointments</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sunday separate row -->
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <div class="p-3 border rounded bg-primary text-white text-center">
+                                    <strong>Sunday</strong><br>
+                                    <span class="h4">22</span><br>
+                                    <i class="fas fa-calendar-day"></i><br>
+                                    <small>No appointments</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Operations Management -->
-                <div class="nav-section">
-                    <h3 class="section-title">
-                        <div class="section-icon">
-                            <i class="fas fa-cogs"></i>
-                        </div>
-                        Operations
-                    </h3>
-                    <div class="nav-links">
-                        <a href="/admin/job-checklists" class="nav-link">
-                            <i class="fas fa-clipboard-check"></i>
-                            <span>Job Checklists</span>
-                        </a>
-                        <a href="/admin/inventory" class="nav-link">
-                            <i class="fas fa-boxes"></i>
-                            <span>Inventory</span>
-                        </a>
-                        <a href="/admin/staff-management" class="nav-link">
-                            <i class="fas fa-user-hard-hat"></i>
-                            <span>Staff</span>
-                        </a>
-                        <a href="/admin/workflow-automation" class="nav-link">
-                            <i class="fas fa-robot"></i>
-                            <span>Automation</span>
-                        </a>
-                    </div>
+        <!-- Right Column - Quick Actions -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Quick Actions
+                    </h5>
                 </div>
-
-                <!-- Analytics & Reports -->
-                <div class="nav-section">
-                    <h3 class="section-title">
-                        <div class="section-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        Analytics
-                    </h3>
-                    <div class="nav-links">
-                        <a href="/admin/analytics" class="nav-link">
-                            <i class="fas fa-chart-bar"></i>
-                            <span>Business Analytics</span>
+                <div class="card-body p-2">
+                    <div class="d-grid gap-2">
+                        <a href="/admin/crm" class="btn btn-outline-primary btn-sm d-flex align-items-center">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            CRM Dashboard
                         </a>
-                        <a href="/admin/financial-reports" class="nav-link">
-                            <i class="fas fa-dollar-sign"></i>
-                            <span>Financial Reports</span>
+                        <a href="/admin/crm/quotes" class="btn btn-outline-primary btn-sm d-flex align-items-center">
+                            <i class="fas fa-file-invoice-dollar me-2"></i>
+                            Quote Builder
                         </a>
-                        <a href="/admin/business-intelligence" class="nav-link">
-                            <i class="fas fa-brain"></i>
-                            <span>Intelligence</span>
+                        <a href="/admin/scheduler" class="btn btn-outline-info btn-sm d-flex align-items-center">
+                            <i class="fas fa-calendar-plus me-2"></i>
+                            Job Schedule
                         </a>
-                        <a href="/admin/ml-insights" class="nav-link">
-                            <i class="fas fa-magic"></i>
-                            <span>ML Insights</span>
+                        <a href="/admin/crm/contacts" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+                            <i class="fas fa-address-book me-2"></i>
+                            Contact Database
                         </a>
-                    </div>
-                </div>
-
-                <!-- Advanced Tools -->
-                <div class="nav-section">
-                    <h3 class="section-title">
-                        <div class="section-icon">
-                            <i class="fas fa-tools"></i>
-                        </div>
-                        Advanced Tools
-                    </h3>
-                    <div class="nav-links">
-                        <a href="/admin/unified-scheduler" class="nav-link">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Unified Scheduler</span>
+                        <a href="/admin/analytics/command-center" class="btn btn-outline-info btn-sm d-flex align-items-center">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Analytics Command Center
                         </a>
-                        <a href="/admin/advanced-scheduler" class="nav-link">
-                            <i class="fas fa-calendar-week"></i>
-                            <span>Advanced Scheduler</span>
+                        <a href="/admin/analytics" class="btn btn-outline-info btn-sm d-flex align-items-center">
+                            <i class="fas fa-analytics me-2"></i>
+                            Business Analytics
+                        </a>
+                        <a href="/admin/business-intelligence" class="btn btn-outline-success btn-sm d-flex align-items-center">
+                            <i class="fas fa-brain me-2"></i>
+                            Business Intelligence
+                        </a>
+                        <a href="/admin/ml-insights" class="btn btn-outline-warning btn-sm d-flex align-items-center">
+                            <i class="fas fa-magic me-2"></i>
+                            ML Insights
+                        </a>
+                        <a href="/admin/scheduler/unified" class="btn btn-outline-primary btn-sm d-flex align-items-center">
+                            <i class="fas fa-calendar-week me-2"></i>
+                            Unified Scheduler
+                        </a>
+                        <a href="/admin/scheduler/advanced" class="btn btn-outline-dark btn-sm d-flex align-items-center">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Advanced Scheduler
+                        </a>
+                        <a href="/admin/staff" class="btn btn-outline-warning btn-sm d-flex align-items-center">
+                            <i class="fas fa-hard-hat me-2"></i>
+                            Staff Management
+                        </a>
+                        <a href="/admin/inventory" class="btn btn-outline-info btn-sm d-flex align-items-center">
+                            <i class="fas fa-boxes me-2"></i>
+                            Inventory Management
+                        </a>
+                        <a href="/admin/job-checklists" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+                            <i class="fas fa-tasks me-2"></i>
+                            Job Checklists
+                        </a>
+                        <a href="/admin/workflow-automation" class="btn btn-outline-success btn-sm d-flex align-items-center">
+                            <i class="fas fa-robot me-2"></i>
+                            Communications Settings
                         </a>
                     </div>
                 </div>
             </div>
-
-            <!-- Recent Activity -->
-            {% if bookings or contact_messages %}
-            <div class="activity-section">
-                <div class="activity-header">
-                    <h3 class="section-title">
-                        <div class="section-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        Recent Activity
-                    </h3>
-                    <a href="/admin/bookings" class="btn btn-outline-primary btn-sm">View All</a>
-                </div>
-
-                {% if bookings %}
-                    {% for booking in bookings[:5] %}
-                    <div class="activity-item">
-                        <div class="activity-avatar">
-                            <i class="fas fa-{% if booking.status == 'confirmed' %}check{% elif booking.status == 'pending' %}clock{% else %}calendar{% endif %}"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">{{ booking.name }}</div>
-                            <div class="activity-subtitle">{{ booking.service|replace('_', ' ')|title }} - {{ booking.status|title }}</div>
-                        </div>
-                        <div class="activity-time">
-                            {{ booking.consultation_date if booking.consultation_date else 'No date' }}
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% endif %}
-
-                {% if contact_messages %}
-                    {% for message in contact_messages[:3] %}
-                    <div class="activity-item">
-                        <div class="activity-avatar">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">{{ message.name }}</div>
-                            <div class="activity-subtitle">{{ message.message[:50] }}{% if message.message|length > 50 %}...{% endif %}</div>
-                        </div>
-                        <div class="activity-time">
-                            New message
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
-            {% else %}
-            <div class="activity-section text-center">
-                <div class="section-icon mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.5rem;">
-                    <i class="fas fa-inbox"></i>
-                </div>
-                <h4>No Recent Activity</h4>
-                <p class="text-muted">New bookings and messages will appear here.</p>
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>
