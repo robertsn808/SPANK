@@ -1872,17 +1872,22 @@ def analytics_dashboard():
 
     from analytics_manager import analytics_manager
     
-    # Get comprehensive analytics through centralized manager
-    analytics_data = analytics_manager.get_comprehensive_analytics(handyman_storage)
-    real_time_metrics = analytics_manager.get_real_time_metrics(handyman_storage)
-    performance_alerts = analytics_manager.get_performance_alerts(handyman_storage)
-    
-    return render_template('admin/enhanced_analytics.html',
-                         business_report=analytics_data['business_report'],
-                         performance_alerts=performance_alerts['alerts'],
-                         cash_flow_forecast=analytics_data['business_report']['revenue'],
-                         predictive_insights=analytics_data['ml_insights'],
-                         real_time_metrics=real_time_metrics)
+    try:
+        # Get comprehensive analytics through centralized manager
+        analytics_data = analytics_manager.get_comprehensive_analytics(storage_service)
+        real_time_metrics = analytics_manager.get_real_time_metrics(storage_service)
+        performance_alerts = analytics_manager.get_performance_alerts(storage_service)
+        
+        return render_template('admin/enhanced_analytics.html',
+                             business_report=analytics_data.get('business_report', {}),
+                             performance_alerts=performance_alerts.get('alerts', []),
+                             cash_flow_forecast=analytics_data.get('business_report', {}).get('revenue', {}),
+                             predictive_insights=analytics_data.get('ml_insights', {}),
+                             real_time_metrics=real_time_metrics)
+    except Exception as e:
+        # Fallback to basic dashboard with error message
+        flash(f'Analytics service temporarily unavailable. Contact system administrator.', 'warning')
+        return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/customer-feedback')
 def customer_feedback():
