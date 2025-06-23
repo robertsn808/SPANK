@@ -543,7 +543,61 @@ body {
 
 /* Step Cards */
 .step-card {
-    padding: 20px;
+    padding: 30px 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 200px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.step-card h6 {
+    font-weight: 600;
+    color: hsl(var(--primary-color));
+    margin: 15px 0 10px;
+    font-size: 1.1rem;
+}
+
+.step-card p {
+    flex-grow: 1;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+/* Step Cards Responsive Design */
+@media (max-width: 991px) {
+    .step-card {
+        min-height: 180px;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 767px) {
+    .step-card {
+        min-height: 160px;
+        padding: 20px 15px;
+    }
+    
+    .step-card h6 {
+        font-size: 1rem;
+    }
+    
+    .step-number {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
 }
 
 .step-number {
