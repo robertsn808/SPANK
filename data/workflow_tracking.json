@@ -97,5 +97,27 @@
     "created_date": "2025-06-22",
     "priority": "normal",
     "automation_enabled": true
+  },
+  {
+    "id": 5,
+    "quote_id": 9,
+    "current_stage": "quote_sent",
+    "stage_entered": "2025-06-22 17:55:48",
+    "next_action_due": "2025-06-25",
+    "actions_completed": [],
+    "stages_history": [
+      {
+        "stage": "quote_sent",
+        "entered": "2025-06-22 17:55:48",
+        "actions": [
+          "Send follow-up email",
+          "Schedule phone call"
+        ]
+      }
+    ],
+    "status": "active",
+    "created_date": "2025-06-22",
+    "priority": "normal",
+    "automation_enabled": true
   }
 ]
