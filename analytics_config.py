@@ -66,6 +66,8 @@ class AnalyticsConfig:
     
     # Service hour estimates for scheduling
     SERVICE_HOURS = {
+        'Consultation': 1,
+        'Admin Block': 2,
         'Drywall Services': 6,
         'Flooring Installation': 8,
         'Fence Building': 10,

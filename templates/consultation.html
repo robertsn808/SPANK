@@ -194,21 +194,44 @@
                                     </select>
                                 </div>
                                 
-                                <!-- Consultation Preferences -->
-                                <div class="col-md-6">
-                                    <label for="preferred_date" class="form-label">Preferred Date</label>
-                                    <input type="date" class="form-control" id="preferred_date" name="preferred_date">
+                                <!-- Real-Time Scheduling -->
+                                <div class="col-12">
+                                    <div class="card bg-light border-0 mb-3">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-success mb-3">
+                                                <i class="fas fa-calendar-check me-2"></i>
+                                                Real-Time Booking - Get Instant Confirmation!
+                                            </h6>
+                                            <p class="small text-muted mb-0">
+                                                Select your exact preferred date and time for immediate booking confirmation.
+                                                No waiting for admin approval!
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 <div class="col-md-6">
-                                    <label for="preferred_time" class="form-label">Preferred Time</label>
-                                    <select class="form-select" id="preferred_time" name="preferred_time">
-                                        <option value="">Select time preference</option>
-                                        <option value="morning">Morning (8 AM - 12 PM)</option>
-                                        <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
-                                        <option value="evening">Evening (5 PM - 7 PM)</option>
-                                        <option value="flexible">Flexible</option>
+                                    <label for="preferred_date" class="form-label">Select Date *</label>
+                                    <select class="form-select" id="preferred_date" name="preferred_date" required>
+                                        <option value="">Loading available dates...</option>
                                     </select>
+                                    <div class="form-text">Next 14 days (Monday-Saturday)</div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="preferred_time" class="form-label">Select Time *</label>
+                                    <select class="form-select" id="preferred_time" name="preferred_time" required disabled>
+                                        <option value="">Choose a date first</option>
+                                    </select>
+                                    <div class="form-text">Available: Mon-Fri 7AM-5PM, Sat 8AM-3PM</div>
+                                </div>
+                                
+                                <!-- Real-Time Booking Status -->
+                                <div class="col-12">
+                                    <div id="booking-status" class="alert alert-info" style="display: none;">
+                                        <i class="fas fa-clock me-2"></i>
+                                        <span id="status-message">Checking availability...</span>
+                                    </div>
                                 </div>
                                 
                                 <div class="col-12">
@@ -339,11 +362,117 @@
 
 {% block scripts %}
 <script>
-// Set minimum date to today
+// Real-time scheduling functionality
 document.addEventListener('DOMContentLoaded', function() {
-    const dateInput = document.getElementById('preferred_date');
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.setAttribute('min', today);
+    const dateSelect = document.getElementById('preferred_date');
+    const timeSelect = document.getElementById('preferred_time');
+    const statusDiv = document.getElementById('booking-status');
+    const statusMessage = document.getElementById('status-message');
+    
+    // Load available dates on page load
+    loadAvailableDates();
+    
+    // Handle date selection
+    dateSelect.addEventListener('change', function() {
+        const selectedDate = this.value;
+        if (selectedDate) {
+            loadAvailableSlots(selectedDate);
+        } else {
+            timeSelect.disabled = true;
+            timeSelect.innerHTML = '<option value="">Choose a date first</option>';
+            hideStatus();
+        }
+    });
+    
+    // Handle time selection
+    timeSelect.addEventListener('change', function() {
+        if (this.value) {
+            showStatus('success', 'Time slot selected! Your appointment will be confirmed upon form submission.');
+        }
+    });
+    
+    function loadAvailableDates() {
+        showStatus('info', 'Loading available dates...');
+        
+        fetch('/api/availability/dates')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    populateDateOptions(data.dates);
+                    hideStatus();
+                } else {
+                    showStatus('warning', 'Could not load available dates. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading dates:', error);
+                showStatus('danger', 'Error loading available dates. Please refresh the page.');
+            });
+    }
+    
+    function loadAvailableSlots(date) {
+        timeSelect.disabled = true;
+        timeSelect.innerHTML = '<option value="">Loading available times...</option>';
+        showStatus('info', 'Loading available time slots...');
+        
+        fetch(`/api/availability/slots?date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.slots.length > 0) {
+                    populateTimeOptions(data.slots);
+                    timeSelect.disabled = false;
+                    showStatus('success', `${data.slots.length} time slots available for ${formatDate(date)}`);
+                } else {
+                    timeSelect.innerHTML = '<option value="">No slots available</option>';
+                    showStatus('warning', 'No available time slots for this date. Please choose another date.');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading slots:', error);
+                timeSelect.innerHTML = '<option value="">Error loading times</option>';
+                showStatus('danger', 'Error loading time slots. Please try again.');
+            });
+    }
+    
+    function populateDateOptions(dates) {
+        dateSelect.innerHTML = '<option value="">Select a date</option>';
+        dates.forEach(date => {
+            const option = document.createElement('option');
+            option.value = date;
+            option.textContent = formatDate(date);
+            dateSelect.appendChild(option);
+        });
+    }
+    
+    function populateTimeOptions(slots) {
+        timeSelect.innerHTML = '<option value="">Select a time</option>';
+        slots.forEach(slot => {
+            const option = document.createElement('option');
+            option.value = slot.time;
+            option.textContent = slot.display_time;
+            timeSelect.appendChild(option);
+        });
+    }
+    
+    function formatDate(dateStr) {
+        const date = new Date(dateStr + 'T00:00:00');
+        return date.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+    
+    function showStatus(type, message) {
+        statusDiv.className = `alert alert-${type}`;
+        statusMessage.textContent = message;
+        statusDiv.style.display = 'block';
+    }
+    
+    function hideStatus() {
+        statusDiv.style.display = 'none';
+    }
 });
 </script>
 {% endblock %}
