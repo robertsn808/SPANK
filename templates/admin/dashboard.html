@@ -169,6 +169,47 @@
 {% block content %}
 <div class="dashboard-content">
     <div class="container-fluid">
+        <!-- Stats Cards Row - At Top -->
+        <div class="row g-4 mb-4">
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="stats-card bg-gradient-primary">
+                    <div class="icon-circle">
+                        <i class="fas fa-clipboard-list fa-2x"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ bookings|length if bookings else 0 }}</h3>
+                    <p class="mb-0">Total Requests</p>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="stats-card bg-gradient-success">
+                    <div class="icon-circle">
+                        <i class="fas fa-handshake fa-2x"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ (bookings|selectattr('status', 'equalto', 'pending')|list)|length if bookings else 0 }}</h3>
+                    <p class="mb-0">Pending</p>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="stats-card bg-gradient-warning">
+                    <div class="icon-circle">
+                        <i class="fas fa-envelope fa-2x"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ contact_messages|length if contact_messages else 0 }}</h3>
+                    <p class="mb-0">Messages</p>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="stats-card bg-gradient-info">
+                    <div class="icon-circle">
+                        <i class="fas fa-calendar fa-2x"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ week_appointments|length if week_appointments else 0 }}</h3>
+                    <p class="mb-0">This Week</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Layout Row -->
         <div class="row">
             <!-- Sidebar with Quick Actions -->
             <div class="col-lg-3 col-xl-2">
@@ -237,112 +278,74 @@
 
             <!-- Main Content Area -->
             <div class="col-lg-9 col-xl-10">
-                <!-- Stats Cards Row -->
-                <div class="row g-4 mb-4">
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="stats-card bg-gradient-primary">
-                            <div class="icon-circle">
-                                <i class="fas fa-clipboard-list fa-2x"></i>
-                            </div>
-                            <h3 class="fw-bold mb-1">{{ bookings|length if bookings else 0 }}</h3>
-                            <p class="mb-0">Total Requests</p>
-                        </div>
+                <!-- Bookings Table Section -->
+                {% if bookings %}
+                <div class="bookings-section">
+                    <h4 class="fw-bold mb-4">
+                        <i class="fas fa-list me-2 text-primary"></i>Recent Consultation Bookings
+                    </h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Contact</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings[:5] %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold">{{ booking.name }}</div>
+                                        {% if booking.project_type %}
+                                        <small class="text-muted">{{ booking.project_type|title }} Project</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div><i class="fas fa-phone text-muted me-1"></i>{{ booking.phone }}</div>
+                                        <div><i class="fas fa-envelope text-muted me-1"></i>{{ booking.email }}</div>
+                                    </td>
+                                    <td>{{ booking.service|replace('_', ' ')|title }}</td>
+                                    <td>{{ booking.consultation_date }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% else %}secondary{% endif %}">
+                                            {{ booking.status|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="#" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-outline-success btn-sm">
+                                                <i class="fas fa-check"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="stats-card bg-gradient-success">
-                            <div class="icon-circle">
-                                <i class="fas fa-handshake fa-2x"></i>
-                            </div>
-                            <h3 class="fw-bold mb-1">{{ (bookings|selectattr('status', 'equalto', 'pending')|list)|length if bookings else 0 }}</h3>
-                            <p class="mb-0">Pending</p>
-                        </div>
+                    {% if bookings|length > 5 %}
+                    <div class="text-center mt-3">
+                        <a href="/admin/bookings" class="btn btn-primary">View All Bookings</a>
                     </div>
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="stats-card bg-gradient-warning">
-                            <div class="icon-circle">
-                                <i class="fas fa-envelope fa-2x"></i>
-                            </div>
-                            <h3 class="fw-bold mb-1">{{ contact_messages|length if contact_messages else 0 }}</h3>
-                            <p class="mb-0">Messages</p>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="stats-card bg-gradient-info">
-                            <div class="icon-circle">
-                                <i class="fas fa-calendar fa-2x"></i>
-                            </div>
-                            <h3 class="fw-bold mb-1">{{ week_appointments|length if week_appointments else 0 }}</h3>
-                            <p class="mb-0">This Week</p>
-                        </div>
-                    </div>
+                    {% endif %}
                 </div>
-
-        <!-- Bookings Table Section -->
-        {% if bookings %}
-        <div class="bookings-section">
-            <h4 class="fw-bold mb-4">
-                <i class="fas fa-list me-2 text-primary"></i>Recent Consultation Bookings
-            </h4>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Customer</th>
-                            <th>Contact</th>
-                            <th>Service</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for booking in bookings[:5] %}
-                        <tr>
-                            <td>
-                                <div class="fw-bold">{{ booking.name }}</div>
-                                {% if booking.project_type %}
-                                <small class="text-muted">{{ booking.project_type|title }} Project</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div><i class="fas fa-phone text-muted me-1"></i>{{ booking.phone }}</div>
-                                <div><i class="fas fa-envelope text-muted me-1"></i>{{ booking.email }}</div>
-                            </td>
-                            <td>{{ booking.service|replace('_', ' ')|title }}</td>
-                            <td>{{ booking.consultation_date }}</td>
-                            <td>
-                                <span class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% else %}secondary{% endif %}">
-                                    {{ booking.status|title }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="#" class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-outline-success btn-sm">
-                                        <i class="fas fa-check"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                {% else %}
+                <div class="bookings-section text-center">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <h4>No Bookings Yet</h4>
+                    <p class="text-muted">When customers submit consultation requests, they'll appear here.</p>
+                </div>
+                {% endif %}
             </div>
-            {% if bookings|length > 5 %}
-            <div class="text-center mt-3">
-                <a href="/admin/bookings" class="btn btn-primary">View All Bookings</a>
-            </div>
-            {% endif %}
         </div>
-        {% else %}
-        <div class="bookings-section text-center">
-            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-            <h4>No Bookings Yet</h4>
-            <p class="text-muted">When customers submit consultation requests, they'll appear here.</p>
-        </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}
