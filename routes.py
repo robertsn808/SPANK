@@ -532,6 +532,7 @@ def admin_dashboard():
 
         # Generate extended schedule dates for calendar using Hawaii timezone
         hawaii_now = get_hawaii_time()
+        hawaii_tz = pytz.timezone('Pacific/Honolulu')
         
         # Get week offset from URL parameter for navigation
         week_offset = int(request.args.get('week_offset', 0))
@@ -563,7 +564,11 @@ def admin_dashboard():
                     continue
                     
                 appointment_date = datetime.strptime(date_field, '%Y-%m-%d')
-                if start_of_week <= appointment_date < end_of_extended_period:
+                # Use naive datetime comparison by converting start_of_week to date only
+                start_date_naive = start_of_week.date()
+                end_date_naive = end_of_extended_period.date()
+                appointment_date_only = appointment_date.date()
+                if start_date_naive <= appointment_date_only < end_date_naive:
                     # Normalize appointment data for template compatibility
                     normalized_appointment = {
                         'id': appointment.get('appointment_id', appointment.get('id')),
