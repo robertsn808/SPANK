@@ -684,7 +684,9 @@ def admin_dashboard():
                              admin_notifications=admin_notifications)
     
     except Exception as e:
+        import traceback
         logging.error(f"Error loading admin dashboard: {e}")
+        logging.error(f"Full traceback: {traceback.format_exc()}")
         flash('Dashboard temporarily unavailable. Please try again.', 'error')
         return render_template('admin_login.html')
 

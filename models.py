@@ -90,7 +90,7 @@ class HandymanStorage:
         """Get next available ID for a collection"""
         if not items:
             return 1
-        return max(item.id for item in items if hasattr(item, 'id') and item.id) + 1
+        return max(item.id if hasattr(item, 'id') else item.get('id', 0) for item in items if (hasattr(item, 'id') and item.id) or (isinstance(item, dict) and item.get('id'))) + 1
     
     def _load_contacts(self):
         """Load contacts from file"""
@@ -431,8 +431,11 @@ class HandymanStorage:
                 if contact.id == contact_id:
                     # Update contact attributes
                     for key, value in updates.items():
-                        if hasattr(contact, key) and value is not None:
-                            setattr(contact, key, value)
+                        if (hasattr(contact, key) if hasattr(contact, '__dict__') else key in contact) and value is not None:
+                            if hasattr(contact, '__dict__'):
+                                setattr(contact, key, value)
+                            else:
+                                contact[key] = value
 
                     # Save back to storage
                     self._save_contacts_to_file()

@@ -302,8 +302,9 @@ class PDFGenerator:
 
         # Calculate totals if not provided
         if 'total_sub' not in data:
-            if hasattr(data.get('items', [{}])[0], 'total'):
-                subtotal = sum(item.total for item in data['items'])
+            first_item = data.get('items', [{}])[0] if data.get('items') else {}
+            if hasattr(first_item, 'total') if hasattr(first_item, '__dict__') else 'total' in first_item:
+                subtotal = sum(item.total if hasattr(item, 'total') else item.get('total', 0) for item in data['items'])
             else:
                 subtotal = sum(item.get('line_total', 0) for item in data['items'])
         else:
