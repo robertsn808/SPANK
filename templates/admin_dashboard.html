@@ -483,9 +483,13 @@
                                     
                                     {% if slot_appointments %}
                                         {% for appointment in slot_appointments %}
-                                        <div class="appointment-block bg-success text-white p-1 rounded small">
+                                        <div class="appointment-block bg-success text-white p-1 rounded small" style="cursor: pointer;" onclick="showAppointmentDetails('{{ appointment.id if appointment.id else loop.index }}', '{{ appointment.client_name }}', '{{ appointment.service }}', '{{ appointment.estimated_amount if appointment.estimated_amount else 'TBD' }}', '{{ appointment.status if appointment.status else 'Scheduled' }}', '{{ appointment.time }}', '{{ date.strftime('%Y-%m-%d') }}')">
                                             <div class="fw-bold">{{ appointment.service[:15] }}{% if appointment.service|length > 15 %}...{% endif %}</div>
                                             <div class="text-white-50" style="font-size: 0.7rem;">{{ appointment.client_name if appointment.client_name else 'Client' }}</div>
+                                            <div class="text-white-75" style="font-size: 0.65rem;">
+                                                {% if appointment.estimated_amount %}${{ appointment.estimated_amount }}{% endif %}
+                                                <span class="badge bg-light text-dark ms-1" style="font-size: 0.6rem;">{{ appointment.status if appointment.status else 'Scheduled' }}</span>
+                                            </div>
                                         </div>
                                         {% endfor %}
                                     {% else %}
@@ -648,6 +652,58 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" onclick="createAppointment()">
                     <i class="fas fa-save me-1"></i>Create Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointment Details Modal -->
+<div class="modal fade" id="appointmentDetailsModal" tabindex="-1" aria-labelledby="appointmentDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="appointmentDetailsModalLabel">
+                    <i class="fas fa-calendar-check me-2"></i>Appointment Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Client Name:</strong></label>
+                            <p id="detailClientName" class="mb-1">-</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Service:</strong></label>
+                            <p id="detailService" class="mb-1">-</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Date & Time:</strong></label>
+                            <p id="detailDateTime" class="mb-1">-</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Estimated Amount:</strong></label>
+                            <p id="detailAmount" class="mb-1">-</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Status:</strong></label>
+                            <p id="detailStatus" class="mb-1">-</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Appointment ID:</strong></label>
+                            <p id="detailId" class="mb-1">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="editAppointment()">
+                    <i class="fas fa-edit me-1"></i>Edit Appointment
                 </button>
             </div>
         </div>
@@ -967,6 +1023,49 @@ function changeWeek(direction) {
     url.searchParams.set('week_offset', currentWeekOffset);
     console.log('Navigating to:', url.toString());
     window.location.href = url.toString();
+}
+
+// Show appointment details function
+function showAppointmentDetails(id, clientName, service, amount, status, time, date) {
+    console.log('Showing appointment details:', {id, clientName, service, amount, status, time, date});
+    
+    // Populate modal fields
+    document.getElementById('detailId').textContent = id || 'N/A';
+    document.getElementById('detailClientName').textContent = clientName || 'Unknown Client';
+    document.getElementById('detailService').textContent = service || 'No service specified';
+    document.getElementById('detailAmount').textContent = amount && amount !== 'TBD' ? `$${amount}` : 'To be determined';
+    document.getElementById('detailStatus').textContent = status || 'Scheduled';
+    
+    // Format date and time
+    const formattedDate = new Date(date).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    const formattedTime = time.includes(':') ? 
+        new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        }) : time;
+    
+    document.getElementById('detailDateTime').textContent = `${formattedDate} at ${formattedTime}`;
+    
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('appointmentDetailsModal'));
+    modal.show();
+}
+
+// Edit appointment function placeholder
+function editAppointment() {
+    console.log('Edit appointment functionality not implemented yet');
+    // Close details modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('appointmentDetailsModal'));
+    if (modal) {
+        modal.hide();
+    }
+    // Could open edit form or navigate to edit page
 }
 
 function updateNavigationButtons() {
