@@ -102,6 +102,16 @@ try:
         financial_reporting_service = None
         
     try:
+        from mailerlite_service import MailerLiteService
+        mailerlite_service = MailerLiteService()
+        logging.info("MailerLite service initialized successfully")
+    except Exception as e:
+        logging.warning(f"MailerLite service initialization failed: {e}")
+        mailerlite_service = None
+        logging.warning(f"FinancialReportingService initialization failed: {e}")
+        financial_reporting_service = None
+        
+    try:
         from inventory_service import InventoryService
         inventory_service = InventoryService()
     except Exception as e:
@@ -6854,5 +6864,220 @@ def get_service_types():
             return jsonify({'success': False, 'error': 'Service types not found. Please sync data first.'})
     except Exception as e:
         print(f"Error retrieving service types: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ===============================
+# MAILERLITE EMAIL MARKETING ROUTES
+# ===============================
+
+@app.route('/admin/email-marketing')
+def admin_email_marketing():
+    """MailerLite Email Marketing Dashboard"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get MailerLite account info and subscriber stats
+        account_info = {}
+        subscriber_stats = {}
+        
+        if mailerlite_service:
+            # Test connection and get account info
+            connection_test = mailerlite_service.test_connection()
+            if connection_test.get('success'):
+                account_info = connection_test.get('account', {})
+            
+            # Get subscriber statistics
+            stats_result = mailerlite_service.get_subscriber_stats()
+            if stats_result.get('success'):
+                subscriber_stats = stats_result.get('stats', {})
+        
+        return render_template('admin/email_marketing.html',
+                             account_info=account_info,
+                             subscriber_stats=subscriber_stats,
+                             mailerlite_configured=mailerlite_service is not None)
+    except Exception as e:
+        logging.error(f"Error in email marketing dashboard: {e}")
+        flash('Error loading email marketing dashboard', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/api/mailerlite/test-connection', methods=['POST'])
+def test_mailerlite_connection():
+    """Test MailerLite API connection"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    if not mailerlite_service:
+        return jsonify({'success': False, 'error': 'MailerLite service not configured'})
+    
+    try:
+        result = mailerlite_service.test_connection()
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error testing MailerLite connection: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/mailerlite/add-subscriber', methods=['POST'])
+def add_mailerlite_subscriber():
+    """Add subscriber to MailerLite list"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    if not mailerlite_service:
+        return jsonify({'success': False, 'error': 'MailerLite service not configured'})
+    
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        name = data.get('name', '')
+        phone = data.get('phone', '')
+        list_name = data.get('list_name', 'leads')
+        custom_fields = data.get('custom_fields', {})
+        
+        if not email:
+            return jsonify({'success': False, 'error': 'Email is required'})
+        
+        result = mailerlite_service.add_subscriber(
+            email=email,
+            name=name,
+            phone=phone,
+            list_name=list_name,
+            custom_fields=custom_fields
+        )
+        
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error adding MailerLite subscriber: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/mailerlite/send-welcome', methods=['POST'])
+def send_welcome_email():
+    """Send welcome email to new customer"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    if not mailerlite_service:
+        return jsonify({'success': False, 'error': 'MailerLite service not configured'})
+    
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        name = data.get('name', '')
+        service_type = data.get('service_type', 'General')
+        
+        if not email:
+            return jsonify({'success': False, 'error': 'Email is required'})
+        
+        result = mailerlite_service.send_welcome_email(
+            email=email,
+            name=name,
+            service_type=service_type
+        )
+        
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error sending welcome email: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/mailerlite/quote-follow-up', methods=['POST'])
+def send_quote_follow_up():
+    """Send quote follow-up email with SPANK Buck incentives"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    if not mailerlite_service:
+        return jsonify({'success': False, 'error': 'MailerLite service not configured'})
+    
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        name = data.get('name', '')
+        quote_id = data.get('quote_id')
+        amount = data.get('amount', 0)
+        
+        if not all([email, quote_id]):
+            return jsonify({'success': False, 'error': 'Email and quote ID are required'})
+        
+        result = mailerlite_service.send_quote_follow_up(
+            email=email,
+            name=name,
+            quote_id=quote_id,
+            amount=float(amount)
+        )
+        
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error sending quote follow-up: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/mailerlite/spank-school', methods=['POST'])
+def add_spank_school_subscriber():
+    """Add subscriber to SPANKKS SKOOL list after course completion"""
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        name = data.get('name', '')
+        course_completed = data.get('course_completed', '')
+        
+        if not email:
+            return jsonify({'success': False, 'error': 'Email is required'})
+        
+        if mailerlite_service:
+            result = mailerlite_service.add_spank_school_subscriber(
+                email=email,
+                name=name,
+                course_completed=course_completed
+            )
+            return jsonify(result)
+        else:
+            return jsonify({'success': False, 'error': 'MailerLite service not configured'})
+            
+    except Exception as e:
+        logging.error(f"Error adding SPANK School subscriber: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/mailerlite/subscriber-stats', methods=['GET'])
+def get_subscriber_stats():
+    """Get subscriber statistics for all SPANKKS Construction lists"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    if not mailerlite_service:
+        return jsonify({'success': False, 'error': 'MailerLite service not configured'})
+    
+    try:
+        result = mailerlite_service.get_subscriber_stats()
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error getting subscriber stats: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/mailerlite/create-campaign', methods=['POST'])
+def create_email_campaign():
+    """Create and send email campaign to specific list"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    if not mailerlite_service:
+        return jsonify({'success': False, 'error': 'MailerLite service not configured'})
+    
+    try:
+        data = request.get_json()
+        subject = data.get('subject')
+        content = data.get('content')
+        list_name = data.get('list_name', 'customers')
+        
+        if not all([subject, content]):
+            return jsonify({'success': False, 'error': 'Subject and content are required'})
+        
+        result = mailerlite_service.create_campaign(
+            subject=subject,
+            content=content,
+            list_name=list_name
+        )
+        
+        return jsonify(result)
+    except Exception as e:
+        logging.error(f"Error creating email campaign: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
