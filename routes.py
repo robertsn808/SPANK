@@ -78,6 +78,15 @@ try:
         logging.warning(f"ReminderService initialization failed: {e}")
         reminder_service = None
         
+    # Initialize real-time scheduler for exact time booking
+    try:
+        from real_time_scheduler import RealTimeScheduler
+        real_time_scheduler = RealTimeScheduler()
+        logging.info("Real-time scheduler initialized successfully")
+    except Exception as e:
+        logging.warning(f"Real-time scheduler initialization failed: {e}")
+        real_time_scheduler = None
+        
     try:
         from job_tracking_service import JobTrackingService
         job_tracking_service = JobTrackingService()
@@ -3338,6 +3347,185 @@ def schedule_appointment_reminder():
         appointment_data = request.get_json()
         
         success = reminder_service.schedule_appointment_reminder(appointment_data)
+        
+        return jsonify({
+            'success': success,
+            'message': 'Appointment reminder scheduled' if success else 'Failed to schedule reminder'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error scheduling appointment reminder: {e}")
+        return jsonify({'error': f'Failed to schedule reminder: {str(e)}'}), 500
+
+# ========== REAL-TIME SCHEDULING API ENDPOINTS ==========
+
+@app.route('/api/availability/dates', methods=['GET'])
+def get_available_dates():
+    """Get available dates for real-time booking"""
+    try:
+        days_ahead = int(request.args.get('days', 14))
+        
+        if real_time_scheduler:
+            available_dates = real_time_scheduler.get_available_dates(days_ahead)
+            return jsonify({
+                'success': True,
+                'available_dates': available_dates,
+                'business_hours': {
+                    'monday_friday': '7:00 AM - 5:00 PM',
+                    'saturday': '8:00 AM - 3:00 PM',
+                    'sunday': 'Closed',
+                    'lunch_break': '12:00 PM - 1:00 PM (Mon-Fri)'
+                }
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Real-time scheduling not available'
+            }), 503
+            
+    except Exception as e:
+        logging.error(f"Error getting available dates: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to load available dates'
+        }), 500
+
+@app.route('/api/availability/slots/<date>', methods=['GET'])
+def get_available_slots(date):
+    """Get available time slots for a specific date"""
+    try:
+        if real_time_scheduler:
+            slots = real_time_scheduler.get_available_slots(date)
+            return jsonify({
+                'success': True,
+                'date': date,
+                'available_slots': slots,
+                'total_slots': len(slots)
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Real-time scheduling not available'
+            }), 503
+            
+    except Exception as e:
+        logging.error(f"Error getting slots for {date}: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'Failed to load time slots for {date}'
+        }), 500
+
+@app.route('/api/booking/create', methods=['POST'])
+def create_real_time_booking():
+    """Create a real-time booking with immediate confirmation"""
+    try:
+        booking_data = request.get_json() if request.is_json else request.form.to_dict()
+        
+        # Format phone number
+        if 'customer_phone' in booking_data:
+            booking_data['customer_phone'] = phone_formatter.format_phone(booking_data['customer_phone'])
+        
+        if real_time_scheduler:
+            result = real_time_scheduler.book_appointment(booking_data)
+            
+            if result['success']:
+                # Also create appointment in unified scheduler for admin dashboard
+                if unified_scheduler:
+                    appointment_data = {
+                        'customer_name': booking_data.get('customer_name'),
+                        'customer_phone': booking_data.get('customer_phone'),
+                        'customer_email': booking_data.get('customer_email'),
+                        'service_type': booking_data.get('service_type'),
+                        'consultation_type': booking_data.get('consultation_type'),
+                        'project_details': booking_data.get('project_details', ''),
+                        'date': booking_data.get('date'),
+                        'time': booking_data.get('time'),
+                        'status': 'confirmed',
+                        'booking_method': 'real_time_web'
+                    }
+                    unified_scheduler.create_appointment(appointment_data)
+                
+                # Send notification to admin
+                if notification_service:
+                    notification_service.send_inquiry_alert(
+                        'New Real-Time Booking Confirmed',
+                        booking_data.get('customer_name', ''),
+                        booking_data.get('customer_phone', ''),
+                        booking_data.get('customer_email', ''),
+                        f"Service: {booking_data.get('service_type', '')} | Date: {booking_data.get('date', '')} | Time: {result['confirmation']['display_time']}"
+                    )
+                
+                return jsonify(result)
+            else:
+                return jsonify(result), 400
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Real-time booking not available'
+            }), 503
+            
+    except Exception as e:
+        logging.error(f"Error creating real-time booking: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to create booking'
+        }), 500
+
+@app.route('/api/booking/<booking_id>/cancel', methods=['POST'])
+def cancel_real_time_booking(booking_id):
+    """Cancel a real-time booking"""
+    try:
+        if real_time_scheduler:
+            success = real_time_scheduler.cancel_booking(booking_id)
+            
+            if success:
+                return jsonify({
+                    'success': True,
+                    'message': f'Booking {booking_id} cancelled successfully'
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': 'Booking not found or already cancelled'
+                }), 404
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Real-time scheduling not available'
+            }), 503
+            
+    except Exception as e:
+        logging.error(f"Error cancelling booking {booking_id}: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to cancel booking'
+        }), 500
+
+@app.route('/api/schedule/daily/<date>', methods=['GET'])
+def get_daily_schedule(date):
+    """Get complete schedule for a specific date"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        if real_time_scheduler:
+            schedule = real_time_scheduler.get_daily_schedule(date)
+            return jsonify({
+                'success': True,
+                'schedule': schedule
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Real-time scheduling not available'
+            }), 503
+            
+    except Exception as e:
+        logging.error(f"Error getting daily schedule for {date}: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'Failed to load schedule for {date}'
+        }), 500
         
         if success:
             return jsonify({
