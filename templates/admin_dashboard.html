@@ -375,10 +375,10 @@
                     <div class="d-flex align-items-center">
                         <!-- Week Navigation -->
                         <div class="d-flex align-items-center me-3">
-                            <button type="button" class="btn btn-outline-light btn-sm me-2" id="prevWeek" onclick="changeWeek(-1)">
+                            <button type="button" class="btn btn-outline-light btn-sm me-2" id="prevWeek">
                                 <i class="fas fa-chevron-left"></i>
                             </button>
-                            <button type="button" class="btn btn-outline-light btn-sm me-2" id="nextWeek" onclick="changeWeek(1)">
+                            <button type="button" class="btn btn-outline-light btn-sm me-2" id="nextWeek">
                                 <i class="fas fa-chevron-right"></i>
                             </button>
                             <button type="button" class="btn btn-outline-light btn-sm me-3" id="todayBtn" onclick="goToToday()">
@@ -925,7 +925,49 @@ document.addEventListener('DOMContentLoaded', function() {
     // Test if appointment modal function is accessible
     console.log('Testing appointment modal function:', typeof openNewAppointmentModal);
     window.openNewAppointmentModal = openNewAppointmentModal;
+    
+    // Add click listeners for navigation buttons
+    const prevWeekBtn = document.getElementById('prevWeek');
+    const nextWeekBtn = document.getElementById('nextWeek');
+    
+    if (prevWeekBtn) {
+        prevWeekBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Previous week clicked');
+            changeWeek(-1);
+        });
+    }
+    
+    if (nextWeekBtn) {
+        nextWeekBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Next week clicked');
+            changeWeek(1);
+        });
+    }
+    
+    // Add click listeners for empty appointment slots
+    document.querySelectorAll('.empty-slot').forEach(slot => {
+        slot.addEventListener('click', function() {
+            const date = this.getAttribute('data-date');
+            const time = this.getAttribute('data-time');
+            console.log('Empty slot clicked:', date, time);
+            openNewAppointmentModal(date, time);
+        });
+    });
 });
+
+// Week navigation function
+function changeWeek(direction) {
+    console.log('changeWeek called with direction:', direction);
+    currentWeekOffset += direction;
+    
+    // Reload page with new week offset
+    const url = new URL(window.location);
+    url.searchParams.set('week_offset', currentWeekOffset);
+    console.log('Navigating to:', url.toString());
+    window.location.href = url.toString();
+}
 
 function updateNavigationButtons() {
     const todayBtn = document.getElementById('todayBtn');
