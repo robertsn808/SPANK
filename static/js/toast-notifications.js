@@ -299,15 +299,6 @@ class ToastNotifications {
 
 // Initialize toast system
 window.toastManager = new ToastNotificationManager();
-        .then(response => response.json())
-        .then(data => {
-            // Hide loading toast
-            bootstrap.Toast.getInstance(loadingToast).hide();
-            
-            if (data.success) {
-                this.success(options.successMessage || data.message || 'Operation completed successfully');
-                if (options.onSuccess) {
-                    options.onSuccess(data);
                 }
             } else {
                 this.error(options.errorMessage || data.error || 'Operation failed');
