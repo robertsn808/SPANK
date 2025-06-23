@@ -187,7 +187,7 @@
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="card text-center border-0 shadow-sm">
+            <div class="card text-center border-0 shadow-sm" style="cursor: pointer;" onclick="showPendingDetails()">
                 <div class="card-body py-3">
                     <i class="fas fa-coins fa-2x text-warning mb-2"></i>
                     <h3 class="card-title h4 mb-1">{{ pending_requests|length if pending_requests else 0 }}</h3>
@@ -652,6 +652,72 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" onclick="createAppointment()">
                     <i class="fas fa-save me-1"></i>Create Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Items Modal -->
+<div class="modal fade" id="pendingDetailsModal" tabindex="-1" aria-labelledby="pendingDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pendingDetailsModalLabel">
+                    <i class="fas fa-clock me-2"></i>Pending Items
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="mb-3"><i class="fas fa-clipboard-check me-2"></i>Pending Service Requests</h6>
+                        {% if pending_requests %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Service</th>
+                                        <th>Date Requested</th>
+                                        <th>Phone</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for request in pending_requests %}
+                                    <tr>
+                                        <td>{{ request.name if hasattr(request, 'name') else 'Unknown' }}</td>
+                                        <td>{{ request.service if hasattr(request, 'service') else 'General Service' }}</td>
+                                        <td>{{ request.created_at.strftime('%m/%d/%Y') if hasattr(request, 'created_at') else 'N/A' }}</td>
+                                        <td>{{ request.phone if hasattr(request, 'phone') else 'N/A' }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success" onclick="updateRequestStatus('{{ request.id if hasattr(request, 'id') else loop.index }}', 'confirmed')">
+                                                <i class="fas fa-check me-1"></i>Confirm
+                                            </button>
+                                            <button class="btn btn-sm btn-warning" onclick="viewRequestDetails('{{ request.id if hasattr(request, 'id') else loop.index }}')">
+                                                <i class="fas fa-eye me-1"></i>View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-check-circle fa-3x mb-3"></i>
+                            <h6>No Pending Requests</h6>
+                            <p>All service requests have been processed.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="window.location.href='/admin/project-tracking'">
+                    <i class="fas fa-tasks me-1"></i>Manage All Requests
                 </button>
             </div>
         </div>
@@ -1158,6 +1224,56 @@ function createAppointment() {
         console.error('Error:', error);
         alert('Error creating appointment. Please try again.');
     });
+}
+
+// Show pending details modal
+function showPendingDetails() {
+    console.log('Showing pending details modal');
+    const modal = new bootstrap.Modal(document.getElementById('pendingDetailsModal'));
+    modal.show();
+}
+
+// Update request status
+function updateRequestStatus(requestId, status) {
+    console.log('Updating request status:', requestId, status);
+    
+    fetch(`/admin/update-booking/${requestId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `status=${status}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            alert(`Request ${status} successfully!`);
+            
+            // Reload the page to reflect changes
+            window.location.reload();
+        } else {
+            alert('Error updating request: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating request. Please try again.');
+    });
+}
+
+// View request details
+function viewRequestDetails(requestId) {
+    console.log('Viewing request details:', requestId);
+    
+    // Close pending modal
+    const pendingModal = bootstrap.Modal.getInstance(document.getElementById('pendingDetailsModal'));
+    if (pendingModal) {
+        pendingModal.hide();
+    }
+    
+    // Navigate to project tracking for detailed view
+    window.location.href = `/admin/project-tracking#request-${requestId}`;
 }
 </script>
 {% endblock %}
