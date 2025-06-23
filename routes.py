@@ -519,6 +519,16 @@ def admin_dashboard():
     try:
         service_requests = handyman_storage.get_all_service_requests()
         contact_messages = handyman_storage.get_all_contact_messages()
+        
+        # Load real appointments from unified scheduler database
+        import json
+        import os
+        appointments_file = os.path.join('data', 'unified_appointments.json')
+        if os.path.exists(appointments_file):
+            with open(appointments_file, 'r') as f:
+                appointments = json.load(f)
+        else:
+            appointments = []
 
         # Generate extended schedule dates for calendar using Hawaii timezone
         hawaii_now = get_hawaii_time()
