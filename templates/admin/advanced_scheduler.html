@@ -361,6 +361,11 @@
 {% endblock %}
 
 {% block content %}
+<div class="container-fluid">
+    <!-- Quick Actions Navigation -->
+    {% include 'quick_actions_nav.html' %}
+</div>
+
 <!-- Hamburger Menu Button -->
 <button class="hamburger-menu" onclick="toggleSidebar()">
     <i class="fas fa-bars"></i>
