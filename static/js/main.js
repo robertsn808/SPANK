@@ -325,7 +325,7 @@ function makeRequest(url, options) {
         }
     };
 
-    const finalOptions = Object.assign({}, defaultOptions, options);
+    const finalOptions = Object.assign({}, defaultOptions, options || {});
 
     return fetch(url, finalOptions)
         .then(function(response) {
