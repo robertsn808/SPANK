@@ -298,7 +298,7 @@ class ToastNotifications {
 }
 
 // Initialize toast system
-window.toastManager = new ToastNotificationManager();
+window.toastManager = new ToastNotifications();
 
 // CSS for toast notifications and progress bars
 const toastStyles = `

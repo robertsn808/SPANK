@@ -489,7 +489,7 @@
                                         </div>
                                         {% endfor %}
                                     {% else %}
-                                        <div class="empty-slot" onclick="console.log('Clicked empty slot:', '{{ date.strftime('%Y-%m-%d') }}', '{{ time_value }}'); openNewAppointmentModal('{{ date.strftime('%Y-%m-%d') }}', '{{ time_value }}');" style="cursor: pointer;">
+                                        <div class="empty-slot" data-date="{{ date.strftime('%Y-%m-%d') }}" data-time="{{ time_value }}" style="cursor: pointer;">
                                             <i class="fas fa-plus text-muted"></i>
                                         </div>
                                     {% endif %}
