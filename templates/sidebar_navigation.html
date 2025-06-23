@@ -157,27 +157,7 @@
                     </div>
                 </div>
 
-                <div class="nav-section">
-                    <div class="nav-section-header" onclick="toggleSection('operations-section')">
-                        <i class="fas fa-cogs"></i>
-                        <span>Operations</span>
-                        <i class="fas fa-chevron-down section-toggle"></i>
-                    </div>
-                    <div class="nav-section-content" id="operations-section">
-                        <a href="{{ url_for('staff_management') }}" class="nav-link">
-                            <i class="fas fa-users-cog"></i> Staff Management
-                        </a>
-                        <a href="{{ url_for('inventory_dashboard') }}" class="nav-link">
-                            <i class="fas fa-boxes"></i> Inventory
-                        </a>
-                        <a href="{{ url_for('checklist_management') }}" class="nav-link">
-                            <i class="fas fa-check-square"></i> Checklists
-                        </a>
-                        <a href="{{ url_for('financial_reports_dashboard') }}" class="nav-link">
-                            <i class="fas fa-chart-pie"></i> Financial Reports
-                        </a>
-                    </div>
-                </div>
+
 
             {% elif session.staff_logged_in %}
                 <!-- Staff Navigation -->
