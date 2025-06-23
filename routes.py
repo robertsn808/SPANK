@@ -597,7 +597,11 @@ def admin_dashboard():
                     continue
                     
                 appointment_date = datetime.strptime(date_field, '%Y-%m-%d')
-                if start_of_week <= appointment_date < start_of_week + timedelta(days=7):
+                # Use naive datetime comparison by converting start_of_week to date only
+                start_date_naive = start_of_week.date()
+                end_week_naive = (start_of_week + timedelta(days=7)).date()
+                appointment_date_only = appointment_date.date()
+                if start_date_naive <= appointment_date_only < end_week_naive:
                     # Normalize for legacy compatibility
                     normalized_appointment = {
                         'id': appointment.get('appointment_id', appointment.get('id')),
@@ -1585,7 +1589,7 @@ def dashboard_metrics():
         
         return jsonify({
             'total_requests': len(service_requests),
-            'pending_requests': len([req for req in service_requests if hasattr(req, 'status') and req.status == 'pending']),
+            'pending_requests': len([req for req in service_requests if req.get('status') == 'pending']),
             'total_messages': len(contact_messages),
             'week_appointments': len(week_appointments),
             'last_updated': datetime.now().isoformat()
@@ -1869,7 +1873,7 @@ def customer_feedback():
 
     # Customer communication priorities
     urgent_messages = [msg for msg in contact_messages if msg.status == 'unread' and 
-                      hasattr(msg, 'priority_score') and msg.priority_score >= 7]
+                      msg.get('priority_score', 0) >= 7]
     
     # Calculate satisfaction metrics
     total_completed = len([req for req in service_requests if req.status == 'completed'])
