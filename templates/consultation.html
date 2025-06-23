@@ -398,7 +398,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    populateDateOptions(data.dates);
+                    populateDateOptions(data.available_dates);
                     hideStatus();
                 } else {
                     showStatus('warning', 'Could not load available dates. Please try again.');
