@@ -1,0 +1,5 @@
+name,phone,email,role,hourly_rate,skills,availability,hire_date,status,emergency_contact,emergency_phone,notes
+"Mike Torres","(808) 555-1001","mike.torres@spankks.com","Lead Technician","28.50","Drywall, Painting, General Repair","Monday-Friday 7AM-5PM","2024-01-15","active","Maria Torres","(808) 555-1002","5 years experience, crew leader"
+"Jake Nakamura","(808) 555-1003","jake.nakamura@spankks.com","Flooring Specialist","26.00","Flooring Installation, Tile Work","Monday-Friday 7AM-5PM, Saturday 8AM-3PM","2024-03-10","active","Linda Nakamura","(808) 555-1004","Certified tile installer"
+"Tom Wilson","(808) 555-1005","tom.wilson@spankks.com","General Handyman","22.00","General Repair, Basic Electrical, Plumbing","Monday-Friday 7AM-5PM","2024-05-20","active","Sarah Wilson","(808) 555-1006","New hire, eager to learn"
+"Alex Chen","(808) 555-1007","alex.chen@spankks.com","Fence Specialist","25.50","Fence Building, Concrete Work","Tuesday-Saturday 7AM-5PM","2024-02-01","active","Jennifer Chen","(808) 555-1008","Licensed for concrete work"

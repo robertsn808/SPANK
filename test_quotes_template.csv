@@ -1,0 +1,4 @@
+client_name,client_email,quote_title,service_type,description,quantity,unit,unit_price,line_total,total_before_tax,hawaii_tax_rate,hawaii_tax_amount,total_amount,status,valid_until,notes
+"John Smith","john.smith@email.com","Kitchen Drywall Repair Quote","Drywall Services","Small patch repair under 12 inches","1","patch","155.00","155.00","155.00","0.04712","7.30","162.30","pending","2025-07-15","Standard drywall compound and primer included"
+"Pacific Properties LLC","contact@pacificprops.com","Conference Room Flooring","Flooring Installation","Vinyl plank flooring installation","200","sq ft","4.50","900.00","900.00","0.04712","42.41","942.41","approved","2025-07-20","Premium grade vinyl planks with 20-year warranty"
+"Maria Rodriguez","maria.r@gmail.com","Fence Gate Replacement","Fence Building","Replace existing gate with new hardware","1","gate","325.00","325.00","325.00","0.04712","15.31","340.31","draft","2025-07-10","Includes new hinges and latch mechanism"

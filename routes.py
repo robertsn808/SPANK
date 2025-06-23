@@ -5443,6 +5443,145 @@ def export_current_data_csv(data_type):
         flash('Error exporting data', 'error')
         return redirect(url_for('csv_templates_dashboard'))
 
+@app.route('/admin/csv-upload', methods=['POST'])
+def upload_csv_bulk_data():
+    """Handle CSV file upload for bulk data import"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from upload_service import CSVUploadService
+        
+        if 'csv_file' not in request.files:
+            flash('No file selected', 'error')
+            return redirect(url_for('csv_templates_dashboard'))
+        
+        file = request.files['csv_file']
+        upload_type = request.form.get('upload_type')
+        
+        if file.filename == '':
+            flash('No file selected', 'error')
+            return redirect(url_for('csv_templates_dashboard'))
+        
+        if not upload_type:
+            flash('Please select an upload type', 'error')
+            return redirect(url_for('csv_templates_dashboard'))
+        
+        # Read file content
+        file_content = file.read().decode('utf-8')
+        
+        # Process upload
+        upload_service = CSVUploadService(storage_service)
+        result = upload_service.process_bulk_upload(upload_type, file_content)
+        
+        if result['success']:
+            flash(f"Upload successful: {result['message']}", 'success')
+            if result.get('errors'):
+                for error in result['errors'][:5]:  # Show first 5 errors
+                    flash(f"Warning: {error}", 'warning')
+        else:
+            flash(f"Upload failed: {result['error']}", 'error')
+        
+        return redirect(url_for('csv_templates_dashboard'))
+        
+    except Exception as e:
+        logging.error(f"Error processing CSV upload: {e}")
+        flash('Error processing file upload', 'error')
+        return redirect(url_for('csv_templates_dashboard'))
+
+@app.route('/api/csv/validate', methods=['POST'])
+def validate_csv_api():
+    """API endpoint to validate CSV file before upload"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 401
+    
+    try:
+        from upload_service import CSVUploadService
+        
+        data = request.get_json()
+        file_content = data.get('file_content')
+        upload_type = data.get('upload_type')
+        
+        if not file_content or not upload_type:
+            return jsonify({'success': False, 'error': 'Missing file content or upload type'})
+        
+        # Define expected headers for each type
+        expected_headers = {
+            'clients': ['name', 'phone', 'email', 'address', 'city', 'state', 'zip_code', 'client_type', 'notes', 'preferred_contact_method'],
+            'jobs': ['client_name', 'client_email', 'job_title', 'service_type', 'description', 'location', 'priority', 'status', 'estimated_hours', 'hourly_rate', 'materials_cost', 'scheduled_date', 'scheduled_time', 'completion_date', 'notes'],
+            'quotes': ['client_name', 'client_email', 'quote_title', 'service_type', 'description', 'quantity', 'unit', 'unit_price', 'line_total', 'total_before_tax', 'hawaii_tax_rate', 'hawaii_tax_amount', 'total_amount', 'status', 'valid_until', 'notes'],
+            'invoices': ['client_name', 'client_email', 'invoice_title', 'service_type', 'description', 'quantity', 'unit', 'unit_price', 'line_total', 'total_before_tax', 'hawaii_tax_rate', 'hawaii_tax_amount', 'total_amount', 'payment_status', 'payment_method', 'payment_date', 'due_date', 'notes'],
+            'staff': ['name', 'phone', 'email', 'role', 'hourly_rate', 'skills', 'availability', 'hire_date', 'status', 'emergency_contact', 'emergency_phone', 'notes'],
+            'schedule': ['client_name', 'client_phone', 'client_email', 'appointment_date', 'appointment_time', 'duration_minutes', 'service_type', 'description', 'location', 'priority', 'status', 'assigned_staff', 'notes']
+        }
+        
+        if upload_type not in expected_headers:
+            return jsonify({'success': False, 'error': f'Unsupported upload type: {upload_type}'})
+        
+        upload_service = CSVUploadService()
+        is_valid, message, data_rows = upload_service.validate_csv_file(file_content, expected_headers[upload_type])
+        
+        return jsonify({
+            'success': is_valid,
+            'message': message,
+            'data_preview': data_rows[:5] if is_valid else [],  # Show first 5 rows
+            'total_rows': len(data_rows) if is_valid else 0
+        })
+        
+    except Exception as e:
+        logging.error(f"Error validating CSV: {e}")
+        return jsonify({'success': False, 'error': f'Validation error: {str(e)}'})
+
+@app.route('/api/csv/upload-test', methods=['POST'])
+def test_csv_upload_api():
+    """API endpoint to test CSV upload without saving to database"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 401
+    
+    try:
+        from upload_service import CSVUploadService
+        
+        data = request.get_json()
+        file_content = data.get('file_content')
+        upload_type = data.get('upload_type')
+        
+        if not file_content or not upload_type:
+            return jsonify({'success': False, 'error': 'Missing file content or upload type'})
+        
+        # Process upload without storage service (test mode)
+        upload_service = CSVUploadService(storage_service=None)
+        result = upload_service.process_bulk_upload(upload_type, file_content)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error testing CSV upload: {e}")
+        return jsonify({'success': False, 'error': f'Test upload error: {str(e)}'})
+
+@app.route('/api/csv/upload-summary')
+def get_upload_summary():
+    """Get summary of recent upload operations"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 401
+    
+    try:
+        # This would typically fetch from a database or session
+        # For now, return basic stats
+        return jsonify({
+            'success': True,
+            'summary': {
+                'total_uploads_today': 0,
+                'successful_uploads': 0,
+                'failed_uploads': 0,
+                'total_records_processed': 0,
+                'last_upload': None
+            }
+        })
+        
+    except Exception as e:
+        logging.error(f"Error getting upload summary: {e}")
+        return jsonify({'success': False, 'error': f'Summary error: {str(e)}'})
+
 @app.route('/api/payment/mark-paid', methods=['POST'])
 def mark_invoice_paid_api():
     """API endpoint to mark invoice as paid"""
