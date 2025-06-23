@@ -45,8 +45,8 @@ class BusinessAnalytics:
                     service_type = invoice.get('service_type', 'Unknown')
                     service_revenue[service_type] += amount
             else:
-                if hasattr(invoice, 'status') and invoice.status == 'paid':
-                    total_revenue += invoice.total_amount
+                if invoice.get('status') == 'paid':
+                    total_revenue += invoice.get('total_amount', 0)
                     
                     # Monthly breakdown
                     try:
@@ -77,9 +77,9 @@ class BusinessAnalytics:
                 if 'total_amount' in q:
                     quote_values.append(q['total_amount'])
             else:
-                if hasattr(q, 'status') and q.status == 'accepted':
+                if q.get('status') == 'accepted':
                     accepted_quotes += 1
-                if hasattr(q, 'total_amount'):
+                if q.get('total_amount') is not None:
                     quote_values.append(q.total_amount)
         
         conversion_rate = (accepted_quotes / total_quotes * 100) if total_quotes > 0 else 0
@@ -112,7 +112,7 @@ class BusinessAnalytics:
                     customer_values[invoice.get('contact_id', 'unknown')] += invoice.get('total_amount', 0)
                     customer_jobs[invoice.get('contact_id', 'unknown')] += 1
             else:
-                if hasattr(invoice, 'status') and invoice.status == 'paid':
+                if invoice.get('status') == 'paid':
                     customer_values[getattr(invoice, 'contact_id', 'unknown')] += getattr(invoice, 'total_amount', 0)
                     customer_jobs[getattr(invoice, 'contact_id', 'unknown')] += 1
         
@@ -173,7 +173,7 @@ class BusinessAnalytics:
                 elif status == 'scheduled':
                     scheduled_jobs.append(j)
             else:
-                if hasattr(j, 'status'):
+                if j.get('status') is not None:
                     if j.status == 'completed':
                         completed_jobs.append(j)
                     elif j.status == 'in_progress':
@@ -193,7 +193,7 @@ class BusinessAnalytics:
                             # Skip time calculation due to complex date handling
                             quote_to_completion_days.append(7)  # Default 7 days
                 else:
-                    if hasattr(job, 'quote_id'):
+                    if job.get('quote_id') is not None:
                         quote = next((q for q in quotes if (q.get('id') if isinstance(q, dict) else getattr(q, 'id', None)) == job.quote_id), None)
                         if quote:
                             quote_to_completion_days.append(7)  # Default 7 days
@@ -209,7 +209,7 @@ class BusinessAnalytics:
                 service_type = quote.get('service_type', 'Unknown')
                 service_demand[service_type] += 1
             else:
-                if hasattr(quote, 'service_type'):
+                if quote.get('service_type') is not None:
                     service_demand[quote.service_type] += 1
         
         return {
@@ -246,7 +246,7 @@ class BusinessAnalytics:
                         month_key = datetime.now().strftime('%Y-%m')
                         monthly_data[month_key]['revenue'] += invoice.get('total_amount', 0)
             else:
-                if hasattr(invoice, 'status') and invoice.status == 'paid':
+                if invoice.get('status') == 'paid':
                     try:
                         if isinstance(invoice.created_date, str):
                             date_obj = datetime.fromisoformat(invoice.created_date.replace('Z', '+00:00'))
