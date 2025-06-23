@@ -268,19 +268,19 @@
             <div class="menu-section">
                 <div class="menu-section-title">Core Business</div>
                 
-                <a href="{{ url_for('crm_dashboard') }}" class="menu-item">
-                    <i class="fas fa-users text-primary"></i>
-                    <div>
-                        <div class="menu-item-text">CRM Dashboard</div>
-                        <div class="menu-item-desc">Manage customer relationships</div>
-                    </div>
-                </a>
-                
                 <a href="{{ url_for('enhanced_quote_builder') }}" class="menu-item">
                     <i class="fas fa-file-invoice-dollar text-success"></i>
                     <div>
-                        <div class="menu-item-text">Enhanced Quote Builder</div>
-                        <div class="menu-item-desc">Multi-line quotes with templates</div>
+                        <div class="menu-item-text">Quote Builder</div>
+                        <div class="menu-item-desc">Create professional quotes</div>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('crm_dashboard') }}" class="menu-item">
+                    <i class="fas fa-users text-primary"></i>
+                    <div>
+                        <div class="menu-item-text">Customer Management</div>
+                        <div class="menu-item-desc">View customer records</div>
                     </div>
                 </a>
                 
@@ -447,12 +447,12 @@
     <div class="row g-4">
         <!-- Full Width - Weekly Schedule -->
         <div class="col-12">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="fas fa-calendar-alt me-2"></i>
-                        <span id="scheduleTitle">Weekly Schedule</span>
-                    </h5>
+            <div class="card border-0 shadow-lg h-100" style="border-left: 4px solid #28a745 !important;">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center py-3">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="fas fa-calendar-week me-2"></i>
+                        <span id="scheduleTitle">SPANKKS Weekly Schedule</span>
+                    </h4>
                     <div class="d-flex align-items-center">
                         <!-- Week Navigation -->
                         <div class="d-flex align-items-center me-3">
