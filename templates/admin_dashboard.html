@@ -1,395 +1,206 @@
 {% extends "admin_base.html" %}
 
-{% block title %}Admin Dashboard - Spankks Construction{% endblock %}
-{% block extra_head %}
-  <meta name="description" content="Spankks Construction Admin Dashboard - Manage actual customer requests and business operations">
-  <meta name="keywords" content="admin dashboard, construction management, customer requests">
-{% endblock %}
+{% block title %}Admin Dashboard - SPANKKS Construction{% endblock %}
 
 {% block content %}
-
-<!-- Authentic Data Dashboard Stats -->
-<section class="py-5 bg-gradient-primary">
-    <div class="container-fluid px-4">
-        <div class="row g-4">
-            <div class="col-xl-3 col-lg-4 col-md-6">
-                <div class="card border-0 shadow-lg h-100 stats-card">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-circle bg-primary-light mb-3">
-                            <i class="fas fa-calendar-check fa-2x text-primary"></i>
-                        </div>
-                        <h3 class="fw-bold text-dark mb-1">{{ bookings|length }}</h3>
-                        <p class="text-muted mb-0 small">Total Requests</p>
-                        <div class="progress mt-2" style="height: 3px;">
-                            <div class="progress-bar bg-primary" style="width: 100%"></div>
-                        </div>
-                    </div>
+<div class="container-fluid py-3">
+    <!-- Stats Cards Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <i class="fas fa-clipboard-list fa-2x text-primary mb-2"></i>
+                    <h3 class="card-title h4 mb-1">{{ bookings|length if bookings else 0 }}</h3>
+                    <p class="card-text text-muted small">Total Requests</p>
                 </div>
             </div>
-
-            <div class="col-xl-3 col-lg-4 col-md-6">
-                <div class="card border-0 shadow-lg h-100 stats-card">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-circle bg-warning-light mb-3">
-                            <i class="fas fa-clock fa-2x text-warning"></i>
-                        </div>
-                        <h3 class="fw-bold text-dark mb-1">{{ pending_requests|length }}</h3>
-                        <p class="text-muted mb-0 small">Pending</p>
-                        <div class="progress mt-2" style="height: 3px;">
-                            <div class="progress-bar bg-warning" style="width: {{ ((pending_requests|length / (bookings|length if bookings|length > 0 else 1)) * 100)|round }}%"></div>
-                        </div>
-                    </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <i class="fas fa-coins fa-2x text-warning mb-2"></i>
+                    <h3 class="card-title h4 mb-1">{{ pending_requests|length if pending_requests else 0 }}</h3>
+                    <p class="card-text text-muted small">Pending</p>
                 </div>
             </div>
-
-            <div class="col-xl-3 col-lg-4 col-md-6">
-                <div class="card border-0 shadow-lg h-100 stats-card">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-circle bg-purple-light mb-3">
-                            <i class="fas fa-envelope fa-2x text-purple"></i>
-                        </div>
-                        <h3 class="fw-bold text-dark mb-1">{{ contact_messages|length }}</h3>
-                        <p class="text-muted mb-0 small">Messages</p>
-                        <div class="progress mt-2" style="height: 3px;">
-                            <div class="progress-bar bg-purple" style="width: 85%"></div>
-                        </div>
-                    </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <i class="fas fa-envelope fa-2x text-info mb-2"></i>
+                    <h3 class="card-title h4 mb-1">{{ contact_messages|length if contact_messages else 0 }}</h3>
+                    <p class="card-text text-muted small">Messages</p>
                 </div>
             </div>
-
-            <div class="col-xl-3 col-lg-4 col-md-6">
-                <div class="card border-0 shadow-lg h-100 stats-card">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-circle bg-orange-light mb-3">
-                            <i class="fas fa-calendar-alt fa-2x text-orange"></i>
-                        </div>
-                        <h3 class="fw-bold text-dark mb-1">{{ week_appointments|length }}</h3>
-                        <p class="text-muted mb-0 small">This Week</p>
-                        <div class="progress mt-2" style="height: 3px;">
-                            <div class="progress-bar bg-orange" style="width: 70%"></div>
-                        </div>
-                    </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <i class="fas fa-calendar-week fa-2x text-success mb-2"></i>
+                    <h3 class="card-title h4 mb-1">{{ week_appointments|length if week_appointments else 0 }}</h3>
+                    <p class="card-text text-muted small">This Week</p>
                 </div>
             </div>
         </div>
     </div>
-</section>
 
-<!-- Main Dashboard Content -->
-<section class="py-5">
-    <div class="container-fluid px-4">
-        <div class="row g-4">
-            <!-- Weekly Calendar -->
-            <div class="col-xl-8 col-lg-7">
-                <div class="card border-0 shadow-lg h-100">
-                    <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center p-4">
-                        <div>
-                            <h2 class="mb-1 text-white">Weekly Schedule</h2>
-                            <p class="mb-0 opacity-75">{{ week_dates[0].strftime('%B %d') }} - {{ week_dates[6].strftime('%B %d, %Y') }}</p>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a href="{{ url_for('admin_invoice_management') }}" class="btn btn-success">
-                                <i class="fas fa-file-invoice-dollar me-2"></i>Invoice Management
-                            </a>
-                            <a href="{{ url_for('enhanced_staff_management') }}" class="btn btn-primary">
-                                <i class="fas fa-users-cog me-2"></i>Staff Management
-                            </a>
-                            <a href="{{ url_for('job_tracking_dashboard') }}" class="btn btn-info">
-                                <i class="fas fa-clipboard-list me-2"></i>Job Tracking
-                            </a>
-                            <a href="{{ url_for('financial_reports_dashboard') }}" class="btn btn-warning">
-                                <i class="fas fa-chart-line me-2"></i>Financial Reports
-                            </a>
-                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
-                                <i class="fas fa-plus me-2"></i>Add Appointment
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="calendar-container">
-                            <div class="row g-0">
-                                {% for date in week_dates %}
-                                <div class="col calendar-day-desktop">
-                                    <div class="day-header text-center p-3 {{ 'bg-primary text-white' if date.strftime('%Y-%m-%d') == today else 'bg-light border-bottom' }}">
-                                        <div class="fw-bold fs-6">{{ date.strftime('%A') }}</div>
-                                        <div class="fs-5 fw-bold">{{ date.strftime('%d') }}</div>
-                                        <div class="small text-muted">{{ date.strftime('%b') }}</div>
-                                    </div>
-                                    <div class="day-appointments-desktop p-2" style="min-height: 350px; border-right: 1px solid #e9ecef;">
-                                        {% set day_appointments = [] %}
-                                        {% for appointment in week_appointments %}
-                                            {% if appointment.date == date.strftime('%Y-%m-%d') %}
-                                                {% set _ = day_appointments.append(appointment) %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        
-                                        {% if day_appointments %}
-                                            {% for appointment in day_appointments %}
-                                            <div class="appointment-item bg-primary text-white p-2 mb-2 rounded-3 small">
-                                                <div class="fw-bold">{{ appointment.time }}</div>
-                                                <div>{{ appointment.service }}</div>
-                                                <div class="small opacity-75">{{ appointment.customer_name }}</div>
-                                            </div>
-                                            {% endfor %}
-                                        {% else %}
-                                            <div class="text-center text-muted mt-4">
-                                                <i class="fas fa-calendar-plus fa-2x opacity-25"></i>
-                                                <p class="small mt-2">No appointments</p>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                {% endfor %}
+    <!-- Main Dashboard Content -->
+    <div class="row g-4">
+        <!-- Left Column - Weekly Schedule -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        Weekly Schedule
+                    </h5>
+                    {% if week_dates %}
+                    <small>{{ week_dates[0].strftime('%B %d') }} - {{ week_dates[6].strftime('%B %d, %Y') }}</small>
+                    {% else %}
+                    <small>Current Week</small>
+                    {% endif %}
+                </div>
+                <div class="card-body p-0">
+                    <!-- Calendar Status Badges -->
+                    <div class="p-3 border-bottom">
+                        <div class="row g-2">
+                            <div class="col-6 col-md-3">
+                                <span class="badge bg-success d-block py-2">
+                                    <i class="fas fa-dollar-sign me-1"></i>
+                                    Invoice Management
+                                </span>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="badge bg-dark d-block py-2">
+                                    <i class="fas fa-users me-1"></i>
+                                    Staff Management
+                                </span>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="badge bg-info d-block py-2">
+                                    <i class="fas fa-tasks me-1"></i>
+                                    Job Tracking
+                                </span>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="badge bg-warning d-block py-2">
+                                    <i class="fas fa-chart-bar me-1"></i>
+                                    Financial Reports
+                                </span>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Quick Actions & Tools -->
-            <div class="col-xl-4 col-lg-5">
-                <div class="card border-0 shadow-lg h-100">
-                    <div class="card-header bg-gradient-success text-white">
-                        <h4 class="mb-0 text-white"><i class="fas fa-tools me-2"></i>Quick Actions</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <a href="{{ url_for('crm_dashboard') }}" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-users me-2"></i>CRM Dashboard
-                            </a>
-                            <a href="{{ url_for('quote_builder') }}" class="btn btn-outline-success w-100">
-                                <i class="fas fa-calculator me-2"></i>Quote Builder
-                            </a>
-                            <a href="{{ url_for('job_schedule') }}" class="btn btn-outline-info w-100">
-                                <i class="fas fa-calendar-alt me-2"></i>Job Schedule
-                            </a>
-                            <a href="{{ url_for('contact_list') }}" class="btn btn-outline-secondary w-100">
-                                <i class="fas fa-address-book me-2"></i>Contact Database
-                            </a>
-                            <a href="{{ url_for('integrated_analytics') }}" class="btn btn-outline-primary w-100 mb-2">
-                                <i class="fas fa-chart-line me-2"></i>Analytics Command Center
-                            </a>
-                            <a href="{{ url_for('analytics_dashboard') }}" class="btn btn-outline-info w-100 mb-2">
-                                <i class="fas fa-chart-bar me-2"></i>Business Analytics
-                            </a>
-                            <a href="{{ url_for('business_intelligence_dashboard') }}" class="btn btn-outline-success w-100 mb-2">
-                                <i class="fas fa-brain me-2"></i>Business Intelligence
-                            </a>
-                            <a href="{{ url_for('ml_insights_dashboard') }}" class="btn btn-outline-warning w-100 mb-2">
-                                <i class="fas fa-robot me-2"></i>ML Insights
-                            </a>
-                            <a href="{{ url_for('unified_scheduler_dashboard') }}" class="btn btn-outline-primary w-100 mb-2">
-                                <i class="fas fa-calendar-alt me-2"></i>Unified Scheduler
-                            </a>
-                            <a href="{{ url_for('advanced_scheduler_dashboard') }}" class="btn btn-outline-purple w-100 mb-2">
-                                <i class="fas fa-magic me-2"></i>Advanced Scheduler
-                            </a>
-                            <a href="{{ url_for('staff_management') }}" class="btn btn-outline-orange w-100 mb-2">
-                                <i class="fas fa-user-hard-hat me-2"></i>Staff Management
-                            </a>
-                            <a href="{{ url_for('inventory_dashboard') }}" class="btn btn-outline-primary w-100 mb-2">
-                                <i class="fas fa-boxes me-2"></i>Inventory Management
-                            </a>
-                            <a href="{{ url_for('checklist_management') }}" class="btn btn-outline-success w-100 mb-2">
-                                <i class="fas fa-tasks me-2"></i>Job Checklists
-                            </a>
-                            <a href="#" onclick="alert('Manual notification system active - all communications handled through admin dashboard')" class="btn btn-outline-warning w-100">
-                                <i class="fas fa-cog me-2"></i>Communication Settings
-                            </a>
+                    <!-- Calendar Days -->
+                    <div class="p-3">
+                        {% if week_dates %}
+                        <div class="row g-2 text-center">
+                            {% for date in week_dates[:6] %}
+                            <div class="col">
+                                <div class="p-2 border rounded bg-light">
+                                    <strong>{{ date.strftime('%A') }}</strong><br>
+                                    <small class="text-muted">{{ date.strftime('%d') }}</small><br>
+                                    <i class="fas fa-calendar text-muted"></i><br>
+                                    <small class="text-muted">No appointments</small>
+                                </div>
+                            </div>
+                            {% endfor %}
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Actual Customer Data Sections -->
-{% if contact_messages %}
-<section class="py-4" id="contact-messages">
-    <div class="container">
-        <div class="card border-0 shadow">
-            <div class="card-header bg-gradient-primary text-white">
-                <h3 class="mb-0 text-white"><i class="fas fa-envelope me-2"></i>Recent Contact Messages</h3>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>Contact</th>
-                                <th>Subject</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for message in contact_messages[:10] %}
-                            <tr>
-                                <td>{{ message.timestamp.strftime('%m/%d/%Y') if message.timestamp else 'N/A' }}</td>
-                                <td>{{ message.name }}</td>
-                                <td>
-                                    {{ message.email }}<br>
-                                    <small class="text-muted">{{ message.phone or 'No phone' }}</small>
-                                </td>
-                                <td>{{ message.subject or 'General Inquiry' }}</td>
-                                <td>
-                                    <span class="badge {{ 'bg-success' if message.status == 'completed' else 'bg-warning' if message.status == 'pending' else 'bg-secondary' }}">
-                                        {{ message.status.title() }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-primary btn-sm" onclick="viewMessage({{ message.id }})">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-outline-success btn-sm" onclick="markRead({{ message.id }})">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-{% if bookings %}
-<section class="py-4" id="service-requests">
-    <div class="container">
-        <div class="card border-0 shadow">
-            <div class="card-header bg-gradient-success text-white">
-                <h3 class="mb-0 text-white"><i class="fas fa-wrench me-2"></i>Service Requests</h3>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Customer</th>
-                                <th>Service</th>
-                                <th>Location</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for booking in bookings[:10] %}
-                            <tr>
-                                <td>{{ booking.preferred_date or 'Flexible' }}</td>
-                                <td>
-                                    {{ booking.name }}<br>
-                                    <small class="text-muted">{{ booking.phone }}</small>
-                                </td>
-                                <td>{{ booking.service }}</td>
-                                <td>{{ booking.location or 'O\'ahu' }}</td>
-                                <td>
-                                    <span class="badge {{ 'bg-danger' if booking.priority == 'high' else 'bg-warning' if booking.priority == 'medium' else 'bg-secondary' }}">
-                                        {{ (booking.priority or 'medium').title() }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge {{ 'bg-success' if booking.status == 'completed' else 'bg-warning' if booking.status == 'pending' else 'bg-info' if booking.status == 'scheduled' else 'bg-secondary' }}">
-                                        {{ booking.status.title() }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-primary btn-sm" onclick="viewBooking({{ booking.id }})">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-outline-success btn-sm" onclick="updateStatus({{ booking.id }})">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- Manual Notifications -->
-{% if admin_notifications %}
-<section class="py-4" id="notifications">
-    <div class="container">
-        <div class="card border-0 shadow">
-            <div class="card-header bg-gradient-warning text-white">
-                <h3 class="mb-0 text-white"><i class="fas fa-bell me-2"></i>Pending Notifications</h3>
-                <small class="opacity-75">Manual follow-up required for customer communications</small>
-            </div>
-            <div class="card-body">
-                {% for notification in admin_notifications %}
-                <div class="alert alert-info d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>{{ notification.type.replace('_', ' ').title() }}:</strong>
-                        {{ notification.customer_name }} ({{ notification.phone_number }})
-                        {% if notification.amount %}
-                        - ${{ notification.amount }} {{ notification.reason }}
+                        
+                        <!-- Sunday separate row -->
+                        {% if week_dates|length > 6 %}
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <div class="p-3 border rounded bg-primary text-white text-center">
+                                    <strong>{{ week_dates[6].strftime('%A') }}</strong><br>
+                                    <span class="h4">{{ week_dates[6].strftime('%d') }}</span><br>
+                                    <i class="fas fa-calendar-day"></i><br>
+                                    <small>No appointments</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% else %}
+                        <div class="text-center py-4">
+                            <p class="text-muted">Calendar loading...</p>
+                        </div>
                         {% endif %}
                     </div>
-                    <button class="btn btn-sm btn-outline-success" onclick="markNotificationComplete({{ notification.id }})">
-                        Mark Complete
-                    </button>
                 </div>
-                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Right Column - Quick Actions -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body p-2">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('crm_dashboard') }}" class="btn btn-outline-primary btn-sm d-flex align-items-center">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            CRM Dashboard
+                        </a>
+                        <a href="{{ url_for('quote_builder') }}" class="btn btn-outline-primary btn-sm d-flex align-items-center">
+                            <i class="fas fa-file-invoice-dollar me-2"></i>
+                            Quote Builder
+                        </a>
+                        <a href="{{ url_for('job_schedule') }}" class="btn btn-outline-info btn-sm d-flex align-items-center">
+                            <i class="fas fa-calendar-plus me-2"></i>
+                            Job Schedule
+                        </a>
+                        <a href="{{ url_for('contact_list') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+                            <i class="fas fa-address-book me-2"></i>
+                            Contact Database
+                        </a>
+                        <a href="{{ url_for('integrated_analytics') }}" class="btn btn-outline-info btn-sm d-flex align-items-center">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Analytics Command Center
+                        </a>
+                        <a href="{{ url_for('analytics_dashboard') }}" class="btn btn-outline-info btn-sm d-flex align-items-center">
+                            <i class="fas fa-analytics me-2"></i>
+                            Business Analytics
+                        </a>
+                        <a href="{{ url_for('business_intelligence_dashboard') }}" class="btn btn-outline-success btn-sm d-flex align-items-center">
+                            <i class="fas fa-brain me-2"></i>
+                            Business Intelligence
+                        </a>
+                        <a href="{{ url_for('ml_insights_dashboard') }}" class="btn btn-outline-warning btn-sm d-flex align-items-center">
+                            <i class="fas fa-magic me-2"></i>
+                            ML Insights
+                        </a>
+                        <a href="{{ url_for('unified_scheduler_dashboard') }}" class="btn btn-outline-primary btn-sm d-flex align-items-center">
+                            <i class="fas fa-calendar-week me-2"></i>
+                            Unified Scheduler
+                        </a>
+                        <a href="{{ url_for('advanced_scheduler_dashboard') }}" class="btn btn-outline-dark btn-sm d-flex align-items-center">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Advanced Scheduler
+                        </a>
+                        <a href="{{ url_for('staff_management') }}" class="btn btn-outline-warning btn-sm d-flex align-items-center">
+                            <i class="fas fa-hard-hat me-2"></i>
+                            Staff Management
+                        </a>
+                        <a href="{{ url_for('inventory_dashboard') }}" class="btn btn-outline-info btn-sm d-flex align-items-center">
+                            <i class="fas fa-boxes me-2"></i>
+                            Inventory Management
+                        </a>
+                        <a href="{{ url_for('checklist_management') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+                            <i class="fas fa-tasks me-2"></i>
+                            Job Checklists
+                        </a>
+                        <a href="#" onclick="alert('Manual notification system active - all communications handled through admin dashboard')" class="btn btn-outline-success btn-sm d-flex align-items-center">
+                            <i class="fas fa-robot me-2"></i>
+                            Communications Settings
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</section>
-{% endif %}
-
-<script>
-// Authentic dashboard functions with auto-refresh
-function viewMessage(messageId) {
-    // In real implementation, show message details
-    alert('Viewing message ID: ' + messageId);
-}
-
-function markRead(messageId) {
-    fetch('/admin/messages/' + messageId + '/read', { method: 'POST' })
-        .then(() => location.reload());
-}
-
-function viewBooking(bookingId) {
-    // In real implementation, show booking details  
-    alert('Viewing booking ID: ' + bookingId);
-}
-
-function updateStatus(bookingId) {
-    // In real implementation, show status update form
-    alert('Updating status for booking ID: ' + bookingId);
-}
-
-function markNotificationComplete(notificationId) {
-    fetch('/admin/notifications/' + notificationId + '/complete', { method: 'POST' })
-        .then(() => location.reload());
-}
-
-// Auto-refresh dashboard every 60 seconds to show new quotes, invoices, and notifications
-function refreshDashboard() {
-    location.reload();
-}
-
-// Initialize auto-refresh
-document.addEventListener('DOMContentLoaded', function() {
-    // Auto-refresh every 60 seconds
-    setInterval(refreshDashboard, 60000);
-});
-</script>
-
+</div>
 {% endblock %}
