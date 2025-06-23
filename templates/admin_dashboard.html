@@ -3,6 +3,61 @@
 {% block title %}Admin Dashboard - SPANKKS Construction{% endblock %}
 
 {% block content %}
+<style>
+.calendar-day-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: white;
+    transition: all 0.2s ease;
+    height: 100%;
+}
+.calendar-day-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.day-header {
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #dee2e6;
+}
+.appointment-block {
+    font-size: 0.75rem;
+    line-height: 1.2;
+}
+.quick-actions .btn {
+    text-align: center;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    height: auto;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.quick-actions .btn i {
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+}
+.quick-actions h6 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+@media (max-width: 768px) {
+    .calendar-day-card {
+        margin-bottom: 0.5rem;
+    }
+    .quick-actions .btn {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.2rem;
+        min-height: 50px;
+    }
+}
+</style>
 <div class="container-fluid py-3">
     <!-- Stats Cards Row -->
     <div class="row g-3 mb-4">
@@ -94,32 +149,40 @@
                     <!-- Calendar Days -->
                     <div class="p-3">
                         {% if week_dates %}
-                        <div class="row g-2 text-center">
-                            {% for date in week_dates[:6] %}
-                            <div class="col">
-                                <div class="p-2 border rounded bg-light">
-                                    <strong>{{ date.strftime('%A') }}</strong><br>
-                                    <small class="text-muted">{{ date.strftime('%d') }}</small><br>
-                                    <i class="fas fa-calendar text-muted"></i><br>
-                                    <small class="text-muted">No appointments</small>
+                        <div class="row g-2">
+                            {% for date in week_dates %}
+                            <div class="col-md">
+                                <div class="calendar-day-card h-100">
+                                    <div class="day-header text-center p-2 {{ 'bg-primary text-white' if date.strftime('%Y-%m-%d') == today else 'bg-light' }}">
+                                        <div class="fw-bold">{{ date.strftime('%a') }}</div>
+                                        <div class="h5 mb-0">{{ date.strftime('%d') }}</div>
+                                    </div>
+                                    <div class="day-content p-2" style="min-height: 120px;">
+                                        {% set day_appointments = [] %}
+                                        {% for appointment in week_appointments %}
+                                            {% if appointment.date == date.strftime('%Y-%m-%d') %}
+                                                {% set _ = day_appointments.append(appointment) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if day_appointments %}
+                                            {% for appointment in day_appointments %}
+                                            <div class="appointment-block bg-success text-white p-1 mb-1 rounded small">
+                                                <div class="fw-bold">{{ appointment.time }}</div>
+                                                <div>{{ appointment.service }}</div>
+                                            </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="text-center text-muted small mt-3">
+                                                <i class="fas fa-plus-circle"></i>
+                                                <div>Add appointment</div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
-                        
-                        <!-- Sunday separate row -->
-                        {% if week_dates|length > 6 %}
-                        <div class="row mt-2">
-                            <div class="col-12">
-                                <div class="p-3 border rounded bg-primary text-white text-center">
-                                    <strong>{{ week_dates[6].strftime('%A') }}</strong><br>
-                                    <span class="h4">{{ week_dates[6].strftime('%d') }}</span><br>
-                                    <i class="fas fa-calendar-day"></i><br>
-                                    <small>No appointments</small>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
                         {% else %}
                         <div class="text-center py-4">
                             <p class="text-muted">Calendar loading...</p>
@@ -139,64 +202,111 @@
                         Quick Actions
                     </h5>
                 </div>
-                <div class="card-body p-2">
-                    <div class="d-grid gap-2">
-                        <a href="{{ url_for('crm_dashboard') }}" class="btn btn-outline-primary btn-sm d-flex align-items-center">
-                            <i class="fas fa-tachometer-alt me-2"></i>
-                            CRM Dashboard
-                        </a>
-                        <a href="{{ url_for('quote_builder') }}" class="btn btn-outline-primary btn-sm d-flex align-items-center">
-                            <i class="fas fa-file-invoice-dollar me-2"></i>
-                            Quote Builder
-                        </a>
-                        <a href="{{ url_for('job_schedule') }}" class="btn btn-outline-info btn-sm d-flex align-items-center">
-                            <i class="fas fa-calendar-plus me-2"></i>
-                            Job Schedule
-                        </a>
-                        <a href="{{ url_for('contact_list') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
-                            <i class="fas fa-address-book me-2"></i>
-                            Contact Database
-                        </a>
-                        <a href="{{ url_for('integrated_analytics') }}" class="btn btn-outline-info btn-sm d-flex align-items-center">
-                            <i class="fas fa-chart-line me-2"></i>
-                            Analytics Command Center
-                        </a>
-                        <a href="{{ url_for('analytics_dashboard') }}" class="btn btn-outline-info btn-sm d-flex align-items-center">
-                            <i class="fas fa-analytics me-2"></i>
-                            Business Analytics
-                        </a>
-                        <a href="{{ url_for('business_intelligence_dashboard') }}" class="btn btn-outline-success btn-sm d-flex align-items-center">
-                            <i class="fas fa-brain me-2"></i>
-                            Business Intelligence
-                        </a>
-                        <a href="{{ url_for('ml_insights_dashboard') }}" class="btn btn-outline-warning btn-sm d-flex align-items-center">
-                            <i class="fas fa-magic me-2"></i>
-                            ML Insights
-                        </a>
-                        <a href="{{ url_for('unified_scheduler_dashboard') }}" class="btn btn-outline-primary btn-sm d-flex align-items-center">
-                            <i class="fas fa-calendar-week me-2"></i>
-                            Unified Scheduler
-                        </a>
-                        <a href="{{ url_for('advanced_scheduler_dashboard') }}" class="btn btn-outline-dark btn-sm d-flex align-items-center">
-                            <i class="fas fa-calendar-alt me-2"></i>
-                            Advanced Scheduler
-                        </a>
-                        <a href="{{ url_for('staff_management') }}" class="btn btn-outline-warning btn-sm d-flex align-items-center">
-                            <i class="fas fa-hard-hat me-2"></i>
-                            Staff Management
-                        </a>
-                        <a href="{{ url_for('inventory_dashboard') }}" class="btn btn-outline-info btn-sm d-flex align-items-center">
-                            <i class="fas fa-boxes me-2"></i>
-                            Inventory Management
-                        </a>
-                        <a href="{{ url_for('checklist_management') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
-                            <i class="fas fa-tasks me-2"></i>
-                            Job Checklists
-                        </a>
-                        <a href="#" onclick="alert('Manual notification system active - all communications handled through admin dashboard')" class="btn btn-outline-success btn-sm d-flex align-items-center">
-                            <i class="fas fa-robot me-2"></i>
-                            Communications Settings
-                        </a>
+                <div class="card-body p-3">
+                    <!-- Core Business Actions -->
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-2">Core Business</h6>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <a href="{{ url_for('crm_dashboard') }}" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fas fa-users d-block mb-1"></i>
+                                    <small>CRM</small>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ url_for('quote_builder') }}" class="btn btn-outline-success btn-sm w-100">
+                                    <i class="fas fa-calculator d-block mb-1"></i>
+                                    <small>Quotes</small>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ url_for('job_schedule') }}" class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fas fa-calendar d-block mb-1"></i>
+                                    <small>Schedule</small>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ url_for('contact_list') }}" class="btn btn-outline-secondary btn-sm w-100">
+                                    <i class="fas fa-address-book d-block mb-1"></i>
+                                    <small>Contacts</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Operations -->
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-2">Operations</h6>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <a href="{{ url_for('staff_management') }}" class="btn btn-outline-warning btn-sm w-100">
+                                    <i class="fas fa-hard-hat d-block mb-1"></i>
+                                    <small>Staff</small>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ url_for('inventory_dashboard') }}" class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fas fa-boxes d-block mb-1"></i>
+                                    <small>Inventory</small>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ url_for('checklist_management') }}" class="btn btn-outline-secondary btn-sm w-100">
+                                    <i class="fas fa-tasks d-block mb-1"></i>
+                                    <small>Checklists</small>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ url_for('unified_scheduler_dashboard') }}" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fas fa-calendar-week d-block mb-1"></i>
+                                    <small>Scheduler</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics -->
+                    <div class="mb-3">
+                        <h6 class="text-muted mb-2">Analytics</h6>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <a href="{{ url_for('analytics_dashboard') }}" class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fas fa-chart-bar d-block mb-1"></i>
+                                    <small>Analytics</small>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ url_for('business_intelligence_dashboard') }}" class="btn btn-outline-success btn-sm w-100">
+                                    <i class="fas fa-brain d-block mb-1"></i>
+                                    <small>Intelligence</small>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ url_for('ml_insights_dashboard') }}" class="btn btn-outline-warning btn-sm w-100">
+                                    <i class="fas fa-magic d-block mb-1"></i>
+                                    <small>ML Insights</small>
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ url_for('integrated_analytics') }}" class="btn btn-outline-dark btn-sm w-100">
+                                    <i class="fas fa-chart-line d-block mb-1"></i>
+                                    <small>Command</small>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Tools -->
+                    <div>
+                        <h6 class="text-muted mb-2">Advanced Tools</h6>
+                        <div class="row g-2">
+                            <div class="col-12">
+                                <a href="{{ url_for('advanced_scheduler_dashboard') }}" class="btn btn-outline-dark btn-sm w-100">
+                                    <i class="fas fa-calendar-alt me-2"></i>
+                                    Advanced Scheduler
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
