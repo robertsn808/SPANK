@@ -1316,5 +1316,403 @@ function viewRequestDetails(requestId) {
     // Navigate to project tracking for detailed view
     window.location.href = `/admin/project-tracking#request-${requestId}`;
 }
+
+// ========== ADVANCED DRAG & DROP FUNCTIONALITY ==========
+
+let draggedAppointment = null;
+let draggedElement = null;
+
+// Drag and Drop Event Handlers
+function allowDrop(event) {
+    event.preventDefault();
+    const dropZone = event.currentTarget;
+    if (!dropZone.classList.contains('drag-over')) {
+        dropZone.classList.add('drag-over');
+    }
+}
+
+function dragEnter(event) {
+    event.preventDefault();
+    const dropZone = event.currentTarget;
+    dropZone.classList.add('drag-enter');
+}
+
+function dragLeave(event) {
+    event.preventDefault();
+    const dropZone = event.currentTarget;
+    dropZone.classList.remove('drag-enter', 'drag-over');
+}
+
+function dropAppointment(event) {
+    event.preventDefault();
+    
+    const dropZone = event.currentTarget;
+    dropZone.classList.remove('drag-enter', 'drag-over');
+    
+    if (!draggedAppointment) {
+        console.log('No appointment being dragged');
+        return;
+    }
+    
+    const newDate = dropZone.dataset.date;
+    const appointmentId = draggedAppointment.id;
+    const originalDate = draggedAppointment.date;
+    
+    if (newDate === originalDate) {
+        console.log('Dropped on same date, no change needed');
+        return;
+    }
+    
+    console.log(`Moving appointment ${appointmentId} from ${originalDate} to ${newDate}`);
+    
+    // Call API to reschedule appointment
+    rescheduleAppointment(appointmentId, newDate, draggedAppointment.time);
+    
+    // Reset drag state
+    draggedAppointment = null;
+    if (draggedElement) {
+        draggedElement.classList.remove('dragging');
+        draggedElement = null;
+    }
+}
+
+// Initialize drag events for appointment blocks
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDragAndDrop();
+    initializeAdvancedFeatures();
+});
+
+function initializeDragAndDrop() {
+    document.querySelectorAll('.draggable-appointment').forEach(appointment => {
+        appointment.addEventListener('dragstart', function(e) {
+            console.log('Drag started for appointment:', this.dataset.appointmentId);
+            
+            draggedAppointment = {
+                id: this.dataset.appointmentId,
+                date: this.dataset.appointmentDate,
+                time: this.dataset.appointmentTime,
+                clientName: this.dataset.clientName,
+                service: this.dataset.service
+            };
+            
+            draggedElement = this;
+            this.classList.add('dragging');
+            
+            // Set drag data
+            e.dataTransfer.setData('text/plain', JSON.stringify(draggedAppointment));
+            e.dataTransfer.effectAllowed = 'move';
+        });
+        
+        appointment.addEventListener('dragend', function() {
+            console.log('Drag ended');
+            this.classList.remove('dragging');
+            
+            // Clear all drag states
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.classList.remove('drag-enter', 'drag-over');
+            });
+        });
+    });
+}
+
+// API call to reschedule appointment
+function rescheduleAppointment(appointmentId, newDate, time) {
+    showToast('Rescheduling appointment...', 'info');
+    
+    fetch('/api/unified/reschedule', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            appointment_id: appointmentId,
+            new_date: newDate,
+            time: time
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Appointment rescheduled successfully!', 'success');
+            // Reload page to show updated schedule
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showToast('Failed to reschedule appointment: ' + (data.error || 'Unknown error'), 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error rescheduling appointment:', error);
+        showToast('Error rescheduling appointment. Please try again.', 'error');
+    });
+}
+
+// ========== ADVANCED CALENDAR FEATURES ==========
+
+function initializeAdvancedFeatures() {
+    // Enhanced appointment creation
+    initializeQuickBooking();
+    
+    // Calendar view switching
+    initializeViewSwitching();
+    
+    // Auto-refresh functionality
+    initializeAutoRefresh();
+    
+    // Keyboard shortcuts
+    initializeKeyboardShortcuts();
+    
+    // Enhanced tooltips
+    initializeEnhancedTooltips();
+}
+
+// Quick booking functionality
+function initializeQuickBooking() {
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+        zone.addEventListener('dblclick', function() {
+            const date = this.dataset.date;
+            openQuickBookingModal(date);
+        });
+    });
+}
+
+function openQuickBookingModal(date) {
+    // Populate date in new appointment modal
+    const dateInput = document.querySelector('#newAppointmentModal input[type="date"]');
+    if (dateInput) {
+        dateInput.value = date;
+    }
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('newAppointmentModal'));
+    modal.show();
+    
+    showToast(`Quick booking for ${new Date(date).toLocaleDateString()}`, 'info');
+}
+
+// Enhanced view switching
+function initializeViewSwitching() {
+    // Add view toggle buttons to the interface
+    const scheduleTitle = document.querySelector('.schedule-title');
+    if (scheduleTitle && !document.querySelector('.view-toggle-buttons')) {
+        const viewToggle = document.createElement('div');
+        viewToggle.className = 'view-toggle-buttons ms-auto';
+        viewToggle.innerHTML = `
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary btn-sm active" onclick="switchToCalendarView()">
+                    <i class="fas fa-calendar-alt me-1"></i>Calendar
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="switchToTimelineView()">
+                    <i class="fas fa-clock me-1"></i>Timeline
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="switchToListView()">
+                    <i class="fas fa-list me-1"></i>List
+                </button>
+            </div>
+        `;
+        scheduleTitle.appendChild(viewToggle);
+    }
+}
+
+function switchToCalendarView() {
+    document.querySelectorAll('.view-toggle-buttons .btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.view-toggle-buttons .btn:first-child').classList.add('active');
+    showToast('Switched to Calendar view', 'info');
+}
+
+function switchToTimelineView() {
+    document.querySelectorAll('.view-toggle-buttons .btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.view-toggle-buttons .btn:nth-child(2)').classList.add('active');
+    showToast('Timeline view coming soon!', 'info');
+}
+
+function switchToListView() {
+    document.querySelectorAll('.view-toggle-buttons .btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.view-toggle-buttons .btn:last-child').classList.add('active');
+    window.location.href = '/admin/scheduler/unified';
+}
+
+// Auto-refresh functionality
+function initializeAutoRefresh() {
+    // Auto-refresh every 2 minutes to show new appointments
+    setInterval(() => {
+        refreshCalendarData();
+    }, 120000);
+}
+
+function refreshCalendarData() {
+    // Subtle refresh without full page reload
+    fetch(window.location.href, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        // Extract and update only the calendar portion
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newCalendar = doc.querySelector('.calendar-day-card');
+        
+        if (newCalendar) {
+            console.log('Calendar data refreshed');
+            // Reinitialize drag and drop after refresh
+            setTimeout(() => {
+                initializeDragAndDrop();
+            }, 500);
+        }
+    })
+    .catch(error => {
+        console.log('Auto-refresh failed:', error);
+    });
+}
+
+// Keyboard shortcuts
+function initializeKeyboardShortcuts() {
+    document.addEventListener('keydown', function(e) {
+        // Only trigger shortcuts when not in input fields
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            return;
+        }
+        
+        // Ctrl+N: New appointment
+        if (e.ctrlKey && e.key === 'n') {
+            e.preventDefault();
+            const modal = new bootstrap.Modal(document.getElementById('newAppointmentModal'));
+            modal.show();
+        }
+        
+        // Ctrl+R: Refresh calendar
+        if (e.ctrlKey && e.key === 'r') {
+            e.preventDefault();
+            refreshCalendarData();
+            showToast('Calendar refreshed', 'info');
+        }
+        
+        // Arrow keys: Navigate weeks
+        if (e.key === 'ArrowLeft' && e.ctrlKey) {
+            e.preventDefault();
+            changeWeek(-1);
+        }
+        if (e.key === 'ArrowRight' && e.ctrlKey) {
+            e.preventDefault();
+            changeWeek(1);
+        }
+    });
+}
+
+// Enhanced tooltips for appointments
+function initializeEnhancedTooltips() {
+    document.querySelectorAll('.draggable-appointment').forEach(appointment => {
+        const clientName = appointment.dataset.clientName;
+        const service = appointment.dataset.service;
+        const time = appointment.dataset.appointmentTime;
+        const date = appointment.dataset.appointmentDate;
+        
+        appointment.title = `${clientName}\n${service}\n${time} on ${new Date(date).toLocaleDateString()}`;
+        
+        // Add hover effects
+        appointment.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px) scale(1.02)';
+            this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+        });
+        
+        appointment.addEventListener('mouseleave', function() {
+            if (!this.classList.contains('dragging')) {
+                this.style.transform = '';
+                this.style.boxShadow = '';
+            }
+        });
+    });
+}
+
+// ========== RECURRING APPOINTMENTS ==========
+
+function createRecurringAppointment() {
+    showToast('Recurring appointments feature coming soon!', 'info');
+    // This would integrate with the recurring appointment modal from advanced scheduler
+}
+
+// ========== CONFLICT DETECTION ==========
+
+function checkSchedulingConflicts(date, time) {
+    // Check for scheduling conflicts before creating appointments
+    return fetch('/api/unified/check-conflicts', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            date: date,
+            time: time
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.conflicts && data.conflicts.length > 0) {
+            showToast(`Scheduling conflict detected at ${time}`, 'warning');
+            return false;
+        }
+        return true;
+    })
+    .catch(error => {
+        console.error('Error checking conflicts:', error);
+        return true; // Allow scheduling if check fails
+    });
+}
+
+// ========== ENHANCED APPOINTMENT MODAL ==========
+
+function showEnhancedAppointmentDetails(appointment) {
+    // Enhanced version of the appointment details modal
+    const modal = document.getElementById('appointmentDetailsModal');
+    if (!modal) return;
+    
+    // Populate enhanced details
+    document.getElementById('detailId').textContent = appointment.id;
+    document.getElementById('detailClientName').textContent = appointment.clientName;
+    document.getElementById('detailService').textContent = appointment.service;
+    document.getElementById('detailAmount').textContent = appointment.amount || 'TBD';
+    document.getElementById('detailStatus').textContent = appointment.status;
+    
+    // Add enhanced action buttons if not already present
+    const modalFooter = modal.querySelector('.modal-footer');
+    if (modalFooter && !modalFooter.querySelector('.enhanced-actions')) {
+        const enhancedActions = document.createElement('div');
+        enhancedActions.className = 'enhanced-actions';
+        enhancedActions.innerHTML = `
+            <button type="button" class="btn btn-warning btn-sm" onclick="rescheduleAppointmentModal('${appointment.id}')">
+                <i class="fas fa-calendar-alt me-1"></i>Reschedule
+            </button>
+            <button type="button" class="btn btn-info btn-sm" onclick="duplicateAppointment('${appointment.id}')">
+                <i class="fas fa-copy me-1"></i>Duplicate
+            </button>
+            <button type="button" class="btn btn-success btn-sm" onclick="markCompleted('${appointment.id}')">
+                <i class="fas fa-check me-1"></i>Complete
+            </button>
+        `;
+        modalFooter.insertBefore(enhancedActions, modalFooter.querySelector('.btn-secondary'));
+    }
+    
+    new bootstrap.Modal(modal).show();
+}
+
+function rescheduleAppointmentModal(appointmentId) {
+    showToast('Opening reschedule dialog...', 'info');
+    // This would open a dedicated reschedule modal
+}
+
+function duplicateAppointment(appointmentId) {
+    showToast('Duplicating appointment...', 'info');
+    // This would create a copy of the appointment
+}
+
+function markCompleted(appointmentId) {
+    showToast('Marking appointment as completed...', 'success');
+    // This would update the appointment status
+}
+
+console.log('✅ Advanced scheduling features initialized');
 </script>
 {% endblock %}

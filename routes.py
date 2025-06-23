@@ -4394,7 +4394,7 @@ def complete_job(job_id):
 # ===============================
 
 @app.route('/api/calendar/events')
-def get_calendar_events():
+def get_legacy_calendar_events():
     """Get calendar events for scheduler"""
     if not session.get('admin_logged_in'):
         return jsonify({'error': 'Unauthorized'}), 401
@@ -5435,3 +5435,90 @@ def generate_tax_summary_api():
     except Exception as e:
         logging.error(f"Error generating tax summary report: {e}")
         return jsonify({'error': str(e)}), 500
+
+# ========== ADVANCED SCHEDULER API ENDPOINTS ==========
+
+@app.route('/api/unified/reschedule', methods=['POST'])
+def reschedule_appointment():
+    """Reschedule an appointment via drag-and-drop"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        appointment_id = data.get('appointment_id')
+        new_date = data.get('new_date')
+        time = data.get('time')
+        
+        if not all([appointment_id, new_date, time]):
+            return jsonify({'error': 'Missing required fields'}), 400
+        
+        # Load appointments
+        with open('data/unified_appointments.json', 'r') as f:
+            appointments = json.load(f)
+        
+        # Find and update the appointment
+        appointment_found = False
+        for appointment in appointments:
+            if appointment['id'] == appointment_id:
+                old_date = appointment['scheduled_date']
+                appointment['scheduled_date'] = new_date
+                appointment['scheduled_time'] = time
+                appointment_found = True
+                logging.info(f"Rescheduled appointment {appointment_id} from {old_date} to {new_date} at {time}")
+                break
+        
+        if not appointment_found:
+            return jsonify({'error': 'Appointment not found'}), 404
+        
+        # Save updated appointments
+        with open('data/unified_appointments.json', 'w') as f:
+            json.dump(appointments, f, indent=2)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Appointment rescheduled to {new_date} at {time}'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error rescheduling appointment: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/unified/check-conflicts', methods=['POST'])
+def check_scheduling_conflicts():
+    """Check for scheduling conflicts"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        date = data.get('date')
+        time = data.get('time')
+        
+        if not all([date, time]):
+            return jsonify({'error': 'Missing date or time'}), 400
+        
+        # Load appointments
+        with open('data/unified_appointments.json', 'r') as f:
+            appointments = json.load(f)
+        
+        # Check for conflicts
+        conflicts = []
+        for appointment in appointments:
+            if (appointment['scheduled_date'] == date and 
+                appointment['scheduled_time'] == time):
+                conflicts.append({
+                    'id': appointment['id'],
+                    'client_name': appointment['client_name'],
+                    'service': appointment['service_type']
+                })
+        
+        return jsonify({
+            'conflicts': conflicts,
+            'has_conflicts': len(conflicts) > 0
+        })
+        
+    except Exception as e:
+        logging.error(f"Error checking conflicts: {e}")
+        return jsonify({'error': str(e)}), 500
+
