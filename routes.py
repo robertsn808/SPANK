@@ -252,6 +252,10 @@ def consultation():
         message = request.form.get('message', '').strip()
         square_footage = request.form.get('square_footage', '').strip()
 
+        # Ensure all consultation requests default to "Consultation" service type
+        if not service or service.strip() == '':
+            service = 'Consultation'
+        
         # Basic validation
         if not all([name, email, phone, service]):
             flash('Please fill in all required fields.', 'error')
@@ -351,13 +355,15 @@ def contact():
                 'message': message
             })
 
-            # Auto-create appointment for service-related inquiries
-            service_keywords = ['drywall', 'floor', 'fence', 'plumb', 'electric', 'paint', 'repair', 'renovation', 'handyman']
+            # Auto-create appointment for service-related inquiries (including general consultations)
+            service_keywords = ['drywall', 'floor', 'fence', 'plumb', 'electric', 'paint', 'repair', 'renovation', 'handyman', 'consultation', 'estimate', 'quote', 'appointment', 'schedule', 'help', 'service', 'work', 'project']
             is_service_inquiry = any(keyword in (subject + ' ' + message).lower() for keyword in service_keywords)
             
             if is_service_inquiry:
-                # Determine service type from keywords
-                service_type = 'General Handyman'
+                # All website inquiries default to Consultation service type
+                service_type = 'Consultation'
+                
+                # Only specify specialized service if explicitly mentioned
                 if 'drywall' in (subject + ' ' + message).lower():
                     service_type = 'Drywall Services'
                 elif 'floor' in (subject + ' ' + message).lower():
