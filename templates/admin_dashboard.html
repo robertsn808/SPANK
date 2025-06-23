@@ -23,6 +23,34 @@
     line-height: 1.2;
 }
 
+/* Drag and Drop Styles */
+.draggable-appointment {
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.draggable-appointment:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.draggable-appointment.dragging {
+    opacity: 0.6;
+    transform: rotate(3deg) scale(1.05);
+    z-index: 1000;
+}
+
+.drop-zone.drag-over {
+    border: 2px dashed #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+    border-radius: 4px;
+}
+
+.drop-zone.drag-enter {
+    background-color: rgba(40, 167, 69, 0.1);
+    border: 2px dashed #28a745;
+}
+
 /* Side Menu Styles */
 .side-menu-overlay {
     position: fixed;
@@ -537,7 +565,13 @@
                                                 <div class="fw-bold small">{{ date.strftime('%a') }}</div>
                                                 <div class="h6 mb-0">{{ date.strftime('%d') }}</div>
                                             </div>
-                                            <div class="day-content p-1" style="min-height: 60px;">
+                                            <div class="day-content p-1 drop-zone" 
+                                                 style="min-height: 60px;"
+                                                 data-date="{{ date.strftime('%Y-%m-%d') }}"
+                                                 ondrop="dropAppointment(event)" 
+                                                 ondragover="allowDrop(event)"
+                                                 ondragenter="dragEnter(event)"
+                                                 ondragleave="dragLeave(event)">
                                                 {% set day_appointments = [] %}
                                                 {% for appointment in all_appointments %}
                                                     {% if appointment.date == date.strftime('%Y-%m-%d') %}
@@ -547,7 +581,14 @@
                                                 
                                                 {% if day_appointments %}
                                                     {% for appointment in day_appointments %}
-                                                    <div class="appointment-block bg-success text-white p-1 mb-1 rounded" style="font-size: 0.7rem; line-height: 1.1;">
+                                                    <div class="appointment-block bg-success text-white p-1 mb-1 rounded draggable-appointment" 
+                                                         style="font-size: 0.7rem; line-height: 1.1; cursor: move;" 
+                                                         draggable="true"
+                                                         data-appointment-id="{{ appointment.id }}"
+                                                         data-appointment-date="{{ appointment.date }}"
+                                                         data-appointment-time="{{ appointment.time }}"
+                                                         data-client-name="{{ appointment.client_name }}"
+                                                         data-service="{{ appointment.service }}">
                                                         <div class="fw-bold">{{ appointment.time }}</div>
                                                         <div>{{ appointment.service[:20] }}{% if appointment.service|length > 20 %}...{% endif %}</div>
                                                     </div>
