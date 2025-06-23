@@ -808,7 +808,7 @@
 let selectedRows = new Set();
 let currentSort = { column: null, direction: 'asc' };
 let currentFilters = { quick: 'all', chips: new Set() };
-let currentPage = 1;
+let tablePagination = 1;
 let pageSize = 25;
 
 // Search and Filtering
@@ -924,12 +924,12 @@ function sortTable(column) {
 
 // Pagination
 function changePage(page) {
-    if (page === 'prev' && currentPage > 1) {
-        currentPage--;
+    if (page === 'prev' && tablePagination > 1) {
+        tablePagination--;
     } else if (page === 'next') {
-        currentPage++;
+        tablePagination++;
     } else if (typeof page === 'number') {
-        currentPage = page;
+        tablePagination = page;
     }
     
     updateTable();
