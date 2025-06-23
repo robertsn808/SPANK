@@ -4837,6 +4837,339 @@ def get_staff_workload_api():
 
 
 
+@app.route('/admin/enhanced-quote-builder')
+def enhanced_quote_builder():
+    """Enhanced multi-line quote builder with templates"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get all contacts for client selection
+        contacts = handyman_storage.get_all_contacts() or []
+        
+        return render_template('admin/enhanced_quote_builder.html', 
+                             contacts=contacts)
+    except Exception as e:
+        logging.error(f"Error loading enhanced quote builder: {e}")
+        flash('Error loading quote builder', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/api/payment/mark-paid', methods=['POST'])
+def mark_invoice_paid_api():
+    """API endpoint to mark invoice as paid"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        
+        required_fields = ['invoice_id', 'amount', 'payment_method']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        # Initialize payment service
+        from payment_tracking_service import PaymentTrackingService
+        payment_service = PaymentTrackingService()
+        
+        # Mark invoice as paid
+        success = payment_service.mark_invoice_paid(
+            invoice_id=data['invoice_id'],
+            amount=float(data['amount']),
+            payment_method=data['payment_method'],
+            notes=data.get('notes', ''),
+            received_by=session.get('admin_user', 'admin')
+        )
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'Invoice marked as paid successfully'
+            })
+        else:
+            return jsonify({'error': 'Failed to mark invoice as paid'}), 500
+            
+    except Exception as e:
+        logging.error(f"Error marking invoice as paid: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/staff/enhanced', methods=['GET'])
+def get_enhanced_staff_api():
+    """API endpoint to get enhanced staff data"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from enhanced_staff_service import EnhancedStaffService
+        staff_service = EnhancedStaffService()
+        
+        # Get staff summary
+        staff_summary = staff_service.get_staff_summary()
+        
+        # Get individual staff workload
+        workload_data = staff_service.get_staff_workload()
+        
+        return jsonify({
+            'summary': staff_summary,
+            'workload': workload_data,
+            'success': True
+        })
+        
+    except Exception as e:
+        logging.error(f"Error getting enhanced staff data: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/staff/add-enhanced', methods=['POST'])
+def add_enhanced_staff_api():
+    """API endpoint to add enhanced staff member"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        
+        required_fields = ['name', 'role']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        from enhanced_staff_service import EnhancedStaffService
+        staff_service = EnhancedStaffService()
+        
+        staff_member = staff_service.add_staff_member(data)
+        
+        return jsonify({
+            'success': True,
+            'staff_member': staff_member,
+            'message': f'Staff member {data["name"]} added successfully'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error adding enhanced staff: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/calendar/enhanced-events')
+def get_enhanced_calendar_events():
+    """API endpoint to get enhanced calendar events with color coding"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        start_date = request.args.get('start')
+        end_date = request.args.get('end')
+        
+        from calendar_enhancement_service import CalendarEnhancementService
+        calendar_service = CalendarEnhancementService()
+        
+        # Get appointments from unified scheduler
+        unified_scheduler = UnifiedScheduler()
+        appointments = unified_scheduler.get_appointments_by_date_range(start_date, end_date)
+        
+        # Convert to enhanced events
+        events = calendar_service.get_enhanced_calendar_events(appointments, start_date, end_date)
+        
+        return jsonify(events)
+        
+    except Exception as e:
+        logging.error(f"Error getting enhanced calendar events: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/calendar/update-status', methods=['POST'])
+def update_appointment_status_api():
+    """API endpoint to update appointment status"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        
+        required_fields = ['appointment_id', 'status']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        from calendar_enhancement_service import CalendarEnhancementService
+        calendar_service = CalendarEnhancementService()
+        
+        success = calendar_service.update_appointment_status(
+            appointment_id=data['appointment_id'],
+            new_status=data['status'],
+            updated_by=session.get('admin_user', 'admin')
+        )
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': f'Appointment status updated to {data["status"]}'
+            })
+        else:
+            return jsonify({'error': 'Failed to update appointment status'}), 500
+            
+    except Exception as e:
+        logging.error(f"Error updating appointment status: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/calendar/legend')
+def get_calendar_legend():
+    """API endpoint to get calendar color legend"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        from calendar_enhancement_service import CalendarEnhancementService
+        calendar_service = CalendarEnhancementService()
+        
+        legend = calendar_service.get_calendar_legend()
+        
+        return jsonify(legend)
+        
+    except Exception as e:
+        logging.error(f"Error getting calendar legend: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/portal/enhanced/<client_id>/<job_id>')
+def enhanced_client_portal(client_id, job_id):
+    """Enhanced client portal with PIN authentication"""
+    # Check if client is already authenticated
+    session_token = session.get('portal_session_token')
+    
+    if session_token:
+        from enhanced_client_portal_service import EnhancedClientPortalService
+        portal_service = EnhancedClientPortalService()
+        
+        session_data = portal_service.validate_session(session_token)
+        if session_data and session_data['client_id'] == client_id and session_data['job_id'] == job_id:
+            # Already authenticated, show portal
+            portal_data = portal_service.get_client_portal_data(client_id, job_id)
+            return render_template('portal/enhanced_client_portal.html', 
+                                 client_id=client_id, 
+                                 job_id=job_id,
+                                 portal_data=portal_data)
+    
+    # Show PIN authentication form
+    return render_template('portal/enhanced_pin_login.html', 
+                         client_id=client_id, 
+                         job_id=job_id)
+
+@app.route('/api/portal/authenticate', methods=['POST'])
+def authenticate_client_portal():
+    """API endpoint to authenticate client with PIN"""
+    try:
+        data = request.get_json()
+        
+        required_fields = ['client_id', 'job_id', 'pin']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        from enhanced_client_portal_service import EnhancedClientPortalService
+        portal_service = EnhancedClientPortalService()
+        
+        auth_result = portal_service.authenticate_client(
+            client_id=data['client_id'],
+            job_id=data['job_id'],
+            pin=data['pin']
+        )
+        
+        if auth_result['success']:
+            # Store session
+            session['portal_session_token'] = auth_result['session_token']
+            session['portal_client_id'] = data['client_id']
+            session['portal_job_id'] = data['job_id']
+            
+            return jsonify({
+                'success': True,
+                'message': 'Authentication successful',
+                'redirect_url': f"/portal/enhanced/{data['client_id']}/{data['job_id']}"
+            })
+        else:
+            return jsonify(auth_result), 401
+            
+    except Exception as e:
+        logging.error(f"Error authenticating client portal: {e}")
+        return jsonify({'error': 'Authentication failed'}), 500
+
+@app.route('/api/portal/approve-quote', methods=['POST'])
+def approve_quote_api():
+    """API endpoint for digital quote approval"""
+    try:
+        data = request.get_json()
+        
+        required_fields = ['client_id', 'job_id', 'quote_id']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        # Validate portal session
+        session_token = session.get('portal_session_token')
+        if not session_token:
+            return jsonify({'error': 'Not authenticated'}), 401
+        
+        from enhanced_client_portal_service import EnhancedClientPortalService
+        portal_service = EnhancedClientPortalService()
+        
+        session_data = portal_service.validate_session(session_token)
+        if not session_data or session_data['client_id'] != data['client_id']:
+            return jsonify({'error': 'Invalid session'}), 401
+        
+        # Process quote approval
+        approval_result = portal_service.approve_quote(
+            client_id=data['client_id'],
+            job_id=data['job_id'],
+            quote_id=data['quote_id'],
+            approval_method=data.get('approval_method', 'digital_signature')
+        )
+        
+        return jsonify(approval_result)
+        
+    except Exception as e:
+        logging.error(f"Error approving quote: {e}")
+        return jsonify({'error': 'Failed to process approval'}), 500
+
+@app.route('/admin/materials-tracking')
+def materials_tracking_dashboard():
+    """Materials tracking dashboard for job costing"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get materials data from inventory service
+        materials_data = inventory_service.get_all_items() if inventory_service else []
+        
+        # Get recent material usage
+        recent_usage = []
+        if inventory_service:
+            recent_usage = inventory_service.get_recent_usage(days=30)
+        
+        return render_template('admin/materials_tracking.html',
+                             materials=materials_data,
+                             recent_usage=recent_usage)
+    except Exception as e:
+        logging.error(f"Error loading materials tracking: {e}")
+        flash('Error loading materials tracking', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/job-checklists')
+def job_checklists_dashboard():
+    """Job checklists dashboard for task management"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get checklist data from checklist service
+        checklists_data = checklist_service.get_all_checklists() if checklist_service else []
+        
+        # Get checklist templates
+        templates = checklist_service.get_checklist_templates() if checklist_service else []
+        
+        return render_template('admin/job_checklists.html',
+                             checklists=checklists_data,
+                             templates=templates)
+    except Exception as e:
+        logging.error(f"Error loading job checklists: {e}")
+        flash('Error loading job checklists', 'error')
+        return redirect(url_for('admin_dashboard'))
+
 @app.route('/admin/create-appointment', methods=['POST'])
 def create_appointment_form():
     """Form-based appointment creation endpoint"""
