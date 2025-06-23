@@ -572,7 +572,14 @@
             <div class="menu-section">
                 <div class="menu-section-title">Advanced Tools</div>
                 
-
+                <a href="{{ url_for('csv_templates_dashboard') }}" class="menu-item" 
+                   data-help="csv-templates">
+                    <i class="fas fa-download text-success"></i>
+                    <div>
+                        <div class="menu-item-text">CSV Templates</div>
+                        <div class="menu-item-desc">Bulk data upload templates</div>
+                    </div>
+                </a>
                 
                 <a href="/admin/scheduler/advanced" class="menu-item">
                     <i class="fas fa-calendar-alt text-dark"></i>

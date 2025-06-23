@@ -5353,6 +5353,96 @@ def enhanced_quote_builder():
     # Redirect to the working quote builder
     return redirect(url_for('quote_builder'))
 
+# ==================================================
+# CSV EXPORT AND DOWNLOAD ROUTES
+# ==================================================
+
+@app.route('/admin/csv-templates')
+def csv_templates_dashboard():
+    """CSV Templates download dashboard"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from csv_export_service import CSVExportService
+        csv_service = CSVExportService()
+        templates = csv_service.get_available_templates()
+        
+        return render_template('admin/csv_templates.html', templates=templates)
+    except Exception as e:
+        logging.error(f"Error loading CSV templates dashboard: {e}")
+        flash('Error loading CSV templates', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/csv-templates/download/<template_name>')
+def download_csv_template(template_name):
+    """Download individual CSV template"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from csv_export_service import CSVExportService
+        csv_service = CSVExportService()
+        
+        content = csv_service.get_template_content(template_name)
+        
+        response = make_response(content)
+        response.headers['Content-Type'] = 'text/csv'
+        response.headers['Content-Disposition'] = f'attachment; filename="{template_name}"'
+        
+        return response
+    except Exception as e:
+        logging.error(f"Error downloading CSV template {template_name}: {e}")
+        flash('Error downloading template', 'error')
+        return redirect(url_for('csv_templates_dashboard'))
+
+@app.route('/admin/csv-templates/download-all')
+def download_all_csv_templates():
+    """Download ZIP file with all CSV templates"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from csv_export_service import CSVExportService
+        csv_service = CSVExportService()
+        
+        zip_content = csv_service.generate_all_templates_zip()
+        
+        response = make_response(zip_content)
+        response.headers['Content-Type'] = 'application/zip'
+        response.headers['Content-Disposition'] = 'attachment; filename="spankks_csv_templates.zip"'
+        
+        return response
+    except Exception as e:
+        logging.error(f"Error downloading all CSV templates: {e}")
+        flash('Error downloading templates', 'error')
+        return redirect(url_for('csv_templates_dashboard'))
+
+@app.route('/admin/csv-export/<data_type>')
+def export_current_data_csv(data_type):
+    """Export current database data to CSV"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        from csv_export_service import CSVExportService
+        csv_service = CSVExportService()
+        
+        csv_content = csv_service.export_current_data_csv(data_type, storage_service)
+        
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"spankks_{data_type}_export_{timestamp}.csv"
+        
+        response = make_response(csv_content)
+        response.headers['Content-Type'] = 'text/csv'
+        response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+        
+        return response
+    except Exception as e:
+        logging.error(f"Error exporting {data_type} data: {e}")
+        flash('Error exporting data', 'error')
+        return redirect(url_for('csv_templates_dashboard'))
+
 @app.route('/api/payment/mark-paid', methods=['POST'])
 def mark_invoice_paid_api():
     """API endpoint to mark invoice as paid"""
