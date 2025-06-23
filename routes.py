@@ -5341,20 +5341,12 @@ def get_staff_workload_api():
 
 @app.route('/admin/enhanced-quote-builder')
 def enhanced_quote_builder():
-    """Enhanced multi-line quote builder with templates"""
+    """Enhanced multi-line quote builder with templates - redirect to working quote builder"""
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
     
-    try:
-        # Get all contacts for client selection
-        contacts = handyman_storage.get_all_contacts() or []
-        
-        return render_template('admin/enhanced_quote_builder.html', 
-                             contacts=contacts)
-    except Exception as e:
-        logging.error(f"Error loading enhanced quote builder: {e}")
-        flash('Error loading quote builder', 'error')
-        return redirect(url_for('admin_dashboard'))
+    # Redirect to the working quote builder
+    return redirect(url_for('quote_builder'))
 
 @app.route('/api/payment/mark-paid', methods=['POST'])
 def mark_invoice_paid_api():
