@@ -27,6 +27,131 @@
     line-height: 1.2;
 }
 
+/* Mobile Dashboard Enhancements */
+@media (max-width: 768px) {
+    .admin-header {
+        padding: 0.75rem 0 !important;
+    }
+    
+    .admin-header h4 {
+        font-size: 1.1rem;
+        margin-bottom: 0;
+    }
+    
+    .admin-header .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem;
+    }
+    
+    .admin-header .btn-group {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .admin-header small {
+        font-size: 0.7rem;
+        align-self: center;
+    }
+    
+    /* Stats cards in mobile 2x2 grid */
+    .stats-row-mobile {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stats-card-mobile {
+        min-height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .stats-card-mobile i {
+        font-size: 1.2rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stats-card-mobile h3 {
+        font-size: 1.25rem;
+        margin: 0.25rem 0;
+    }
+    
+    .stats-card-mobile p {
+        font-size: 0.7rem;
+        margin: 0;
+        line-height: 1.2;
+    }
+    
+    /* Calendar header mobile adjustments */
+    .card-header .d-flex {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.75rem;
+    }
+    
+    .card-header .d-flex > div {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .card-header .btn-group {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    /* Calendar status badges mobile */
+    .calendar-status-badges .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+    
+    .calendar-status-badges .badge {
+        font-size: 0.7rem;
+        padding: 0.5rem;
+        text-align: center;
+    }
+    
+    /* Better mobile scroll for schedule */
+    .time-slot-schedule {
+        border-radius: 8px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Hide some elements on very small screens */
+    .mobile-hide-sm {
+        display: none !important;
+    }
+    
+    /* Compact button text */
+    .btn-sm {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    /* Modal improvements */
+    .modal-header h5 {
+        font-size: 1rem;
+    }
+    
+    .form-label {
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .form-control,
+    .form-select {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+}</style>
+
 /* Drag and Drop Styles */
 .draggable-appointment {
     transition: all 0.2s ease;
@@ -208,7 +333,7 @@
 </style>
 <div class="container-fluid py-3">
     <!-- Stats Cards Row -->
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4 d-none d-md-flex">
         <div class="col-6 col-md-3">
             <div class="card text-center border-0 shadow-sm">
                 <div class="card-body py-3">
@@ -244,6 +369,30 @@
                     <p class="card-text text-muted small">This Week</p>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Mobile Stats Cards -->
+    <div class="stats-row-mobile d-md-none">
+        <div class="card stats-card-mobile shadow-sm" onclick="showPendingDetails()">
+            <i class="fas fa-clipboard-list text-primary"></i>
+            <h3>{{ bookings|length if bookings else 0 }}</h3>
+            <p class="text-muted">Total Requests</p>
+        </div>
+        <div class="card stats-card-mobile shadow-sm" onclick="showPendingDetails()">
+            <i class="fas fa-coins text-warning"></i>
+            <h3>{{ pending_requests|length if pending_requests else 0 }}</h3>
+            <p class="text-muted">Pending</p>
+        </div>
+        <div class="card stats-card-mobile shadow-sm">
+            <i class="fas fa-envelope text-info"></i>
+            <h3>{{ contact_messages|length if contact_messages else 0 }}</h3>
+            <p class="text-muted">Messages</p>
+        </div>
+        <div class="card stats-card-mobile shadow-sm">
+            <i class="fas fa-calendar-week text-success"></i>
+            <h3>{{ week_appointments|length if week_appointments else 0 }}</h3>
+            <p class="text-muted">This Week</p>
         </div>
     </div>
 
@@ -427,30 +576,34 @@
                 </div>
                 <div class="card-body p-0">
                     <!-- Calendar Status Badges -->
-                    <div class="p-3 border-bottom">
+                    <div class="p-3 border-bottom calendar-status-badges">
                         <div class="row g-2">
                             <div class="col-6 col-md-3">
                                 <span class="badge bg-success d-block py-2">
                                     <i class="fas fa-dollar-sign me-1"></i>
-                                    Invoice Management
+                                    <span class="d-none d-sm-inline">Invoice Management</span>
+                                    <span class="d-sm-none">Invoices</span>
                                 </span>
                             </div>
                             <div class="col-6 col-md-3">
                                 <span class="badge bg-dark d-block py-2">
                                     <i class="fas fa-users me-1"></i>
-                                    Staff Management
+                                    <span class="d-none d-sm-inline">Staff Management</span>
+                                    <span class="d-sm-none">Staff</span>
                                 </span>
                             </div>
                             <div class="col-6 col-md-3">
                                 <span class="badge bg-info d-block py-2">
                                     <i class="fas fa-tasks me-1"></i>
-                                    Job Tracking
+                                    <span class="d-none d-sm-inline">Job Tracking</span>
+                                    <span class="d-sm-none">Jobs</span>
                                 </span>
                             </div>
                             <div class="col-6 col-md-3">
                                 <span class="badge bg-warning d-block py-2">
                                     <i class="fas fa-chart-bar me-1"></i>
-                                    Financial Reports
+                                    <span class="d-none d-sm-inline">Financial Reports</span>
+                                    <span class="d-sm-none">Reports</span>
                                 </span>
                             </div>
                         </div>

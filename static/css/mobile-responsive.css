@@ -16,6 +16,37 @@
         --bs-gutter-y: 0.5rem;
     }
     
+    /* Admin Dashboard Mobile Fixes */
+    .admin-main {
+        padding-top: 10px;
+        min-height: calc(100vh - 120px);
+    }
+    
+    /* Stats Cards Mobile Layout */
+    .stats-card {
+        margin-bottom: 0.75rem;
+        min-height: auto;
+    }
+    
+    .stats-card .card-body {
+        padding: 1rem 0.75rem;
+        text-align: center;
+    }
+    
+    .stats-card h3 {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stats-card p {
+        font-size: 0.75rem;
+        margin-bottom: 0;
+    }
+    
+    .stats-card i {
+        font-size: 1.25rem !important;
+    }
+    
     /* Card Layouts */
     .card {
         margin-bottom: 1rem;
@@ -185,6 +216,65 @@
     .fc-event {
         font-size: 12px;
         padding: 4px 6px;
+    }
+    
+    /* Weekly Schedule Mobile Fixes */
+    .time-slot-schedule {
+        overflow-x: auto;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    
+    .schedule-header,
+    .schedule-row {
+        min-width: 600px; /* Ensure horizontal scroll works */
+    }
+    
+    .time-column-header {
+        min-width: 60px;
+        font-size: 0.7rem;
+        padding: 8px 4px;
+    }
+    
+    .day-column-header {
+        min-width: 70px;
+        padding: 8px 4px;
+        font-size: 0.7rem;
+    }
+    
+    .day-column-header .fw-bold {
+        font-size: 0.7rem;
+    }
+    
+    .day-column-header .h6 {
+        font-size: 0.8rem;
+        margin-bottom: 0;
+    }
+    
+    .appointment-slot {
+        min-width: 70px;
+        min-height: 40px;
+        padding: 2px;
+    }
+    
+    .appointment-block {
+        font-size: 0.6rem !important;
+        line-height: 1.1;
+        padding: 2px 4px !important;
+        margin: 1px 0;
+    }
+    
+    .appointment-block .fw-bold {
+        font-size: 0.6rem;
+    }
+    
+    .appointment-block .text-white-50 {
+        font-size: 0.5rem;
+    }
+    
+    .appointment-block .badge {
+        font-size: 0.5rem;
+        padding: 1px 3px;
     }
     
     /* Quote/Invoice Forms */
@@ -475,7 +565,110 @@
     }
 }
 
-/* Extra Small Screens */
+/* Quick Actions Mobile Improvements */
+    .quick-actions-toggle {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 1.2rem !important;
+        right: 15px !important;
+        bottom: 20px !important;
+        top: auto !important;
+        transform: none !important;
+        position: fixed !important;
+        z-index: 1040 !important;
+    }
+    
+    .side-menu {
+        width: 90% !important;
+        right: -90% !important;
+    }
+    
+    .side-menu.active {
+        right: 5% !important;
+    }
+    
+    .menu-item {
+        padding: 1rem 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .menu-item i {
+        font-size: 1.1rem;
+        width: 24px;
+        margin-right: 0.5rem;
+    }
+    
+    .menu-item-text {
+        font-size: 0.9rem;
+    }
+    
+    .menu-item-desc {
+        font-size: 0.7rem;
+        line-height: 1.2;
+    }
+    
+    .menu-section-title {
+        font-size: 0.7rem;
+        padding: 0.5rem 0;
+    }
+    
+    /* Calendar Day Cards Mobile */
+    .calendar-day-card {
+        margin-bottom: 0.5rem;
+        min-height: 80px;
+    }
+    
+    .day-header {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .day-content {
+        padding: 0.5rem;
+        min-height: 50px;
+    }
+    
+    .appointment-block {
+        font-size: 0.65rem;
+        padding: 0.25rem;
+        margin-bottom: 0.25rem;
+        line-height: 1.1;
+    }
+    
+    /* Extended View Mobile */
+    #extendedView .row.g-2 {
+        --bs-gutter-x: 0.25rem;
+        --bs-gutter-y: 0.25rem;
+    }
+    
+    #extendedView .col {
+        min-width: 0;
+    }
+    
+    /* Modal Mobile Improvements */
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+    
+    .modal-body {
+        padding: 1rem;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    
+    .modal-footer {
+        padding: 0.75rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+        margin: 0;
+    }
+
+    /* Extra Small Screens */
 @media (max-width: 575px) {
     /* Ultra-compact layouts */
     .container-fluid {
