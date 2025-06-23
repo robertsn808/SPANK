@@ -267,9 +267,9 @@
         <div class="row mb-5">
             {% if bookings %}
             <!-- Actual database metrics -->
-            <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-primary text-white">
-                    <div class="card-body text-center p-4">
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card border-0 shadow-lg stats-card bg-gradient-primary text-white" style="height: 200px; width: 100%; min-width: 200px; display: flex; flex-direction: column; justify-content: center;">
+                    <div class="card-body text-center p-3">
                         <div class="icon-circle bg-light mb-3">
                             <i class="fas fa-clipboard-list fa-2x text-primary"></i>
                         </div>
@@ -283,9 +283,9 @@
                 </div>
             </div>
 
-            <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-success text-white">
-                    <div class="card-body text-center p-4">
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card border-0 shadow-lg stats-card bg-gradient-success text-white" style="height: 200px; width: 100%; min-width: 200px; display: flex; flex-direction: column; justify-content: center;">
+                    <div class="card-body text-center p-3">
                         <div class="icon-circle bg-light mb-3">
                             <i class="fas fa-handshake fa-2x text-success"></i>
                         </div>
@@ -299,9 +299,9 @@
                 </div>
             </div>
 
-            <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-warning text-white">
-                    <div class="card-body text-center p-4">
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card border-0 shadow-lg stats-card bg-gradient-warning text-white" style="height: 200px; width: 100%; min-width: 200px; display: flex; flex-direction: column; justify-content: center;">
+                    <div class="card-body text-center p-3">
                         <div class="icon-circle bg-light mb-3">
                             <i class="fas fa-envelope fa-2x text-warning"></i>
                         </div>
@@ -315,53 +315,23 @@
                 </div>
             </div>
 
-            <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
-                <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-info text-white">
-                    <div class="card-body text-center p-4">
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card border-0 shadow-lg stats-card bg-gradient-info text-white" style="height: 200px; width: 100%; min-width: 200px; display: flex; flex-direction: column; justify-content: center;">
+                    <div class="card-body text-center p-3">
                         <div class="icon-circle bg-light mb-3">
-                            <i class="fas fa-envelope fa-2x text-info"></i>
+                            <i class="fas fa-calendar fa-2x text-info"></i>
                         </div>
-                        <h3 class="fw-bold mb-1">{{ contact_messages|length }}</h3>
-                        <p class="mb-0 opacity-85">Contact Messages</p>
+                        <h3 class="fw-bold mb-1">{{ week_appointments|length if week_appointments else 0 }}</h3>
+                        <p class="mb-0 opacity-85">This Week</p>
                         <div class="progress mt-2" style="height: 4px;">
-                            <div class="progress-bar bg-light" style="width: {{ (contact_messages|length / 15 * 100)|int }}%"></div>
+                            <div class="progress-bar bg-light" style="width: {{ ((week_appointments|length if week_appointments else 0) / 7 * 100)|int }}%"></div>
                         </div>
-                        <small class="opacity-75">Customer inquiries</small>
+                        <small class="opacity-75">Scheduled jobs</small>
                     </div>
                 </div>
             </div>
 
-            <div class="col-xl-2 col-lg-3 col-md-6 mb-4">
-                <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-purple text-white">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-circle bg-light mb-3">
-                            <i class="fas fa-users fa-2x text-purple"></i>
-                        </div>
-                        <h3 class="fw-bold mb-1">{{ staff_members|length }}</h3>
-                        <p class="mb-0 opacity-85">Staff Members</p>
-                        <div class="progress mt-2" style="height: 4px;">
-                            <div class="progress-bar bg-light" style="width: {{ (staff_members|length / 5 * 100)|int }}%"></div>
-                        </div>
-                        <small class="opacity-75">Team size</small>
-                    </div>
-                </div>
-            </div>
 
-            <div class="col-xl-2 col-lg-3 col-md-6 mb-4">
-                <div class="card border-0 shadow-lg h-100 stats-card bg-gradient-orange text-white">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-circle bg-light mb-3">
-                            <i class="fas fa-bell fa-2x text-orange"></i>
-                        </div>
-                        <h3 class="fw-bold mb-1">{{ admin_notifications|length }}</h3>
-                        <p class="mb-0 opacity-85">Notifications</p>
-                        <div class="progress mt-2" style="height: 4px;">
-                            <div class="progress-bar bg-light" style="width: {{ (admin_notifications|length / 8 * 100)|int }}%"></div>
-                        </div>
-                        <small class="opacity-75">Unread alerts</small>
-                    </div>
-                </div>
-            </div>
             {% else %}
             <!-- No data state -->
             <div class="col-12">
