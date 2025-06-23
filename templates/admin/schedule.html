@@ -256,7 +256,7 @@ function generateWeeklyCalendar() {
                 
                 html += `
                     <div class="mb-1">
-                        <a href="/admin/crm/jobs/${job.id}" class="text-decoration-none">
+                        <a href="/admin/job-management/${job.id}" class="text-decoration-none">
                             <div class="badge badge-${statusClass} badge-block text-left p-1" style="width: 100%; font-size: 0.7rem;">
                                 <strong>#${job.id}</strong><br>
                                 ${contact ? contact.name : 'Unknown'}
@@ -305,7 +305,7 @@ function updateJobStatus(jobId, newStatus) {
     if (confirm(`Are you sure you want to update this job to "${newStatus.replace('_', ' ')}"?`)) {
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = `/admin/crm/jobs/${jobId}/update_status`;
+        form.action = `/admin/jobs/${jobId}/update_status`;
         
         const input = document.createElement('input');
         input.type = 'hidden';
