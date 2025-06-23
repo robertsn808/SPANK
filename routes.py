@@ -428,7 +428,7 @@ def admin_login():
         flash('Invalid credentials. Please try again.', 'error')
         logging.warning(f"Failed login attempt for username: {username}")
 
-    return render_template('admin_login_clean.html')
+    return render_template('admin_login.html')
 
 @app.route('/admin/quote-invoice-form')
 def quote_invoice_form():
