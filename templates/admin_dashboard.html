@@ -22,39 +22,155 @@
     font-size: 0.75rem;
     line-height: 1.2;
 }
-.quick-actions .btn {
-    text-align: center;
-    padding: 0.5rem 0.25rem;
-    font-size: 0.8rem;
-    border-radius: 6px;
-    height: auto;
-    min-height: 60px;
+
+/* Side Menu Styles */
+.side-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    display: none;
+}
+
+.side-menu {
+    position: fixed;
+    top: 0;
+    right: -350px;
+    width: 350px;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1050;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+}
+
+.side-menu.active {
+    right: 0;
+}
+
+.side-menu-header {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.side-menu-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    float: right;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
-.quick-actions .btn i {
-    font-size: 1.2rem;
-    margin-bottom: 0.25rem;
+
+.side-menu-content {
+    padding: 1rem;
 }
-.quick-actions h6 {
+
+.menu-section {
+    margin-bottom: 1.5rem;
+}
+
+.menu-section-title {
     font-size: 0.75rem;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-weight: 600;
-    border-bottom: 1px solid #dee2e6;
-    padding-bottom: 0.5rem;
+    color: #6c757d;
     margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
 }
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    color: #495057;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+    background: #f8f9fa;
+    color: #28a745;
+    text-decoration: none;
+    transform: translateX(5px);
+}
+
+.menu-item i {
+    width: 20px;
+    margin-right: 0.75rem;
+    font-size: 1rem;
+}
+
+.menu-item-text {
+    font-weight: 500;
+}
+
+.menu-item-desc {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.quick-actions-toggle {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1030;
+}
+
+.quick-actions-toggle:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.quick-actions-toggle.active {
+    background: linear-gradient(135deg, #dc3545, #e74c3c);
+}
+
 @media (max-width: 768px) {
+    .side-menu {
+        width: 100%;
+        right: -100%;
+    }
+    
     .calendar-day-card {
         margin-bottom: 0.5rem;
     }
-    .quick-actions .btn {
-        font-size: 0.7rem;
-        padding: 0.4rem 0.2rem;
-        min-height: 50px;
+    
+    .quick-actions-toggle {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+        right: 15px;
     }
 }
 </style>
@@ -99,10 +215,157 @@
         </div>
     </div>
 
+    <!-- Quick Actions Toggle Button -->
+    <button class="quick-actions-toggle" id="quickActionsToggle" onclick="toggleSideMenu()">
+        <i class="fas fa-bolt"></i>
+    </button>
+
+    <!-- Side Menu Overlay -->
+    <div class="side-menu-overlay" id="sideMenuOverlay" onclick="closeSideMenu()"></div>
+
+    <!-- Side Menu -->
+    <div class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <h5 class="mb-0">
+                <i class="fas fa-bolt me-2"></i>
+                Quick Actions
+            </h5>
+            <button class="side-menu-close" onclick="closeSideMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="side-menu-content">
+            <!-- Core Business Section -->
+            <div class="menu-section">
+                <div class="menu-section-title">Core Business</div>
+                
+                <a href="{{ url_for('crm_dashboard') }}" class="menu-item">
+                    <i class="fas fa-users text-primary"></i>
+                    <div>
+                        <div class="menu-item-text">CRM Dashboard</div>
+                        <div class="menu-item-desc">Manage customer relationships</div>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('quote_invoice_form') }}" class="menu-item">
+                    <i class="fas fa-file-invoice-dollar text-success"></i>
+                    <div>
+                        <div class="menu-item-text">Quote & Invoice</div>
+                        <div class="menu-item-desc">Generate quotes and invoices</div>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('job_schedule') }}" class="menu-item">
+                    <i class="fas fa-calendar text-info"></i>
+                    <div>
+                        <div class="menu-item-text">Job Schedule</div>
+                        <div class="menu-item-desc">View and manage appointments</div>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('contact_list') }}" class="menu-item">
+                    <i class="fas fa-address-book text-secondary"></i>
+                    <div>
+                        <div class="menu-item-text">Contact Database</div>
+                        <div class="menu-item-desc">Manage customer contacts</div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Operations Section -->
+            <div class="menu-section">
+                <div class="menu-section-title">Operations</div>
+                
+                <a href="{{ url_for('staff_management') }}" class="menu-item">
+                    <i class="fas fa-hard-hat text-warning"></i>
+                    <div>
+                        <div class="menu-item-text">Staff Management</div>
+                        <div class="menu-item-desc">Manage crew and assignments</div>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('inventory_dashboard') }}" class="menu-item">
+                    <i class="fas fa-boxes text-info"></i>
+                    <div>
+                        <div class="menu-item-text">Inventory</div>
+                        <div class="menu-item-desc">Track materials and supplies</div>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('checklist_management') }}" class="menu-item">
+                    <i class="fas fa-tasks text-secondary"></i>
+                    <div>
+                        <div class="menu-item-text">Job Checklists</div>
+                        <div class="menu-item-desc">Track job completion</div>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('unified_scheduler_dashboard') }}" class="menu-item">
+                    <i class="fas fa-calendar-week text-primary"></i>
+                    <div>
+                        <div class="menu-item-text">Advanced Scheduler</div>
+                        <div class="menu-item-desc">Comprehensive scheduling tools</div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="menu-section">
+                <div class="menu-section-title">Analytics & Intelligence</div>
+                
+                <a href="{{ url_for('analytics_dashboard') }}" class="menu-item">
+                    <i class="fas fa-chart-bar text-info"></i>
+                    <div>
+                        <div class="menu-item-text">Analytics Dashboard</div>
+                        <div class="menu-item-desc">Business performance metrics</div>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('business_intelligence_dashboard') }}" class="menu-item">
+                    <i class="fas fa-brain text-success"></i>
+                    <div>
+                        <div class="menu-item-text">Business Intelligence</div>
+                        <div class="menu-item-desc">Strategic insights and recommendations</div>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('ml_insights_dashboard') }}" class="menu-item">
+                    <i class="fas fa-magic text-warning"></i>
+                    <div>
+                        <div class="menu-item-text">ML Insights</div>
+                        <div class="menu-item-desc">AI-powered analytics</div>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('integrated_analytics') }}" class="menu-item">
+                    <i class="fas fa-chart-line text-dark"></i>
+                    <div>
+                        <div class="menu-item-text">Analytics Command</div>
+                        <div class="menu-item-desc">Integrated analytics platform</div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Advanced Tools Section -->
+            <div class="menu-section">
+                <div class="menu-section-title">Advanced Tools</div>
+                
+                <a href="{{ url_for('advanced_scheduler_dashboard') }}" class="menu-item">
+                    <i class="fas fa-calendar-alt text-dark"></i>
+                    <div>
+                        <div class="menu-item-text">Advanced Scheduler</div>
+                        <div class="menu-item-desc">Professional scheduling interface</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Dashboard Content -->
     <div class="row g-4">
-        <!-- Left Column - Weekly Schedule -->
-        <div class="col-lg-9">
+        <!-- Full Width - Weekly Schedule -->
+        <div class="col-12">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
@@ -192,125 +455,73 @@
                 </div>
             </div>
         </div>
-
-        <!-- Right Column - Quick Actions -->
-        <div class="col-lg-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-bolt me-2"></i>
-                        Quick Actions
-                    </h5>
-                </div>
-                <div class="card-body p-3">
-                    <!-- Core Business Actions -->
-                    <div class="mb-3">
-                        <h6 class="text-muted mb-2">Core Business</h6>
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <a href="{{ url_for('crm_dashboard') }}" class="btn btn-outline-primary btn-sm w-100">
-                                    <i class="fas fa-users d-block mb-1"></i>
-                                    <small>CRM</small>
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ url_for('quote_invoice_form') }}" class="btn btn-outline-success btn-sm w-100">
-                                    <i class="fas fa-file-invoice-dollar d-block mb-1"></i>
-                                    <small>Quote/Invoice</small>
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ url_for('job_schedule') }}" class="btn btn-outline-info btn-sm w-100">
-                                    <i class="fas fa-calendar d-block mb-1"></i>
-                                    <small>Schedule</small>
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ url_for('contact_list') }}" class="btn btn-outline-secondary btn-sm w-100">
-                                    <i class="fas fa-address-book d-block mb-1"></i>
-                                    <small>Contacts</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Operations -->
-                    <div class="mb-3">
-                        <h6 class="text-muted mb-2">Operations</h6>
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <a href="{{ url_for('staff_management') }}" class="btn btn-outline-warning btn-sm w-100">
-                                    <i class="fas fa-hard-hat d-block mb-1"></i>
-                                    <small>Staff</small>
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ url_for('inventory_dashboard') }}" class="btn btn-outline-info btn-sm w-100">
-                                    <i class="fas fa-boxes d-block mb-1"></i>
-                                    <small>Inventory</small>
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ url_for('checklist_management') }}" class="btn btn-outline-secondary btn-sm w-100">
-                                    <i class="fas fa-tasks d-block mb-1"></i>
-                                    <small>Checklists</small>
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ url_for('unified_scheduler_dashboard') }}" class="btn btn-outline-primary btn-sm w-100">
-                                    <i class="fas fa-calendar-week d-block mb-1"></i>
-                                    <small>Scheduler</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Analytics -->
-                    <div class="mb-3">
-                        <h6 class="text-muted mb-2">Analytics</h6>
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <a href="{{ url_for('analytics_dashboard') }}" class="btn btn-outline-info btn-sm w-100">
-                                    <i class="fas fa-chart-bar d-block mb-1"></i>
-                                    <small>Analytics</small>
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ url_for('business_intelligence_dashboard') }}" class="btn btn-outline-success btn-sm w-100">
-                                    <i class="fas fa-brain d-block mb-1"></i>
-                                    <small>Intelligence</small>
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ url_for('ml_insights_dashboard') }}" class="btn btn-outline-warning btn-sm w-100">
-                                    <i class="fas fa-magic d-block mb-1"></i>
-                                    <small>ML Insights</small>
-                                </a>
-                            </div>
-                            <div class="col-6">
-                                <a href="{{ url_for('integrated_analytics') }}" class="btn btn-outline-dark btn-sm w-100">
-                                    <i class="fas fa-chart-line d-block mb-1"></i>
-                                    <small>Command</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Advanced Tools -->
-                    <div>
-                        <h6 class="text-muted mb-2">Advanced Tools</h6>
-                        <div class="row g-2">
-                            <div class="col-12">
-                                <a href="{{ url_for('advanced_scheduler_dashboard') }}" class="btn btn-outline-dark btn-sm w-100">
-                                    <i class="fas fa-calendar-alt me-2"></i>
-                                    Advanced Scheduler
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
+
+<script>
+// Side Menu Functionality
+function toggleSideMenu() {
+    const sideMenu = document.getElementById('sideMenu');
+    const overlay = document.getElementById('sideMenuOverlay');
+    const toggleBtn = document.getElementById('quickActionsToggle');
+    
+    if (sideMenu.classList.contains('active')) {
+        closeSideMenu();
+    } else {
+        openSideMenu();
+    }
+}
+
+function openSideMenu() {
+    const sideMenu = document.getElementById('sideMenu');
+    const overlay = document.getElementById('sideMenuOverlay');
+    const toggleBtn = document.getElementById('quickActionsToggle');
+    
+    sideMenu.classList.add('active');
+    overlay.style.display = 'block';
+    toggleBtn.classList.add('active');
+    
+    // Change icon to close
+    const icon = toggleBtn.querySelector('i');
+    icon.className = 'fas fa-times';
+    
+    // Prevent body scroll when menu is open
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSideMenu() {
+    const sideMenu = document.getElementById('sideMenu');
+    const overlay = document.getElementById('sideMenuOverlay');
+    const toggleBtn = document.getElementById('quickActionsToggle');
+    
+    sideMenu.classList.remove('active');
+    overlay.style.display = 'none';
+    toggleBtn.classList.remove('active');
+    
+    // Change icon back to bolt
+    const icon = toggleBtn.querySelector('i');
+    icon.className = 'fas fa-bolt';
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
+}
+
+// Close menu when pressing Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeSideMenu();
+    }
+});
+
+// Close menu when clicking on menu items (for better UX)
+document.addEventListener('DOMContentLoaded', function() {
+    const menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach(item => {
+        item.addEventListener('click', function() {
+            // Small delay to allow the navigation to start
+            setTimeout(closeSideMenu, 100);
+        });
+    });
+});
+</script>
 {% endblock %}
