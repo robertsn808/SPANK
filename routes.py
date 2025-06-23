@@ -1376,6 +1376,47 @@ def api_clear_analytics_cache():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/health-check', methods=['GET', 'HEAD'])
+def health_check():
+    """Health check endpoint for dashboard monitoring"""
+    try:
+        return jsonify({
+            'status': 'healthy',
+            'timestamp': datetime.now().isoformat(),
+            'service': 'SPANKKS Construction Admin Portal'
+        })
+    except Exception as e:
+        return jsonify({'status': 'error', 'error': str(e)}), 500
+
+@app.route('/api/dashboard/metrics')
+def dashboard_metrics():
+    """Get dashboard metrics for real-time updates"""
+    try:
+        service_requests = handyman_storage.get_all_service_requests()
+        contact_messages = handyman_storage.get_all_contact_messages()
+        
+        # Get current week appointments
+        hawaii_now = get_hawaii_time()
+        start_of_week = hawaii_now - timedelta(days=hawaii_now.weekday())
+        week_appointments = []
+        for appointment in appointments:
+            try:
+                appointment_date = datetime.strptime(appointment['date'], '%Y-%m-%d')
+                if start_of_week <= appointment_date < start_of_week + timedelta(days=7):
+                    week_appointments.append(appointment)
+            except (KeyError, ValueError, TypeError):
+                continue
+        
+        return jsonify({
+            'total_requests': len(service_requests),
+            'pending_requests': len([req for req in service_requests if hasattr(req, 'status') and req.status == 'pending']),
+            'total_messages': len(contact_messages),
+            'week_appointments': len(week_appointments),
+            'last_updated': datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/client/<client_id>/<job_id>/update', methods=['POST'])
 def update_client_info(client_id, job_id):
     """Update client information in the database"""
