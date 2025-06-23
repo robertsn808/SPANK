@@ -807,7 +807,7 @@
 // Medium Priority Enhancement Functions
 let selectedRows = new Set();
 let currentSort = { column: null, direction: 'asc' };
-let currentFilters = { quick: 'all', chips: new Set() };
+let adminFilters = { quick: 'all', chips: new Set() };
 let tablePagination = 1;
 let pageSize = 25;
 
@@ -821,16 +821,16 @@ function performSearch(searchTerm) {
 function setQuickFilter(filter, element) {
     document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
     element.classList.add('active');
-    currentFilters.quick = filter;
+    adminFilters.quick = filter;
     updateTable();
 }
 
 function toggleFilter(filter, element) {
     element.classList.toggle('active');
-    if (currentFilters.chips.has(filter)) {
-        currentFilters.chips.delete(filter);
+    if (adminFilters.chips.has(filter)) {
+        adminFilters.chips.delete(filter);
     } else {
-        currentFilters.chips.add(filter);
+        adminFilters.chips.add(filter);
     }
     updateTable();
 }
@@ -938,7 +938,7 @@ function changePage(page) {
 
 function changePageSize(size) {
     pageSize = parseInt(size);
-    currentPage = 1;
+    tablePagination = 1;
     updateTable();
     updatePaginationButtons();
 }
@@ -946,7 +946,7 @@ function changePageSize(size) {
 function updatePaginationButtons() {
     document.querySelectorAll('.pagination-btn').forEach(btn => {
         btn.classList.remove('active');
-        if (btn.textContent == currentPage) {
+        if (btn.textContent == tablePagination) {
             btn.classList.add('active');
         }
     });
@@ -1102,7 +1102,7 @@ function showUpdateNotification(message) {
 }
 
 function updateTable() {
-    console.log('Updating table with filters:', currentFilters, 'Sort:', currentSort, 'Page:', currentPage);
+    console.log('Updating table with filters:', adminFilters, 'Sort:', currentSort, 'Page:', tablePagination);
     // Implement table update logic
     showUpdateNotification('Table updated');
 }
