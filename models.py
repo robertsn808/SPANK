@@ -90,7 +90,22 @@ class HandymanStorage:
         """Get next available ID for a collection"""
         if not items:
             return 1
-        return max(item.id if hasattr(item, 'id') else item.get('id', 0) for item in items if (hasattr(item, 'id') and item.id) or (isinstance(item, dict) and item.get('id'))) + 1
+        
+        valid_ids = []
+        for item in items:
+            if hasattr(item, 'id') and item.id:
+                # Convert string IDs to integers for comparison
+                try:
+                    valid_ids.append(int(str(item.id).replace('CLI', '').replace('JOB', '').replace('Q', '').replace('I', '')))
+                except:
+                    valid_ids.append(1)
+            elif isinstance(item, dict) and item.get('id'):
+                try:
+                    valid_ids.append(int(str(item.get('id')).replace('CLI', '').replace('JOB', '').replace('Q', '').replace('I', '')))
+                except:
+                    valid_ids.append(1)
+        
+        return max(valid_ids) + 1 if valid_ids else 1
     
     def _load_contacts(self):
         """Load contacts from file"""

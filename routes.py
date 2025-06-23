@@ -6665,3 +6665,152 @@ def job_site_portal_redirect():
     """Redirect to job site portal login"""
     return redirect(url_for('portal_login'))
 
+# ===== MANAGEMENT ROUTES =====
+
+@app.route('/admin/management')
+def admin_management():
+    """Comprehensive Management Center - CSV, Staff, Company Settings"""
+    try:
+        return render_template('admin/management.html')
+    except Exception as e:
+        print(f"Error in management page: {e}")
+        flash('Error loading management page', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+# ===== MANAGEMENT API ENDPOINTS =====
+
+@app.route('/api/management/business-info', methods=['POST'])
+def update_business_info():
+    """Update business information settings"""
+    try:
+        data = request.get_json()
+        # Save business info to storage or config file
+        settings = {
+            'company_name': data.get('companyName', 'SPANKKS Construction'),
+            'phone': data.get('companyPhone', '(808) 778-9132'),
+            'email': data.get('companyEmail', 'spank808@gmail.com'),
+            'license_number': data.get('licenseNumber', '')
+        }
+        
+        # Store in data directory
+        import json
+        import os
+        settings_file = os.path.join('data', 'business_settings.json')
+        os.makedirs('data', exist_ok=True)
+        
+        with open(settings_file, 'w') as f:
+            json.dump(settings, f, indent=2)
+        
+        return jsonify({'success': True, 'message': 'Business information updated successfully'})
+    except Exception as e:
+        print(f"Error updating business info: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/management/hours', methods=['POST'])
+def management_update_hours():
+    """Update business hours settings via Management Center"""
+    try:
+        data = request.get_json()
+        hours = {
+            'weekday_start': data.get('weekdayStart', '07:00'),
+            'weekday_end': data.get('weekdayEnd', '17:00'),
+            'saturday_start': data.get('saturdayStart', '08:00'),
+            'saturday_end': data.get('saturdayEnd', '15:00'),
+            'lunch_start': data.get('lunchStart', '12:00'),
+            'lunch_end': data.get('lunchEnd', '13:00'),
+            'sunday_closed': data.get('sundayClosed', True)
+        }
+        
+        # Store in data directory
+        import json
+        import os
+        hours_file = os.path.join('data', 'business_hours.json')
+        os.makedirs('data', exist_ok=True)
+        
+        with open(hours_file, 'w') as f:
+            json.dump(hours, f, indent=2)
+        
+        return jsonify({'success': True, 'message': 'Business hours updated successfully'})
+    except Exception as e:
+        print(f"Error updating business hours: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/management/system-settings', methods=['POST'])
+def update_system_settings():
+    """Update system settings"""
+    try:
+        data = request.get_json()
+        settings = {
+            'next_client_id': int(data.get('nextClientId', 1)),
+            'next_job_id': int(data.get('nextJobId', 1)),
+            'hawaii_tax_rate': float(data.get('hawaiiTaxRate', 4.712))
+        }
+        
+        # Store in data directory
+        import json
+        import os
+        system_file = os.path.join('data', 'system_settings.json')
+        os.makedirs('data', exist_ok=True)
+        
+        with open(system_file, 'w') as f:
+            json.dump(settings, f, indent=2)
+        
+        return jsonify({'success': True, 'message': 'System settings saved successfully'})
+    except Exception as e:
+        print(f"Error updating system settings: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/management/payment-methods', methods=['POST'])
+def update_payment_methods():
+    """Update accepted payment methods"""
+    try:
+        data = request.get_json()
+        methods = {
+            'cash': data.get('paymentCash', True),
+            'check': data.get('paymentCheck', True),
+            'venmo': data.get('paymentVenmo', True),
+            'zelle': data.get('paymentZelle', True),
+            'bank_transfer': data.get('paymentBank', False),
+            'credit_card': data.get('paymentCredit', False)
+        }
+        
+        # Store in data directory
+        import json
+        import os
+        payment_file = os.path.join('data', 'payment_methods.json')
+        os.makedirs('data', exist_ok=True)
+        
+        with open(payment_file, 'w') as f:
+            json.dump(methods, f, indent=2)
+        
+        return jsonify({'success': True, 'message': 'Payment methods updated successfully'})
+    except Exception as e:
+        print(f"Error updating payment methods: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/management/notifications', methods=['POST'])
+def update_notification_settings():
+    """Update notification preferences"""
+    try:
+        data = request.get_json()
+        notifications = {
+            'new_inquiry': data.get('notifyNewInquiry', True),
+            'quote_accepted': data.get('notifyQuoteAccepted', True),
+            'payment_received': data.get('notifyPaymentReceived', True),
+            'appointment_reminder': data.get('notifyAppointmentReminder', True)
+        }
+        
+        # Store in data directory
+        import json
+        import os
+        notify_file = os.path.join('data', 'notification_settings.json')
+        os.makedirs('data', exist_ok=True)
+        
+        with open(notify_file, 'w') as f:
+            json.dump(notifications, f, indent=2)
+        
+        return jsonify({'success': True, 'message': 'Notification preferences saved successfully'})
+    except Exception as e:
+        print(f"Error updating notification settings: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
