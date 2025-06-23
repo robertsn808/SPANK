@@ -1,0 +1,300 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Customer Feedback - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<!-- Customer Feedback Header -->
+<section class="py-4 bg-gradient-purple">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="text-white fw-bold mb-2">
+                            <i class="fas fa-star me-3"></i>Customer Satisfaction
+                        </h1>
+                        <p class="text-white-50 mb-0">Feedback management and follow-up tracking</p>
+                    </div>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Satisfaction Overview -->
+<section class="py-4">
+    <div class="container">
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-circle bg-success-light mb-3">
+                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark">{{ total_completed }}</h3>
+                        <p class="text-muted mb-0">Total Completed</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-circle bg-warning-light mb-3">
+                            <i class="fas fa-clock fa-2x text-warning"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark">{{ recent_completions|length }}</h3>
+                        <p class="text-muted mb-0">Recent Jobs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-circle bg-info-light mb-3">
+                            <i class="fas fa-envelope fa-2x text-info"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark">{{ follow_up_needed|length }}</h3>
+                        <p class="text-muted mb-0">Need Follow-up</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body text-center">
+                        <div class="icon-circle bg-danger-light mb-3">
+                            <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark">{{ urgent_messages|length }}</h3>
+                        <p class="text-muted mb-0">Urgent Messages</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Completions -->
+<section class="py-4">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-white">
+                <h3 class="mb-0"><i class="fas fa-clock me-2 text-success"></i>Recent Completions (Last 7 Days)</h3>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_completions %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Customer</th>
+                                <th>Service</th>
+                                <th>Completed</th>
+                                <th>Contact</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for completion in recent_completions %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ completion.request.name }}</div>
+                                    <small class="text-muted">#{{ completion.request.id }}</small>
+                                </td>
+                                <td>{{ completion.request.service }}</td>
+                                <td>
+                                    <div>{{ completion.days_since }} day{{ 's' if completion.days_since != 1 else '' }} ago</div>
+                                    <small class="text-muted">{{ completion.request.preferred_date }}</small>
+                                </td>
+                                <td>
+                                    <div>
+                                        <a href="tel:{{ completion.request.phone }}" class="text-decoration-none">
+                                            <i class="fas fa-phone me-1"></i>{{ completion.request.phone }}
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a href="mailto:{{ completion.request.email }}" class="text-decoration-none small">
+                                            <i class="fas fa-envelope me-1"></i>{{ completion.request.email }}
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if completion.days_since <= 3 %}
+                                    <span class="badge bg-success">Fresh Completion</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">Ready for Survey</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <form method="POST" action="{{ url_for('send_followup', request_id=completion.request.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-outline-success" title="Send satisfaction survey">
+                                                <i class="fas fa-star"></i>
+                                            </button>
+                                        </form>
+                                        <a href="mailto:{{ completion.request.email }}" class="btn btn-outline-primary" title="Email customer">
+                                            <i class="fas fa-envelope"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Recent Completions</h4>
+                    <p class="text-muted">Completed jobs from the last 7 days will appear here.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Follow-up Needed -->
+<section class="py-4">
+    <div class="container">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-white">
+                <h3 class="mb-0"><i class="fas fa-envelope me-2 text-info"></i>Customers Needing Follow-up</h3>
+            </div>
+            <div class="card-body p-0">
+                {% if follow_up_needed %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Customer</th>
+                                <th>Service</th>
+                                <th>Days Since Completion</th>
+                                <th>Contact</th>
+                                <th>Priority</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for follow_up in follow_up_needed %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ follow_up.request.name }}</div>
+                                    <small class="text-muted">#{{ follow_up.request.id }}</small>
+                                </td>
+                                <td>{{ follow_up.request.service }}</td>
+                                <td>
+                                    <div>{{ follow_up.days_since }} days ago</div>
+                                    {% if follow_up.days_since > 21 %}
+                                    <span class="badge bg-danger">Overdue</span>
+                                    {% elif follow_up.days_since > 14 %}
+                                    <span class="badge bg-warning">High Priority</span>
+                                    {% else %}
+                                    <span class="badge bg-info">Standard</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div>{{ follow_up.request.phone }}</div>
+                                    <div class="small text-muted">{{ follow_up.request.email }}</div>
+                                </td>
+                                <td>
+                                    {% if follow_up.days_since > 21 %}
+                                    <i class="fas fa-exclamation-triangle text-danger"></i> Urgent
+                                    {% elif follow_up.days_since > 14 %}
+                                    <i class="fas fa-clock text-warning"></i> High
+                                    {% else %}
+                                    <i class="fas fa-info-circle text-info"></i> Normal
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <form method="POST" action="{{ url_for('send_followup', request_id=follow_up.request.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-success" title="Send follow-up with $5 SPANK Bucks">
+                                                <i class="fas fa-dollar-sign me-1"></i>Follow-up
+                                            </button>
+                                        </form>
+                                        <a href="tel:{{ follow_up.request.phone }}" class="btn btn-outline-primary" title="Call customer">
+                                            <i class="fas fa-phone"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h4 class="text-success">All Caught Up!</h4>
+                    <p class="text-muted">No customers need follow-up at this time.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Urgent Messages -->
+{% if urgent_messages %}
+<section class="py-4">
+    <div class="container">
+        <div class="card border-0 shadow border-danger">
+            <div class="card-header bg-danger text-white">
+                <h3 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Urgent Customer Messages</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Customer</th>
+                                <th>Subject</th>
+                                <th>Message Preview</th>
+                                <th>Priority Score</th>
+                                <th>Received</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for message in urgent_messages %}
+                            <tr class="table-warning">
+                                <td>
+                                    <div class="fw-bold">{{ message.name }}</div>
+                                    <small class="text-muted">{{ message.email }}</small>
+                                </td>
+                                <td>{{ message.subject or 'General Inquiry' }}</td>
+                                <td>
+                                    <div class="message-preview">
+                                        {{ message.message[:80] }}{% if message.message|length > 80 %}...{% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger">{{ message.priority_score }}/10</span>
+                                </td>
+                                <td>{{ message.submitted_at }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('mark_message_read', message_id=message.id) }}" class="btn btn-success">
+                                            <i class="fas fa-check"></i> Read
+                                        </a>
+                                        <a href="mailto:{{ message.email }}" class="btn btn-outline-primary">
+                                            <i class="fas fa-reply"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

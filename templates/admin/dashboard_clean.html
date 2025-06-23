@@ -1,0 +1,244 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Admin Dashboard - SPANKKS Construction{% endblock %}
+
+{% block head %}
+<style>
+    .dashboard-content {
+        padding: 2rem 0;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 200px);
+    }
+    
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        height: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .stats-card.bg-gradient-primary {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    }
+    
+    .stats-card.bg-gradient-success {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    }
+    
+    .stats-card.bg-gradient-warning {
+        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    }
+    
+    .stats-card.bg-gradient-info {
+        background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);
+    }
+
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .quick-actions-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .quick-action-btn {
+        height: 120px;
+        border-radius: 10px;
+        transition: all 0.2s ease;
+        margin-bottom: 1rem;
+    }
+
+    .quick-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .bookings-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-content">
+    <div class="container">
+        <!-- Stats Cards Row -->
+        <div class="row g-4 mb-5">
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="stats-card bg-gradient-primary">
+                    <div class="icon-circle">
+                        <i class="fas fa-clipboard-list fa-2x"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ bookings|length if bookings else 0 }}</h3>
+                    <p class="mb-0">Total Requests</p>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="stats-card bg-gradient-success">
+                    <div class="icon-circle">
+                        <i class="fas fa-handshake fa-2x"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ (bookings|selectattr('status', 'equalto', 'pending')|list)|length if bookings else 0 }}</h3>
+                    <p class="mb-0">Pending</p>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="stats-card bg-gradient-warning">
+                    <div class="icon-circle">
+                        <i class="fas fa-envelope fa-2x"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ contact_messages|length if contact_messages else 0 }}</h3>
+                    <p class="mb-0">Messages</p>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="stats-card bg-gradient-info">
+                    <div class="icon-circle">
+                        <i class="fas fa-calendar fa-2x"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ week_appointments|length if week_appointments else 0 }}</h3>
+                    <p class="mb-0">This Week</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Section -->
+        <div class="quick-actions-section">
+            <h4 class="fw-bold mb-4">
+                <i class="fas fa-bolt me-2 text-primary"></i>Quick Actions
+            </h4>
+            <div class="row g-3">
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="/admin/quote-builder" class="quick-action-btn btn btn-outline-primary w-100 d-flex flex-column align-items-center justify-content-center">
+                        <i class="fas fa-plus-circle fa-2x mb-2"></i>
+                        <span>New Quote</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="/admin/scheduler" class="quick-action-btn btn btn-outline-success w-100 d-flex flex-column align-items-center justify-content-center">
+                        <i class="fas fa-calendar-plus fa-2x mb-2"></i>
+                        <span>Schedule Job</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="/admin/invoices" class="quick-action-btn btn btn-outline-warning w-100 d-flex flex-column align-items-center justify-content-center">
+                        <i class="fas fa-receipt fa-2x mb-2"></i>
+                        <span>Create Invoice</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="/admin/crm" class="quick-action-btn btn btn-outline-info w-100 d-flex flex-column align-items-center justify-content-center">
+                        <i class="fas fa-user-plus fa-2x mb-2"></i>
+                        <span>Add Client</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="/admin/analytics" class="quick-action-btn btn btn-outline-secondary w-100 d-flex flex-column align-items-center justify-content-center">
+                        <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                        <span>Analytics</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="/admin/staff-management" class="quick-action-btn btn btn-outline-dark w-100 d-flex flex-column align-items-center justify-content-center">
+                        <i class="fas fa-users fa-2x mb-2"></i>
+                        <span>Staff</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Table Section -->
+        {% if bookings %}
+        <div class="bookings-section">
+            <h4 class="fw-bold mb-4">
+                <i class="fas fa-list me-2 text-primary"></i>Recent Consultation Bookings
+            </h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Customer</th>
+                            <th>Contact</th>
+                            <th>Service</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings[:5] %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ booking.name }}</div>
+                                {% if booking.project_type %}
+                                <small class="text-muted">{{ booking.project_type|title }} Project</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div><i class="fas fa-phone text-muted me-1"></i>{{ booking.phone }}</div>
+                                <div><i class="fas fa-envelope text-muted me-1"></i>{{ booking.email }}</div>
+                            </td>
+                            <td>{{ booking.service|replace('_', ' ')|title }}</td>
+                            <td>{{ booking.consultation_date }}</td>
+                            <td>
+                                <span class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% else %}secondary{% endif %}">
+                                    {{ booking.status|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="#" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-success btn-sm">
+                                        <i class="fas fa-check"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if bookings|length > 5 %}
+            <div class="text-center mt-3">
+                <a href="/admin/bookings" class="btn btn-primary">View All Bookings</a>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="bookings-section text-center">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h4>No Bookings Yet</h4>
+            <p class="text-muted">When customers submit consultation requests, they'll appear here.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

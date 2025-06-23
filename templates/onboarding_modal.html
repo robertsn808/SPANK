@@ -1,0 +1,347 @@
+<!-- Getting Started Walkthrough Modal -->
+<div class="modal fade" id="onboardingModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title text-white">
+                    <i class="fas fa-rocket me-2"></i>Welcome to SPANKKS Construction
+                </h5>
+            </div>
+            <div class="modal-body p-0">
+                <!-- Admin Onboarding Steps -->
+                <div id="adminOnboarding" class="onboarding-steps" style="display: none;">
+                    <div class="step active" data-step="1">
+                        <div class="p-4 text-center">
+                            <div class="icon-circle bg-primary-light mb-3 mx-auto" style="width: 80px; height: 80px;">
+                                <i class="fas fa-chart-line fa-2x text-primary mt-3"></i>
+                            </div>
+                            <h4>Dashboard Overview</h4>
+                            <p class="text-muted mb-4">Your admin dashboard shows real customer inquiries, weekly schedules, and business metrics. All data here represents actual customer interactions.</p>
+                            <div class="bg-light p-3 rounded">
+                                <small><strong>Quick Tip:</strong> Use the weekly calendar to manage appointments and the quick action buttons for common tasks.</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step" data-step="2">
+                        <div class="p-4 text-center">
+                            <div class="icon-circle bg-success-light mb-3 mx-auto" style="width: 80px; height: 80px;">
+                                <i class="fas fa-file-invoice-dollar fa-2x text-success mt-3"></i>
+                            </div>
+                            <h4>Invoice Management</h4>
+                            <p class="text-muted mb-4">Track payments, mark invoices as paid, and monitor cash flow. Hawaii GET tax (4.712%) is automatically calculated for all quotes and invoices.</p>
+                            <div class="bg-light p-3 rounded">
+                                <small><strong>Access:</strong> Click "Invoice Management" from the dashboard or use the CRM system for integrated workflows.</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step" data-step="3">
+                        <div class="p-4 text-center">
+                            <div class="icon-circle bg-info-light mb-3 mx-auto" style="width: 80px; height: 80px;">
+                                <i class="fas fa-users-cog fa-2x text-info mt-3"></i>
+                            </div>
+                            <h4>Staff Management</h4>
+                            <p class="text-muted mb-4">Manage crew schedules, skills, and assignments. Track performance metrics and availability for optimal job allocation.</p>
+                            <div class="bg-light p-3 rounded">
+                                <small><strong>Features:</strong> Skills tracking, availability management, performance monitoring, and automated scheduling.</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step" data-step="4">
+                        <div class="p-4 text-center">
+                            <div class="icon-circle bg-warning-light mb-3 mx-auto" style="width: 80px; height: 80px;">
+                                <i class="fas fa-clipboard-check fa-2x text-warning mt-3"></i>
+                            </div>
+                            <h4>Job Workflow</h4>
+                            <p class="text-muted mb-4">Complete customer lifecycle: Inquiry → Quote → Invoice → Job Completion. Each step automatically updates status and notifications.</p>
+                            <div class="bg-light p-3 rounded">
+                                <small><strong>Workflow:</strong> CRM system handles the entire process from initial contact to final payment and customer follow-up.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Staff Onboarding Steps -->
+                <div id="staffOnboarding" class="onboarding-steps" style="display: none;">
+                    <div class="step active" data-step="1">
+                        <div class="p-4 text-center">
+                            <div class="icon-circle bg-primary-light mb-3 mx-auto" style="width: 80px; height: 80px;">
+                                <i class="fas fa-hard-hat fa-2x text-primary mt-3"></i>
+                            </div>
+                            <h4>Welcome to the Team</h4>
+                            <p class="text-muted mb-4">Access your job assignments, upload photos, generate quotes, and manage tasks through the staff portal system.</p>
+                            <div class="bg-light p-3 rounded">
+                                <small><strong>Login:</strong> Use your Staff ID and PIN to access job portals: SPK001/30078 + PIN</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step" data-step="2">
+                        <div class="p-4 text-center">
+                            <div class="icon-circle bg-success-light mb-3 mx-auto" style="width: 80px; height: 80px;">
+                                <i class="fas fa-camera fa-2x text-success mt-3"></i>
+                            </div>
+                            <h4>Job Documentation</h4>
+                            <p class="text-muted mb-4">Upload before/after photos, track materials used, and complete job checklists. All photos are automatically organized by job.</p>
+                            <div class="bg-light p-3 rounded">
+                                <small><strong>Requirements:</strong> Upload before photos at start, after photos at completion, and log all materials used.</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step" data-step="3">
+                        <div class="p-4 text-center">
+                            <div class="icon-circle bg-info-light mb-3 mx-auto" style="width: 80px; height: 80px;">
+                                <i class="fas fa-file-invoice fa-2x text-info mt-3"></i>
+                            </div>
+                            <h4>Quote & Invoice Tools</h4>
+                            <p class="text-muted mb-4">Generate professional quotes and invoices on-site. Hawaii tax is automatically calculated, and PDFs are instantly available.</p>
+                            <div class="bg-light p-3 rounded">
+                                <small><strong>Access:</strong> Use staff portal toolkit or direct links. Customer details auto-populate when accessed from job portals.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Client Onboarding Steps -->
+                <div id="clientOnboarding" class="onboarding-steps" style="display: none;">
+                    <div class="step active" data-step="1">
+                        <div class="p-4 text-center">
+                            <div class="icon-circle bg-primary-light mb-3 mx-auto" style="width: 80px; height: 80px;">
+                                <i class="fas fa-home fa-2x text-primary mt-3"></i>
+                            </div>
+                            <h4>Welcome to Your Project Portal</h4>
+                            <p class="text-muted mb-4">Access your quotes, invoices, project photos, and track job progress through your secure client portal.</p>
+                            <div class="bg-light p-3 rounded">
+                                <small><strong>Access:</strong> Use your Client ID and Job ID provided by SPANKKS Construction to log in.</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step" data-step="2">
+                        <div class="p-4 text-center">
+                            <div class="icon-circle bg-success-light mb-3 mx-auto" style="width: 80px; height: 80px;">
+                                <i class="fas fa-file-alt fa-2x text-success mt-3"></i>
+                            </div>
+                            <h4>Quotes & Invoices</h4>
+                            <p class="text-muted mb-4">View and download your project quotes and invoices. All documents include detailed breakdowns and Hawaii GET tax calculations.</p>
+                            <div class="bg-light p-3 rounded">
+                                <small><strong>Features:</strong> PDF downloads, payment status tracking, and detailed service descriptions.</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step" data-step="3">
+                        <div class="p-4 text-center">
+                            <div class="icon-circle bg-info-light mb-3 mx-auto" style="width: 80px; height: 80px;">
+                                <i class="fas fa-images fa-2x text-info mt-3"></i>
+                            </div>
+                            <h4>Project Photos</h4>
+                            <p class="text-muted mb-4">View before and after photos of your project. Photos are automatically updated as work progresses.</p>
+                            <div class="bg-light p-3 rounded">
+                                <small><strong>Updates:</strong> Portal refreshes automatically to show new photos and documents as they're added.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Progress Indicator -->
+                <div class="px-4 pb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="progress flex-grow-1 me-3" style="height: 4px;">
+                            <div class="progress-bar bg-primary" id="onboardingProgress" style="width: 25%"></div>
+                        </div>
+                        <small class="text-muted">
+                            <span id="currentStep">1</span> of <span id="totalSteps">3</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" id="skipOnboarding">Skip Tour</button>
+                <button type="button" class="btn btn-secondary" id="prevStep" style="display: none;">Previous</button>
+                <button type="button" class="btn btn-primary" id="nextStep">Next</button>
+                <button type="button" class="btn btn-success" id="finishOnboarding" style="display: none;">Get Started</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.onboarding-steps .step {
+    display: none;
+}
+
+.onboarding-steps .step.active {
+    display: block;
+}
+
+.icon-circle {
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bg-primary-light { background-color: rgba(13, 110, 253, 0.1); }
+.bg-success-light { background-color: rgba(25, 135, 84, 0.1); }
+.bg-info-light { background-color: rgba(13, 202, 240, 0.1); }
+.bg-warning-light { background-color: rgba(255, 193, 7, 0.1); }
+</style>
+
+<script>
+class OnboardingWalkthrough {
+    constructor() {
+        this.currentStep = 1;
+        this.totalSteps = 3;
+        this.currentRole = 'admin';
+        this.init();
+    }
+    
+    init() {
+        this.bindEvents();
+        this.checkIfShouldShow();
+    }
+    
+    bindEvents() {
+        const nextBtn = document.getElementById('nextStep');
+        const prevBtn = document.getElementById('prevStep');
+        const skipBtn = document.getElementById('skipOnboarding');
+        const finishBtn = document.getElementById('finishOnboarding');
+        
+        if (nextBtn) nextBtn.addEventListener('click', () => this.nextStep());
+        if (prevBtn) prevBtn.addEventListener('click', () => this.prevStep());
+        if (skipBtn) skipBtn.addEventListener('click', () => this.skipOnboarding());
+        if (finishBtn) finishBtn.addEventListener('click', () => this.finishOnboarding());
+    }
+    
+    checkIfShouldShow() {
+        const hasSeenOnboarding = localStorage.getItem('spankks_onboarding_complete');
+        const userRole = this.detectUserRole();
+        
+        if (!hasSeenOnboarding) {
+            this.showOnboarding(userRole);
+        }
+    }
+    
+    detectUserRole() {
+        const path = window.location.pathname;
+        
+        if (path.includes('/admin') || path.includes('/dashboard')) {
+            return 'admin';
+        } else if (path.includes('/staff-portal') || path.includes('/portal/staff')) {
+            return 'staff';
+        } else if (path.includes('/client-portal') || path.includes('/portal/client')) {
+            return 'client';
+        }
+        
+        return 'admin';
+    }
+    
+    showOnboarding(role) {
+        this.currentRole = role;
+        this.currentStep = 1;
+        this.totalSteps = role === 'admin' ? 4 : 3;
+        
+        document.querySelectorAll('.onboarding-steps').forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        const sectionId = `${role}Onboarding`;
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.style.display = 'block';
+        }
+        
+        this.updateStepDisplay();
+        
+        const modal = new bootstrap.Modal(document.getElementById('onboardingModal'));
+        modal.show();
+    }
+    
+    nextStep() {
+        if (this.currentStep < this.totalSteps) {
+            this.currentStep++;
+            this.updateStepDisplay();
+        }
+    }
+    
+    prevStep() {
+        if (this.currentStep > 1) {
+            this.currentStep--;
+            this.updateStepDisplay();
+        }
+    }
+    
+    updateStepDisplay() {
+        const currentSection = document.querySelector(`#${this.currentRole}Onboarding`);
+        if (currentSection) {
+            const steps = currentSection.querySelectorAll('.step');
+            steps.forEach((step, index) => {
+                step.classList.toggle('active', index + 1 === this.currentStep);
+            });
+        }
+        
+        const progress = (this.currentStep / this.totalSteps) * 100;
+        const progressBar = document.getElementById('onboardingProgress');
+        if (progressBar) {
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        const currentStepSpan = document.getElementById('currentStep');
+        const totalStepsSpan = document.getElementById('totalSteps');
+        if (currentStepSpan) currentStepSpan.textContent = this.currentStep;
+        if (totalStepsSpan) totalStepsSpan.textContent = this.totalSteps;
+        
+        const prevBtn = document.getElementById('prevStep');
+        const nextBtn = document.getElementById('nextStep');
+        const finishBtn = document.getElementById('finishOnboarding');
+        
+        if (prevBtn) prevBtn.style.display = this.currentStep > 1 ? 'inline-block' : 'none';
+        if (nextBtn) nextBtn.style.display = this.currentStep < this.totalSteps ? 'inline-block' : 'none';
+        if (finishBtn) finishBtn.style.display = this.currentStep === this.totalSteps ? 'inline-block' : 'none';
+    }
+    
+    skipOnboarding() {
+        this.markAsComplete();
+        this.closeModal();
+    }
+    
+    finishOnboarding() {
+        this.markAsComplete();
+        this.closeModal();
+        this.showWelcomeMessage();
+    }
+    
+    markAsComplete() {
+        localStorage.setItem('spankks_onboarding_complete', 'true');
+        localStorage.setItem('spankks_onboarding_date', new Date().toISOString());
+    }
+    
+    closeModal() {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('onboardingModal'));
+        if (modal) {
+            modal.hide();
+        }
+    }
+    
+    showWelcomeMessage() {
+        if (typeof showToast === 'function') {
+            showToast('Welcome to SPANKKS Construction! You\'re all set to get started.', 'success');
+        }
+    }
+    
+    resetOnboarding() {
+        localStorage.removeItem('spankks_onboarding_complete');
+        localStorage.removeItem('spankks_onboarding_date');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('onboardingModal')) {
+        window.spankksOnboarding = new OnboardingWalkthrough();
+    }
+});
+</script>

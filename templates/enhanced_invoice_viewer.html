@@ -1,0 +1,899 @@
+<!-- Enhanced Invoice Viewer with Payment Breakdown -->
+<style>
+.invoice-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #eee;
+}
+
+.invoice-status-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-paid {
+    background: #d4edda;
+    color: #155724;
+    border: 2px solid #c3e6cb;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 2px solid #ffeaa7;
+}
+
+.status-overdue {
+    background: #f8d7da;
+    color: #721c24;
+    border: 2px solid #f1b5ba;
+}
+
+.status-partial {
+    background: #cce7ff;
+    color: #004085;
+    border: 2px solid #99d6ff;
+}
+
+.invoice-summary {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.summary-item {
+    text-align: center;
+}
+
+.summary-amount {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.summary-label {
+    font-size: 14px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.payment-breakdown {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.breakdown-header {
+    background: #007bff;
+    color: white;
+    padding: 15px 20px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.breakdown-content {
+    padding: 0;
+}
+
+.breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.breakdown-row:last-child {
+    border-bottom: none;
+}
+
+.breakdown-row:hover {
+    background: #f8f9fa;
+}
+
+.breakdown-label {
+    font-weight: 500;
+    color: #333;
+}
+
+.breakdown-amount {
+    font-weight: 600;
+    color: #333;
+}
+
+.breakdown-total {
+    background: #f8f9fa;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.tax-detail {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+}
+
+.payment-history {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.payment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.payment-item:last-child {
+    border-bottom: none;
+}
+
+.payment-method {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.payment-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: white;
+}
+
+.payment-cash {
+    background: #28a745;
+}
+
+.payment-check {
+    background: #6c757d;
+}
+
+.payment-venmo {
+    background: #3d95ce;
+}
+
+.payment-zelle {
+    background: #6a1b9a;
+}
+
+.payment-date {
+    font-size: 14px;
+    color: #666;
+}
+
+.payment-amount {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.payment-receipt {
+    background: #e8f4f8;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-left: 4px solid #007bff;
+}
+
+.receipt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.receipt-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.receipt-number {
+    font-size: 14px;
+    color: #666;
+    background: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 25px;
+}
+
+.action-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.btn-download {
+    background: #28a745;
+    color: white;
+}
+
+.btn-download:hover {
+    background: #218838;
+    transform: translateY(-1px);
+}
+
+.btn-email {
+    background: #007bff;
+    color: white;
+}
+
+.btn-email:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+}
+
+.btn-payment {
+    background: #ffc107;
+    color: #333;
+}
+
+.btn-payment:hover {
+    background: #e0a800;
+    transform: translateY(-1px);
+}
+
+.btn-print {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-print:hover {
+    background: #545b62;
+    transform: translateY(-1px);
+}
+
+.quote-acceptance {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.acceptance-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.acceptance-details {
+    font-size: 16px;
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+.acceptance-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.accept-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.accept-btn:hover {
+    background: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+}
+
+.view-btn {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 2px solid white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.view-btn:hover {
+    background: white;
+    color: #333;
+}
+
+.acceptance-terms {
+    margin-top: 20px;
+    font-size: 12px;
+    opacity: 0.8;
+    line-height: 1.4;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .invoice-container {
+        margin: 0 -15px 20px;
+        border-radius: 0;
+        padding: 15px;
+    }
+    
+    .invoice-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .summary-amount {
+        font-size: 1.5rem;
+    }
+    
+    .breakdown-row {
+        padding: 12px 15px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 15px 20px;
+        font-size: 16px;
+    }
+    
+    .acceptance-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .accept-btn,
+    .view-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 18px 30px;
+    }
+    
+    .payment-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 15px;
+    }
+    
+    .payment-method {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 480px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .acceptance-title {
+        font-size: 20px;
+    }
+    
+    .acceptance-details {
+        font-size: 14px;
+    }
+}
+</style>
+
+<!-- Enhanced Invoice Viewer HTML -->
+
+<!-- Quote Acceptance Widget (shown when quote is pending) -->
+<div class="quote-acceptance" id="quoteAcceptance" style="display: none;">
+    <div class="acceptance-title">Quote Ready for Your Approval</div>
+    <div class="acceptance-details">
+        <strong>Quote #Q2025-001</strong> - Kitchen Renovation<br>
+        <strong>Total Amount:</strong> $4,500.00 (including Hawaii GET tax)<br>
+        <strong>Valid Until:</strong> <span id="quoteExpiry">January 15, 2025</span>
+    </div>
+    <div class="acceptance-actions">
+        <button class="accept-btn" onclick="acceptQuoteDigitally('Q2025-001')">
+            <i class="fas fa-check-circle"></i>
+            Accept Quote Digitally
+        </button>
+        <a href="/api/quotes/Q2025-001/download" class="view-btn">
+            <i class="fas fa-download"></i>
+            Download PDF
+        </a>
+    </div>
+    <div class="acceptance-terms">
+        By accepting this quote digitally, you agree to the terms and conditions outlined in the quote document. 
+        A digital timestamp will be recorded for your acceptance.
+    </div>
+</div>
+
+<!-- Invoice Container -->
+<div class="invoice-container">
+    <!-- Invoice Header -->
+    <div class="invoice-header">
+        <div>
+            <h3>Invoice #I2025-001</h3>
+            <p class="text-muted mb-0">Kitchen Renovation - Johnson Residence</p>
+            <small class="text-muted">Generated from Quote #Q2025-001</small>
+        </div>
+        <div class="invoice-status-badge status-paid" id="invoiceStatus">
+            Paid in Full
+        </div>
+    </div>
+    
+    <!-- Invoice Summary -->
+    <div class="invoice-summary">
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="summary-amount" id="totalAmount">$4,712.00</div>
+                <div class="summary-label">Total Amount</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-amount" id="paidAmount">$4,712.00</div>
+                <div class="summary-label">Amount Paid</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-amount" id="remainingBalance">$0.00</div>
+                <div class="summary-label">Remaining Balance</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-amount" id="dueDate">Dec 22, 2024</div>
+                <div class="summary-label">Due Date</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment Breakdown -->
+    <div class="payment-breakdown">
+        <div class="breakdown-header">
+            <span>Invoice Breakdown</span>
+            <span>Amount</span>
+        </div>
+        <div class="breakdown-content">
+            <div class="breakdown-row">
+                <div class="breakdown-label">
+                    Drywall Repair & Paint Touch-up
+                    <div class="tax-detail">Labor and materials included</div>
+                </div>
+                <div class="breakdown-amount">$4,500.00</div>
+            </div>
+            <div class="breakdown-row">
+                <div class="breakdown-label">
+                    Hawaii GET Tax
+                    <div class="tax-detail">O'ahu County - 4.712%</div>
+                </div>
+                <div class="breakdown-amount">$212.04</div>
+            </div>
+            <div class="breakdown-row breakdown-total">
+                <div class="breakdown-label">Total Amount</div>
+                <div class="breakdown-amount">$4,712.04</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment History -->
+    <div class="payment-history">
+        <div class="breakdown-header">
+            <span>Payment History</span>
+            <span>Payments Received</span>
+        </div>
+        <div class="breakdown-content">
+            <div class="payment-item">
+                <div class="payment-method">
+                    <div class="payment-icon payment-venmo">
+                        <i class="fab fa-venmo"></i>
+                    </div>
+                    <div>
+                        <div>Venmo Payment</div>
+                        <div class="payment-date">December 22, 2024 - 2:30 PM</div>
+                    </div>
+                </div>
+                <div class="payment-amount">$4,712.04</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment Receipt -->
+    <div class="payment-receipt">
+        <div class="receipt-header">
+            <h5 class="receipt-title">Payment Receipt</h5>
+            <span class="receipt-number">Receipt #R2024-001</span>
+        </div>
+        <div class="receipt-details">
+            <p><strong>Payment Method:</strong> Venmo (@SPANKKS-Construction)</p>
+            <p><strong>Transaction ID:</strong> VEN-2024-12-22-001</p>
+            <p><strong>Payment Date:</strong> December 22, 2024 at 2:30 PM HST</p>
+            <p><strong>Amount Received:</strong> $4,712.04</p>
+            <p><strong>Status:</strong> <span class="text-success">Completed</span></p>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="/api/invoices/I2025-001/download" class="action-btn btn-download">
+            <i class="fas fa-download"></i>
+            Download PDF
+        </a>
+        <button class="action-btn btn-email" onclick="emailInvoice('I2025-001')">
+            <i class="fas fa-envelope"></i>
+            Email Invoice
+        </button>
+        <button class="action-btn btn-payment" onclick="recordPayment('I2025-001')" style="display: none;">
+            <i class="fas fa-credit-card"></i>
+            Record Payment
+        </button>
+        <button class="action-btn btn-print" onclick="printInvoice()">
+            <i class="fas fa-print"></i>
+            Print
+        </button>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Record Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm" onsubmit="submitPayment(event)">
+                    <div class="mb-3">
+                        <label class="form-label">Payment Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="paymentAmount" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Payment Method</label>
+                        <select class="form-control" id="paymentMethod" required>
+                            <option value="">Select method...</option>
+                            <option value="cash">Cash</option>
+                            <option value="check">Check</option>
+                            <option value="venmo">Venmo</option>
+                            <option value="zelle">Zelle</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Reference/Transaction ID</label>
+                        <input type="text" class="form-control" id="paymentReference" placeholder="Optional">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Payment Date</label>
+                        <input type="date" class="form-control" id="paymentDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" id="paymentNotes" rows="2" placeholder="Optional notes..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="paymentForm" class="btn btn-success">Record Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="confirmationMessage">
+                <!-- Dynamic content -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmAction">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Enhanced invoice functionality
+function acceptQuoteDigitally(quoteId) {
+    const confirmationMessage = `
+        <div class="text-center">
+            <i class="fas fa-file-signature fa-3x text-primary mb-3"></i>
+            <h5>Digital Quote Acceptance</h5>
+            <p>You are about to digitally accept Quote #${quoteId} for <strong>$4,500.00</strong> (including Hawaii GET tax).</p>
+            <p>This creates a binding agreement between you and SPANKKS Construction LLC.</p>
+            <div class="alert alert-info">
+                <small><i class="fas fa-info-circle"></i> Your acceptance will be timestamped and recorded for legal purposes.</small>
+            </div>
+        </div>
+    `;
+    
+    showConfirmation(confirmationMessage, () => {
+        // Process digital acceptance
+        const acceptanceData = {
+            quote_id: quoteId,
+            accepted_date: new Date().toISOString(),
+            digital_signature: true,
+            client_ip: getClientIP(),
+            timestamp: Date.now()
+        };
+        
+        fetch(`/api/quotes/${quoteId}/accept`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(acceptanceData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessMessage('Quote accepted successfully! We will contact you within 24 hours to schedule the work.');
+                document.getElementById('quoteAcceptance').style.display = 'none';
+                // Convert to invoice and update display
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                showErrorMessage('Error accepting quote: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorMessage('Network error. Please try again.');
+        });
+    });
+}
+
+function emailInvoice(invoiceId) {
+    showConfirmation(
+        'Send this invoice via email to the client?',
+        () => {
+            fetch(`/api/invoices/${invoiceId}/email`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessMessage('Invoice emailed successfully!');
+                } else {
+                    showErrorMessage('Error sending email: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showErrorMessage('Network error. Please try again.');
+            });
+        }
+    );
+}
+
+function recordPayment(invoiceId) {
+    // Set today's date as default
+    document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
+    
+    // Show payment modal
+    const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+    modal.show();
+}
+
+function submitPayment(event) {
+    event.preventDefault();
+    
+    const paymentData = {
+        invoice_id: 'I2025-001',
+        amount: parseFloat(document.getElementById('paymentAmount').value),
+        method: document.getElementById('paymentMethod').value,
+        reference: document.getElementById('paymentReference').value,
+        date: document.getElementById('paymentDate').value,
+        notes: document.getElementById('paymentNotes').value
+    };
+    
+    fetch('/api/payments/record', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccessMessage('Payment recorded successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showErrorMessage('Error recording payment: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showErrorMessage('Network error. Please try again.');
+    });
+}
+
+function printInvoice() {
+    window.print();
+}
+
+function showConfirmation(message, onConfirm) {
+    document.getElementById('confirmationMessage').innerHTML = message;
+    document.getElementById('confirmAction').onclick = () => {
+        bootstrap.Modal.getInstance(document.getElementById('confirmationModal')).hide();
+        onConfirm();
+    };
+    
+    const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+    modal.show();
+}
+
+function showSuccessMessage(message) {
+    showToast(message, 'success');
+}
+
+function showErrorMessage(message) {
+    showToast(message, 'error');
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'error' ? 'danger' : 'success'} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 400px;';
+    toast.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'} me-2"></i>
+            <span>${message}</span>
+            <button type="button" class="btn-close ms-auto" onclick="this.closest('.alert').remove()"></button>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 5000);
+}
+
+function getClientIP() {
+    // Simplified client IP detection
+    return 'client-ip-hidden';
+}
+
+function updateInvoiceStatus(invoiceData) {
+    // Update invoice status based on payments
+    const totalAmount = parseFloat(invoiceData.total_amount);
+    const paidAmount = parseFloat(invoiceData.paid_amount);
+    const remainingBalance = totalAmount - paidAmount;
+    
+    document.getElementById('totalAmount').textContent = `$${totalAmount.toFixed(2)}`;
+    document.getElementById('paidAmount').textContent = `$${paidAmount.toFixed(2)}`;
+    document.getElementById('remainingBalance').textContent = `$${remainingBalance.toFixed(2)}`;
+    
+    const statusBadge = document.getElementById('invoiceStatus');
+    const recordPaymentBtn = document.querySelector('.btn-payment');
+    
+    if (remainingBalance <= 0) {
+        statusBadge.className = 'invoice-status-badge status-paid';
+        statusBadge.textContent = 'Paid in Full';
+        recordPaymentBtn.style.display = 'none';
+    } else if (paidAmount > 0) {
+        statusBadge.className = 'invoice-status-badge status-partial';
+        statusBadge.textContent = 'Partially Paid';
+        recordPaymentBtn.style.display = 'flex';
+    } else {
+        const dueDate = new Date(invoiceData.due_date);
+        const today = new Date();
+        
+        if (today > dueDate) {
+            statusBadge.className = 'invoice-status-badge status-overdue';
+            statusBadge.textContent = 'Overdue';
+        } else {
+            statusBadge.className = 'invoice-status-badge status-pending';
+            statusBadge.textContent = 'Pending Payment';
+        }
+        recordPaymentBtn.style.display = 'flex';
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if this is a quote that needs acceptance
+    const urlParams = new URLSearchParams(window.location.search);
+    const showQuoteAcceptance = urlParams.get('show_acceptance');
+    
+    if (showQuoteAcceptance === 'true') {
+        document.getElementById('quoteAcceptance').style.display = 'block';
+    }
+    
+    // Load real invoice data and update display
+    loadInvoiceData();
+});
+
+function loadInvoiceData() {
+    // This would typically fetch real data from the API
+    const mockInvoiceData = {
+        total_amount: 4712.04,
+        paid_amount: 4712.04,
+        due_date: '2024-12-22'
+    };
+    
+    updateInvoiceStatus(mockInvoiceData);
+}
+</script>

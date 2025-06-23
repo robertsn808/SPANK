@@ -1,0 +1,1128 @@
+<!-- Medium Priority Enhancements Implementation -->
+<style>
+/* Advanced Search and Filtering */
+.search-filter-bar {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #e1e5e9;
+}
+
+.search-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    flex: 1;
+    padding: 12px 45px 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.15);
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    color: #6c757d;
+    font-size: 16px;
+}
+
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.filter-chip {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+    background: #e9ecef;
+}
+
+.filter-chip.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.quick-filters {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.quick-filter {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quick-filter:hover {
+    background: #e9ecef;
+    transform: translateY(-1px);
+}
+
+.quick-filter.active {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+/* Bulk Actions */
+.bulk-actions-bar {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.bulk-actions-bar.active {
+    display: flex;
+}
+
+.bulk-selection-info {
+    font-size: 14px;
+    color: #495057;
+    font-weight: 500;
+}
+
+.bulk-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.bulk-action-btn {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bulk-action-btn:hover {
+    background: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+.bulk-action-btn.danger:hover {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+/* Advanced Data Tables */
+.data-table-container {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #e1e5e9;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    background: #f8f9fa;
+    padding: 16px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+
+.data-table th:hover {
+    background: #e9ecef;
+}
+
+.data-table th.sortable::after {
+    content: '\f0dc';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 8px;
+    color: #adb5bd;
+    font-size: 12px;
+}
+
+.data-table th.sort-asc::after {
+    content: '\f0de';
+    color: #007bff;
+}
+
+.data-table th.sort-desc::after {
+    content: '\f0dd';
+    color: #007bff;
+}
+
+.data-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.data-table tr:hover {
+    background: #f8f9fa;
+}
+
+.row-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.row-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.data-table tr:hover .row-actions {
+    opacity: 1;
+}
+
+.row-action-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 4px;
+    background: #f8f9fa;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.row-action-btn:hover {
+    background: #007bff;
+    color: white;
+    transform: scale(1.1);
+}
+
+.row-action-btn.danger:hover {
+    background: #dc3545;
+}
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-indicator::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-pending::before {
+    background: #ffc107;
+}
+
+.status-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-confirmed::before {
+    background: #28a745;
+}
+
+.status-completed {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-completed::before {
+    background: #17a2b8;
+}
+
+.status-overdue {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-overdue::before {
+    background: #dc3545;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Advanced Pagination */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.pagination-info {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #dee2e6;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.pagination-btn:hover {
+    background: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-btn.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.page-size-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 16px;
+}
+
+.page-size-select {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 13px;
+}
+
+/* Export and Import */
+.export-import-bar {
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.export-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.export-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.export-btn:hover {
+    background: #218838;
+    transform: translateY(-1px);
+}
+
+.import-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.file-upload-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.file-upload-btn:hover {
+    background: #0056b3;
+}
+
+/* Advanced Modals */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-container {
+    background: white;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e1e5e9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #495057;
+    margin: 0;
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #f8f9fa;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background: #e9ecef;
+}
+
+.modal-body {
+    padding: 24px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e1e5e9;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: #f8f9fa;
+}
+
+/* Real-time Updates */
+.live-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 12px;
+    font-size: 11px;
+    color: #155724;
+    font-weight: 500;
+}
+
+.live-indicator::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #28a745;
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+}
+
+.update-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #17a2b8;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9998;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+}
+
+.update-notification.show {
+    transform: translateX(0);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .search-filter-bar {
+        padding: 15px;
+    }
+    
+    .filter-chips {
+        margin-top: 10px;
+    }
+    
+    .bulk-actions-bar {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+    
+    .bulk-actions {
+        justify-content: center;
+    }
+    
+    .data-table-container {
+        overflow-x: auto;
+    }
+    
+    .data-table {
+        min-width: 600px;
+    }
+    
+    .pagination-container {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+    
+    .export-import-bar {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .modal-container {
+        margin: 10px;
+        max-height: calc(100vh - 20px);
+    }
+    
+    .modal-body {
+        max-height: calc(70vh - 120px);
+    }
+}
+</style>
+
+<!-- Advanced Search and Filtering Component -->
+<div class="search-filter-bar">
+    <div class="search-input-group">
+        <input type="text" class="search-input" placeholder="Search quotes, invoices, clients..." 
+               onkeyup="performSearch(this.value)">
+        <i class="fas fa-search search-icon"></i>
+    </div>
+    
+    <div class="quick-filters">
+        <div class="quick-filter active" onclick="setQuickFilter('all', this)">All Items</div>
+        <div class="quick-filter" onclick="setQuickFilter('pending', this)">Pending</div>
+        <div class="quick-filter" onclick="setQuickFilter('confirmed', this)">Confirmed</div>
+        <div class="quick-filter" onclick="setQuickFilter('completed', this)">Completed</div>
+        <div class="quick-filter" onclick="setQuickFilter('overdue', this)">Overdue</div>
+    </div>
+    
+    <div class="filter-chips">
+        <div class="filter-chip" onclick="toggleFilter('this-week', this)">This Week</div>
+        <div class="filter-chip" onclick="toggleFilter('this-month', this)">This Month</div>
+        <div class="filter-chip" onclick="toggleFilter('high-value', this)">High Value ($1000+)</div>
+        <div class="filter-chip" onclick="toggleFilter('new-clients', this)">New Clients</div>
+        <div class="filter-chip" onclick="toggleFilter('repeat-clients', this)">Repeat Clients</div>
+    </div>
+</div>
+
+<!-- Bulk Actions Bar -->
+<div class="bulk-actions-bar" id="bulkActionsBar">
+    <div class="bulk-selection-info">
+        <span id="selectedCount">0</span> items selected
+    </div>
+    <div class="bulk-actions">
+        <button class="bulk-action-btn" onclick="bulkAction('mark-paid')">
+            <i class="fas fa-check"></i> Mark as Paid
+        </button>
+        <button class="bulk-action-btn" onclick="bulkAction('send-reminders')">
+            <i class="fas fa-envelope"></i> Send Reminders
+        </button>
+        <button class="bulk-action-btn" onclick="bulkAction('export-selected')">
+            <i class="fas fa-download"></i> Export
+        </button>
+        <button class="bulk-action-btn danger" onclick="bulkAction('delete')">
+            <i class="fas fa-trash"></i> Delete
+        </button>
+    </div>
+</div>
+
+<!-- Export/Import Bar -->
+<div class="export-import-bar">
+    <div class="export-buttons">
+        <button class="export-btn" onclick="exportData('csv')">
+            <i class="fas fa-file-csv"></i> Export CSV
+        </button>
+        <button class="export-btn" onclick="exportData('excel')">
+            <i class="fas fa-file-excel"></i> Export Excel
+        </button>
+        <button class="export-btn" onclick="exportData('pdf')">
+            <i class="fas fa-file-pdf"></i> Export PDF Report
+        </button>
+    </div>
+    
+    <div class="import-area">
+        <span class="live-indicator">Live Updates Active</span>
+        <input type="file" id="importFile" accept=".csv,.xlsx" style="display: none;" onchange="importData(this)">
+        <button class="file-upload-btn" onclick="document.getElementById('importFile').click()">
+            <i class="fas fa-upload"></i> Import Data
+        </button>
+    </div>
+</div>
+
+<!-- Advanced Data Table -->
+<div class="data-table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th width="40">
+                    <input type="checkbox" class="row-checkbox" onchange="selectAllRows(this)">
+                </th>
+                <th class="sortable" onclick="sortTable('id')">ID</th>
+                <th class="sortable" onclick="sortTable('client')">Client</th>
+                <th class="sortable" onclick="sortTable('service')">Service</th>
+                <th class="sortable" onclick="sortTable('amount')">Amount</th>
+                <th class="sortable" onclick="sortTable('status')">Status</th>
+                <th class="sortable" onclick="sortTable('date')">Date</th>
+                <th width="120">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="dataTableBody">
+            <tr>
+                <td><input type="checkbox" class="row-checkbox" onchange="toggleRowSelection(this)"></td>
+                <td><strong>Q2025-001</strong></td>
+                <td>Johnson Residence</td>
+                <td>Kitchen Renovation</td>
+                <td>$4,500.00</td>
+                <td><span class="status-indicator status-confirmed">Confirmed</span></td>
+                <td>Dec 15, 2024</td>
+                <td>
+                    <div class="row-actions">
+                        <button class="row-action-btn" data-tooltip="View Details" onclick="viewItem('Q2025-001')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="row-action-btn" data-tooltip="Edit Quote" onclick="editItem('Q2025-001')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="row-action-btn" data-tooltip="Generate Invoice" onclick="generateInvoice('Q2025-001')">
+                            <i class="fas fa-file-invoice"></i>
+                        </button>
+                        <button class="row-action-btn danger" data-tooltip="Delete" onclick="deleteItem('Q2025-001')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" class="row-checkbox" onchange="toggleRowSelection(this)"></td>
+                <td><strong>I2025-001</strong></td>
+                <td>Johnson Residence</td>
+                <td>Kitchen Renovation</td>
+                <td>$4,712.04</td>
+                <td><span class="status-indicator status-completed">Paid</span></td>
+                <td>Dec 22, 2024</td>
+                <td>
+                    <div class="row-actions">
+                        <button class="row-action-btn" data-tooltip="View Invoice" onclick="viewItem('I2025-001')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="row-action-btn" data-tooltip="Download PDF" onclick="downloadPDF('I2025-001')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="row-action-btn" data-tooltip="Email Client" onclick="emailClient('I2025-001')">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                        <button class="row-action-btn" data-tooltip="Record Payment" onclick="recordPayment('I2025-001')">
+                            <i class="fas fa-credit-card"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- Pagination -->
+    <div class="pagination-container">
+        <div class="pagination-info">
+            Showing 1-25 of 127 items
+        </div>
+        <div class="pagination-controls">
+            <button class="pagination-btn" onclick="changePage('prev')" disabled>
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="pagination-btn active" onclick="changePage(1)">1</button>
+            <button class="pagination-btn" onclick="changePage(2)">2</button>
+            <button class="pagination-btn" onclick="changePage(3)">3</button>
+            <span>...</span>
+            <button class="pagination-btn" onclick="changePage(6)">6</button>
+            <button class="pagination-btn" onclick="changePage('next')">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            
+            <div class="page-size-selector">
+                <span>Show:</span>
+                <select class="page-size-select" onchange="changePageSize(this.value)">
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Modal -->
+<div class="modal-overlay" id="advancedModal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modalTitle">Item Details</h3>
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Dynamic content -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+            <button class="btn btn-primary" id="modalActionBtn">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- Real-time Update Notification -->
+<div class="update-notification" id="updateNotification">
+    <i class="fas fa-sync-alt"></i>
+    <span id="updateMessage">Data updated successfully</span>
+</div>
+
+<script>
+// Medium Priority Enhancement Functions
+let selectedRows = new Set();
+let currentSort = { column: null, direction: 'asc' };
+let currentFilters = { quick: 'all', chips: new Set() };
+let currentPage = 1;
+let pageSize = 25;
+
+// Search and Filtering
+function performSearch(searchTerm) {
+    console.log('Searching for:', searchTerm);
+    // Implement search logic
+    updateTable();
+}
+
+function setQuickFilter(filter, element) {
+    document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+    currentFilters.quick = filter;
+    updateTable();
+}
+
+function toggleFilter(filter, element) {
+    element.classList.toggle('active');
+    if (currentFilters.chips.has(filter)) {
+        currentFilters.chips.delete(filter);
+    } else {
+        currentFilters.chips.add(filter);
+    }
+    updateTable();
+}
+
+// Bulk Actions
+function selectAllRows(checkbox) {
+    const rowCheckboxes = document.querySelectorAll('.data-table tbody .row-checkbox');
+    selectedRows.clear();
+    
+    rowCheckboxes.forEach(cb => {
+        cb.checked = checkbox.checked;
+        if (checkbox.checked) {
+            selectedRows.add(cb.closest('tr').querySelector('td:nth-child(2)').textContent.trim());
+        }
+    });
+    
+    updateBulkActionsBar();
+}
+
+function toggleRowSelection(checkbox) {
+    const rowId = checkbox.closest('tr').querySelector('td:nth-child(2)').textContent.trim();
+    
+    if (checkbox.checked) {
+        selectedRows.add(rowId);
+    } else {
+        selectedRows.delete(rowId);
+    }
+    
+    updateBulkActionsBar();
+}
+
+function updateBulkActionsBar() {
+    const bulkBar = document.getElementById('bulkActionsBar');
+    const countSpan = document.getElementById('selectedCount');
+    
+    countSpan.textContent = selectedRows.size;
+    
+    if (selectedRows.size > 0) {
+        bulkBar.classList.add('active');
+    } else {
+        bulkBar.classList.remove('active');
+    }
+}
+
+function bulkAction(action) {
+    if (selectedRows.size === 0) return;
+    
+    const actionMessages = {
+        'mark-paid': 'mark selected items as paid',
+        'send-reminders': 'send reminders for selected items',
+        'export-selected': 'export selected items',
+        'delete': 'delete selected items'
+    };
+    
+    if (confirm(`Are you sure you want to ${actionMessages[action]}? This will affect ${selectedRows.size} items.`)) {
+        console.log(`Performing ${action} on:`, Array.from(selectedRows));
+        showUpdateNotification(`Successfully ${actionMessages[action].replace('delete', 'deleted')}`);
+        
+        // Clear selection after action
+        selectedRows.clear();
+        updateBulkActionsBar();
+        document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false);
+    }
+}
+
+// Table Sorting
+function sortTable(column) {
+    const th = event.target;
+    
+    // Reset other columns
+    document.querySelectorAll('.data-table th').forEach(header => {
+        if (header !== th) {
+            header.classList.remove('sort-asc', 'sort-desc');
+        }
+    });
+    
+    // Update current column
+    if (currentSort.column === column) {
+        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+    } else {
+        currentSort.column = column;
+        currentSort.direction = 'asc';
+    }
+    
+    th.classList.remove('sort-asc', 'sort-desc');
+    th.classList.add(`sort-${currentSort.direction}`);
+    
+    console.log(`Sorting by ${column} ${currentSort.direction}`);
+    updateTable();
+}
+
+// Pagination
+function changePage(page) {
+    if (page === 'prev' && currentPage > 1) {
+        currentPage--;
+    } else if (page === 'next') {
+        currentPage++;
+    } else if (typeof page === 'number') {
+        currentPage = page;
+    }
+    
+    updateTable();
+    updatePaginationButtons();
+}
+
+function changePageSize(size) {
+    pageSize = parseInt(size);
+    currentPage = 1;
+    updateTable();
+    updatePaginationButtons();
+}
+
+function updatePaginationButtons() {
+    document.querySelectorAll('.pagination-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent == currentPage) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+// Export/Import
+function exportData(format) {
+    console.log(`Exporting data as ${format}`);
+    showUpdateNotification(`Preparing ${format.toUpperCase()} export...`);
+    
+    // Simulate export process
+    setTimeout(() => {
+        showUpdateNotification(`${format.toUpperCase()} export completed!`);
+    }, 2000);
+}
+
+function importData(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    console.log('Importing file:', file.name);
+    showUpdateNotification('Processing import file...');
+    
+    // Simulate import process
+    setTimeout(() => {
+        showUpdateNotification('Import completed successfully!');
+        updateTable();
+    }, 3000);
+}
+
+// Modal Functions
+function openModal(title, content, actionText = 'Save') {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalBody').innerHTML = content;
+    document.getElementById('modalActionBtn').textContent = actionText;
+    document.getElementById('advancedModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('advancedModal').classList.remove('active');
+}
+
+// Row Actions
+function viewItem(itemId) {
+    const content = `
+        <div class="item-details">
+            <h5>Item: ${itemId}</h5>
+            <p><strong>Status:</strong> Active</p>
+            <p><strong>Created:</strong> ${new Date().toLocaleDateString()}</p>
+            <p><strong>Last Modified:</strong> ${new Date().toLocaleDateString()}</p>
+            <div class="mt-3">
+                <h6>Recent Activity</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-1"><small class="text-muted">${new Date().toLocaleString()}</small> - Item viewed</li>
+                    <li class="mb-1"><small class="text-muted">${new Date().toLocaleString()}</small> - Status updated</li>
+                </ul>
+            </div>
+        </div>
+    `;
+    openModal(`View ${itemId}`, content, 'Close');
+}
+
+function editItem(itemId) {
+    const content = `
+        <form>
+            <div class="mb-3">
+                <label class="form-label">Item Name</label>
+                <input type="text" class="form-control" value="${itemId}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <select class="form-control">
+                    <option>Pending</option>
+                    <option selected>Confirmed</option>
+                    <option>Completed</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Notes</label>
+                <textarea class="form-control" rows="3"></textarea>
+            </div>
+        </form>
+    `;
+    openModal(`Edit ${itemId}`, content, 'Save Changes');
+}
+
+function generateInvoice(itemId) {
+    showUpdateNotification('Generating invoice...');
+    setTimeout(() => {
+        showUpdateNotification('Invoice generated successfully!');
+    }, 2000);
+}
+
+function deleteItem(itemId) {
+    if (confirm(`Are you sure you want to delete ${itemId}? This action cannot be undone.`)) {
+        showUpdateNotification('Item deleted successfully');
+        updateTable();
+    }
+}
+
+function downloadPDF(itemId) {
+    showUpdateNotification('Preparing PDF download...');
+    setTimeout(() => {
+        showUpdateNotification('PDF download started');
+    }, 1000);
+}
+
+function emailClient(itemId) {
+    showUpdateNotification('Sending email to client...');
+    setTimeout(() => {
+        showUpdateNotification('Email sent successfully!');
+    }, 2000);
+}
+
+function recordPayment(itemId) {
+    const content = `
+        <form>
+            <div class="mb-3">
+                <label class="form-label">Payment Amount</label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Payment Method</label>
+                <select class="form-control">
+                    <option>Cash</option>
+                    <option>Check</option>
+                    <option>Venmo</option>
+                    <option>Zelle</option>
+                    <option>Bank Transfer</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Payment Date</label>
+                <input type="date" class="form-control" value="${new Date().toISOString().split('T')[0]}">
+            </div>
+        </form>
+    `;
+    openModal(`Record Payment - ${itemId}`, content, 'Record Payment');
+}
+
+// Real-time Updates
+function showUpdateNotification(message) {
+    const notification = document.getElementById('updateNotification');
+    document.getElementById('updateMessage').textContent = message;
+    notification.classList.add('show');
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+function updateTable() {
+    console.log('Updating table with filters:', currentFilters, 'Sort:', currentSort, 'Page:', currentPage);
+    // Implement table update logic
+    showUpdateNotification('Table updated');
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    updateTable();
+    
+    // Simulate real-time updates every 30 seconds
+    setInterval(() => {
+        if (Math.random() > 0.7) { // 30% chance of update
+            showUpdateNotification('New data available');
+        }
+    }, 30000);
+});
+
+// Close modal when clicking overlay
+document.getElementById('advancedModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+</script>

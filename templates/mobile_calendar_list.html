@@ -1,0 +1,971 @@
+<!-- Mobile Calendar List View -->
+<style>
+.mobile-calendar-container {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.calendar-view-toggle {
+    display: flex;
+    background: #f8f9fa;
+    border-radius: 25px;
+    padding: 4px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.view-toggle-btn {
+    flex: 1;
+    padding: 10px 15px;
+    border: none;
+    background: transparent;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.view-toggle-btn.active {
+    background: #007bff;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.3);
+}
+
+.date-navigator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.nav-btn {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 10px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.current-date {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+}
+
+.today-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.list-view {
+    display: block;
+}
+
+.calendar-view {
+    display: none;
+}
+
+.day-section {
+    margin-bottom: 25px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.day-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.day-date {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.day-count {
+    background: rgba(255,255,255,0.2);
+    border-radius: 15px;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.day-jobs {
+    background: white;
+}
+
+.job-card {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.job-card:last-child {
+    border-bottom: none;
+}
+
+.job-card:hover {
+    background: #f8f9fa;
+}
+
+.job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.job-title {
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    font-size: 16px;
+}
+
+.job-time {
+    font-size: 14px;
+    color: #666;
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.job-details {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.job-status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.job-status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-paid {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-in-progress {
+    background: #fce4ec;
+    color: #880e4f;
+}
+
+.job-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.job-action-btn {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 12px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.job-action-btn:hover {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.empty-day {
+    padding: 40px 20px;
+    text-align: center;
+    color: #666;
+    background: white;
+}
+
+.empty-day i {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #dee2e6;
+}
+
+.quick-add-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #007bff;
+    color: white;
+    border: none;
+    font-size: 24px;
+    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quick-add-btn:hover {
+    background: #0056b3;
+    transform: scale(1.1);
+}
+
+.job-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.job-modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 400px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.job-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.job-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.btn-group-mobile {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-mobile {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-mobile {
+    background: #007bff;
+    color: white;
+}
+
+.btn-secondary-mobile {
+    background: #6c757d;
+    color: white;
+}
+
+.week-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+.week-day {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 60px;
+}
+
+.week-day.today {
+    background: #007bff;
+    color: white;
+}
+
+.week-day.selected {
+    background: #28a745;
+    color: white;
+}
+
+.week-day:hover {
+    background: #f8f9fa;
+}
+
+.week-day.today:hover,
+.week-day.selected:hover {
+    transform: scale(1.05);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .mobile-calendar-container {
+        margin: 0 -15px 20px;
+        border-radius: 0;
+        padding: 15px;
+    }
+    
+    .calendar-view {
+        display: none !important;
+    }
+    
+    .list-view {
+        display: block !important;
+    }
+    
+    .day-header {
+        padding: 12px 15px;
+    }
+    
+    .job-card {
+        padding: 12px 15px;
+    }
+    
+    .job-modal-content {
+        margin: 20px 10px;
+        max-height: calc(100vh - 40px);
+    }
+    
+    .week-navigation {
+        margin: 0 -15px 20px;
+        padding: 10px 15px;
+    }
+}
+
+@media (min-width: 769px) {
+    .list-view {
+        display: none;
+    }
+    
+    .calendar-view {
+        display: block;
+    }
+    
+    .quick-add-btn {
+        display: none;
+    }
+}
+</style>
+
+<!-- Mobile Calendar List View HTML -->
+<div class="mobile-calendar-container">
+    <!-- View Toggle (hidden on mobile) -->
+    <div class="calendar-view-toggle d-none d-md-flex">
+        <button class="view-toggle-btn active" onclick="switchView('calendar')" data-view="calendar">
+            <i class="fas fa-calendar-alt"></i> Calendar
+        </button>
+        <button class="view-toggle-btn" onclick="switchView('list')" data-view="list">
+            <i class="fas fa-list"></i> List
+        </button>
+    </div>
+    
+    <!-- Date Navigator -->
+    <div class="date-navigator">
+        <button class="nav-btn" onclick="previousPeriod()">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <div class="d-flex align-items-center gap-3">
+            <div class="current-date" id="currentDate">
+                December 2024
+            </div>
+            <button class="today-btn" onclick="goToToday()">
+                Today
+            </button>
+        </div>
+        
+        <button class="nav-btn" onclick="nextPeriod()">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+    
+    <!-- Week Navigation (mobile only) -->
+    <div class="week-navigation d-md-none" id="weekNavigation">
+        <div class="week-day today" onclick="selectDay(this, '2024-12-16')">
+            <div>Mon</div>
+            <div>16</div>
+        </div>
+        <div class="week-day" onclick="selectDay(this, '2024-12-17')">
+            <div>Tue</div>
+            <div>17</div>
+        </div>
+        <div class="week-day" onclick="selectDay(this, '2024-12-18')">
+            <div>Wed</div>
+            <div>18</div>
+        </div>
+        <div class="week-day" onclick="selectDay(this, '2024-12-19')">
+            <div>Thu</div>
+            <div>19</div>
+        </div>
+        <div class="week-day" onclick="selectDay(this, '2024-12-20')">
+            <div>Fri</div>
+            <div>20</div>
+        </div>
+        <div class="week-day" onclick="selectDay(this, '2024-12-21')">
+            <div>Sat</div>
+            <div>21</div>
+        </div>
+        <div class="week-day" onclick="selectDay(this, '2024-12-22')">
+            <div>Sun</div>
+            <div>22</div>
+        </div>
+    </div>
+    
+    <!-- List View -->
+    <div class="list-view" id="listView">
+        <!-- Today's Jobs -->
+        <div class="day-section">
+            <div class="day-header">
+                <div class="day-date">Today - Monday, Dec 16</div>
+                <div class="day-count">3 jobs</div>
+            </div>
+            <div class="day-jobs">
+                <div class="job-card" onclick="openJobModal('job1')">
+                    <div class="job-header">
+                        <h6 class="job-title">Kitchen Renovation - Johnson</h6>
+                        <span class="job-time">8:00 AM</span>
+                    </div>
+                    <div class="job-details">
+                        1234 Ala Moana Blvd, Honolulu<br>
+                        Drywall repair and paint touch-up
+                    </div>
+                    <div class="job-status-bar">
+                        <span class="job-status status-confirmed">Confirmed</span>
+                        <div class="job-actions">
+                            <button class="job-action-btn" onclick="event.stopPropagation(); startJob('job1')">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="job-action-btn" onclick="event.stopPropagation(); callClient('8087789132')">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="job-card" onclick="openJobModal('job2')">
+                    <div class="job-header">
+                        <h6 class="job-title">Bathroom Tile Work - Smith</h6>
+                        <span class="job-time">1:00 PM</span>
+                    </div>
+                    <div class="job-details">
+                        5678 King St, Kailua<br>
+                        Tile replacement and grout repair
+                    </div>
+                    <div class="job-status-bar">
+                        <span class="job-status status-in-progress">In Progress</span>
+                        <div class="job-actions">
+                            <button class="job-action-btn" onclick="event.stopPropagation(); uploadPhotos('job2')">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                            <button class="job-action-btn" onclick="event.stopPropagation(); completeJob('job2')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="job-card" onclick="openJobModal('job3')">
+                    <div class="job-header">
+                        <h6 class="job-title">Fence Repair - Wong</h6>
+                        <span class="job-time">4:00 PM</span>
+                    </div>
+                    <div class="job-details">
+                        9012 Kapahulu Ave, Honolulu<br>
+                        Replace damaged fence panels
+                    </div>
+                    <div class="job-status-bar">
+                        <span class="job-status status-pending">Pending</span>
+                        <div class="job-actions">
+                            <button class="job-action-btn" onclick="event.stopPropagation(); confirmJob('job3')">
+                                <i class="fas fa-check-circle"></i>
+                            </button>
+                            <button class="job-action-btn" onclick="event.stopPropagation(); rescheduleJob('job3')">
+                                <i class="fas fa-calendar"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tomorrow's Jobs -->
+        <div class="day-section">
+            <div class="day-header">
+                <div class="day-date">Tomorrow - Tuesday, Dec 17</div>
+                <div class="day-count">2 jobs</div>
+            </div>
+            <div class="day-jobs">
+                <div class="job-card" onclick="openJobModal('job4')">
+                    <div class="job-header">
+                        <h6 class="job-title">Flooring Installation - Davis</h6>
+                        <span class="job-time">9:00 AM</span>
+                    </div>
+                    <div class="job-details">
+                        3456 Beretania St, Honolulu<br>
+                        Luxury vinyl plank installation
+                    </div>
+                    <div class="job-status-bar">
+                        <span class="job-status status-confirmed">Confirmed</span>
+                        <div class="job-actions">
+                            <button class="job-action-btn" onclick="event.stopPropagation(); viewQuote('Q2025-002')">
+                                <i class="fas fa-file-alt"></i>
+                            </button>
+                            <button class="job-action-btn" onclick="event.stopPropagation(); callClient('8087789133')">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="job-card" onclick="openJobModal('job5')">
+                    <div class="job-header">
+                        <h6 class="job-title">Electrical Outlet Installation - Lee</h6>
+                        <span class="job-time">2:30 PM</span>
+                    </div>
+                    <div class="job-details">
+                        7890 Ward Ave, Honolulu<br>
+                        Install 4 new GFCI outlets
+                    </div>
+                    <div class="job-status-bar">
+                        <span class="job-status status-confirmed">Confirmed</span>
+                        <div class="job-actions">
+                            <button class="job-action-btn" onclick="event.stopPropagation(); checkMaterials('job5')">
+                                <i class="fas fa-tools"></i>
+                            </button>
+                            <button class="job-action-btn" onclick="event.stopPropagation(); callClient('8087789134')">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wednesday - No Jobs -->
+        <div class="day-section">
+            <div class="day-header">
+                <div class="day-date">Wednesday, Dec 18</div>
+                <div class="day-count">Available</div>
+            </div>
+            <div class="empty-day">
+                <i class="fas fa-calendar-check"></i>
+                <p>No jobs scheduled</p>
+                <small>Perfect day for maintenance or catching up</small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Calendar View (desktop only) -->
+    <div class="calendar-view" id="calendarView">
+        <!-- Full calendar would go here for desktop -->
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Full calendar view available on desktop. Switch to list view for mobile-optimized scheduling.
+        </div>
+    </div>
+</div>
+
+<!-- Quick Add Button (mobile only) -->
+<button class="quick-add-btn d-md-none" onclick="openJobModal('new')">
+    <i class="fas fa-plus"></i>
+</button>
+
+<!-- Job Modal -->
+<div class="job-modal" id="jobModal" onclick="closeJobModal(event)">
+    <div class="job-modal-content" onclick="event.stopPropagation()">
+        <div class="job-modal-header">
+            <h5 id="modalTitle">Job Details</h5>
+            <button class="job-modal-close" onclick="closeJobModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div id="modalContent">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+</div>
+
+<script>
+let currentView = window.innerWidth > 768 ? 'calendar' : 'list';
+let currentDate = new Date();
+let selectedDate = null;
+
+function switchView(view) {
+    currentView = view;
+    
+    // Update toggle buttons
+    document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-view="${view}"]`).classList.add('active');
+    
+    // Show/hide views
+    document.getElementById('listView').style.display = view === 'list' ? 'block' : 'none';
+    document.getElementById('calendarView').style.display = view === 'calendar' ? 'block' : 'none';
+}
+
+function previousPeriod() {
+    if (currentView === 'list') {
+        currentDate.setDate(currentDate.getDate() - 7);
+    } else {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+    }
+    updateDateDisplay();
+    updateWeekNavigation();
+}
+
+function nextPeriod() {
+    if (currentView === 'list') {
+        currentDate.setDate(currentDate.getDate() + 7);
+    } else {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+    }
+    updateDateDisplay();
+    updateWeekNavigation();
+}
+
+function goToToday() {
+    currentDate = new Date();
+    updateDateDisplay();
+    updateWeekNavigation();
+}
+
+function updateDateDisplay() {
+    const dateElement = document.getElementById('currentDate');
+    if (currentView === 'list') {
+        const weekStart = new Date(currentDate);
+        weekStart.setDate(currentDate.getDate() - currentDate.getDay() + 1);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+        
+        dateElement.textContent = `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+    } else {
+        dateElement.textContent = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+}
+
+function updateWeekNavigation() {
+    const weekNav = document.getElementById('weekNavigation');
+    if (!weekNav) return;
+    
+    const weekStart = new Date(currentDate);
+    weekStart.setDate(currentDate.getDate() - currentDate.getDay() + 1);
+    
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const today = new Date();
+    
+    weekNav.innerHTML = '';
+    
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(weekStart);
+        date.setDate(weekStart.getDate() + i);
+        
+        const dayElement = document.createElement('div');
+        dayElement.className = 'week-day';
+        dayElement.innerHTML = `
+            <div>${days[i]}</div>
+            <div>${date.getDate()}</div>
+        `;
+        
+        if (date.toDateString() === today.toDateString()) {
+            dayElement.classList.add('today');
+        }
+        
+        if (selectedDate && date.toDateString() === selectedDate.toDateString()) {
+            dayElement.classList.add('selected');
+        }
+        
+        dayElement.onclick = () => selectDay(dayElement, date.toISOString().split('T')[0]);
+        weekNav.appendChild(dayElement);
+    }
+}
+
+function selectDay(element, dateString) {
+    // Remove previous selection
+    document.querySelectorAll('.week-day').forEach(day => {
+        day.classList.remove('selected');
+    });
+    
+    // Add selection to clicked day
+    if (!element.classList.contains('today')) {
+        element.classList.add('selected');
+    }
+    
+    selectedDate = new Date(dateString);
+    // Filter jobs by selected date (implementation would filter the job list)
+}
+
+function openJobModal(jobId) {
+    const modal = document.getElementById('jobModal');
+    const title = document.getElementById('modalTitle');
+    const content = document.getElementById('modalContent');
+    
+    if (jobId === 'new') {
+        title.textContent = 'Add New Job';
+        content.innerHTML = `
+            <form onsubmit="saveJob(event)">
+                <div class="form-group">
+                    <label class="form-label">Client Name</label>
+                    <input type="text" class="form-control" placeholder="Enter client name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Service Type</label>
+                    <select class="form-control" required>
+                        <option value="">Select service...</option>
+                        <option value="drywall">Drywall Repair</option>
+                        <option value="flooring">Flooring Installation</option>
+                        <option value="electrical">Electrical Work</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="painting">Painting</option>
+                        <option value="fence">Fence Repair</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Time</label>
+                    <input type="time" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-control" placeholder="Job location" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-control" rows="3" placeholder="Additional details..."></textarea>
+                </div>
+                <div class="btn-group-mobile">
+                    <button type="submit" class="btn-mobile btn-primary-mobile">Save Job</button>
+                    <button type="button" class="btn-mobile btn-secondary-mobile" onclick="closeJobModal()">Cancel</button>
+                </div>
+            </form>
+        `;
+    } else {
+        // Show existing job details
+        title.textContent = 'Job Details';
+        content.innerHTML = `
+            <div class="job-detail-info">
+                <h6>Kitchen Renovation - Johnson</h6>
+                <p><strong>Date:</strong> Monday, Dec 16, 2024</p>
+                <p><strong>Time:</strong> 8:00 AM - 12:00 PM</p>
+                <p><strong>Address:</strong> 1234 Ala Moana Blvd, Honolulu</p>
+                <p><strong>Service:</strong> Drywall repair and paint touch-up</p>
+                <p><strong>Status:</strong> <span class="job-status status-confirmed">Confirmed</span></p>
+                <p><strong>Phone:</strong> <a href="tel:8087789132">(808) 778-9132</a></p>
+            </div>
+            <div class="btn-group-mobile">
+                <button class="btn-mobile btn-primary-mobile" onclick="startJob('${jobId}')">
+                    <i class="fas fa-play"></i> Start Job
+                </button>
+                <button class="btn-mobile btn-secondary-mobile" onclick="callClient('8087789132')">
+                    <i class="fas fa-phone"></i> Call Client
+                </button>
+            </div>
+        `;
+    }
+    
+    modal.style.display = 'flex';
+}
+
+function closeJobModal(event) {
+    if (!event || event.target === event.currentTarget) {
+        document.getElementById('jobModal').style.display = 'none';
+    }
+}
+
+function saveJob(event) {
+    event.preventDefault();
+    
+    // Show confirmation
+    if (confirm('Save this job to the schedule?')) {
+        // Simulate saving
+        setTimeout(() => {
+            closeJobModal();
+            showToast('Job added to schedule successfully', 'success');
+            // Refresh the job list (implementation would update the display)
+        }, 500);
+    }
+}
+
+function startJob(jobId) {
+    if (confirm('Mark this job as started?')) {
+        showToast('Job started! Good luck with the work.', 'success');
+        closeJobModal();
+        // Update job status in the display
+    }
+}
+
+function completeJob(jobId) {
+    if (confirm('Mark this job as completed?')) {
+        showToast('Job completed successfully!', 'success');
+        // Update job status
+    }
+}
+
+function callClient(phone) {
+    window.location.href = `tel:${phone}`;
+}
+
+function uploadPhotos(jobId) {
+    showToast('Opening camera for job photos...', 'info');
+    // Would open photo upload interface
+}
+
+function confirmJob(jobId) {
+    if (confirm('Confirm this job appointment?')) {
+        showToast('Job confirmed with client', 'success');
+    }
+}
+
+function rescheduleJob(jobId) {
+    showToast('Opening reschedule interface...', 'info');
+    // Would open reschedule modal
+}
+
+function checkMaterials(jobId) {
+    showToast('Opening materials checklist...', 'info');
+    // Would open materials interface
+}
+
+function viewQuote(quoteId) {
+    showToast(`Opening quote ${quoteId}...`, 'info');
+    // Would open quote viewer
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'error' ? 'danger' : type === 'info' ? 'info' : 'success'} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close float-end" onclick="this.parentElement.remove()"></button>
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 5000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateDateDisplay();
+    updateWeekNavigation();
+    
+    // Set initial view based on screen size
+    if (window.innerWidth <= 768) {
+        switchView('list');
+    }
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth <= 768) {
+            switchView('list');
+        } else if (currentView === 'list') {
+            switchView('calendar');
+        }
+    });
+});
+</script>

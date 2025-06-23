@@ -1,0 +1,1006 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Workflow Management - SPANKKS Construction{% endblock %}
+
+{% block extra_css %}
+<style>
+.workflow-container {
+    display: grid;
+    grid-template-columns: 280px 1fr 300px;
+    gap: 1.5rem;
+    height: calc(100vh - 140px);
+}
+
+.workflow-sidebar {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.workflow-main {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.workflow-stage {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #007bff;
+}
+
+.stage-inquiry { border-left-color: #6c757d; }
+.stage-estimate { border-left-color: #ffc107; }
+.stage-quote { border-left-color: #17a2b8; }
+.stage-confirmed { border-left-color: #007bff; }
+.stage-progress { border-left-color: #fd7e14; }
+.stage-completed { border-left-color: #28a745; }
+.stage-followup { border-left-color: #6f42c1; }
+
+.job-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #e9ecef;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.job-card.dragging {
+    opacity: 0.6;
+    transform: rotate(3deg);
+}
+
+.job-status {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: white;
+}
+
+.status-inquiry { background: #6c757d; }
+.status-estimate_scheduled { background: #ffc107; color: #000; }
+.status-estimate_sent { background: #17a2b8; }
+.status-awaiting_deposit { background: #dc3545; }
+.status-work_in_progress { background: #fd7e14; }
+.status-completed { background: #28a745; }
+.status-follow_up { background: #6f42c1; }
+
+.filter-tabs {
+    display: flex;
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 1.5rem;
+}
+
+.filter-tab {
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6c757d;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.filter-tab.active {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.view-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.view-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    background: white;
+    color: #495057;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.view-btn.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.crew-schedule {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.crew-member {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    border-left: 4px solid #007bff;
+}
+
+.crew-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.time-slot {
+    background: white;
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+    border-left: 3px solid #28a745;
+    font-size: 0.875rem;
+}
+
+.time-slot.busy {
+    border-left-color: #dc3545;
+    background: #f8d7da;
+}
+
+.time-slot.estimate {
+    border-left-color: #ffc107;
+    background: #fff3cd;
+}
+
+.job-type-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.job-type-chip {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.job-type-chip.drywall { background: #007bff; color: white; }
+.job-type-chip.flooring { background: #28a745; color: white; }
+.job-type-chip.fence { background: #ffc107; color: #000; }
+.job-type-chip.handyman { background: #6c757d; color: white; }
+.job-type-chip.renovation { background: #dc3545; color: white; }
+
+.job-type-chip:hover {
+    transform: scale(1.05);
+}
+
+.job-type-chip.inactive {
+    opacity: 0.4;
+}
+
+.payment-overview {
+    background: #fff3cd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #ffc107;
+}
+
+.overdue-alert {
+    background: #f8d7da;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #dc3545;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-box {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #007bff;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.stat-label {
+    color: #6c757d;
+    margin-top: 0.5rem;
+}
+
+.quick-actions {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 1rem;
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+}
+
+.workflow-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 0.5rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #007bff;
+}
+
+.timeline-item::after {
+    content: '';
+    position: absolute;
+    left: -1.75rem;
+    top: 1.25rem;
+    width: 2px;
+    height: calc(100% - 0.75rem);
+    background: #e9ecef;
+}
+
+.timeline-item:last-child::after {
+    display: none;
+}
+
+.drop-zone {
+    min-height: 60px;
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #007bff;
+    background: rgba(0, 123, 255, 0.05);
+    margin: 0.5rem 0;
+    transition: all 0.2s ease;
+}
+
+.drop-zone.drag-over {
+    background: rgba(0, 123, 255, 0.1);
+    border-color: #0056b3;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">
+            <i class="fas fa-project-diagram me-2"></i>Workflow Management
+        </h1>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('advanced_scheduler_dashboard') }}" class="btn btn-outline-primary">
+                <i class="fas fa-calendar me-1"></i>Advanced Calendar
+            </a>
+            <a href="{{ url_for('unified_scheduler_dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-list me-1"></i>Simple List
+            </a>
+            <button type="button" class="btn btn-success" onclick="createNewInquiry()">
+                <i class="fas fa-plus me-1"></i>New Inquiry
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-row">
+        <div class="stat-box">
+            <div class="stat-number">{{ reporting_data.status_breakdown.get('inquiry', 0) + reporting_data.status_breakdown.get('estimate_scheduled', 0) }}</div>
+            <div class="stat-label">Pending Estimates</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ reporting_data.status_breakdown.get('work_in_progress', 0) }}</div>
+            <div class="stat-label">Jobs In Progress</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ reporting_data.status_breakdown.get('completed', 0) }}</div>
+            <div class="stat-label">Completed This Month</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ "%.1f"|format(reporting_data.completion_rate) }}%</div>
+            <div class="stat-label">Completion Rate</div>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    {% if overdue_jobs %}
+    <div class="overdue-alert">
+        <h6 class="mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Overdue Jobs ({{ overdue_jobs|length }})</h6>
+        {% for job in overdue_jobs %}
+        <div class="small">
+            <strong>{{ job.client_name }}</strong> - {{ job.service_type }} 
+            (Due: {{ job.scheduled_date }})
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Workflow Container -->
+    <div class="workflow-container">
+        <!-- Left Sidebar - Filters & Controls -->
+        <div class="workflow-sidebar">
+            <h5 class="mb-3">
+                <i class="fas fa-filter me-2"></i>View Filters
+            </h5>
+            
+            <!-- Job Type Filters -->
+            <div class="mb-4">
+                <h6>Job Types</h6>
+                <div class="job-type-filter">
+                    <div class="job-type-chip drywall" data-type="Drywall Services">Drywall</div>
+                    <div class="job-type-chip flooring" data-type="Flooring Installation">Flooring</div>
+                    <div class="job-type-chip fence" data-type="Fence Building">Fencing</div>
+                    <div class="job-type-chip handyman" data-type="General Handyman">Handyman</div>
+                    <div class="job-type-chip renovation" data-type="Home Renovation">Renovation</div>
+                </div>
+            </div>
+
+            <!-- Status Filters -->
+            <div class="mb-4">
+                <h6>Status Filters</h6>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="unconfirmed" checked>
+                    <label class="form-check-label" for="unconfirmed">Unconfirmed Jobs</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="confirmed" checked>
+                    <label class="form-check-label" for="confirmed">Confirmed Jobs</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="pending_payments" checked>
+                    <label class="form-check-label" for="pending_payments">Pending Payments</label>
+                </div>
+            </div>
+
+            <!-- Date Range -->
+            <div class="mb-4">
+                <h6>Date Range</h6>
+                <input type="date" class="form-control mb-2" id="start_date">
+                <input type="date" class="form-control" id="end_date">
+                <button class="btn btn-sm btn-primary mt-2" onclick="applyDateFilter()">Apply</button>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="mb-4">
+                <h6>This Week</h6>
+                <div class="small text-muted">
+                    <div>Estimates: {{ week_data.total_appointments }}</div>
+                    <div>Follow-ups: {{ reminders_24h|length + reminders_2h|length }}</div>
+                    <div>Completions: {{ reporting_data.status_breakdown.get('completed', 0) }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Calendar Area -->
+        <div class="workflow-main">
+            <!-- Calendar Header -->
+            <div class="calendar-header">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-view="workflow">Workflow</button>
+                    <button class="filter-tab" data-view="crew">Crew Schedule</button>
+                    <button class="filter-tab" data-view="calendar">Calendar</button>
+                    <button class="filter-tab" data-view="payments">Payments</button>
+                </div>
+                
+                <div class="view-controls">
+                    <button class="view-btn active" data-period="day">Day</button>
+                    <button class="view-btn" data-period="week">Week</button>
+                    <button class="view-btn" data-period="month">Month</button>
+                </div>
+            </div>
+
+            <!-- Workflow View -->
+            <div id="workflow-view" class="workflow-timeline">
+                <!-- Stage 1: Client Inquiries -->
+                <div class="workflow-stage stage-inquiry">
+                    <h6><i class="fas fa-envelope me-2"></i>1. Client Inquiries</h6>
+                    <div class="drop-zone" data-stage="inquiry">
+                        Drop new inquiries here
+                    </div>
+                    <div id="inquiry-jobs"></div>
+                </div>
+
+                <!-- Stage 2: Estimate Scheduled -->
+                <div class="workflow-stage stage-estimate">
+                    <h6><i class="fas fa-calendar-check me-2"></i>2. Estimate Scheduled</h6>
+                    <div class="drop-zone" data-stage="estimate_scheduled">
+                        Move jobs here when estimate is scheduled
+                    </div>
+                    <div id="estimate-jobs"></div>
+                </div>
+
+                <!-- Stage 3: Quote Sent -->
+                <div class="workflow-stage stage-quote">
+                    <h6><i class="fas fa-file-invoice me-2"></i>3. Quote Sent</h6>
+                    <div class="drop-zone" data-stage="estimate_sent">
+                        Jobs with quotes sent to clients
+                    </div>
+                    <div id="quote-jobs"></div>
+                </div>
+
+                <!-- Stage 4: Job Confirmed -->
+                <div class="workflow-stage stage-confirmed">
+                    <h6><i class="fas fa-handshake me-2"></i>4. Job Confirmed</h6>
+                    <div class="drop-zone" data-stage="awaiting_deposit">
+                        Confirmed jobs ready to start
+                    </div>
+                    <div id="confirmed-jobs"></div>
+                </div>
+
+                <!-- Stage 5: Work In Progress -->
+                <div class="workflow-stage stage-progress">
+                    <h6><i class="fas fa-tools me-2"></i>5. Work In Progress</h6>
+                    <div class="drop-zone" data-stage="work_in_progress">
+                        Active job sites
+                    </div>
+                    <div id="progress-jobs"></div>
+                </div>
+
+                <!-- Stage 6: Completed -->
+                <div class="workflow-stage stage-completed">
+                    <h6><i class="fas fa-check-circle me-2"></i>6. Completed</h6>
+                    <div class="drop-zone" data-stage="completed">
+                        Finished jobs
+                    </div>
+                    <div id="completed-jobs"></div>
+                </div>
+
+                <!-- Stage 7: Follow-up -->
+                <div class="workflow-stage stage-followup">
+                    <h6><i class="fas fa-redo me-2"></i>7. Follow-up</h6>
+                    <div class="drop-zone" data-stage="follow_up">
+                        Return visits or additional work
+                    </div>
+                    <div id="followup-jobs"></div>
+                </div>
+            </div>
+
+            <!-- Crew Schedule View -->
+            <div id="crew-view" style="display: none;">
+                <div class="crew-schedule" id="crew-schedule"></div>
+            </div>
+
+            <!-- Calendar View -->
+            <div id="calendar-view" style="display: none;">
+                <div id="workflow-calendar"></div>
+            </div>
+
+            <!-- Payments View -->
+            <div id="payments-view" style="display: none;">
+                <div id="payments-overview"></div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar - Job Details & Actions -->
+        <div class="workflow-sidebar">
+            <h5 class="mb-3">
+                <i class="fas fa-info-circle me-2"></i>Job Details
+            </h5>
+            
+            <div id="job-details">
+                <div class="text-center text-muted">
+                    <i class="fas fa-mouse-pointer fa-2x mb-3"></i>
+                    <p>Click on a job to view details</p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h6>Quick Actions</h6>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-sm btn-primary" onclick="scheduleEstimate()">
+                        <i class="fas fa-calendar-plus me-1"></i>Schedule Estimate
+                    </button>
+                    <button class="btn btn-sm btn-success" onclick="sendQuote()">
+                        <i class="fas fa-file-invoice me-1"></i>Send Quote
+                    </button>
+                    <button class="btn btn-sm btn-info" onclick="assignCrew()">
+                        <i class="fas fa-users me-1"></i>Assign Crew
+                    </button>
+                    <button class="btn btn-sm btn-warning" onclick="addChecklist()">
+                        <i class="fas fa-tasks me-1"></i>Add Checklist
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="markOverdue()">
+                        <i class="fas fa-exclamation-triangle me-1"></i>Mark Overdue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+let currentJobs = [];
+let selectedJob = null;
+let currentView = 'workflow';
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadJobs();
+    initializeDragAndDrop();
+    initializeFilters();
+    
+    // View tab handlers
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            switchView(this.dataset.view);
+        });
+    });
+    
+    // Period handlers
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            switchPeriod(this.dataset.period);
+        });
+    });
+});
+
+function loadJobs() {
+    fetch('/api/scheduler/color-coded-events')
+        .then(response => response.json())
+        .then(events => {
+            currentJobs = events.filter(event => event.extendedProps.type === 'job');
+            renderWorkflowView();
+        })
+        .catch(error => {
+            console.error('Error loading jobs:', error);
+        });
+}
+
+function renderWorkflowView() {
+    // Clear all job containers
+    document.querySelectorAll('[id$="-jobs"]').forEach(container => {
+        container.innerHTML = '';
+    });
+    
+    // Group jobs by status
+    const jobsByStatus = {
+        'inquiry': [],
+        'estimate_scheduled': [],
+        'estimate_sent': [],
+        'awaiting_deposit': [],
+        'work_in_progress': [],
+        'completed': [],
+        'follow_up': []
+    };
+    
+    currentJobs.forEach(job => {
+        const status = job.extendedProps.status || 'inquiry';
+        if (jobsByStatus[status]) {
+            jobsByStatus[status].push(job);
+        }
+    });
+    
+    // Render jobs in each stage
+    Object.keys(jobsByStatus).forEach(status => {
+        const containerId = getContainerIdByStatus(status);
+        const container = document.getElementById(containerId);
+        
+        if (container) {
+            jobsByStatus[status].forEach(job => {
+                container.appendChild(createJobCard(job));
+            });
+        }
+    });
+}
+
+function createJobCard(job) {
+    const card = document.createElement('div');
+    card.className = 'job-card';
+    card.draggable = true;
+    card.dataset.jobId = job.id;
+    
+    const statusClass = `status-${job.extendedProps.status || 'inquiry'}`;
+    const serviceType = job.extendedProps.service_type || 'General';
+    
+    card.innerHTML = `
+        <div class="job-status ${statusClass}">${formatStatus(job.extendedProps.status)}</div>
+        <div class="fw-bold">${job.title.split(' - ')[0]}</div>
+        <div class="small text-muted">${serviceType}</div>
+        <div class="small">${job.start.split('T')[0]} at ${job.start.split('T')[1]?.substring(0,5) || 'TBD'}</div>
+        <div class="small text-primary">${job.extendedProps.location || 'Location TBD'}</div>
+        ${job.extendedProps.assigned_staff?.length > 0 ? 
+            `<div class="small"><i class="fas fa-users me-1"></i>${job.extendedProps.assigned_staff.length} crew</div>` : 
+            '<div class="small text-warning"><i class="fas fa-exclamation-triangle me-1"></i>No crew assigned</div>'
+        }
+    `;
+    
+    card.addEventListener('click', () => showJobDetails(job));
+    
+    return card;
+}
+
+function getContainerIdByStatus(status) {
+    const mapping = {
+        'inquiry': 'inquiry-jobs',
+        'estimate_scheduled': 'estimate-jobs',
+        'estimate_sent': 'quote-jobs',
+        'awaiting_deposit': 'confirmed-jobs',
+        'work_in_progress': 'progress-jobs',
+        'completed': 'completed-jobs',
+        'follow_up': 'followup-jobs'
+    };
+    return mapping[status] || 'inquiry-jobs';
+}
+
+function formatStatus(status) {
+    const statusMap = {
+        'inquiry': 'New',
+        'estimate_scheduled': 'Estimate',
+        'estimate_sent': 'Quote Sent',
+        'awaiting_deposit': 'Confirmed',
+        'work_in_progress': 'In Progress',
+        'completed': 'Complete',
+        'follow_up': 'Follow-up'
+    };
+    return statusMap[status] || 'Unknown';
+}
+
+function initializeDragAndDrop() {
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+        new Sortable(zone, {
+            group: 'workflow',
+            animation: 150,
+            onAdd: function(evt) {
+                const jobId = evt.item.dataset.jobId;
+                const newStatus = evt.to.dataset.stage;
+                updateJobStatus(jobId, newStatus);
+            }
+        });
+    });
+    
+    document.querySelectorAll('[id$="-jobs"]').forEach(container => {
+        new Sortable(container, {
+            group: 'workflow',
+            animation: 150,
+            onEnd: function(evt) {
+                if (evt.to !== evt.from) {
+                    const jobId = evt.item.dataset.jobId;
+                    const newStatus = evt.to.parentElement.querySelector('.drop-zone').dataset.stage;
+                    updateJobStatus(jobId, newStatus);
+                }
+            }
+        });
+    });
+}
+
+function updateJobStatus(jobId, newStatus) {
+    fetch(`/api/scheduler/update-status/${jobId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            status: newStatus,
+            notes: `Status updated via workflow drag-and-drop to ${newStatus}`
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            loadJobs(); // Refresh the view
+        } else {
+            alert('Error updating job status: ' + result.reason);
+            loadJobs(); // Refresh to revert
+        }
+    })
+    .catch(error => {
+        console.error('Error updating job status:', error);
+        loadJobs(); // Refresh to revert
+    });
+}
+
+function showJobDetails(job) {
+    selectedJob = job;
+    const detailsContainer = document.getElementById('job-details');
+    
+    detailsContainer.innerHTML = `
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">${job.title.split(' - ')[0]}</h6>
+                <span class="badge bg-primary">${job.extendedProps.status}</span>
+            </div>
+            <div class="card-body">
+                <p><strong>Service:</strong> ${job.extendedProps.service_type}</p>
+                <p><strong>Date:</strong> ${job.start.split('T')[0]}</p>
+                <p><strong>Time:</strong> ${job.start.split('T')[1]?.substring(0,5) || 'TBD'}</p>
+                <p><strong>Location:</strong> ${job.extendedProps.location || 'TBD'}</p>
+                <p><strong>Phone:</strong> ${job.extendedProps.phone || 'Not provided'}</p>
+                <p><strong>Crew:</strong> ${job.extendedProps.assigned_staff?.join(', ') || 'Not assigned'}</p>
+                ${job.extendedProps.notes ? `<p><strong>Notes:</strong> ${job.extendedProps.notes}</p>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+function switchView(view) {
+    // Update active tab
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`[data-view="${view}"]`).classList.add('active');
+    
+    // Hide all views
+    document.getElementById('workflow-view').style.display = 'none';
+    document.getElementById('crew-view').style.display = 'none';
+    document.getElementById('calendar-view').style.display = 'none';
+    document.getElementById('payments-view').style.display = 'none';
+    
+    // Show selected view
+    document.getElementById(view + '-view').style.display = 'block';
+    currentView = view;
+    
+    if (view === 'crew') {
+        loadCrewSchedule();
+    } else if (view === 'calendar') {
+        loadCalendarView();
+    } else if (view === 'payments') {
+        loadPaymentsView();
+    }
+}
+
+function switchPeriod(period) {
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-period="${period}"]`).classList.add('active');
+    
+    // Reload current view with new period
+    if (currentView === 'crew') {
+        loadCrewSchedule(period);
+    } else if (currentView === 'calendar') {
+        loadCalendarView(period);
+    }
+}
+
+function loadCrewSchedule(period = 'week') {
+    fetch('/api/scheduler/staff-workload?days=' + (period === 'day' ? 1 : period === 'week' ? 7 : 30))
+        .then(response => response.json())
+        .then(workload => {
+            const container = document.getElementById('crew-schedule');
+            container.innerHTML = '';
+            
+            Object.keys(workload).forEach(staffId => {
+                const crew = workload[staffId];
+                const crewDiv = document.createElement('div');
+                crewDiv.className = 'crew-member';
+                
+                crewDiv.innerHTML = `
+                    <div class="crew-avatar">${staffId.substring(0, 2).toUpperCase()}</div>
+                    <h6>${staffId.replace('_', ' ')}</h6>
+                    <div class="small text-muted">${crew.appointment_count} jobs • ${crew.total_hours.toFixed(1)}h</div>
+                    <div class="progress mt-2" style="height: 6px;">
+                        <div class="progress-bar ${crew.capacity_utilization > 90 ? 'bg-danger' : crew.capacity_utilization > 75 ? 'bg-warning' : 'bg-success'}" 
+                             style="width: ${Math.min(crew.capacity_utilization, 100)}%"></div>
+                    </div>
+                    <div class="small">${crew.capacity_utilization.toFixed(1)}% capacity</div>
+                `;
+                
+                container.appendChild(crewDiv);
+            });
+        });
+}
+
+function loadCalendarView(period = 'week') {
+    // Initialize FullCalendar
+    const calendarEl = document.getElementById('workflow-calendar');
+    calendarEl.innerHTML = '';
+    
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: period === 'day' ? 'timeGridDay' : period === 'month' ? 'dayGridMonth' : 'timeGridWeek',
+        events: '/api/scheduler/color-coded-events',
+        eventClick: function(info) {
+            showJobDetails(info.event);
+        }
+    });
+    
+    calendar.render();
+}
+
+function loadPaymentsView() {
+    const container = document.getElementById('payments-overview');
+    container.innerHTML = `
+        <div class="payment-overview">
+            <h6>Pending Payments</h6>
+            <p>Payment tracking will be integrated with invoice system</p>
+        </div>
+    `;
+}
+
+function initializeFilters() {
+    // Job type filter handlers
+    document.querySelectorAll('.job-type-chip').forEach(chip => {
+        chip.addEventListener('click', function() {
+            this.classList.toggle('inactive');
+            applyFilters();
+        });
+    });
+    
+    // Status filter handlers
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', applyFilters);
+    });
+}
+
+function applyFilters() {
+    // Get active filters
+    const activeJobTypes = Array.from(document.querySelectorAll('.job-type-chip:not(.inactive)'))
+        .map(chip => chip.dataset.type);
+    
+    const showUnconfirmed = document.getElementById('unconfirmed').checked;
+    const showConfirmed = document.getElementById('confirmed').checked;
+    const showPendingPayments = document.getElementById('pending_payments').checked;
+    
+    // Filter jobs and re-render
+    const filteredJobs = currentJobs.filter(job => {
+        const serviceType = job.extendedProps.service_type;
+        const status = job.extendedProps.status;
+        
+        // Job type filter
+        if (activeJobTypes.length > 0 && !activeJobTypes.includes(serviceType)) {
+            return false;
+        }
+        
+        // Status filters
+        if (!showUnconfirmed && ['inquiry', 'estimate_scheduled'].includes(status)) {
+            return false;
+        }
+        
+        if (!showConfirmed && ['awaiting_deposit', 'work_in_progress'].includes(status)) {
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // Re-render with filtered jobs
+    const originalJobs = currentJobs;
+    currentJobs = filteredJobs;
+    renderWorkflowView();
+    currentJobs = originalJobs;
+}
+
+function applyDateFilter() {
+    const startDate = document.getElementById('start_date').value;
+    const endDate = document.getElementById('end_date').value;
+    
+    if (startDate && endDate) {
+        loadJobs(); // In a real implementation, this would pass date filters
+    }
+}
+
+// Quick action functions
+function scheduleEstimate() {
+    if (!selectedJob) {
+        alert('Please select a job first');
+        return;
+    }
+    alert('Opening estimate scheduler for: ' + selectedJob.title);
+}
+
+function sendQuote() {
+    if (!selectedJob) {
+        alert('Please select a job first');
+        return;
+    }
+    window.open(`/quote-generator?client_id=${selectedJob.extendedProps.client_id}&job_id=${selectedJob.extendedProps.job_id}`);
+}
+
+function assignCrew() {
+    if (!selectedJob) {
+        alert('Please select a job first');
+        return;
+    }
+    alert('Opening crew assignment for: ' + selectedJob.title);
+}
+
+function addChecklist() {
+    if (!selectedJob) {
+        alert('Please select a job first');
+        return;
+    }
+    
+    const items = prompt('Enter checklist items (comma-separated):');
+    if (items) {
+        const itemList = items.split(',').map(item => item.trim()).filter(item => item);
+        
+        fetch(`/api/scheduler/add-checklist/${selectedJob.id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ checklist_items: itemList })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert('Checklist added successfully');
+                loadJobs();
+            } else {
+                alert('Error adding checklist: ' + result.reason);
+            }
+        });
+    }
+}
+
+function markOverdue() {
+    if (!selectedJob) {
+        alert('Please select a job first');
+        return;
+    }
+    alert('Marking job as overdue: ' + selectedJob.title);
+}
+
+function createNewInquiry() {
+    const name = prompt('Client name:');
+    if (name) {
+        const service = prompt('Service type:');
+        const date = prompt('Preferred date (YYYY-MM-DD):');
+        
+        if (service && date) {
+            alert(`Creating new inquiry for ${name} - ${service} on ${date}`);
+            // In real implementation, this would create a new inquiry
+        }
+    }
+}
+</script>
+{% endblock %}

@@ -216,7 +216,13 @@
 </head>
 
 <body>
-    <!-- Mobile navigation and notifications handled by individual templates -->
+    <!-- Include Mobile Navigation Component (Admin Dashboard Only) -->
+    {% if request.endpoint and request.endpoint != 'admin_login' and request.endpoint != 'portal_login' and request.endpoint in ['admin_dashboard', 'admin', 'admin_analytics', 'admin_crm', 'admin_inventory', 'admin_checklists', 'admin_staff', 'admin_scheduler', 'admin_workflow_automation'] %}
+        {% include 'mobile_navigation.html' %}
+    {% endif %}
+    
+    <!-- Include Notification System -->
+    {% include 'notification_system.html' %}
     
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-premium fixed-top">

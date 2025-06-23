@@ -421,7 +421,7 @@ def admin_login():
         flash('Invalid credentials. Please try again.', 'error')
         logging.warning(f"Failed login attempt for username: {username}")
 
-    return render_template('admin_login.html')
+    return render_template('admin_login_clean.html')
 
 @app.route('/admin/ai-leads')
 def ai_leads():
@@ -508,40 +508,39 @@ def admin_dashboard():
         return redirect(url_for('admin_login'))
 
     try:
-        # Get data with safe fallbacks
-        service_requests = []
-        contact_messages = []
-        admin_notifications = []
-        
-        if handyman_storage:
-            try:
-                service_requests = handyman_storage.get_all_service_requests() or []
-            except:
-                service_requests = []
-            
-            try:
-                contact_messages = handyman_storage.get_all_contact_messages() or []
-            except:
-                contact_messages = []
-                
-            try:
-                admin_notifications = handyman_storage.get_admin_notifications() or []
-            except:
-                admin_notifications = []
+        service_requests = handyman_storage.get_all_service_requests()
+        contact_messages = handyman_storage.get_all_contact_messages()
 
         # Generate current week dates for calendar using Hawaii timezone
         hawaii_now = get_hawaii_time()
+
+        # Get the start of the week (Monday) in Hawaii time
         start_of_week = hawaii_now - timedelta(days=hawaii_now.weekday())
         week_dates = [(start_of_week + timedelta(days=i)) for i in range(7)]
 
-        # Simple data with safe fallbacks
+        # Get appointments for current week
         week_appointments = []
-        staff_members = []
-        staff_logins = []
+        for appointment in appointments:
+            try:
+                appointment_date = datetime.strptime(appointment['date'], '%Y-%m-%d')
+                if start_of_week <= appointment_date < start_of_week + timedelta(days=7):
+                    week_appointments.append(appointment)
+            except (KeyError, ValueError, TypeError) as e:
+                logging.warning(f"Invalid appointment data: {appointment} - {e}")
+                continue
 
-        # Calculate stats safely
+        # Only show authentic data - actual contact messages and service requests
         pending_requests = [req for req in service_requests if hasattr(req, 'status') and req.status == 'pending']
         urgent_requests = [req for req in service_requests if getattr(req, 'priority', 'medium') == 'high']
+        
+        # Get admin notifications for manual processing
+        try:
+            admin_notifications = handyman_storage.get_admin_notifications()
+        except Exception as e:
+            logging.warning(f"Error getting admin notifications: {e}")
+            admin_notifications = []
+
+        # Calculate actual stats from database data
         completed_requests = [req for req in service_requests if hasattr(req, 'status') and req.status == 'completed']
         unread_messages = [msg for msg in contact_messages if hasattr(msg, 'status') and msg.status == 'unread']
         
@@ -556,6 +555,7 @@ def admin_dashboard():
                              today=hawaii_now.strftime('%Y-%m-%d'),
                              user_role=session.get('user_role', 'admin'),
                              user_name=session.get('user_name', 'Admin'),
+                             # Only authentic data from database
                              pending_requests=pending_requests,
                              urgent_requests=urgent_requests,
                              completed_requests=completed_requests,
