@@ -314,6 +314,26 @@ def consultation():
                 additional_info=f"Auto-scheduled: {appointment['client_id']}/{appointment['job_id']} for {preferred_date or 'next day'}"
             )
             
+            # Automatically add customer to MailerLite leads list
+            if mailerlite_service and email:
+                try:
+                    result = mailerlite_service.add_subscriber(
+                        email=email,
+                        name=name,
+                        phone=phone_formatter.format_phone(phone) if phone_formatter else phone,
+                        list_name="leads",
+                        custom_fields={
+                            "service_interest": service,
+                            "inquiry_type": "consultation",
+                            "inquiry_date": datetime.now().strftime("%Y-%m-%d"),
+                            "source": "website_consultation_form"
+                        }
+                    )
+                    if result.get('success'):
+                        logging.info(f"Customer {email} added to MailerLite leads list")
+                except Exception as e:
+                    logging.warning(f"Failed to add customer to MailerLite: {e}")
+            
             logging.info(f"New service request created with ID: {request_id}")
             return redirect(url_for('form_confirmation', 
                                   form_type='consultation',
@@ -424,6 +444,27 @@ def contact():
                     phone_number=phone,
                     email=email
                 )
+            
+            # Automatically add customer to MailerLite leads list
+            if mailerlite_service and email:
+                try:
+                    result = mailerlite_service.add_subscriber(
+                        email=email,
+                        name=name,
+                        phone=phone,
+                        list_name="leads",
+                        custom_fields={
+                            "service_interest": service_type if is_service_inquiry else "General Inquiry",
+                            "inquiry_type": "contact_form",
+                            "inquiry_date": datetime.now().strftime("%Y-%m-%d"),
+                            "source": "website_contact_form",
+                            "subject": subject
+                        }
+                    )
+                    if result.get('success'):
+                        logging.info(f"Customer {email} added to MailerLite leads list from contact form")
+                except Exception as e:
+                    logging.warning(f"Failed to add contact form customer to MailerLite: {e}")
             
             logging.info(f"New contact message created with ID: {message_id}")
             return redirect(url_for('form_confirmation', 
@@ -2240,6 +2281,24 @@ def create_quote():
     }
     
     quote = handyman_storage.add_quote(quote_data)
+    
+    # Automatically send quote follow-up email via MailerLite
+    if mailerlite_service and quote:
+        try:
+            # Get contact information
+            contact = handyman_storage.get_contact_by_id(quote_data['contact_id'])
+            if contact and hasattr(contact, 'email') and contact.email:
+                result = mailerlite_service.send_quote_follow_up(
+                    email=contact.email,
+                    name=contact.name,
+                    quote_id=f"Q{quote.id:03d}",
+                    amount=total_amount
+                )
+                if result.get('success'):
+                    logging.info(f"Quote follow-up email sent to {contact.email} for Q{quote.id:03d}")
+        except Exception as e:
+            logging.warning(f"Failed to send quote follow-up email: {e}")
+    
     flash('Quote created successfully!', 'success')
     return redirect(url_for('quote_detail', quote_id=quote.id))
 
