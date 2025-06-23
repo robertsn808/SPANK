@@ -520,14 +520,38 @@ def admin_dashboard():
         service_requests = handyman_storage.get_all_service_requests()
         contact_messages = handyman_storage.get_all_contact_messages()
 
-        # Generate current week dates for calendar using Hawaii timezone
+        # Generate extended schedule dates for calendar using Hawaii timezone
         hawaii_now = get_hawaii_time()
 
-        # Get the start of the week (Monday) in Hawaii time
+        # Get the start of the current week (Monday) in Hawaii time
         start_of_week = hawaii_now - timedelta(days=hawaii_now.weekday())
-        week_dates = [(start_of_week + timedelta(days=i)) for i in range(7)]
+        
+        # Generate 4 weeks of dates (current week + 3 following weeks)
+        all_weeks = []
+        for week_num in range(4):
+            week_start = start_of_week + timedelta(weeks=week_num)
+            week_dates = [(week_start + timedelta(days=i)) for i in range(7)]
+            all_weeks.append({
+                'week_number': week_num + 1,
+                'week_start': week_start,
+                'dates': week_dates,
+                'is_current': week_num == 0
+            })
 
-        # Get appointments for current week
+        # Get appointments for all 4 weeks
+        all_appointments = []
+        end_of_extended_period = start_of_week + timedelta(weeks=4)
+        
+        for appointment in appointments:
+            try:
+                appointment_date = datetime.strptime(appointment['date'], '%Y-%m-%d')
+                if start_of_week <= appointment_date < end_of_extended_period:
+                    all_appointments.append(appointment)
+            except (KeyError, ValueError, TypeError) as e:
+                logging.warning(f"Invalid appointment data: {appointment} - {e}")
+                continue
+                
+        # Keep legacy week_appointments for current week compatibility
         week_appointments = []
         for appointment in appointments:
             try:
@@ -535,7 +559,6 @@ def admin_dashboard():
                 if start_of_week <= appointment_date < start_of_week + timedelta(days=7):
                     week_appointments.append(appointment)
             except (KeyError, ValueError, TypeError) as e:
-                logging.warning(f"Invalid appointment data: {appointment} - {e}")
                 continue
 
         # Only show authentic data - actual contact messages and service requests
@@ -557,7 +580,9 @@ def admin_dashboard():
                              bookings=service_requests,
                              service_requests=service_requests, 
                              contact_messages=contact_messages,
-                             week_dates=week_dates,
+                             week_dates=all_weeks[0]['dates'] if all_weeks else [],  # First week for compatibility
+                             all_weeks=all_weeks,  # Extended 4-week schedule
+                             all_appointments=all_appointments,  # All appointments for 4 weeks
                              week_appointments=week_appointments,
                              staff_members=staff_members,
                              staff_logins=staff_logins,

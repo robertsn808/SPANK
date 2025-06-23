@@ -370,12 +370,12 @@
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
                         <i class="fas fa-calendar-alt me-2"></i>
-                        Weekly Schedule
+                        Extended Schedule (4 Weeks)
                     </h5>
-                    {% if week_dates %}
-                    <small>{{ week_dates[0].strftime('%B %d') }} - {{ week_dates[6].strftime('%B %d, %Y') }}</small>
+                    {% if all_weeks and all_weeks|length > 0 %}
+                    <small>{{ all_weeks[0]['dates'][0].strftime('%B %d') }} - {{ all_weeks[-1]['dates'][6].strftime('%B %d, %Y') }}</small>
                     {% else %}
-                    <small>Current Week</small>
+                    <small>Schedule View</small>
                     {% endif %}
                 </div>
                 <div class="card-body p-0">
@@ -409,46 +409,65 @@
                         </div>
                     </div>
 
-                    <!-- Calendar Days -->
+                    <!-- Extended Calendar - 4 Weeks -->
                     <div class="p-3">
-                        {% if week_dates %}
-                        <div class="row g-2">
-                            {% for date in week_dates %}
-                            <div class="col-md">
-                                <div class="calendar-day-card h-100">
-                                    <div class="day-header text-center p-2 {{ 'bg-primary text-white' if date.strftime('%Y-%m-%d') == today else 'bg-light' }}">
-                                        <div class="fw-bold">{{ date.strftime('%a') }}</div>
-                                        <div class="h5 mb-0">{{ date.strftime('%d') }}</div>
-                                    </div>
-                                    <div class="day-content p-2" style="min-height: 120px;">
-                                        {% set day_appointments = [] %}
-                                        {% for appointment in week_appointments %}
-                                            {% if appointment.date == date.strftime('%Y-%m-%d') %}
-                                                {% set _ = day_appointments.append(appointment) %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        
-                                        {% if day_appointments %}
-                                            {% for appointment in day_appointments %}
-                                            <div class="appointment-block bg-success text-white p-1 mb-1 rounded small">
-                                                <div class="fw-bold">{{ appointment.time }}</div>
-                                                <div>{{ appointment.service }}</div>
-                                            </div>
-                                            {% endfor %}
-                                        {% else %}
-                                            <div class="text-center text-muted small mt-3">
-                                                <i class="fas fa-plus-circle"></i>
-                                                <div>Add appointment</div>
-                                            </div>
+                        {% if all_weeks and all_weeks|length > 0 %}
+                            {% for week in all_weeks %}
+                            <div class="mb-4 {% if not loop.last %}border-bottom pb-3{% endif %}">
+                                <!-- Week Header -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="fw-bold mb-0 {{ 'text-primary' if week.is_current else 'text-muted' }}">
+                                        <i class="fas fa-calendar-week me-1"></i>
+                                        Week {{ week.week_number }} 
+                                        {% if week.is_current %}
+                                            <span class="badge bg-primary ms-2">Current</span>
                                         {% endif %}
+                                    </h6>
+                                    <small class="text-muted">
+                                        {{ week.dates[0].strftime('%b %d') }} - {{ week.dates[6].strftime('%b %d') }}
+                                    </small>
+                                </div>
+                                
+                                <!-- Week Days -->
+                                <div class="row g-2">
+                                    {% for date in week.dates %}
+                                    <div class="col">
+                                        <div class="calendar-day-card h-100" style="min-height: 100px;">
+                                            <div class="day-header text-center p-2 {{ 'bg-primary text-white' if date.strftime('%Y-%m-%d') == today else 'bg-light' }}">
+                                                <div class="fw-bold small">{{ date.strftime('%a') }}</div>
+                                                <div class="h6 mb-0">{{ date.strftime('%d') }}</div>
+                                            </div>
+                                            <div class="day-content p-1" style="min-height: 60px;">
+                                                {% set day_appointments = [] %}
+                                                {% for appointment in all_appointments %}
+                                                    {% if appointment.date == date.strftime('%Y-%m-%d') %}
+                                                        {% set _ = day_appointments.append(appointment) %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% if day_appointments %}
+                                                    {% for appointment in day_appointments %}
+                                                    <div class="appointment-block bg-success text-white p-1 mb-1 rounded" style="font-size: 0.7rem; line-height: 1.1;">
+                                                        <div class="fw-bold">{{ appointment.time }}</div>
+                                                        <div>{{ appointment.service[:20] }}{% if appointment.service|length > 20 %}...{% endif %}</div>
+                                                    </div>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <div class="text-center text-muted mt-2" style="font-size: 0.65rem;">
+                                                        <i class="fas fa-plus-circle"></i>
+                                                        <div>Open</div>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
                                     </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                             {% endfor %}
-                        </div>
                         {% else %}
                         <div class="text-center py-4">
-                            <p class="text-muted">Calendar loading...</p>
+                            <p class="text-muted">Schedule loading...</p>
                         </div>
                         {% endif %}
                     </div>
