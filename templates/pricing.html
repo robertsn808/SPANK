@@ -53,33 +53,55 @@
     /* Desktop card sizing optimizations */
     @media (min-width: 1200px) {
         .pricing-notes-card {
-            max-width: 280px;
+            max-width: 100%;
             margin: 0 auto;
         }
         
         .pricing-notes-card .card-body {
-            padding: 2rem 1.5rem;
+            padding: 1.5rem;
         }
         
-        .pricing-notes-card .fa-3x {
-            font-size: 2.5rem !important;
+        .pricing-notes-card .fa-2x {
+            font-size: 2rem !important;
         }
         
         .pricing-notes-card h6 {
-            font-size: 1rem;
-            margin: 1rem 0 0.5rem 0;
+            font-size: 0.95rem;
+            margin: 0.75rem 0 0.5rem 0;
         }
         
-        .pricing-notes-card .h4 {
-            font-size: 1.5rem;
+        .pricing-notes-card .h5 {
+            font-size: 1.25rem;
         }
     }
     
     @media (min-width: 992px) and (max-width: 1199px) {
         .pricing-notes-card {
-            max-width: 250px;
+            max-width: 100%;
             margin: 0 auto;
         }
+        
+        .row.g-4 > [class*="col-"] {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+    }
+    
+    /* Prevent card overlap on all screen sizes */
+    .pricing-notes-card {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .row.g-4 {
+        margin-left: -1rem;
+        margin-right: -1rem;
+    }
+    
+    .row.g-4 > [class*="col-"] {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        margin-bottom: 1.5rem;
     }
     }
     
@@ -539,45 +561,45 @@
                     </div>
                     <div class="card-body">
                         <div class="row g-4 justify-content-center">
-                            <div class="col-md-6 col-lg-3">
-                                <div class="pricing-notes-card text-center p-4 bg-light rounded shadow-sm h-100" style="min-height: 220px;">
-                                    <div class="mb-3">
-                                        <i class="fas fa-clock fa-3x text-warning"></i>
+                            <div class="col-sm-6 col-lg-6 col-xl-3">
+                                <div class="pricing-notes-card text-center p-3 bg-light rounded shadow-sm h-100" style="min-height: 200px;">
+                                    <div class="mb-2">
+                                        <i class="fas fa-clock fa-2x text-warning"></i>
                                     </div>
                                     <h6 class="fw-bold">Minimum Service Call</h6>
-                                    <div class="h4 fw-bold text-warning">$75</div>
+                                    <div class="h5 fw-bold text-warning">$75</div>
                                     <small class="text-muted">(1 hour of work)</small>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-lg-3">
-                                <div class="pricing-notes-card text-center p-4 bg-light rounded shadow-sm h-100" style="min-height: 220px;">
-                                    <div class="mb-3">
-                                        <i class="fas fa-calendar-day fa-3x text-primary"></i>
+                            <div class="col-sm-6 col-lg-6 col-xl-3">
+                                <div class="pricing-notes-card text-center p-3 bg-light rounded shadow-sm h-100" style="min-height: 200px;">
+                                    <div class="mb-2">
+                                        <i class="fas fa-calendar-day fa-2x text-primary"></i>
                                     </div>
                                     <h6 class="fw-bold">Spankks Day Rate</h6>
-                                    <div class="h4 fw-bold text-primary">$550 – $650</div>
+                                    <div class="h5 fw-bold text-primary">$550 – $650</div>
                                     <small class="text-muted">(up to 8 hours, non-reno)</small>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-lg-3">
-                                <div class="pricing-notes-card text-center p-4 bg-light rounded shadow-sm h-100" style="min-height: 220px;">
-                                    <div class="mb-3">
-                                        <i class="fas fa-percentage fa-3x text-success"></i>
+                            <div class="col-sm-6 col-lg-6 col-xl-3">
+                                <div class="pricing-notes-card text-center p-3 bg-light rounded shadow-sm h-100" style="min-height: 200px;">
+                                    <div class="mb-2">
+                                        <i class="fas fa-percentage fa-2x text-success"></i>
                                     </div>
                                     <h6 class="fw-bold">Bundle Discount</h6>
-                                    <div class="h4 fw-bold text-success">Save 10%</div>
+                                    <div class="h5 fw-bold text-success">Save 10%</div>
                                     <small class="text-muted">2+ Services bundled</small>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-lg-3">
-                                <div class="pricing-notes-card text-center p-4 bg-warning bg-opacity-10 rounded border border-warning shadow-sm h-100" style="min-height: 220px;">
-                                    <div class="mb-3">
-                                        <i class="fas fa-graduation-cap fa-3x text-warning"></i>
+                            <div class="col-sm-6 col-lg-6 col-xl-3">
+                                <div class="pricing-notes-card text-center p-3 bg-warning bg-opacity-10 rounded border border-warning shadow-sm h-100" style="min-height: 200px;">
+                                    <div class="mb-2">
+                                        <i class="fas fa-graduation-cap fa-2x text-warning"></i>
                                     </div>
                                     <h6 class="fw-bold">Spankks Bucks</h6>
-                                    <div class="h4 fw-bold text-warning">$5 or $25</div>
+                                    <div class="h5 fw-bold text-warning">$5 or $25</div>
                                     <small class="text-muted">Credits from SPANKKS SKOOL</small>
-                                    <div class="mt-3">
+                                    <div class="mt-2">
                                         <a href="{{ url_for('spank_school') }}" class="btn btn-warning btn-sm">Earn Credits</a>
                                     </div>
                                 </div>
