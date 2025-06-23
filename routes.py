@@ -547,9 +547,28 @@ def admin_dashboard():
         
         for appointment in appointments:
             try:
-                appointment_date = datetime.strptime(appointment['date'], '%Y-%m-%d')
+                # Use scheduled_date field from unified scheduler
+                date_field = appointment.get('scheduled_date') or appointment.get('date')
+                if not date_field:
+                    continue
+                    
+                appointment_date = datetime.strptime(date_field, '%Y-%m-%d')
                 if start_of_week <= appointment_date < end_of_extended_period:
-                    all_appointments.append(appointment)
+                    # Normalize appointment data for template compatibility
+                    normalized_appointment = {
+                        'id': appointment.get('appointment_id', appointment.get('id')),
+                        'date': date_field,  # Template expects 'date' field
+                        'time': appointment.get('scheduled_time', appointment.get('time', '09:00')),
+                        'service': appointment.get('service_type', appointment.get('service', 'Service')),
+                        'client_name': appointment.get('client_name', 'Client'),
+                        'status': appointment.get('status', 'scheduled'),
+                        'estimated_amount': appointment.get('estimated_amount'),
+                        'location': appointment.get('location', ''),
+                        'notes': appointment.get('notes', ''),
+                        'client_id': appointment.get('client_id'),
+                        'job_id': appointment.get('job_id')
+                    }
+                    all_appointments.append(normalized_appointment)
             except (KeyError, ValueError, TypeError) as e:
                 logging.warning(f"Invalid appointment data: {appointment} - {e}")
                 continue
@@ -558,9 +577,23 @@ def admin_dashboard():
         week_appointments = []
         for appointment in appointments:
             try:
-                appointment_date = datetime.strptime(appointment['date'], '%Y-%m-%d')
+                date_field = appointment.get('scheduled_date') or appointment.get('date')
+                if not date_field:
+                    continue
+                    
+                appointment_date = datetime.strptime(date_field, '%Y-%m-%d')
                 if start_of_week <= appointment_date < start_of_week + timedelta(days=7):
-                    week_appointments.append(appointment)
+                    # Normalize for legacy compatibility
+                    normalized_appointment = {
+                        'id': appointment.get('appointment_id', appointment.get('id')),
+                        'date': date_field,
+                        'time': appointment.get('scheduled_time', appointment.get('time', '09:00')),
+                        'service': appointment.get('service_type', appointment.get('service', 'Service')),
+                        'client_name': appointment.get('client_name', 'Client'),
+                        'status': appointment.get('status', 'scheduled'),
+                        'estimated_amount': appointment.get('estimated_amount')
+                    }
+                    week_appointments.append(normalized_appointment)
             except (KeyError, ValueError, TypeError) as e:
                 continue
 
