@@ -597,9 +597,23 @@ def admin_dashboard():
             except (KeyError, ValueError, TypeError) as e:
                 continue
 
-        # Only show authentic data - actual contact messages and service requests
-        pending_requests = [req for req in service_requests if hasattr(req, 'status') and req.status == 'pending']
-        urgent_requests = [req for req in service_requests if getattr(req, 'priority', 'medium') == 'high']
+        # Get real pending requests from unified appointments (tentative status = pending)
+        try:
+            import json
+            import os
+            appointments_file = os.path.join('data', 'unified_appointments.json')
+            if os.path.exists(appointments_file):
+                with open(appointments_file, 'r') as f:
+                    all_appointments_data = json.load(f)
+                    pending_requests = [apt for apt in all_appointments_data if apt.get('status') == 'tentative']
+                    urgent_requests = [apt for apt in all_appointments_data if apt.get('priority') == 'high']
+            else:
+                pending_requests = []
+                urgent_requests = []
+        except Exception as e:
+            logging.warning(f"Error reading appointments data: {e}")
+            pending_requests = []
+            urgent_requests = []
         
         # Get admin notifications for manual processing
         try:
@@ -608,9 +622,27 @@ def admin_dashboard():
             logging.warning(f"Error getting admin notifications: {e}")
             admin_notifications = []
 
-        # Calculate actual stats from database data
-        completed_requests = [req for req in service_requests if hasattr(req, 'status') and req.status == 'completed']
-        unread_messages = [msg for msg in contact_messages if hasattr(msg, 'status') and msg.status == 'unread']
+        # Get completed requests from the same appointments data
+        try:
+            completed_requests = [apt for apt in all_appointments_data if apt.get('status') == 'completed']
+        except Exception as e:
+            logging.warning(f"Error filtering completed appointments: {e}")
+            completed_requests = []
+            
+        # Get unread messages from actual database files
+        try:
+            import json
+            import os
+            contacts_file = os.path.join('data', 'contacts.json')
+            if os.path.exists(contacts_file):
+                with open(contacts_file, 'r') as f:
+                    contacts_data = json.load(f)
+                    unread_messages = [contact for contact in contacts_data if contact.get('status') == 'unread']
+            else:
+                unread_messages = []
+        except Exception as e:
+            logging.warning(f"Error reading contacts data: {e}")
+            unread_messages = []
         
         return render_template('admin_dashboard.html',
                              bookings=service_requests,
