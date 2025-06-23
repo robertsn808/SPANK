@@ -478,7 +478,9 @@
 }
 </style>
 
-<!-- Enhanced Quote/Invoice Form with Sections -->
+<!-- Enhanced Quote/Invoice Form with Sections - Removed from global include -->
+<!-- This form should only be included on specific quote/invoice pages -->
+<!--
 <div class="container-fluid">
     <!-- Progress Steps -->
     <div class="progress-steps">
@@ -880,7 +882,9 @@ function generateDocument() {
         }, 2000);
     }
 }
+-->
 
+<script>
 function showToast(message, type) {
     const toast = document.createElement('div');
     toast.className = `alert alert-${type === 'warning' ? 'warning' : type === 'info' ? 'info' : type === 'success' ? 'success' : 'primary'} position-fixed`;
