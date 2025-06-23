@@ -6814,3 +6814,45 @@ def update_notification_settings():
         print(f"Error updating notification settings: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/management/sync-services', methods=['POST'])
+def sync_service_data():
+    """Synchronize service data between pricing page, CSV, and database"""
+    try:
+        from service_data_sync import sync_service_data
+        
+        # Run the synchronization
+        result = sync_service_data()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Service data synchronized successfully',
+            'details': {
+                'services_saved': result['database']['total_services'],
+                'categories': result['database']['categories'],
+                'csv_updated': True,
+                'validation_passed': result['validation']['all_fields_present']
+            }
+        })
+    except Exception as e:
+        print(f"Error synchronizing service data: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/management/service-types', methods=['GET'])
+def get_service_types():
+    """Get all service types from database"""
+    try:
+        import json
+        import os
+        
+        service_types_file = os.path.join('data', 'service_types.json')
+        
+        if os.path.exists(service_types_file):
+            with open(service_types_file, 'r') as f:
+                data = json.load(f)
+            return jsonify({'success': True, 'data': data})
+        else:
+            return jsonify({'success': False, 'error': 'Service types not found. Please sync data first.'})
+    except Exception as e:
+        print(f"Error retrieving service types: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
