@@ -489,7 +489,7 @@
                                         </div>
                                         {% endfor %}
                                     {% else %}
-                                        <div class="empty-slot" onclick="openNewAppointmentModal('{{ date.strftime('%Y-%m-%d') }}', '{{ time_value }}')">
+                                        <div class="empty-slot" onclick="console.log('Clicked empty slot:', '{{ date.strftime('%Y-%m-%d') }}', '{{ time_value }}'); openNewAppointmentModal('{{ date.strftime('%Y-%m-%d') }}', '{{ time_value }}');" style="cursor: pointer;">
                                             <i class="fas fa-plus text-muted"></i>
                                         </div>
                                     {% endif %}
@@ -921,6 +921,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update button states based on current week
     updateNavigationButtons();
+    
+    // Test if appointment modal function is accessible
+    console.log('Testing appointment modal function:', typeof openNewAppointmentModal);
+    window.openNewAppointmentModal = openNewAppointmentModal;
 });
 
 function updateNavigationButtons() {
@@ -938,6 +942,8 @@ function updateNavigationButtons() {
 
 // Appointment modal functions
 function openNewAppointmentModal(date, time) {
+    console.log('openNewAppointmentModal called with:', date, time);
+    
     // Set the date and time in the modal
     document.getElementById('appointmentDate').value = date;
     document.getElementById('appointmentTime').value = time;
