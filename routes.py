@@ -1653,8 +1653,8 @@ def update_client_info(client_id, job_id):
                 # Check for portal sync tags to find previously synced contacts
                 if not contact_to_update:
                     for contact in contacts:
-                        if (hasattr(contact, 'tags') and contact.tags and 'portal_sync' in contact.tags) or \
-                           (hasattr(contact, 'notes') and contact.notes and f'portal client {client_id}/{job_id}' in contact.notes):
+                        if (contact.get('tags') and 'portal_sync' in contact.get('tags', [])) or \
+                           (contact.get('notes') and f'portal client {client_id}/{job_id}' in contact.get('notes', '')):
                             contact_to_update = contact
                             logging.info(f"Found portal-synced contact: {contact.id} - {contact.name}")
                             break
@@ -1674,19 +1674,19 @@ def update_client_info(client_id, job_id):
                         # Update quotes
                         quotes = handyman_storage.get_quotes_by_contact(contact_to_update.id)
                         for quote in quotes:
-                            if hasattr(quote, 'contact_name'):
+                            if quote.get('contact_name'):
                                 quote.contact_name = data.get('name')
                         
                         # Update invoices  
                         invoices = handyman_storage.get_invoices_by_contact(contact_to_update.id)
                         for invoice in invoices:
-                            if hasattr(invoice, 'contact_name'):
+                            if invoice.get('contact_name'):
                                 invoice.contact_name = data.get('name')
                         
                         # Update jobs
                         jobs = handyman_storage.get_jobs_by_contact(contact_to_update.id)
                         for job in jobs:
-                            if hasattr(job, 'contact_name'):
+                            if job.get('contact_name'):
                                 job.contact_name = data.get('name')
                                 
                         logging.info(f"Updated related records for contact {contact_to_update.id}")
@@ -2874,7 +2874,7 @@ def mark_invoice_paid():
             json.dump(invoices, f, indent=2)
         
         # Log the payment in job tracking system
-        if storage_service and hasattr(storage_service, 'log_payment'):
+        if storage_service and callable(getattr(storage_service, 'log_payment', None)):
             storage_service.log_payment({
                 'invoice_id': invoice_id,
                 'amount': payment_amount,
