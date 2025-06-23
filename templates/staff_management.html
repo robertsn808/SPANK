@@ -6,8 +6,9 @@
 <style>
 .staff-container {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
+    min-height: calc(100vh - 80px); /* Account for admin header */
     padding: 2rem 0;
+    margin-top: 0; /* Ensure it doesn't overlap admin header */
 }
 
 .staff-header {
