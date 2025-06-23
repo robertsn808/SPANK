@@ -82,96 +82,200 @@
         padding: 2rem;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
+
+    .sidebar-panel {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 20px;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+    }
+
+    .sidebar-title {
+        color: #495057;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .sidebar-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: #495057;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        border-left: 3px solid transparent;
+    }
+
+    .sidebar-item:hover {
+        background-color: #f8f9fa;
+        color: #28a745;
+        text-decoration: none;
+        border-left-color: #28a745;
+        transform: translateX(3px);
+    }
+
+    .sidebar-item i {
+        width: 20px;
+        text-align: center;
+    }
+
+    @media (max-width: 991px) {
+        .sidebar-panel {
+            position: static;
+            margin-bottom: 2rem;
+        }
+        
+        .sidebar-menu {
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .sidebar-item {
+            flex: 1 1 calc(50% - 0.25rem);
+            min-width: 150px;
+            justify-content: center;
+            text-align: center;
+            flex-direction: column;
+            padding: 1rem 0.5rem;
+        }
+        
+        .sidebar-item i {
+            margin-bottom: 0.25rem;
+            margin-right: 0;
+        }
+        
+        .sidebar-item span {
+            font-size: 0.8rem;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="dashboard-content">
-    <div class="container">
-        <!-- Stats Cards Row -->
-        <div class="row g-4 mb-5">
-            <div class="col-12 col-sm-6 col-lg-3">
-                <div class="stats-card bg-gradient-primary">
-                    <div class="icon-circle">
-                        <i class="fas fa-clipboard-list fa-2x"></i>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar with Quick Actions -->
+            <div class="col-lg-3 col-xl-2">
+                <div class="sidebar-panel">
+                    <h5 class="sidebar-title">Quick Actions</h5>
+                    <div class="sidebar-menu">
+                        <a href="/admin/quote-builder" class="sidebar-item">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            <span>New Quote</span>
+                        </a>
+                        <a href="/admin/scheduler" class="sidebar-item">
+                            <i class="fas fa-calendar-plus me-2"></i>
+                            <span>Schedule Job</span>
+                        </a>
+                        <a href="/admin/invoices" class="sidebar-item">
+                            <i class="fas fa-receipt me-2"></i>
+                            <span>Create Invoice</span>
+                        </a>
+                        <a href="/admin/crm" class="sidebar-item">
+                            <i class="fas fa-user-plus me-2"></i>
+                            <span>Add Client</span>
+                        </a>
+                        <a href="/admin/analytics" class="sidebar-item">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            <span>Analytics</span>
+                        </a>
+                        <a href="/admin/business-intelligence" class="sidebar-item">
+                            <i class="fas fa-brain me-2"></i>
+                            <span>Business Intelligence</span>
+                        </a>
+                        <a href="/admin/staff-management" class="sidebar-item">
+                            <i class="fas fa-users me-2"></i>
+                            <span>Staff Management</span>
+                        </a>
+                        <a href="/admin/inventory" class="sidebar-item">
+                            <i class="fas fa-boxes me-2"></i>
+                            <span>Inventory</span>
+                        </a>
+                        <a href="/admin/job-checklists" class="sidebar-item">
+                            <i class="fas fa-clipboard-check me-2"></i>
+                            <span>Job Checklists</span>
+                        </a>
+                        <a href="/admin/unified-scheduler" class="sidebar-item">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            <span>Unified Scheduler</span>
+                        </a>
+                        <a href="/admin/advanced-scheduler" class="sidebar-item">
+                            <i class="fas fa-calendar-week me-2"></i>
+                            <span>Advanced Scheduler</span>
+                        </a>
+                        <a href="/admin/workflow-automation" class="sidebar-item">
+                            <i class="fas fa-cogs me-2"></i>
+                            <span>Workflow Automation</span>
+                        </a>
+                        <a href="/admin/financial-reports" class="sidebar-item">
+                            <i class="fas fa-dollar-sign me-2"></i>
+                            <span>Financial Reports</span>
+                        </a>
+                        <a href="/admin/ml-insights" class="sidebar-item">
+                            <i class="fas fa-robot me-2"></i>
+                            <span>ML Insights</span>
+                        </a>
                     </div>
-                    <h3 class="fw-bold mb-1">{{ bookings|length if bookings else 0 }}</h3>
-                    <p class="mb-0">Total Requests</p>
                 </div>
             </div>
-            <div class="col-12 col-sm-6 col-lg-3">
-                <div class="stats-card bg-gradient-success">
-                    <div class="icon-circle">
-                        <i class="fas fa-handshake fa-2x"></i>
-                    </div>
-                    <h3 class="fw-bold mb-1">{{ (bookings|selectattr('status', 'equalto', 'pending')|list)|length if bookings else 0 }}</h3>
-                    <p class="mb-0">Pending</p>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-3">
-                <div class="stats-card bg-gradient-warning">
-                    <div class="icon-circle">
-                        <i class="fas fa-envelope fa-2x"></i>
-                    </div>
-                    <h3 class="fw-bold mb-1">{{ contact_messages|length if contact_messages else 0 }}</h3>
-                    <p class="mb-0">Messages</p>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-3">
-                <div class="stats-card bg-gradient-info">
-                    <div class="icon-circle">
-                        <i class="fas fa-calendar fa-2x"></i>
-                    </div>
-                    <h3 class="fw-bold mb-1">{{ week_appointments|length if week_appointments else 0 }}</h3>
-                    <p class="mb-0">This Week</p>
-                </div>
-            </div>
-        </div>
 
-        <!-- Quick Actions Section -->
-        <div class="quick-actions-section">
-            <h4 class="fw-bold mb-4">
-                <i class="fas fa-bolt me-2 text-primary"></i>Quick Actions
-            </h4>
-            <div class="row g-3">
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="/admin/quote-builder" class="quick-action-btn btn btn-outline-primary w-100 d-flex flex-column align-items-center justify-content-center">
-                        <i class="fas fa-plus-circle fa-2x mb-2"></i>
-                        <span>New Quote</span>
-                    </a>
+            <!-- Main Content Area -->
+            <div class="col-lg-9 col-xl-10">
+                <!-- Stats Cards Row -->
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stats-card bg-gradient-primary">
+                            <div class="icon-circle">
+                                <i class="fas fa-clipboard-list fa-2x"></i>
+                            </div>
+                            <h3 class="fw-bold mb-1">{{ bookings|length if bookings else 0 }}</h3>
+                            <p class="mb-0">Total Requests</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stats-card bg-gradient-success">
+                            <div class="icon-circle">
+                                <i class="fas fa-handshake fa-2x"></i>
+                            </div>
+                            <h3 class="fw-bold mb-1">{{ (bookings|selectattr('status', 'equalto', 'pending')|list)|length if bookings else 0 }}</h3>
+                            <p class="mb-0">Pending</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stats-card bg-gradient-warning">
+                            <div class="icon-circle">
+                                <i class="fas fa-envelope fa-2x"></i>
+                            </div>
+                            <h3 class="fw-bold mb-1">{{ contact_messages|length if contact_messages else 0 }}</h3>
+                            <p class="mb-0">Messages</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stats-card bg-gradient-info">
+                            <div class="icon-circle">
+                                <i class="fas fa-calendar fa-2x"></i>
+                            </div>
+                            <h3 class="fw-bold mb-1">{{ week_appointments|length if week_appointments else 0 }}</h3>
+                            <p class="mb-0">This Week</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="/admin/scheduler" class="quick-action-btn btn btn-outline-success w-100 d-flex flex-column align-items-center justify-content-center">
-                        <i class="fas fa-calendar-plus fa-2x mb-2"></i>
-                        <span>Schedule Job</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="/admin/invoices" class="quick-action-btn btn btn-outline-warning w-100 d-flex flex-column align-items-center justify-content-center">
-                        <i class="fas fa-receipt fa-2x mb-2"></i>
-                        <span>Create Invoice</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="/admin/crm" class="quick-action-btn btn btn-outline-info w-100 d-flex flex-column align-items-center justify-content-center">
-                        <i class="fas fa-user-plus fa-2x mb-2"></i>
-                        <span>Add Client</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="/admin/analytics" class="quick-action-btn btn btn-outline-secondary w-100 d-flex flex-column align-items-center justify-content-center">
-                        <i class="fas fa-chart-bar fa-2x mb-2"></i>
-                        <span>Analytics</span>
-                    </a>
-                </div>
-                <div class="col-6 col-md-4 col-lg-2">
-                    <a href="/admin/staff-management" class="quick-action-btn btn btn-outline-dark w-100 d-flex flex-column align-items-center justify-content-center">
-                        <i class="fas fa-users fa-2x mb-2"></i>
-                        <span>Staff</span>
-                    </a>
-                </div>
-            </div>
-        </div>
 
         <!-- Bookings Table Section -->
         {% if bookings %}
