@@ -9,7 +9,7 @@ deploymentTarget = "autoscale"
 run = ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
 
 [workflows]
-runButton = "Start SPANKKS Portal"
+runButton = "Start application"
 
 [[workflows.workflow]]
 name = "Project"
