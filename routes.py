@@ -524,8 +524,13 @@ def admin_dashboard():
         return redirect(url_for('admin_login'))
 
     try:
-        service_requests = handyman_storage.get_all_service_requests()
-        contact_messages = handyman_storage.get_all_contact_messages()
+        # Ensure storage service is initialized
+        if handyman_storage is None:
+            flash('Dashboard temporarily unavailable. Please try again.', 'error')
+            return redirect(url_for('admin_login'))
+            
+        service_requests = handyman_storage.get_all_service_requests() or []
+        contact_messages = handyman_storage.get_all_contact_messages() or []
         
         # Load real appointments from unified scheduler database
         import json
@@ -4079,20 +4084,32 @@ def scheduler_dashboard():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
     
-    # Load data from JSON files
-    with open('data/inquiries.json', 'r') as f:
-        inquiries = json.load(f)
-    
-    with open('data/staff.json', 'r') as f:
-        staff = json.load(f)
-    
-    # Get CRM jobs
-    all_jobs = handyman_storage.get_all_jobs()
-    
-    return render_template('scheduler.html', 
-                         inquiries=inquiries,
-                         staff=staff,
-                         jobs=all_jobs)
+    try:
+        # Load data from JSON files with error handling
+        inquiries = []
+        if os.path.exists('data/inquiries.json'):
+            with open('data/inquiries.json', 'r') as f:
+                inquiries = json.load(f)
+        
+        staff = []
+        if os.path.exists('data/staff.json'):
+            with open('data/staff.json', 'r') as f:
+                staff = json.load(f)
+        
+        # Get CRM jobs with error handling
+        all_jobs = []
+        if handyman_storage:
+            all_jobs = handyman_storage.get_all_jobs() or []
+        
+        return render_template('scheduler.html', 
+                             inquiries=inquiries,
+                             staff=staff,
+                             jobs=all_jobs)
+                             
+    except Exception as e:
+        logging.error(f"Error in scheduler dashboard: {e}")
+        flash('Scheduler temporarily unavailable. Please try again.', 'error')
+        return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/inquiries')
 def inquiry_management():
