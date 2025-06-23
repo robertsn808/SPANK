@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "name": "Test Client 1",
+    "phone": "(808) 555-1111",
+    "email": "test1@example.com",
+    "address": "123 Test St",
+    "city": "Honolulu",
+    "state": "HI",
+    "zip_code": "96814",
+    "client_type": "residential",
+    "notes": "Test upload client",
+    "preferred_contact_method": "email",
+    "id": "CLI001",
+    "created_at": "2025-06-23T22:57:06.524923"
+  },
+  {
+    "name": "Test Client 2",
+    "phone": "(808) 555-2222",
+    "email": "test2@example.com",
+    "address": "456 Test Ave",
+    "city": "Pearl City",
+    "state": "HI",
+    "zip_code": "96782",
+    "client_type": "commercial",
+    "notes": "Another test client",
+    "preferred_contact_method": "phone",
+    "id": "CLI002",
+    "created_at": "2025-06-23T22:57:06.525540"
+  }
+]
