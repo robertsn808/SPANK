@@ -6187,3 +6187,27 @@ def check_scheduling_conflicts():
         logging.error(f"Error checking conflicts: {e}")
         return jsonify({'error': str(e)}), 500
 
+# ===============================
+# MISSING ROUTE FIXES
+# ===============================
+
+@app.route('/spankks-skool')
+def spankks_skool_redirect():
+    """Redirect alternative spelling to correct SPANKKS SKOOL route"""
+    return redirect('/spank-school')
+
+@app.route('/portal')
+def portal_home():
+    """Portal homepage - redirect to login"""
+    return redirect(url_for('portal_login'))
+
+@app.route('/job-portal')
+def job_portal_redirect():
+    """Redirect to job site portal login"""
+    return redirect(url_for('portal_login'))
+
+@app.route('/job-site-portal')
+def job_site_portal_redirect():
+    """Redirect to job site portal login"""
+    return redirect(url_for('portal_login'))
+
