@@ -426,37 +426,62 @@
                     <!-- Weekly View (Default) -->
                     <div class="p-3" id="weeklyView">
                         {% if week_dates %}
-                        <div class="row g-2">
-                            {% for date in week_dates %}
-                            <div class="col-md">
-                                <div class="calendar-day-card h-100">
-                                    <div class="day-header text-center p-2 {{ 'bg-primary text-white' if date.strftime('%Y-%m-%d') == today else 'bg-light' }}">
-                                        <div class="fw-bold">{{ date.strftime('%a') }}</div>
-                                        <div class="h5 mb-0">{{ date.strftime('%d') }}</div>
-                                    </div>
-                                    <div class="day-content p-2" style="min-height: 120px;">
-                                        {% set day_appointments = [] %}
-                                        {% for appointment in week_appointments %}
-                                            {% if appointment.date == date.strftime('%Y-%m-%d') %}
-                                                {% set _ = day_appointments.append(appointment) %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        
-                                        {% if day_appointments %}
-                                            {% for appointment in day_appointments %}
-                                            <div class="appointment-block bg-success text-white p-1 mb-1 rounded small">
-                                                <div class="fw-bold">{{ appointment.time }}</div>
-                                                <div>{{ appointment.service }}</div>
-                                            </div>
-                                            {% endfor %}
-                                        {% else %}
-                                            <div class="text-center text-muted small mt-3">
-                                                <i class="fas fa-plus-circle"></i>
-                                                <div>Add appointment</div>
-                                            </div>
-                                        {% endif %}
-                                    </div>
+                        <!-- Time Slot Schedule -->
+                        <div class="time-slot-schedule">
+                            <!-- Header Row with Days -->
+                            <div class="schedule-header">
+                                <div class="time-column-header">Time</div>
+                                {% for date in week_dates %}
+                                <div class="day-column-header text-center {{ 'bg-primary text-white' if date.strftime('%Y-%m-%d') == today else 'bg-light' }}">
+                                    <div class="fw-bold">{{ date.strftime('%a') }}</div>
+                                    <div class="h6 mb-0">{{ date.strftime('%m/%d') }}</div>
                                 </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Time Slots -->
+                            {% set time_slots = [
+                                ('7:00 AM', '7:00'),
+                                ('8:00 AM', '8:00'),
+                                ('9:00 AM', '9:00'),
+                                ('10:00 AM', '10:00'),
+                                ('11:00 AM', '11:00'),
+                                ('12:00 PM', '12:00'),
+                                ('1:00 PM', '13:00'),
+                                ('2:00 PM', '14:00'),
+                                ('3:00 PM', '15:00'),
+                                ('4:00 PM', '16:00'),
+                                ('5:00 PM', '17:00')
+                            ] %}
+                            
+                            {% for time_display, time_value in time_slots %}
+                            <div class="schedule-row">
+                                <div class="time-column">
+                                    <span class="time-label">{{ time_display }}</span>
+                                </div>
+                                {% for date in week_dates %}
+                                <div class="appointment-slot" data-date="{{ date.strftime('%Y-%m-%d') }}" data-time="{{ time_value }}">
+                                    {% set slot_appointments = [] %}
+                                    {% for appointment in week_appointments %}
+                                        {% if appointment.date == date.strftime('%Y-%m-%d') and appointment.time.startswith(time_value) %}
+                                            {% set _ = slot_appointments.append(appointment) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if slot_appointments %}
+                                        {% for appointment in slot_appointments %}
+                                        <div class="appointment-block bg-success text-white p-1 rounded small">
+                                            <div class="fw-bold">{{ appointment.service[:15] }}{% if appointment.service|length > 15 %}...{% endif %}</div>
+                                            <div class="text-white-50" style="font-size: 0.7rem;">{{ appointment.client_name if appointment.client_name else 'Client' }}</div>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="empty-slot">
+                                            <i class="fas fa-plus text-muted"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
                             </div>
                             {% endfor %}
                         </div>
@@ -600,6 +625,140 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Add CSS for time slot schedule
+const timeSlotStyles = `
+<style>
+.time-slot-schedule {
+    display: grid;
+    grid-template-rows: auto repeat(11, 1fr);
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+.schedule-header {
+    display: grid;
+    grid-template-columns: 100px repeat(7, 1fr);
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.time-column-header {
+    padding: 12px 8px;
+    font-weight: bold;
+    background: #6c757d;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.day-column-header {
+    padding: 12px 8px;
+    border-left: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+}
+
+.schedule-row {
+    display: grid;
+    grid-template-columns: 100px repeat(7, 1fr);
+    border-bottom: 1px solid #dee2e6;
+    min-height: 50px;
+}
+
+.time-column {
+    padding: 8px;
+    background: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.time-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.appointment-slot {
+    padding: 4px;
+    border-left: 1px solid #dee2e6;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.appointment-slot:hover {
+    background-color: #f8f9fa;
+}
+
+.appointment-block {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    padding: 4px 6px !important;
+}
+
+.empty-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+}
+
+.appointment-slot:hover .empty-slot {
+    opacity: 0.8;
+}
+
+.empty-slot i {
+    font-size: 1.2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .schedule-header,
+    .schedule-row {
+        grid-template-columns: 80px repeat(7, 1fr);
+    }
+    
+    .time-column-header,
+    .time-column {
+        padding: 8px 4px;
+    }
+    
+    .time-label {
+        font-size: 0.7rem;
+    }
+    
+    .day-column-header {
+        padding: 8px 4px;
+        font-size: 0.8rem;
+    }
+    
+    .appointment-block {
+        font-size: 0.65rem;
+        padding: 2px 4px !important;
+    }
+}
+</style>
+`;
+
+document.head.insertAdjacentHTML('beforeend', timeSlotStyles);
 
 // Schedule view switching functionality
 function switchView(viewType) {
