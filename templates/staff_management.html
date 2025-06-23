@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 
 {% block title %}Staff Management - SPANKKS Construction{% endblock %}
 
@@ -191,6 +191,11 @@
 {% endblock %}
 
 {% block content %}
+<div class="container-fluid">
+    <!-- Quick Actions Navigation -->
+    {% include 'quick_actions_nav.html' %}
+</div>
+
 <div class="staff-container">
     <div class="container-fluid">
         
