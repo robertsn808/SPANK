@@ -476,7 +476,7 @@
                                 <div class="appointment-slot" data-date="{{ date.strftime('%Y-%m-%d') }}" data-time="{{ time_value }}">
                                     {% set slot_appointments = [] %}
                                     {% for appointment in week_appointments %}
-                                        {% if appointment.date == date.strftime('%Y-%m-%d') and appointment.time.startswith(time_value) %}
+                                        {% if appointment.date == date.strftime('%Y-%m-%d') and appointment.time == time_value %}
                                             {% set _ = slot_appointments.append(appointment) %}
                                         {% endif %}
                                     {% endfor %}
