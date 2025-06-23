@@ -1,0 +1,922 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Enhanced Admin Dashboard - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <!-- Header with System Status -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="h3 mb-0">Enhanced Admin Dashboard</h2>
+            <p class="text-muted">Complete business management with medium priority features</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div id="systemStatus" class="badge bg-success">
+                <i class="fas fa-check-circle me-1"></i>
+                All Systems Operational
+            </div>
+            <div class="text-muted small mt-1" id="hawaiiTime"></div>
+        </div>
+    </div>
+
+    <!-- Stats Cards with Medium Priority Enhancements -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <i class="fas fa-clipboard-list fa-2x text-primary mb-2"></i>
+                    <h3 class="card-title h4 mb-1">{{ bookings|length if bookings else 0 }}</h3>
+                    <p class="card-text text-muted small">Total Requests</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm" style="cursor: pointer;" onclick="showBulkOperations()">
+                <div class="card-body py-3">
+                    <i class="fas fa-tasks fa-2x text-warning mb-2"></i>
+                    <h3 class="card-title h4 mb-1">{{ pending_requests|length if pending_requests else 0 }}</h3>
+                    <p class="card-text text-muted small">Pending (Bulk Actions)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm" onclick="showAdvancedSearch()">
+                <div class="card-body py-3">
+                    <i class="fas fa-search fa-2x text-info mb-2"></i>
+                    <h3 class="card-title h4 mb-1">{{ contact_messages|length if contact_messages else 0 }}</h3>
+                    <p class="card-text text-muted small">Messages (Search)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm" onclick="showExportOptions()">
+                <div class="card-body py-3">
+                    <i class="fas fa-download fa-2x text-success mb-2"></i>
+                    <h3 class="card-title h4 mb-1">Export</h3>
+                    <p class="card-text text-muted small">Data Export</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
+    <div class="row">
+        <!-- Calendar and Main Dashboard -->
+        <div class="col-lg-8">
+            <!-- Enhanced Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Enhanced Quick Actions
+                    </h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="showKeyboardShortcuts()">
+                        <i class="fas fa-keyboard"></i> Shortcuts
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Template Management -->
+                        <div class="col-6 col-md-4">
+                            <button class="btn btn-outline-primary w-100" onclick="showTemplateManager()">
+                                <i class="fas fa-file-alt mb-2 d-block fa-2x"></i>
+                                Quote Templates
+                            </button>
+                        </div>
+                        
+                        <!-- Bulk Operations -->
+                        <div class="col-6 col-md-4">
+                            <button class="btn btn-outline-warning w-100" onclick="showBulkOperations()">
+                                <i class="fas fa-layer-group mb-2 d-block fa-2x"></i>
+                                Bulk Operations
+                            </button>
+                        </div>
+                        
+                        <!-- Advanced Search -->
+                        <div class="col-6 col-md-4">
+                            <button class="btn btn-outline-info w-100" onclick="showAdvancedSearch()">
+                                <i class="fas fa-filter mb-2 d-block fa-2x"></i>
+                                Advanced Search
+                            </button>
+                        </div>
+                        
+                        <!-- Export Manager -->
+                        <div class="col-6 col-md-4">
+                            <button class="btn btn-outline-success w-100" onclick="showExportOptions()">
+                                <i class="fas fa-file-export mb-2 d-block fa-2x"></i>
+                                Export Data
+                            </button>
+                        </div>
+                        
+                        <!-- System Notifications -->
+                        <div class="col-6 col-md-4">
+                            <button class="btn btn-outline-secondary w-100" onclick="showSystemNotifications()">
+                                <i class="fas fa-bell mb-2 d-block fa-2x"></i>
+                                Notifications
+                                {% if notifications and notifications|length > 0 %}
+                                <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                                    {{ notifications|length }}
+                                </span>
+                                {% endif %}
+                            </button>
+                        </div>
+                        
+                        <!-- Enhanced Quote Builder -->
+                        <div class="col-6 col-md-4">
+                            <a href="{{ url_for('enhanced_quote_builder') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-plus-circle mb-2 d-block fa-2x"></i>
+                                Enhanced Quote
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Integration (from existing dashboard) -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-week me-2"></i>
+                        Weekly Schedule
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if week_dates %}
+                    <div class="time-slot-schedule">
+                        <!-- Simplified calendar view -->
+                        {% for date in week_dates %}
+                        <div class="day-column mb-3">
+                            <h6 class="fw-bold">{{ date.strftime('%a %m/%d') }}</h6>
+                            {% set day_appointments = [] %}
+                            {% for appointment in week_appointments %}
+                                {% if appointment.date == date.strftime('%Y-%m-%d') %}
+                                    {% set _ = day_appointments.append(appointment) %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if day_appointments %}
+                                {% for appointment in day_appointments %}
+                                <div class="appointment-card bg-primary text-white p-2 rounded mb-2 small">
+                                    <strong>{{ appointment.time }}</strong> - {{ appointment.service }}<br>
+                                    <small>{{ appointment.client_name }}</small>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-muted small">No appointments</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Calendar loading...</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar with Medium Priority Features -->
+        <div class="col-lg-4">
+            <!-- System Notifications Panel -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">System Notifications</h6>
+                    <button class="btn btn-sm btn-outline-primary" onclick="refreshNotifications()">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div id="notificationsList" style="max-height: 300px; overflow-y: auto;">
+                        {% if notifications %}
+                            {% for notification in notifications[:5] %}
+                            <div class="notification-item border-bottom p-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="notification-icon me-2">
+                                        {% if notification.type == 'success' %}
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        {% elif notification.type == 'warning' %}
+                                        <i class="fas fa-exclamation-triangle text-warning"></i>
+                                        {% elif notification.type == 'error' %}
+                                        <i class="fas fa-times-circle text-danger"></i>
+                                        {% else %}
+                                        <i class="fas fa-info-circle text-info"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 small">{{ notification.title }}</h6>
+                                        <p class="mb-1 small text-muted">{{ notification.message }}</p>
+                                        {% if notification.timestamp %}
+                                        <small class="text-muted">{{ notification.timestamp[:16] }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <div class="p-3 text-center text-muted">
+                            <i class="fas fa-bell-slash fa-2x mb-2"></i>
+                            <p class="mb-0">No notifications</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity with Enhanced Features -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Recent Activity</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        {% if bookings %}
+                            {% for booking in bookings[:5] %}
+                            <div class="activity-item border-bottom p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="activity-icon me-3">
+                                        <i class="fas fa-tools text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 small">{{ booking.get('service', 'Service Request') }}</h6>
+                                        <p class="mb-1 small text-muted">{{ booking.get('name', 'Customer') }}</p>
+                                        <small class="text-muted">{{ booking.get('timestamp', 'Recently') }}</small>
+                                    </div>
+                                    <div class="activity-actions">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="selectForBulkOperation('{{ booking.get('id', '') }}')">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <div class="p-3 text-center text-muted">
+                            <i class="fas fa-clipboard fa-2x mb-2"></i>
+                            <p class="mb-0">No recent activity</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Medium Priority Feature Modals -->
+
+<!-- Template Manager Modal -->
+<div class="modal fade" id="templateManagerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Quote Template Manager</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="templatesList">
+                    <p class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading templates...</p>
+                </div>
+                
+                <hr>
+                
+                <h6>Create New Template</h6>
+                <form id="newTemplateForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Template Name:</label>
+                            <input type="text" class="form-control" id="templateName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Category:</label>
+                            <select class="form-select" id="templateCategory">
+                                <option value="custom">Custom</option>
+                                <option value="repairs">Repairs</option>
+                                <option value="installation">Installation</option>
+                                <option value="outdoor">Outdoor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="templateItems">
+                        <div class="template-item border p-3 mb-3 rounded">
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <label class="form-label">Description:</label>
+                                    <input type="text" class="form-control item-description" placeholder="Service description">
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label">Unit Price:</label>
+                                    <input type="number" class="form-control item-price" step="0.01" placeholder="0.00">
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label">Quantity:</label>
+                                    <input type="number" class="form-control item-quantity" value="1" min="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary" onclick="addTemplateItem()">
+                        <i class="fas fa-plus"></i> Add Item
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="createTemplate()">Create Template</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Operations Modal -->
+<div class="modal fade" id="bulkOperationsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bulk Operations</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="bulkOperationsList">
+                    <p class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading bulk operations...</p>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h6>Selected Items</h6>
+                        <div id="selectedItemsList" class="border rounded p-3" style="min-height: 100px;">
+                            <p class="text-muted">No items selected</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Operation Details</h6>
+                        <div id="operationDetails" class="border rounded p-3" style="min-height: 100px;">
+                            <p class="text-muted">Select an operation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" onclick="processBulkOperation()">Process Operation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Search Modal -->
+<div class="modal fade" id="advancedSearchModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Advanced Search & Filters</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="searchFilters">
+                    <p class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading search filters...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-info" onclick="executeAdvancedSearch()">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Options Modal -->
+<div class="modal fade" id="exportOptionsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Export Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="exportOptions">
+                    <p class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading export options...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="generateExport()">Generate Export</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Keyboard Shortcuts Modal -->
+<div class="modal fade" id="keyboardShortcutsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Keyboard Shortcuts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="shortcutsList">
+                    <p class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading shortcuts...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Notifications Modal -->
+<div class="modal fade" id="systemNotificationsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">System Notifications</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="allNotificationsList">
+                    <p class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading notifications...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="addCustomNotification()">Add Notification</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.notification-item:hover {
+    background-color: #f8f9fa;
+}
+
+.activity-item:hover {
+    background-color: #f8f9fa;
+}
+
+.template-item {
+    background-color: #f8f9fa;
+}
+
+.day-column {
+    border-left: 3px solid #28a745;
+    padding-left: 1rem;
+}
+
+.appointment-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.appointment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#hawaiiTime {
+    font-family: 'Courier New', monospace;
+}
+</style>
+
+<script>
+// Medium Priority Enhancement JavaScript Functions
+
+// Global variables for bulk operations
+let selectedItems = new Set();
+let currentOperation = null;
+
+// Update Hawaii time
+function updateHawaiiTime() {
+    const now = new Date();
+    const hawaiiTime = now.toLocaleString("en-US", {
+        timeZone: "Pacific/Honolulu",
+        hour12: true,
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    document.getElementById('hawaiiTime').textContent = `HST: ${hawaiiTime}`;
+}
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    updateHawaiiTime();
+    setInterval(updateHawaiiTime, 1000);
+    
+    // Load keyboard shortcuts
+    loadKeyboardShortcuts();
+});
+
+// Template Manager Functions
+function showTemplateManager() {
+    const modal = new bootstrap.Modal(document.getElementById('templateManagerModal'));
+    modal.show();
+    loadTemplates();
+}
+
+function loadTemplates() {
+    fetch('/api/templates/quote-templates')
+    .then(response => response.json())
+    .then(data => {
+        const templatesList = document.getElementById('templatesList');
+        let html = '<div class="row">';
+        
+        Object.entries(data).forEach(([key, template]) => {
+            html += `
+                <div class="col-md-6 mb-3">
+                    <div class="card border">
+                        <div class="card-body">
+                            <h6 class="card-title">${template.name}</h6>
+                            <p class="card-text small text-muted">${template.category}</p>
+                            <p class="card-text small">${template.items.length} items</p>
+                            <button class="btn btn-sm btn-primary" onclick="useTemplate('${key}')">Use Template</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        templatesList.innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Error loading templates:', error);
+        document.getElementById('templatesList').innerHTML = '<p class="text-danger">Error loading templates</p>';
+    });
+}
+
+function addTemplateItem() {
+    const templateItems = document.getElementById('templateItems');
+    const newItem = document.createElement('div');
+    newItem.className = 'template-item border p-3 mb-3 rounded';
+    newItem.innerHTML = `
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <label class="form-label">Description:</label>
+                <input type="text" class="form-control item-description" placeholder="Service description">
+            </div>
+            <div class="col-md-3 mb-2">
+                <label class="form-label">Unit Price:</label>
+                <input type="number" class="form-control item-price" step="0.01" placeholder="0.00">
+            </div>
+            <div class="col-md-3 mb-2">
+                <label class="form-label">Quantity:</label>
+                <input type="number" class="form-control item-quantity" value="1" min="1">
+            </div>
+            <div class="col-12">
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.parentElement.parentElement.remove()">
+                    <i class="fas fa-trash"></i> Remove
+                </button>
+            </div>
+        </div>
+    `;
+    templateItems.appendChild(newItem);
+}
+
+function createTemplate() {
+    const name = document.getElementById('templateName').value;
+    const category = document.getElementById('templateCategory').value;
+    
+    if (!name) {
+        alert('Please enter a template name');
+        return;
+    }
+    
+    const items = [];
+    document.querySelectorAll('.template-item').forEach(item => {
+        const description = item.querySelector('.item-description').value;
+        const price = parseFloat(item.querySelector('.item-price').value) || 0;
+        const quantity = parseInt(item.querySelector('.item-quantity').value) || 1;
+        
+        if (description) {
+            items.push({
+                description: description,
+                unit_price: price,
+                quantity: quantity
+            });
+        }
+    });
+    
+    if (items.length === 0) {
+        alert('Please add at least one item');
+        return;
+    }
+    
+    fetch('/api/templates/create-template', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: name,
+            items: items,
+            category: category
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Template created successfully!');
+            document.getElementById('newTemplateForm').reset();
+            loadTemplates();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to create template');
+    });
+}
+
+// Bulk Operations Functions
+function showBulkOperations() {
+    const modal = new bootstrap.Modal(document.getElementById('bulkOperationsModal'));
+    modal.show();
+    loadBulkOperations();
+}
+
+function loadBulkOperations() {
+    fetch('/api/bulk/operations')
+    .then(response => response.json())
+    .then(data => {
+        const operationsList = document.getElementById('bulkOperationsList');
+        let html = '<div class="row">';
+        
+        Object.entries(data).forEach(([category, operations]) => {
+            html += `
+                <div class="col-12 mb-3">
+                    <h6 class="text-uppercase text-muted">${category.replace('_', ' ')}</h6>
+                    <div class="row">
+            `;
+            
+            operations.forEach(operation => {
+                html += `
+                    <div class="col-md-6 mb-2">
+                        <div class="card border operation-card" onclick="selectOperation('${category}', '${operation.id}')">
+                            <div class="card-body p-3">
+                                <h6 class="card-title small">${operation.name}</h6>
+                                <p class="card-text small text-muted">${operation.description}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div></div>';
+        });
+        
+        html += '</div>';
+        operationsList.innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Error loading bulk operations:', error);
+        document.getElementById('bulkOperationsList').innerHTML = '<p class="text-danger">Error loading operations</p>';
+    });
+}
+
+function selectForBulkOperation(itemId) {
+    if (selectedItems.has(itemId)) {
+        selectedItems.delete(itemId);
+    } else {
+        selectedItems.add(itemId);
+    }
+    updateSelectedItemsDisplay();
+}
+
+function updateSelectedItemsDisplay() {
+    const selectedList = document.getElementById('selectedItemsList');
+    if (selectedItems.size === 0) {
+        selectedList.innerHTML = '<p class="text-muted">No items selected</p>';
+    } else {
+        selectedList.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>${selectedItems.size} items selected</strong>
+                <button class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">Clear</button>
+            </div>
+            <div class="selected-items">
+                ${Array.from(selectedItems).map(id => `<span class="badge bg-primary me-1">${id}</span>`).join('')}
+            </div>
+        `;
+    }
+}
+
+// Advanced Search Functions
+function showAdvancedSearch() {
+    const modal = new bootstrap.Modal(document.getElementById('advancedSearchModal'));
+    modal.show();
+    loadSearchFilters();
+}
+
+function loadSearchFilters() {
+    fetch('/api/search/filters')
+    .then(response => response.json())
+    .then(data => {
+        const filtersDiv = document.getElementById('searchFilters');
+        let html = '';
+        
+        Object.entries(data).forEach(([category, filters]) => {
+            html += `
+                <div class="mb-4">
+                    <h6 class="text-uppercase text-muted">${category.replace('_', ' ')}</h6>
+                    <div class="row">
+            `;
+            
+            Object.entries(filters).forEach(([filterName, options]) => {
+                html += `
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">${filterName.replace('_', ' ')}:</label>
+                        <select class="form-select" name="${category}_${filterName}">
+                            <option value="">All</option>
+                            ${options.map(option => `<option value="${option}">${option.replace('_', ' ')}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+            });
+            
+            html += '</div></div>';
+        });
+        
+        filtersDiv.innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Error loading search filters:', error);
+        document.getElementById('searchFilters').innerHTML = '<p class="text-danger">Error loading filters</p>';
+    });
+}
+
+// Export Functions
+function showExportOptions() {
+    const modal = new bootstrap.Modal(document.getElementById('exportOptionsModal'));
+    modal.show();
+    loadExportOptions();
+}
+
+function loadExportOptions() {
+    fetch('/api/export/options')
+    .then(response => response.json())
+    .then(data => {
+        const optionsDiv = document.getElementById('exportOptions');
+        let html = `
+            <div class="mb-3">
+                <label class="form-label">Export Type:</label>
+                <select class="form-select" id="exportType">
+                    ${Object.entries(data.quote_exports).map(([key, value]) => `<option value="${key}">${value}</option>`).join('')}
+                    ${Object.entries(data.invoice_exports).map(([key, value]) => `<option value="${key}">${value}</option>`).join('')}
+                    ${Object.entries(data.customer_exports).map(([key, value]) => `<option value="${key}">${value}</option>`).join('')}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Format:</label>
+                <select class="form-select" id="exportFormat">
+                    ${data.formats.map(format => `<option value="${format}">${format.toUpperCase()}</option>`).join('')}
+                </select>
+            </div>
+        `;
+        optionsDiv.innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Error loading export options:', error);
+        document.getElementById('exportOptions').innerHTML = '<p class="text-danger">Error loading options</p>';
+    });
+}
+
+function generateExport() {
+    const exportType = document.getElementById('exportType').value;
+    const exportFormat = document.getElementById('exportFormat').value;
+    
+    fetch('/api/export/generate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            export_type: exportType,
+            format_type: exportFormat
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Export generated successfully! File: ${data.filename}`);
+            bootstrap.Modal.getInstance(document.getElementById('exportOptionsModal')).hide();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to generate export');
+    });
+}
+
+// Keyboard Shortcuts Functions
+function showKeyboardShortcuts() {
+    const modal = new bootstrap.Modal(document.getElementById('keyboardShortcutsModal'));
+    modal.show();
+    loadKeyboardShortcuts();
+}
+
+function loadKeyboardShortcuts() {
+    fetch('/api/system/keyboard-shortcuts')
+    .then(response => response.json())
+    .then(data => {
+        const shortcutsList = document.getElementById('shortcutsList');
+        let html = '';
+        
+        Object.entries(data).forEach(([category, shortcuts]) => {
+            html += `
+                <div class="mb-4">
+                    <h6 class="text-uppercase text-muted">${category}</h6>
+                    <div class="list-group list-group-flush">
+            `;
+            
+            Object.entries(shortcuts).forEach(([key, description]) => {
+                html += `
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>${description}</span>
+                        <kbd>${key}</kbd>
+                    </div>
+                `;
+            });
+            
+            html += '</div></div>';
+        });
+        
+        shortcutsList.innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Error loading shortcuts:', error);
+        document.getElementById('shortcutsList').innerHTML = '<p class="text-danger">Error loading shortcuts</p>';
+    });
+}
+
+// System Notifications Functions
+function showSystemNotifications() {
+    const modal = new bootstrap.Modal(document.getElementById('systemNotificationsModal'));
+    modal.show();
+    refreshNotifications();
+}
+
+function refreshNotifications() {
+    fetch('/api/system/notifications')
+    .then(response => response.json())
+    .then(data => {
+        const notificationsList = document.getElementById('allNotificationsList');
+        if (data.length === 0) {
+            notificationsList.innerHTML = '<p class="text-center text-muted">No notifications</p>';
+            return;
+        }
+        
+        let html = '';
+        data.forEach(notification => {
+            html += `
+                <div class="notification-item border-bottom p-3">
+                    <div class="d-flex align-items-start">
+                        <div class="notification-icon me-2">
+                            <i class="fas fa-${getNotificationIcon(notification.type)} text-${getNotificationColor(notification.type)}"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">${notification.title}</h6>
+                            <p class="mb-1 text-muted">${notification.message}</p>
+                            <small class="text-muted">${notification.timestamp}</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        notificationsList.innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Error loading notifications:', error);
+    });
+}
+
+function getNotificationIcon(type) {
+    const icons = {
+        'success': 'check-circle',
+        'warning': 'exclamation-triangle',
+        'error': 'times-circle',
+        'info': 'info-circle'
+    };
+    return icons[type] || 'info-circle';
+}
+
+function getNotificationColor(type) {
+    const colors = {
+        'success': 'success',
+        'warning': 'warning',
+        'error': 'danger',
+        'info': 'info'
+    };
+    return colors[type] || 'info';
+}
+
+// Utility functions
+function clearSelection() {
+    selectedItems.clear();
+    updateSelectedItemsDisplay();
+}
+</script>
+{% endblock %}

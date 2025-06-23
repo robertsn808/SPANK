@@ -78,6 +78,13 @@ try:
         inventory_service = None
         
     try:
+        from medium_priority_enhancements import MediumPriorityEnhancements
+        medium_priority_service = MediumPriorityEnhancements()
+    except Exception as e:
+        logging.warning(f"MediumPriorityEnhancements initialization failed: {e}")
+        medium_priority_service = None
+        
+    try:
         from checklist_service import ChecklistService
         checklist_service = ChecklistService()
     except Exception as e:
@@ -2443,6 +2450,256 @@ def email_quote_pdf(quote_id):
         
     except Exception as e:
         logging.error(f"Error emailing quote: {e}")
+        flash('Error emailing quote. Please try again.', 'error')
+        return redirect(url_for('quote_detail', quote_id=quote_id))
+
+# ==================================================
+# MEDIUM PRIORITY ENHANCEMENT ROUTES
+# ==================================================
+
+@app.route('/api/templates/quote-templates')
+def get_quote_templates():
+    """Get all quote templates"""
+    if medium_priority_service:
+        templates = medium_priority_service.get_quote_templates()
+        return jsonify(templates)
+    return jsonify({"error": "Service unavailable"}), 503
+
+@app.route('/api/templates/create-template', methods=['POST'])
+def create_quote_template():
+    """Create custom quote template"""
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if not medium_priority_service:
+        return jsonify({"error": "Service unavailable"}), 503
+    
+    try:
+        data = request.get_json()
+        name = data.get('name')
+        items = data.get('items', [])
+        category = data.get('category', 'custom')
+        
+        if not name or not items:
+            return jsonify({"error": "Missing required fields"}), 400
+        
+        success = medium_priority_service.create_custom_template(name, items, category)
+        
+        if success:
+            return jsonify({
+                "success": True,
+                "message": f"Template '{name}' created successfully",
+                "template_id": name.lower().replace(' ', '_')
+            })
+        else:
+            return jsonify({"error": "Failed to create template"}), 500
+            
+    except Exception as e:
+        logging.error(f"Error creating template: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/system/notifications')
+def get_system_notifications():
+    """Get system notifications"""
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if medium_priority_service:
+        notifications = medium_priority_service.get_system_notifications()
+        return jsonify(notifications)
+    return jsonify([])
+
+@app.route('/api/system/add-notification', methods=['POST'])
+def add_system_notification():
+    """Add system notification"""
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if not medium_priority_service:
+        return jsonify({"error": "Service unavailable"}), 503
+    
+    try:
+        data = request.get_json()
+        title = data.get('title')
+        message = data.get('message')
+        notification_type = data.get('type', 'info')
+        priority = data.get('priority', 'medium')
+        
+        if not title or not message:
+            return jsonify({"error": "Missing required fields"}), 400
+        
+        success = medium_priority_service.add_system_notification(title, message, notification_type, priority)
+        
+        if success:
+            return jsonify({
+                "success": True,
+                "message": "Notification added successfully"
+            })
+        else:
+            return jsonify({"error": "Failed to add notification"}), 500
+            
+    except Exception as e:
+        logging.error(f"Error adding notification: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/bulk/operations')
+def get_bulk_operations():
+    """Get available bulk operations"""
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if medium_priority_service:
+        operations = medium_priority_service.get_bulk_operation_tools()
+        return jsonify(operations)
+    return jsonify({"error": "Service unavailable"}), 503
+
+@app.route('/api/bulk/process', methods=['POST'])
+def process_bulk_operation():
+    """Process bulk operation"""
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if not medium_priority_service:
+        return jsonify({"error": "Service unavailable"}), 503
+    
+    try:
+        data = request.get_json()
+        operation_type = data.get('operation_type')
+        operation_id = data.get('operation_id')
+        selected_items = data.get('selected_items', [])
+        additional_data = data.get('additional_data', {})
+        
+        if not operation_type or not operation_id or not selected_items:
+            return jsonify({"error": "Missing required fields"}), 400
+        
+        result = medium_priority_service.process_bulk_operation(
+            operation_type, operation_id, selected_items, additional_data
+        )
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error processing bulk operation: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/search/filters')
+def get_search_filters():
+    """Get advanced search filters"""
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if medium_priority_service:
+        filters = medium_priority_service.get_advanced_search_filters()
+        return jsonify(filters)
+    return jsonify({"error": "Service unavailable"}), 503
+
+@app.route('/api/system/keyboard-shortcuts')
+def get_keyboard_shortcuts():
+    """Get keyboard shortcuts for power users"""
+    if medium_priority_service:
+        shortcuts = medium_priority_service.get_keyboard_shortcuts()
+        return jsonify(shortcuts)
+    return jsonify({"error": "Service unavailable"}), 503
+
+@app.route('/api/export/options')
+def get_export_options():
+    """Get export options"""
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if medium_priority_service:
+        options = medium_priority_service.get_export_options()
+        return jsonify(options)
+    return jsonify({"error": "Service unavailable"}), 503
+
+@app.route('/api/export/generate', methods=['POST'])
+def generate_export():
+    """Generate data export"""
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if not medium_priority_service:
+        return jsonify({"error": "Service unavailable"}), 503
+    
+    try:
+        data = request.get_json()
+        export_type = data.get('export_type')
+        format_type = data.get('format_type')
+        filters = data.get('filters', {})
+        
+        if not export_type or not format_type:
+            return jsonify({"error": "Missing required fields"}), 400
+        
+        result = medium_priority_service.generate_export_data(export_type, format_type, filters)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error generating export: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/admin/enhanced-dashboard')
+def enhanced_admin_dashboard():
+    """Enhanced admin dashboard with medium priority features"""
+    try:
+        # Get system notifications
+        notifications = []
+        if medium_priority_service:
+            notifications = medium_priority_service.get_system_notifications()
+        
+        # Get bulk operations
+        bulk_operations = {}
+        if medium_priority_service:
+            bulk_operations = medium_priority_service.get_bulk_operation_tools()
+        
+        # Get keyboard shortcuts
+        shortcuts = {}
+        if medium_priority_service:
+            shortcuts = medium_priority_service.get_keyboard_shortcuts()
+        
+        # Get existing dashboard data
+        bookings = handyman_storage.get_all_service_requests() if handyman_storage else []
+        contact_messages = handyman_storage.get_all_contact_messages() if handyman_storage else []
+        
+        # Get week data for calendar
+        hawaii_tz = pytz.timezone('Pacific/Honolulu')
+        today = datetime.now(hawaii_tz).date()
+        week_start = today - timedelta(days=today.weekday())
+        week_dates = [week_start + timedelta(days=i) for i in range(7)]
+        
+        # Get appointments
+        week_appointments = []
+        if unified_scheduler:
+            all_appointments_data = unified_scheduler.get_appointments_by_date_range(
+                week_start.strftime('%Y-%m-%d'), 
+                (week_start + timedelta(days=6)).strftime('%Y-%m-%d')
+            )
+            week_appointments = all_appointments_data.get('appointments', [])
+        
+        # Get pending requests
+        pending_requests = [booking for booking in bookings if booking.get('status') == 'pending'] if bookings else []
+        
+        return render_template('admin/enhanced_dashboard.html',
+            bookings=bookings,
+            contact_messages=contact_messages,
+            pending_requests=pending_requests,
+            week_dates=week_dates,
+            week_appointments=week_appointments,
+            today=today.strftime('%Y-%m-%d'),
+            notifications=notifications,
+            bulk_operations=bulk_operations,
+            shortcuts=shortcuts
+        )
+        
+    except Exception as e:
+        logging.error(f"Error loading enhanced dashboard: {e}")
+        flash('Error loading dashboard. Please try again.', 'error')
+        return redirect(url_for('admin_dashboard'))
+        
+    except Exception as e:
+        logging.error(f"Error emailing quote: {e}")
+        flash('Error emailing quote. Please try again.', 'error')
+        return redirect(url_for('quote_detail', quote_id=quote_id))
         flash('Error sending quote email. Please try again.', 'error')
         return redirect(url_for('quote_detail', quote_id=quote_id))
 
