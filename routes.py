@@ -7405,75 +7405,7 @@ def api_create_quote():
         logging.error(f"Error creating quote: {e}")
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/appointments/create', methods=['POST'])
-def api_create_appointment():
-    """API endpoint to create new appointment with calendar integration"""
-    if not session.get('admin_logged_in'):
-        return jsonify({'error': 'Unauthorized'}), 401
-    
-    try:
-        data = request.get_json()
-        
-        # Validate appointment time is within business hours
-        scheduled_time = data.get('scheduled_time', '')
-        if scheduled_time:
-            hour = int(scheduled_time.split(':')[0])
-            # Business hours: Mon-Fri 7AM-5PM, Sat 8AM-3PM, Sunday closed
-            if hour < 7 or hour > 17:
-                return jsonify({'error': 'Appointment must be during business hours (7 AM - 5 PM)'}), 400
-        
-        # Generate appointment ID
-        appointments = storage_service.load_data('unified_appointments.json')
-        new_id = f"APT{len(appointments) + 1:03d}"
-        
-        # Create appointment record
-        appointment = {
-            'appointment_id': new_id,
-            'client_id': f"CLI{len(storage_service.get_all_contacts()) + 1:03d}",
-            'job_id': f"JOB{len(appointments) + 1:03d}",
-            'client_name': data.get('client_name'),
-            'phone': phone_formatter.format_phone(data.get('phone', '')),
-            'email': data.get('email', ''),
-            'service_type': data.get('service_type'),
-            'scheduled_date': data.get('scheduled_date'),
-            'scheduled_time': data.get('scheduled_time'),
-            'status': data.get('status', 'tentative'),
-            'location': data.get('location', ''),
-            'notes': data.get('notes', ''),
-            'estimated_amount': data.get('estimated_amount', ''),
-            'created_at': datetime.now().isoformat(),
-            'source': 'admin_dashboard'
-        }
-        
-        # Save appointment
-        appointments.append(appointment)
-        storage_service.save_data('unified_appointments.json', appointments)
-        
-        # Create contact if needed
-        contacts = storage_service.get_all_contacts()
-        existing_contact = next((c for c in contacts if c.get('name') == data.get('client_name')), None)
-        
-        if not existing_contact:
-            contact = {
-                'id': appointment['client_id'],
-                'name': data.get('client_name'),
-                'email': data.get('email', ''),
-                'phone': appointment['phone'],
-                'address': data.get('location', ''),
-                'notes': f"Appointment {new_id} - {data.get('service_type')}",
-                'tags': [data.get('service_type')],
-                'created_date': datetime.now().strftime('%Y-%m-%d'),
-                'status': 'active',
-                'source': 'admin_appointment'
-            }
-            contacts.append(contact)
-            storage_service.save_data('contacts.json', contacts)
-        
-        return jsonify({'success': True, 'appointment_id': new_id})
-        
-    except Exception as e:
-        logging.error(f"Error creating appointment: {e}")
-        return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/contacts/create', methods=['POST'])
 def api_create_contact():
@@ -7516,6 +7448,463 @@ def api_create_contact():
     except Exception as e:
         logging.error(f"Error creating contact: {e}")
         return jsonify({'error': str(e)}), 500
+
+# Advanced Scheduling API Endpoints
+@app.route('/api/appointments', methods=['GET'])
+def api_appointments():
+    """Get calendar appointments for FullCalendar"""
+    try:
+        appointments = storage_service.load_data('unified_appointments.json')
+        # Convert appointments to FullCalendar format
+        events = []
+        for apt in appointments:
+            # Determine color based on status
+            bg_color = '#28a745'  # Green for confirmed
+            if apt.get('status') == 'pending':
+                bg_color = '#ffc107'  # Yellow for pending
+            elif apt.get('status') == 'tentative':
+                bg_color = '#17a2b8'  # Blue for tentative
+            elif apt.get('status') == 'completed':
+                bg_color = '#6c757d'  # Gray for completed
+            elif apt.get('priority') == 'urgent':
+                bg_color = '#dc3545'  # Red for urgent
+            
+            events.append({
+                'id': apt.get('id', ''),
+                'title': f"{apt.get('client_name', 'Unknown')} - {apt.get('service_type', 'Service')}",
+                'start': f"{apt.get('date', '')}T{apt.get('time', '09:00')}:00",
+                'end': f"{apt.get('date', '')}T{apt.get('end_time', '11:00')}:00",
+                'backgroundColor': bg_color,
+                'borderColor': bg_color,
+                'textColor': '#ffffff',
+                'extendedProps': {
+                    'client_id': apt.get('client_id', ''),
+                    'job_id': apt.get('job_id', ''),
+                    'client_name': apt.get('client_name', ''),
+                    'phone': apt.get('client_phone', ''),
+                    'email': apt.get('client_email', ''),
+                    'service_type': apt.get('service_type', ''),
+                    'status': apt.get('status', 'pending'),
+                    'priority': apt.get('priority', 'normal'),
+                    'location': apt.get('job_location', ''),
+                    'description': apt.get('job_description', ''),
+                    'assigned_staff': apt.get('assigned_staff', ''),
+                    'duration_hours': apt.get('duration_hours', 2),
+                    'estimated_cost': apt.get('estimated_cost', 0)
+                }
+            })
+        return jsonify(events)
+    except Exception as e:
+        logging.error(f"Error loading appointments: {e}")
+        return jsonify([])
+
+@app.route('/api/appointments/create', methods=['POST'])
+def api_create_appointment():
+    """Create new appointment with comprehensive field storage"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        
+        # Generate unique appointment ID in J2025-XXXX format
+        appointments = storage_service.load_data('unified_appointments.json')
+        new_id = f"J2025-{len(appointments) + 1:04d}"
+        
+        # Generate client and job IDs
+        client_id = f"CLI{len(appointments) + 1:03d}"
+        job_id = f"JOB{len(appointments) + 1:03d}"
+        
+        # Create comprehensive appointment record
+        appointment = {
+            'id': new_id,
+            'client_id': client_id,
+            'job_id': job_id,
+            'client_name': data.get('client_name'),
+            'client_phone': phone_formatter.format_phone(data.get('client_phone', '')),
+            'client_email': data.get('client_email', ''),
+            'service_type': data.get('service_type'),
+            'date': data.get('preferred_date'),
+            'time': data.get('preferred_time'),
+            'duration_hours': int(data.get('duration', 2)),
+            'end_time': calculate_end_time(data.get('preferred_time'), int(data.get('duration', 2))),
+            'priority': data.get('priority', 'normal'),
+            'status': 'scheduled',
+            'assigned_staff': data.get('assigned_staff', 'auto'),
+            'job_location': data.get('job_location', ''),
+            'job_description': data.get('job_description', ''),
+            'estimated_cost': float(data.get('estimated_cost', 0)) if data.get('estimated_cost') else None,
+            'actual_cost': None,
+            'materials_needed': data.get('materials_needed', ''),
+            'equipment_needed': data.get('equipment_needed', ''),
+            'special_instructions': data.get('special_instructions', ''),
+            'access_instructions': data.get('access_instructions', ''),
+            'emergency_contact': data.get('emergency_contact', ''),
+            'weather_dependent': data.get('weather_dependent', False),
+            'recurring': data.get('recurring_job') == 'on',
+            'recurring_frequency': data.get('recurring_frequency', '') if data.get('recurring_job') == 'on' else None,
+            'recurring_end_date': data.get('recurring_end_date', '') if data.get('recurring_job') == 'on' else None,
+            'parent_appointment_id': None,
+            'created_date': datetime.now().isoformat(),
+            'created_by': 'admin',
+            'last_modified': datetime.now().isoformat(),
+            'confirmation_sent': data.get('send_confirmation') == 'on',
+            'reminder_24h_sent': False,
+            'reminder_2h_sent': False,
+            'completion_notes': '',
+            'customer_satisfaction': None,
+            'follow_up_required': False,
+            'invoice_generated': False,
+            'payment_received': False,
+            'photos_uploaded': 0,
+            'crew_assigned': [],
+            'buffer_time': 30,  # 30-minute buffer between jobs
+            'source': 'admin_dashboard',
+            'tags': data.get('tags', []),
+            'internal_notes': data.get('internal_notes', ''),
+            'hawaii_time': datetime.now(pytz.timezone('Pacific/Honolulu')).isoformat()
+        }
+        
+        # Validate business hours (Mon-Fri 7AM-5PM, lunch break 12-1PM)
+        if not is_within_business_hours(data.get('preferred_date'), data.get('preferred_time')):
+            return jsonify({
+                'success': False, 
+                'error': 'Appointment time is outside business hours (Mon-Fri 7AM-5PM, Sat 8AM-3PM, lunch break 12-1PM)'
+            }), 400
+        
+        # Check for conflicts with 30-minute buffer
+        conflict_check = check_appointment_conflicts(appointment, appointments)
+        if conflict_check['has_conflict'] and not data.get('force_schedule', False):
+            return jsonify({
+                'success': False,
+                'error': 'Time slot conflict detected',
+                'conflicts': conflict_check['conflicts']
+            }), 409
+        
+        # Handle recurring appointments
+        appointments_to_create = [appointment]
+        if data.get('recurring_job') == 'on':
+            recurring_appointments = generate_recurring_appointments(appointment)
+            appointments_to_create.extend(recurring_appointments)
+        
+        # Save all appointments to database
+        appointments.extend(appointments_to_create)
+        storage_service.save_data('unified_appointments.json', appointments)
+        
+        # Create corresponding client record
+        create_client_from_appointment(appointment)
+        
+        # Send confirmation if requested
+        if data.get('send_confirmation') == 'on':
+            send_appointment_confirmation(appointment)
+        
+        # Log appointment creation for audit trail
+        log_appointment_action('created', new_id, 'admin')
+        
+        return jsonify({
+            'success': True,
+            'appointment_id': new_id,
+            'client_id': client_id,
+            'job_id': job_id,
+            'recurring_count': len(appointments_to_create)
+        })
+        
+    except Exception as e:
+        logging.error(f"Error creating appointment: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/appointments/update/<appointment_id>', methods=['PUT'])
+def api_update_appointment(appointment_id):
+    """Update existing appointment with drag-and-drop support"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        appointments = storage_service.load_data('unified_appointments.json')
+        
+        # Find and update appointment
+        for i, appointment in enumerate(appointments):
+            if appointment.get('id') == appointment_id:
+                # Update fields while preserving existing data
+                appointment.update({
+                    'client_name': data.get('client_name', appointment.get('client_name')),
+                    'client_phone': phone_formatter.format_phone(data.get('client_phone', appointment.get('client_phone', ''))),
+                    'service_type': data.get('service_type', appointment.get('service_type')),
+                    'date': data.get('date', appointment.get('date')),
+                    'time': data.get('time', appointment.get('time')),
+                    'duration_hours': int(data.get('duration', appointment.get('duration_hours', 2))),
+                    'priority': data.get('priority', appointment.get('priority')),
+                    'status': data.get('status', appointment.get('status')),
+                    'assigned_staff': data.get('assigned_staff', appointment.get('assigned_staff')),
+                    'job_location': data.get('job_location', appointment.get('job_location')),
+                    'job_description': data.get('job_description', appointment.get('job_description')),
+                    'last_modified': datetime.now().isoformat()
+                })
+                
+                # Recalculate end time with buffer
+                appointment['end_time'] = calculate_end_time(appointment['time'], appointment['duration_hours'])
+                
+                # Validate new time if changed
+                if data.get('date') or data.get('time'):
+                    if not is_within_business_hours(appointment['date'], appointment['time']):
+                        return jsonify({
+                            'success': False,
+                            'error': 'Cannot move appointment outside business hours'
+                        }), 400
+                    
+                    # Check conflicts (exclude current appointment)
+                    temp_appointments = [apt for apt in appointments if apt.get('id') != appointment_id]
+                    conflict_check = check_appointment_conflicts(appointment, temp_appointments)
+                    
+                    if conflict_check['has_conflict']:
+                        return jsonify({
+                            'success': False,
+                            'error': 'Move would create scheduling conflict',
+                            'conflicts': conflict_check['conflicts']
+                        }), 409
+                
+                appointments[i] = appointment
+                break
+        else:
+            return jsonify({'error': 'Appointment not found'}), 404
+        
+        storage_service.save_data('unified_appointments.json', appointments)
+        log_appointment_action('updated', appointment_id, 'admin')
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        logging.error(f"Error updating appointment: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/appointments/date/<date>', methods=['GET'])
+def api_appointments_by_date(date):
+    """Get appointments for specific date"""
+    try:
+        appointments = storage_service.load_data('unified_appointments.json')
+        date_appointments = [apt for apt in appointments if apt.get('date') == date]
+        
+        # Sort by time
+        date_appointments.sort(key=lambda x: x.get('time', '00:00'))
+        
+        return jsonify(date_appointments)
+        
+    except Exception as e:
+        logging.error(f"Error getting appointments by date: {e}")
+        return jsonify([])
+
+# Helper functions for advanced scheduling
+def calculate_end_time(start_time, duration_hours):
+    """Calculate appointment end time with 30-minute buffer"""
+    try:
+        start_hour, start_minute = map(int, start_time.split(':'))
+        total_minutes = start_hour * 60 + start_minute + (duration_hours * 60)
+        
+        end_hour = total_minutes // 60
+        end_minute = total_minutes % 60
+        
+        return f"{end_hour:02d}:{end_minute:02d}"
+    except:
+        return "16:00"
+
+def is_within_business_hours(date, time):
+    """Check if appointment is within SPANKKS business hours with lunch break"""
+    try:
+        appointment_date = datetime.strptime(date, '%Y-%m-%d')
+        day_of_week = appointment_date.weekday()  # 0 = Monday
+        hour, minute = map(int, time.split(':'))
+        time_decimal = hour + (minute / 60)
+        
+        # Sunday (6) is closed
+        if day_of_week == 6:
+            return False
+        
+        # Monday-Friday (0-4): 7AM-12PM and 1PM-5PM (lunch break 12-1PM enforced)
+        if day_of_week <= 4:
+            return (7 <= time_decimal < 12) or (13 <= time_decimal < 17)
+        
+        # Saturday (5): 8AM-3PM
+        if day_of_week == 5:
+            return 8 <= time_decimal < 15
+        
+        return False
+    except:
+        return False
+
+def check_appointment_conflicts(new_appointment, existing_appointments):
+    """Check for scheduling conflicts with 30-minute buffer enforcement"""
+    conflicts = []
+    
+    try:
+        new_date = new_appointment.get('date')
+        new_time = new_appointment.get('time')
+        new_duration = new_appointment.get('duration_hours', 2)
+        new_staff = new_appointment.get('assigned_staff')
+        buffer_minutes = 30  # Enforced 30-minute buffer
+        
+        new_start_minutes = time_to_minutes(new_time)
+        new_end_minutes = new_start_minutes + (new_duration * 60) + buffer_minutes
+        
+        for appointment in existing_appointments:
+            if appointment.get('date') != new_date:
+                continue
+            
+            existing_start_minutes = time_to_minutes(appointment.get('time', '09:00'))
+            existing_duration = appointment.get('duration_hours', 2)
+            existing_end_minutes = existing_start_minutes + (existing_duration * 60) + buffer_minutes
+            
+            # Check time overlap with buffer
+            if (new_start_minutes < existing_end_minutes and new_end_minutes > existing_start_minutes):
+                # Staff conflict if same staff assigned
+                if new_staff and new_staff != 'auto' and appointment.get('assigned_staff') == new_staff:
+                    conflicts.append({
+                        'appointment_id': appointment.get('id'),
+                        'client_name': appointment.get('client_name'),
+                        'time': appointment.get('time'),
+                        'conflict_type': 'staff_overlap',
+                        'staff_member': new_staff
+                    })
+                # General time overlap
+                else:
+                    conflicts.append({
+                        'appointment_id': appointment.get('id'),
+                        'client_name': appointment.get('client_name'),
+                        'time': appointment.get('time'),
+                        'conflict_type': 'time_overlap'
+                    })
+        
+        return {
+            'has_conflict': len(conflicts) > 0,
+            'conflicts': conflicts
+        }
+    except Exception as e:
+        logging.error(f"Error checking conflicts: {e}")
+        return {'has_conflict': False, 'conflicts': []}
+
+def time_to_minutes(time_str):
+    """Convert time string to minutes since midnight"""
+    try:
+        hour, minute = map(int, time_str.split(':'))
+        return hour * 60 + minute
+    except:
+        return 9 * 60
+
+def generate_recurring_appointments(base_appointment):
+    """Generate recurring appointments based on frequency"""
+    recurring_appointments = []
+    
+    try:
+        if not base_appointment.get('recurring'):
+            return recurring_appointments
+        
+        frequency = base_appointment.get('recurring_frequency', 'weekly')
+        end_date = base_appointment.get('recurring_end_date')
+        
+        if not end_date:
+            return recurring_appointments
+        
+        base_date = datetime.strptime(base_appointment['date'], '%Y-%m-%d')
+        end_date_obj = datetime.strptime(end_date, '%Y-%m-%d')
+        
+        current_date = base_date
+        counter = 1
+        
+        while current_date <= end_date_obj and counter <= 52:  # Max 52 instances
+            if frequency == 'weekly':
+                current_date += timedelta(weeks=1)
+            elif frequency == 'monthly':
+                current_date += timedelta(days=30)
+            elif frequency == 'quarterly':
+                current_date += timedelta(days=90)
+            
+            if current_date <= end_date_obj:
+                recurring_apt = base_appointment.copy()
+                recurring_apt.update({
+                    'id': f"{base_appointment['id']}_R{counter:02d}",
+                    'date': current_date.strftime('%Y-%m-%d'),
+                    'parent_appointment_id': base_appointment['id'],
+                    'recurring_instance': counter,
+                    'created_date': datetime.now().isoformat()
+                })
+                recurring_appointments.append(recurring_apt)
+                counter += 1
+        
+    except Exception as e:
+        logging.error(f"Error generating recurring appointments: {e}")
+    
+    return recurring_appointments
+
+def create_client_from_appointment(appointment):
+    """Create client record from appointment data"""
+    try:
+        clients = storage_service.load_data('clients.json')
+        
+        # Check if client exists by phone
+        existing_client = next((c for c in clients if c.get('client_phone') == appointment['client_phone']), None)
+        
+        if not existing_client:
+            client = {
+                'client_id': appointment['client_id'],
+                'job_id': appointment['job_id'],
+                'client_name': appointment['client_name'],
+                'client_phone': appointment['client_phone'],
+                'client_email': appointment.get('client_email', ''),
+                'address': appointment.get('job_location', ''),
+                'access_level': 'client',
+                'status': 'active',
+                'created_date': datetime.now().strftime('%Y-%m-%d'),
+                'last_login': None,
+                'notes': f"Auto-created from appointment {appointment['id']}",
+                'source': 'appointment_booking'
+            }
+            
+            clients.append(client)
+            storage_service.save_data('clients.json', clients)
+    
+    except Exception as e:
+        logging.error(f"Error creating client from appointment: {e}")
+
+def send_appointment_confirmation(appointment):
+    """Send appointment confirmation notification"""
+    try:
+        logging.info(f"Appointment confirmation sent for {appointment['id']} to {appointment['client_phone']}")
+        
+        # Update appointment record
+        appointments = storage_service.load_data('unified_appointments.json')
+        for apt in appointments:
+            if apt.get('id') == appointment['id']:
+                apt['confirmation_sent'] = True
+                apt['confirmation_sent_at'] = datetime.now().isoformat()
+                break
+        
+        storage_service.save_data('unified_appointments.json', appointments)
+        
+    except Exception as e:
+        logging.error(f"Error sending appointment confirmation: {e}")
+
+def log_appointment_action(action, appointment_id, user):
+    """Log appointment actions for audit trail"""
+    try:
+        log_entry = {
+            'timestamp': datetime.now().isoformat(),
+            'hawaii_time': datetime.now(pytz.timezone('Pacific/Honolulu')).isoformat(),
+            'action': action,
+            'appointment_id': appointment_id,
+            'user': user,
+            'ip_address': request.remote_addr if request else None
+        }
+        
+        logs = storage_service.load_data('appointment_log.json')
+        logs.append(log_entry)
+        
+        # Keep only last 1000 entries
+        if len(logs) > 1000:
+            logs = logs[-1000:]
+        
+        storage_service.save_data('appointment_log.json', logs)
+    except Exception as e:
+        logging.error(f"Error logging appointment action: {e}")
 
 @app.route('/templates/<path:filename>')
 def serve_template(filename):

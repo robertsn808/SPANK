@@ -1135,18 +1135,37 @@
             setTimeout(() => toast.remove(), 5000);
         }
 
-        // Placeholder functions for other sections
+        // Load SPANKKS Schedule section with advanced features
         function loadScheduleSection() {
-            document.getElementById('dynamic-content').innerHTML = `
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-calendar-alt me-2"></i>Advanced Scheduling</h3>
-                    </div>
-                    <div class="card-body">
-                        <p>Advanced scheduling features will be implemented here.</p>
-                    </div>
-                </div>
-            `;
+            fetch('/templates/advanced_schedule_section.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('dynamic-content').innerHTML = html;
+                    setTimeout(() => {
+                        if (typeof initializeAdvancedCalendar === 'function') {
+                            initializeAdvancedCalendar();
+                        }
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error loading advanced schedule section:', error);
+                    document.getElementById('dynamic-content').innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h3 class="card-title"><i class="fas fa-calendar-alt me-2"></i>SPANKKS Weekly Schedule</h3>
+                                <button class="btn btn-spankks btn-sm" onclick="showCreateAppointmentModal()">
+                                    <i class="fas fa-plus me-1"></i>New Appointment
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">Advanced scheduling system is loading. Please refresh if needed.</div>
+                                <div class="calendar-container">
+                                    <div id="advancedCalendar" style="height: 600px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
         }
 
         function loadContactsSection() {

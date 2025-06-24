@@ -1,0 +1,111 @@
+Here’s how you can regenerate your Customer CRM Page with modal popups for:
+
+View: Client details + job summary
+
+Photos: Before/After job photos
+
+Notes: Internal staff notes
+
+Checklist: Job tasks and statuses
+
+✅ Updated UI Flow & Modal Logic
+🧾 Main Table View (HTML)
+html
+Copy
+Edit
+<table>
+  <thead>
+    <tr>
+      <th>Name</th><th>Email</th><th>Phone</th><th>Total Revenue</th><th>Recent Jobs</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody id="client-table-body">
+    <!-- Populated dynamically -->
+  </tbody>
+</table>
+🧩 Action Buttons (per row, inside JS render loop)
+html
+Copy
+Edit
+<button onclick="openModal('view', clientId)">View</button>
+<button onclick="openModal('photos', clientId)">Photos</button>
+<button onclick="openModal('notes', clientId)">Notes</button>
+<button onclick="openModal('checklist', clientId)">Checklist</button>
+🪟 Modal Template (HTML)
+html
+Copy
+Edit
+<div id="modal" class="hidden">
+  <div class="modal-content">
+    <span onclick="closeModal()" class="close">&times;</span>
+    <h2 id="modal-title"></h2>
+    <div id="modal-body"></div>
+  </div>
+</div>
+🧠 JavaScript Logic
+javascript
+Copy
+Edit
+function openModal(type, clientId) {
+  const modal = document.getElementById('modal');
+  const title = document.getElementById('modal-title');
+  const body = document.getElementById('modal-body');
+
+  // Fetch or load client/job data here
+  let content = '';
+  switch (type) {
+    case 'view':
+      title.innerText = 'Client Overview';
+      content = `<!-- Pull full job history and client data -->`;
+      break;
+    case 'photos':
+      title.innerText = 'Job Photos';
+      content = `<img src="before.jpg"/><img src="after.jpg"/>`; // Use real data paths
+      break;
+    case 'notes':
+      title.innerText = 'Job Notes';
+      content = `<p>Internal note: Replace caulking on east window</p>`;
+      break;
+    case 'checklist':
+      title.innerText = 'Job Checklist';
+      content = `
+        <ul>
+          <li><input type="checkbox" checked> Patch drywall</li>
+          <li><input type="checkbox"> Paint touch-up</li>
+        </ul>
+      `;
+      break;
+  }
+
+  body.innerHTML = content;
+  modal.classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.add('hidden');
+}
+🎨 CSS Snippet for Modal
+css
+Copy
+Edit
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 600px;
+  margin: 10vh auto;
+}
+#modal.hidden {
+  display: none;
+}
+#modal {
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
