@@ -8533,7 +8533,7 @@ def api_delete_service_type(service_id):
         return jsonify({'error': 'Failed to delete service type'}), 500
 
 @app.route('/api/service-types/seed', methods=['POST'])
-def seed_service_types():
+def api_seed_service_types():
     """Seed database with default service types"""
     if not session.get('admin_logged_in'):
         return jsonify({'error': 'Admin authentication required'}), 401
@@ -8669,7 +8669,7 @@ def seed_service_types():
         return jsonify({'error': 'Failed to seed service types'}), 500
 
 @app.route('/api/seed-all-data', methods=['POST'])
-def seed_all_data():
+def api_seed_all_data():
     """Seed all business data including categories, services, packages, and memberships"""
     if not session.get('admin_logged_in'):
         return jsonify({'error': 'Admin authentication required'}), 401
