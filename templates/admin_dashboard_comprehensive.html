@@ -1315,42 +1315,60 @@
         }
 
         function loadBusinessIntelligenceSection() {
-            document.getElementById('dynamic-content').innerHTML = `
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-brain me-2"></i>Business Intelligence</h3>
-                    </div>
-                    <div class="card-body">
-                        <p>AI-powered business insights and analytics will be implemented here.</p>
-                    </div>
-                </div>
-            `;
+            fetch('/templates/business_intelligence_section.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('dynamic-content').innerHTML = html;
+                    setTimeout(() => {
+                        if (typeof loadBusinessIntelligence === 'function') {
+                            loadBusinessIntelligence();
+                        }
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error loading business intelligence section:', error);
+                    document.getElementById('dynamic-content').innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-brain me-2"></i>Business Intelligence</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">Business intelligence section is being loaded. Please try refreshing the page.</div>
+                            </div>
+                        </div>
+                    `;
+                });
         }
 
         function loadPerformanceSection() {
-            document.getElementById('dynamic-content').innerHTML = `
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-chart-bar me-2"></i>Performance Analytics</h3>
-                    </div>
-                    <div class="card-body">
-                        <p>Performance monitoring and metrics will be implemented here.</p>
-                    </div>
-                </div>
-            `;
+            // Performance analytics shares the same business intelligence component
+            loadBusinessIntelligenceSection();
         }
 
         function loadPortalSection() {
-            document.getElementById('dynamic-content').innerHTML = `
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-user-circle me-2"></i>Client Portal Management</h3>
-                    </div>
-                    <div class="card-body">
-                        <p>Client portal configuration and management will be implemented here.</p>
-                    </div>
-                </div>
-            `;
+            fetch('/templates/portal_management_section.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('dynamic-content').innerHTML = html;
+                    setTimeout(() => {
+                        if (typeof loadPortalManagement === 'function') {
+                            loadPortalManagement();
+                        }
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error loading portal section:', error);
+                    document.getElementById('dynamic-content').innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-user-circle me-2"></i>Client Portal Management</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">Portal management section is being loaded. Please try refreshing the page.</div>
+                            </div>
+                        </div>
+                    `;
+                });
         }
 
         function loadManagementSection() {
@@ -1360,7 +1378,36 @@
                         <h3 class="card-title"><i class="fas fa-cogs me-2"></i>System Management</h3>
                     </div>
                     <div class="card-body">
-                        <p>System configuration and management tools will be implemented here.</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="list-group">
+                                    <h6 class="mb-3">Database Management</h6>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showToast('Database backup functionality coming soon', 'info')">
+                                        <i class="fas fa-database me-2"></i>Backup Database
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showToast('Data cleanup functionality coming soon', 'info')">
+                                        <i class="fas fa-broom me-2"></i>Clean Up Data
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showToast('Export functionality coming soon', 'info')">
+                                        <i class="fas fa-download me-2"></i>Export All Data
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="list-group">
+                                    <h6 class="mb-3">System Settings</h6>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showToast('User management coming soon', 'info')">
+                                        <i class="fas fa-users-cog me-2"></i>User Management
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showToast('System logs coming soon', 'info')">
+                                        <i class="fas fa-file-alt me-2"></i>System Logs
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showToast('Settings configuration coming soon', 'info')">
+                                        <i class="fas fa-cog me-2"></i>Configuration
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;

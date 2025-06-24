@@ -1,0 +1,528 @@
+<div class="content-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">
+            <i class="fas fa-brain me-2"></i>Business Intelligence & Analytics
+        </h3>
+        <div class="btn-group">
+            <button class="btn btn-spankks btn-sm" onclick="refreshAnalytics()">
+                <i class="fas fa-sync-alt me-1"></i>Refresh Data
+            </button>
+            <button class="btn btn-outline-success btn-sm" onclick="exportAnalytics()">
+                <i class="fas fa-download me-1"></i>Export Report
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Business Health Score -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h5 class="mb-3">
+                        <i class="fas fa-heartbeat me-2"></i>Business Health Score
+                        <span class="badge bg-success ms-2" id="healthScore">Loading...</span>
+                    </h5>
+                    <div class="progress mb-2" style="height: 20px;">
+                        <div class="progress-bar bg-success" id="healthProgress" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted" id="healthDescription">Calculating business health metrics...</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tabs -->
+        <ul class="nav nav-tabs mb-4" id="analyticsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="revenue-tab" data-bs-toggle="tab" data-bs-target="#revenue" type="button" role="tab">
+                    <i class="fas fa-dollar-sign me-1"></i>Revenue Analysis
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="customer-tab" data-bs-toggle="tab" data-bs-target="#customer" type="button" role="tab">
+                    <i class="fas fa-users me-1"></i>Customer Insights
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="operational-tab" data-bs-toggle="tab" data-bs-target="#operational" type="button" role="tab">
+                    <i class="fas fa-cogs me-1"></i>Operations
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="predictive-tab" data-bs-toggle="tab" data-bs-target="#predictive" type="button" role="tab">
+                    <i class="fas fa-chart-line me-1"></i>Forecasting
+                </button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="analyticsTabContent">
+            <!-- Revenue Analysis Tab -->
+            <div class="tab-pane fade show active" id="revenue" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-value" id="monthlyRevenue">$0</div>
+                            <div class="stat-label">Monthly Revenue</div>
+                            <div class="stat-change" id="revenueChange">
+                                <i class="fas fa-chart-line me-1"></i>Growth
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgJobValue">$0</div>
+                            <div class="stat-label">Average Job Value</div>
+                            <div class="stat-change" id="jobValueChange">
+                                <i class="fas fa-calculator me-1"></i>Per Job
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-value" id="profitMargin">0%</div>
+                            <div class="stat-label">Profit Margin</div>
+                            <div class="stat-change" id="marginChange">
+                                <i class="fas fa-percentage me-1"></i>Current
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Revenue by Service Type</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="revenueByServiceChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Monthly Revenue Trend</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="monthlyRevenueChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Customer Insights Tab -->
+            <div class="tab-pane fade" id="customer" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalCustomers">0</div>
+                            <div class="stat-label">Total Customers</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="repeatCustomers">0</div>
+                            <div class="stat-label">Repeat Customers</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="customerLifetimeValue">$0</div>
+                            <div class="stat-label">Avg Lifetime Value</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="customerSatisfaction">N/A</div>
+                            <div class="stat-label">Satisfaction Rate</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Customer Acquisition Sources</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Source</th>
+                                                <th>Customers</th>
+                                                <th>Revenue</th>
+                                                <th>Conversion Rate</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="acquisitionSourcesTable">
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted">Loading data...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Top Service Requests</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="topServicesChart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Operations Tab -->
+            <div class="tab-pane fade" id="operational" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="jobsCompleted">0</div>
+                            <div class="stat-label">Jobs Completed</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgJobDuration">0 days</div>
+                            <div class="stat-label">Avg Job Duration</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="staffUtilization">0%</div>
+                            <div class="stat-label">Staff Utilization</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="onTimeCompletion">0%</div>
+                            <div class="stat-label">On-Time Completion</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Staff Performance</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Staff Member</th>
+                                                <th>Jobs Completed</th>
+                                                <th>Hours Worked</th>
+                                                <th>Efficiency</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="staffPerformanceTable">
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted">No staff performance data available</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Job Status Distribution</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="jobStatusChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Forecasting Tab -->
+            <div class="tab-pane fade" id="predictive" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-value" id="projectedRevenue">$0</div>
+                            <div class="stat-label">Next Month Projection</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-value" id="demandForecast">0</div>
+                            <div class="stat-label">Projected Jobs</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-value" id="seasonalTrend">N/A</div>
+                            <div class="stat-label">Seasonal Trend</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>12-Month Revenue Forecast</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="forecastChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Market Insights</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="marketInsights">
+                                    <div class="text-muted">Market analysis requires historical data to generate insights.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Recommendations</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="aiRecommendations">
+                                    <div class="text-muted">AI recommendations will appear as data accumulates.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function loadBusinessIntelligence() {
+    // Load comprehensive analytics data
+    fetch('/api/analytics/comprehensive')
+        .then(response => response.json())
+        .then(data => {
+            updateBusinessHealth(data.business_health || {});
+            updateRevenueAnalytics(data.revenue || {});
+            updateCustomerInsights(data.customers || {});
+            updateOperationalMetrics(data.operations || {});
+            updateForecasting(data.forecasting || {});
+        })
+        .catch(error => {
+            console.error('Error loading business intelligence:', error);
+            showEmptyAnalytics();
+        });
+}
+
+function updateBusinessHealth(health) {
+    const score = health.overall_score || 0;
+    const scoreElement = document.getElementById('healthScore');
+    const progressElement = document.getElementById('healthProgress');
+    const descriptionElement = document.getElementById('healthDescription');
+    
+    scoreElement.textContent = `${score}%`;
+    progressElement.style.width = `${score}%`;
+    
+    if (score >= 80) {
+        scoreElement.className = 'badge bg-success ms-2';
+        progressElement.className = 'progress-bar bg-success';
+        descriptionElement.textContent = 'Excellent business health. All key metrics performing well.';
+    } else if (score >= 60) {
+        scoreElement.className = 'badge bg-warning ms-2';
+        progressElement.className = 'progress-bar bg-warning';
+        descriptionElement.textContent = 'Good business health with room for improvement.';
+    } else if (score > 0) {
+        scoreElement.className = 'badge bg-danger ms-2';
+        progressElement.className = 'progress-bar bg-danger';
+        descriptionElement.textContent = 'Business health needs attention. Focus on key metrics.';
+    } else {
+        scoreElement.textContent = 'N/A';
+        progressElement.style.width = '0%';
+        descriptionElement.textContent = 'Insufficient data for health score calculation.';
+    }
+}
+
+function updateRevenueAnalytics(revenue) {
+    document.getElementById('monthlyRevenue').textContent = `$${revenue.monthly_total || 0}`;
+    document.getElementById('avgJobValue').textContent = `$${revenue.avg_job_value || 0}`;
+    document.getElementById('profitMargin').textContent = `${revenue.profit_margin || 0}%`;
+    
+    // Update revenue charts if data exists
+    if (revenue.by_service && Object.keys(revenue.by_service).length > 0) {
+        createRevenueByServiceChart(revenue.by_service);
+    }
+    
+    if (revenue.monthly_trend && revenue.monthly_trend.length > 0) {
+        createMonthlyRevenueChart(revenue.monthly_trend);
+    }
+}
+
+function updateCustomerInsights(customers) {
+    document.getElementById('totalCustomers').textContent = customers.total || 0;
+    document.getElementById('repeatCustomers').textContent = customers.repeat || 0;
+    document.getElementById('customerLifetimeValue').textContent = `$${customers.lifetime_value || 0}`;
+    document.getElementById('customerSatisfaction').textContent = customers.satisfaction ? `${customers.satisfaction}%` : 'N/A';
+    
+    // Update acquisition sources table
+    updateAcquisitionSourcesTable(customers.acquisition_sources || []);
+}
+
+function updateOperationalMetrics(operations) {
+    document.getElementById('jobsCompleted').textContent = operations.jobs_completed || 0;
+    document.getElementById('avgJobDuration').textContent = `${operations.avg_duration || 0} days`;
+    document.getElementById('staffUtilization').textContent = `${operations.staff_utilization || 0}%`;
+    document.getElementById('onTimeCompletion').textContent = `${operations.on_time_completion || 0}%`;
+    
+    // Update staff performance table
+    updateStaffPerformanceTable(operations.staff_performance || []);
+}
+
+function updateForecasting(forecasting) {
+    document.getElementById('projectedRevenue').textContent = `$${forecasting.next_month_revenue || 0}`;
+    document.getElementById('demandForecast').textContent = forecasting.projected_jobs || 0;
+    document.getElementById('seasonalTrend').textContent = forecasting.seasonal_trend || 'N/A';
+    
+    // Update market insights and recommendations
+    updateMarketInsights(forecasting.market_insights || []);
+    updateAIRecommendations(forecasting.recommendations || []);
+}
+
+function updateAcquisitionSourcesTable(sources) {
+    const tbody = document.getElementById('acquisitionSourcesTable');
+    
+    if (sources.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No customer acquisition data available</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = sources.map(source => `
+        <tr>
+            <td>${source.name}</td>
+            <td>${source.customers}</td>
+            <td>$${source.revenue}</td>
+            <td>${source.conversion_rate}%</td>
+        </tr>
+    `).join('');
+}
+
+function updateStaffPerformanceTable(performance) {
+    const tbody = document.getElementById('staffPerformanceTable');
+    
+    if (performance.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No staff performance data available</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = performance.map(staff => `
+        <tr>
+            <td>${staff.name}</td>
+            <td>${staff.jobs_completed}</td>
+            <td>${staff.hours_worked}</td>
+            <td>${staff.efficiency}%</td>
+        </tr>
+    `).join('');
+}
+
+function updateMarketInsights(insights) {
+    const container = document.getElementById('marketInsights');
+    
+    if (insights.length === 0) {
+        container.innerHTML = '<div class="text-muted">Market analysis requires historical data to generate insights.</div>';
+        return;
+    }
+    
+    container.innerHTML = insights.map(insight => `
+        <div class="mb-2">
+            <strong>${insight.title}</strong>
+            <p class="small text-muted mb-1">${insight.description}</p>
+        </div>
+    `).join('');
+}
+
+function updateAIRecommendations(recommendations) {
+    const container = document.getElementById('aiRecommendations');
+    
+    if (recommendations.length === 0) {
+        container.innerHTML = '<div class="text-muted">AI recommendations will appear as data accumulates.</div>';
+        return;
+    }
+    
+    container.innerHTML = recommendations.map(rec => `
+        <div class="alert alert-info small mb-2">
+            <strong>${rec.category}</strong>: ${rec.recommendation}
+        </div>
+    `).join('');
+}
+
+function showEmptyAnalytics() {
+    // Show empty state for all analytics sections
+    document.getElementById('healthScore').textContent = 'N/A';
+    document.getElementById('healthProgress').style.width = '0%';
+    document.getElementById('healthDescription').textContent = 'No business data available for analysis.';
+    
+    // Reset all metric values to 0 or N/A
+    const metricElements = [
+        'monthlyRevenue', 'avgJobValue', 'profitMargin', 'totalCustomers',
+        'repeatCustomers', 'customerLifetimeValue', 'jobsCompleted',
+        'avgJobDuration', 'staffUtilization', 'onTimeCompletion',
+        'projectedRevenue', 'demandForecast'
+    ];
+    
+    metricElements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = id.includes('Revenue') || id.includes('Value') ? '$0' : 
+                                 id.includes('Percentage') || id.includes('Margin') || id.includes('Utilization') ? '0%' :
+                                 id.includes('Duration') ? '0 days' : '0';
+        }
+    });
+    
+    document.getElementById('customerSatisfaction').textContent = 'N/A';
+    document.getElementById('seasonalTrend').textContent = 'N/A';
+}
+
+function createRevenueByServiceChart(data) {
+    // Chart creation would go here
+    console.log('Revenue by service chart data:', data);
+}
+
+function createMonthlyRevenueChart(data) {
+    // Chart creation would go here
+    console.log('Monthly revenue chart data:', data);
+}
+
+function refreshAnalytics() {
+    loadBusinessIntelligence();
+    showToast('Analytics data refreshed', 'info');
+}
+
+function exportAnalytics() {
+    showToast('Exporting analytics report...', 'info');
+    // Export functionality would go here
+}
+
+// Load business intelligence data when section is shown
+if (typeof loadBusinessIntelligence === 'function') {
+    loadBusinessIntelligence();
+}
+</script>
