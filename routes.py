@@ -347,17 +347,17 @@ def consultation():
             
             try:
                 appointment_result = unified_scheduler.create_appointment(appointment_data)
-                logging.info(f"Appointment creation result type: {type(appointment_result)}")
+                logging.info(f"Appointment creation successful: {appointment_result}")
                 
                 # Handle appointment result properly (create_appointment returns the appointment dict)
                 appointment_info = ""
                 if appointment_result and isinstance(appointment_result, dict):
                     client_ref = appointment_result.get('client_id', f'CLI{client_id:03d}')
                     job_ref = appointment_result.get('job_id', request_id)
-                    appointment_info = f"Appointment created: {client_ref}/{job_ref}"
+                    appointment_info = f"Appointment scheduled: {client_ref}/{job_ref} on {preferred_date or 'next available day'} at {preferred_time or '09:00'}"
                     logging.info(f"Appointment successfully created: {client_ref}/{job_ref} for {name}")
                 else:
-                    appointment_info = f"Appointment created for client ID: {client_id}"
+                    appointment_info = f"Consultation scheduled for client ID: {client_id}"
                     logging.warning(f"Unexpected appointment result format: {type(appointment_result)}")
                 
                 # Send inquiry alert to admin with detailed error handling
@@ -368,7 +368,7 @@ def consultation():
                         phone_number=phone,
                         email=email,
                         service_type=service,
-                        additional_info=f"{appointment_info} for {preferred_date or 'next available day'}. Project: {project_type}, {consultation_type}, {square_footage} sq ft"
+                        additional_info=f"{appointment_info}. Project: {project_type}, {consultation_type}, {square_footage} sq ft"
                     )
                     logging.info(f"Admin notification sent successfully for {name}")
                 except Exception as notification_error:
@@ -377,6 +377,7 @@ def consultation():
                     
             except Exception as appointment_error:
                 logging.error(f"Appointment creation failed: {appointment_error}")
+                logging.error(f"Appointment data: {appointment_data}")
                 appointment_info = f"Consultation request logged for client ID: {client_id}"
             
             # Automatically add customer to MailerLite leads list
@@ -2019,6 +2020,70 @@ def analytics_dashboard():
         # Fallback to basic dashboard with error message
         flash(f'Analytics service temporarily unavailable. Contact system administrator.', 'warning')
         return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/consultations')
+def admin_consultations():
+    """Admin consultations page to view all consultation requests"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access consultations.', 'error')
+        return redirect(url_for('admin_login'))
+    
+    # Get all service requests that are consultations
+    all_service_requests = handyman_storage.get_all_service_requests()
+    consultation_requests = [req for req in all_service_requests if 'consultation' in req.service.lower()]
+    
+    # Sort by most recent first
+    consultation_requests = sorted(consultation_requests, key=lambda x: x.submitted_at, reverse=True)
+    
+    return render_template('admin/consultations.html', 
+                         consultation_requests=consultation_requests)
+
+@app.route('/api/consultation/<request_id>')
+def api_consultation_details(request_id):
+    """API endpoint to get consultation details"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    # Find the consultation request
+    all_service_requests = handyman_storage.get_all_service_requests()
+    consultation = next((req for req in all_service_requests if req.id == request_id), None)
+    
+    if not consultation:
+        return jsonify({'error': 'Consultation not found'}), 404
+    
+    return jsonify({
+        'id': consultation.id,
+        'name': consultation.name,
+        'email': consultation.email,
+        'phone': consultation.phone,
+        'service': consultation.service,
+        'preferred_date': consultation.preferred_date,
+        'preferred_time': consultation.preferred_time,
+        'description': consultation.description,
+        'status': consultation.status,
+        'submitted_at': consultation.submitted_at,
+        'client_id': consultation.client_id
+    })
+
+@app.route('/api/consultation/<request_id>/status', methods=['POST'])
+def api_update_consultation_status(request_id):
+    """API endpoint to update consultation status"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    data = request.get_json()
+    new_status = data.get('status')
+    
+    if new_status not in ['pending', 'scheduled', 'completed']:
+        return jsonify({'error': 'Invalid status'}), 400
+    
+    # Update the consultation status
+    success = handyman_storage.update_service_request_status(request_id, new_status)
+    
+    if success:
+        return jsonify({'success': True, 'status': new_status})
+    else:
+        return jsonify({'error': 'Consultation not found'}), 404
 
 @app.route('/admin/customer-feedback')
 def customer_feedback():

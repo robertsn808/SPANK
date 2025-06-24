@@ -1,0 +1,306 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Consultation Requests - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-success mb-0">
+                    <i class="fas fa-handshake me-2"></i>Consultation Requests
+                </h2>
+                <div class="btn-group">
+                    <button class="btn btn-outline-success" onclick="filterConsultations('all')">All</button>
+                    <button class="btn btn-outline-warning" onclick="filterConsultations('pending')">Pending</button>
+                    <button class="btn btn-outline-info" onclick="filterConsultations('scheduled')">Scheduled</button>
+                    <button class="btn btn-outline-secondary" onclick="filterConsultations('completed')">Completed</button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body text-center">
+                            <h3 class="mb-0">{{ consultation_requests|length }}</h3>
+                            <small>Total Consultations</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center">
+                            <h3 class="mb-0">{{ consultation_requests|selectattr('status', 'equalto', 'pending')|list|length }}</h3>
+                            <small>Pending Review</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <h3 class="mb-0">{{ consultation_requests|selectattr('status', 'equalto', 'scheduled')|list|length }}</h3>
+                            <small>Scheduled</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-secondary text-white">
+                        <div class="card-body text-center">
+                            <h3 class="mb-0">{{ consultation_requests|selectattr('status', 'equalto', 'completed')|list|length }}</h3>
+                            <small>Completed</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Consultation Requests Table -->
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Consultation Requests</h5>
+                </div>
+                <div class="card-body">
+                    {% if consultation_requests %}
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="consultationsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date Submitted</th>
+                                        <th>Customer</th>
+                                        <th>Contact</th>
+                                        <th>Project Type</th>
+                                        <th>Consultation Type</th>
+                                        <th>Preferred Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for request in consultation_requests %}
+                                    <tr data-status="{{ request.status }}" data-consultation-id="{{ request.id }}">
+                                        <td>
+                                            <small class="text-muted">{{ request.submitted_at }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ request.name }}</strong>
+                                            {% if request.client_id %}
+                                                <br><small class="text-muted">Client ID: {{ request.client_id }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <i class="fas fa-envelope me-1"></i>{{ request.email }}
+                                            </div>
+                                            <div>
+                                                <i class="fas fa-phone me-1"></i>{{ request.phone }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% set description_parts = request.description.split('.') %}
+                                            {% for part in description_parts %}
+                                                {% if 'Project:' in part %}
+                                                    <strong>{{ part.strip() }}</strong><br>
+                                                {% elif 'Consultation:' in part %}
+                                                    <span class="badge bg-info">{{ part.strip() }}</span><br>
+                                                {% elif 'Square footage:' in part %}
+                                                    <small class="text-muted">{{ part.strip() }}</small><br>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                        <td>
+                                            {% if 'phone' in request.description.lower() %}
+                                                <span class="badge bg-primary">Phone</span>
+                                            {% elif 'video' in request.description.lower() %}
+                                                <span class="badge bg-info">Video</span>
+                                            {% elif 'in-person' in request.description.lower() %}
+                                                <span class="badge bg-success">In-Person</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">TBD</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if request.preferred_date %}
+                                                <strong>{{ request.preferred_date }}</strong>
+                                                {% if request.preferred_time %}
+                                                    <br><small>{{ request.preferred_time }}</small>
+                                                {% endif %}
+                                            {% else %}
+                                                <em class="text-muted">Flexible</em>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if request.status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% elif request.status == 'scheduled' %}
+                                                <span class="badge bg-success">Scheduled</span>
+                                            {% elif request.status == 'completed' %}
+                                                <span class="badge bg-secondary">Completed</span>
+                                            {% else %}
+                                                <span class="badge bg-info">{{ request.status.title() }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" 
+                                                        onclick="viewConsultationDetails('{{ request.id }}')"
+                                                        data-bs-toggle="tooltip" 
+                                                        title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                {% if request.status == 'pending' %}
+                                                <button class="btn btn-outline-success" 
+                                                        onclick="scheduleConsultation('{{ request.id }}')"
+                                                        data-bs-toggle="tooltip" 
+                                                        title="Schedule">
+                                                    <i class="fas fa-calendar-plus"></i>
+                                                </button>
+                                                {% endif %}
+                                                <button class="btn btn-outline-info" 
+                                                        onclick="updateConsultationStatus('{{ request.id }}')"
+                                                        data-bs-toggle="tooltip" 
+                                                        title="Update Status">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-handshake fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No consultation requests yet</h5>
+                            <p class="text-muted">Consultation requests from your website will appear here.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Consultation Details Modal -->
+<div class="modal fade" id="consultationDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Consultation Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="consultationDetailsBody">
+                <!-- Details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="scheduleBtn">Schedule Consultation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterConsultations(status) {
+    const table = document.getElementById('consultationsTable');
+    const rows = table.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        if (status === 'all' || row.dataset.status === status) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Update active filter button
+    document.querySelectorAll('.btn-group .btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+}
+
+function viewConsultationDetails(requestId) {
+    // Load consultation details into modal
+    fetch(`/api/consultation/${requestId}`)
+        .then(response => response.json())
+        .then(data => {
+            const body = document.getElementById('consultationDetailsBody');
+            body.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Customer Information</h6>
+                        <p><strong>Name:</strong> ${data.name}</p>
+                        <p><strong>Email:</strong> ${data.email}</p>
+                        <p><strong>Phone:</strong> ${data.phone}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Consultation Details</h6>
+                        <p><strong>Service:</strong> ${data.service}</p>
+                        <p><strong>Preferred Date:</strong> ${data.preferred_date || 'Flexible'}</p>
+                        <p><strong>Preferred Time:</strong> ${data.preferred_time || 'Flexible'}</p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Project Description</h6>
+                        <p>${data.description}</p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Status</h6>
+                        <span class="badge bg-${data.status === 'pending' ? 'warning' : 'success'}">${data.status}</span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('scheduleBtn').onclick = () => scheduleConsultation(requestId);
+            
+            new bootstrap.Modal(document.getElementById('consultationDetailsModal')).show();
+        })
+        .catch(error => {
+            console.error('Error loading consultation details:', error);
+            alert('Error loading consultation details');
+        });
+}
+
+function scheduleConsultation(requestId) {
+    // Redirect to scheduler with consultation pre-filled
+    window.location.href = `/admin/schedule?consultation=${requestId}`;
+}
+
+function updateConsultationStatus(requestId) {
+    const newStatus = prompt('Enter new status (pending, scheduled, completed):');
+    if (newStatus && ['pending', 'scheduled', 'completed'].includes(newStatus)) {
+        fetch(`/api/consultation/${requestId}/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error updating status');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating status:', error);
+            alert('Error updating status');
+        });
+    }
+}
+
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}
