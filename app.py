@@ -1,6 +1,8 @@
 import os
 import logging
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
 
 # Configure logging
 logging.basicConfig(
@@ -8,8 +10,23 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
+class Base(DeclarativeBase):
+    pass
+
+# Initialize Flask app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "triton-concrete-coating-secret-key-2025")
+
+# Configure database
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_recycle": 300,
+    "pool_pre_ping": True,
+}
+
+# Initialize SQLAlchemy
+db = SQLAlchemy(model_class=Base)
+db.init_app(app)
 
 # Print startup message only for admin routes
 import os
@@ -27,6 +44,12 @@ try:
     logging.info("Template helpers registered successfully")
 except ImportError as e:
     logging.warning(f"Could not register template helpers: {e}")
+
+# Create database tables
+with app.app_context():
+    # Import models to create tables
+    import models_db  # noqa: F401
+    db.create_all()
 
 # Import routes after app creation to avoid circular imports
 try:
