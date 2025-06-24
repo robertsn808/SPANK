@@ -318,7 +318,100 @@ console.log('CRM section loaded with server-rendered data');
 
 // Global function definitions
 window.viewContact = function(id) { 
-    alert('View contact details for ID: ' + id); 
+    // Find contact data
+    const contacts = {{ contacts|tojson }};
+    const contact = contacts.find(c => c.id === id);
+    
+    if (!contact) {
+        alert('Contact not found');
+        return;
+    }
+    
+    // Populate modal with contact data
+    document.getElementById('clientName').textContent = contact.name;
+    document.getElementById('clientEmail').textContent = contact.email;
+    document.getElementById('clientPhone').textContent = contact.phone;
+    document.getElementById('lifetimeValue').textContent = '$' + (contact.lifetime_value || 0).toFixed(2);
+    document.getElementById('jobCount').textContent = contact.job_count || 0;
+    document.getElementById('quoteCount').textContent = contact.quotes ? contact.quotes.length : 0;
+    
+    // Fill overview tab
+    document.getElementById('profileFullName').textContent = contact.name;
+    document.getElementById('profileEmail').textContent = contact.email;
+    document.getElementById('profilePhone').textContent = contact.phone;
+    document.getElementById('profileAddress').textContent = contact.address || 'Not provided';
+    document.getElementById('profileSource').textContent = contact.source || 'Unknown';
+    document.getElementById('profileCreated').textContent = contact.created_date || 'Unknown';
+    
+    // Populate job history
+    const jobHistoryContainer = document.getElementById('jobHistoryList');
+    if (contact.job_history && contact.job_history.length > 0) {
+        jobHistoryContainer.innerHTML = contact.job_history.map(job => `
+            <div class="job-item">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">${job.service_type || 'Service'}</h6>
+                        <p class="mb-1 text-muted">Job ID: ${job.id || 'N/A'}</p>
+                        <p class="mb-0 text-muted">${job.date || 'Date not available'}</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-${job.status === 'completed' ? 'success' : job.status === 'in_progress' ? 'warning' : 'secondary'}">${job.status || 'Pending'}</span>
+                        <p class="mb-0 fw-bold">$${(job.total_amount || 0).toFixed(2)}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        jobHistoryContainer.innerHTML = '<p class="text-muted">No job history available</p>';
+    }
+    
+    // Populate quotes
+    const quotesContainer = document.getElementById('quotesHistoryList');
+    if (contact.quotes && contact.quotes.length > 0) {
+        quotesContainer.innerHTML = contact.quotes.map(quote => `
+            <div class="job-item">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">Quote ${quote.quote_id}</h6>
+                        <p class="mb-1 text-muted">${quote.service_type || 'Service'}</p>
+                        <p class="mb-0 text-muted">${quote.date || 'Date not available'}</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-${quote.status === 'accepted' ? 'success' : quote.status === 'sent' ? 'warning' : 'secondary'}">${quote.status || 'Draft'}</span>
+                        <p class="mb-0 fw-bold">$${(quote.total_amount || 0).toFixed(2)}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        quotesContainer.innerHTML = '<p class="text-muted">No quotes available</p>';
+    }
+    
+    // Populate invoices
+    const invoicesContainer = document.getElementById('invoicesHistoryList');
+    if (contact.invoices && contact.invoices.length > 0) {
+        invoicesContainer.innerHTML = contact.invoices.map(invoice => `
+            <div class="job-item">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">Invoice ${invoice.invoice_id}</h6>
+                        <p class="mb-1 text-muted">${invoice.service_type || 'Service'}</p>
+                        <p class="mb-0 text-muted">${invoice.date || 'Date not available'}</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-${invoice.status === 'paid' ? 'success' : invoice.status === 'sent' ? 'warning' : 'danger'}">${invoice.status || 'Unpaid'}</span>
+                        <p class="mb-0 fw-bold">$${(invoice.total_amount || 0).toFixed(2)}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        invoicesContainer.innerHTML = '<p class="text-muted">No invoices available</p>';
+    }
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('clientProfileModal'));
+    modal.show();
 };
 
 window.createQuote = function(id) { 
@@ -431,4 +524,12 @@ document.addEventListener('DOMContentLoaded', function() {
 const contactRows = document.querySelectorAll('#crmTableBody tr');
 const contactCount = contactRows.length;
 console.log('CRM: Displaying', contactCount, 'contacts with enhanced features');
+
+window.editClientProfile = function() {
+    alert('Edit client profile functionality - Coming soon');
+};
+
+window.createQuoteForClient = function() {
+    alert('Create quote for client - Coming soon');
+};
 </script>

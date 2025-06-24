@@ -8184,7 +8184,54 @@ def serve_crm_section():
                         'source': 'Client Database'
                     })
         
-        logging.info(f"CRM: Loading {len(contacts)} contacts from 2 data sources")
+        # Add job history, quotes, and invoices for each contact
+        for contact in contacts:
+            contact['job_history'] = []
+            contact['quotes'] = []
+            contact['invoices'] = []
+            contact['lifetime_value'] = 0
+            contact['job_count'] = 0
+            
+            # Load job history from actual data
+            jobs_file = os.path.join('data', 'jobs.json')
+            if os.path.exists(jobs_file):
+                try:
+                    with open(jobs_file, 'r') as f:
+                        job_data = json.load(f)
+                        for job in job_data:
+                            if job.get('client_name', '').lower() == contact['name'].lower():
+                                contact['job_history'].append(job)
+                                contact['job_count'] += 1
+                                if job.get('total_amount'):
+                                    contact['lifetime_value'] += float(job.get('total_amount', 0))
+                except:
+                    pass
+            
+            # Load quotes
+            quotes_file = os.path.join('data', 'quotes.json')
+            if os.path.exists(quotes_file):
+                try:
+                    with open(quotes_file, 'r') as f:
+                        quote_data = json.load(f)
+                        for quote in quote_data:
+                            if quote.get('client_name', '').lower() == contact['name'].lower():
+                                contact['quotes'].append(quote)
+                except:
+                    pass
+            
+            # Load invoices
+            invoices_file = os.path.join('data', 'invoices.json')
+            if os.path.exists(invoices_file):
+                try:
+                    with open(invoices_file, 'r') as f:
+                        invoice_data = json.load(f)
+                        for invoice in invoice_data:
+                            if invoice.get('client_name', '').lower() == contact['name'].lower():
+                                contact['invoices'].append(invoice)
+                except:
+                    pass
+        
+        logging.info(f"CRM: Loading {len(contacts)} contacts from 2 data sources with complete profiles")
         return render_template('crm_section.html', contacts=contacts)
     except Exception as e:
         logging.error(f"Error serving CRM section: {e}")
