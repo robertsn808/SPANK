@@ -1,0 +1,150 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Financial Dashboard - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">Financial Dashboard</h2>
+    
+    <!-- Financial Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h4>${{ "%.2f"|format(total_revenue) }}</h4>
+                    <p class="mb-0">Total Revenue</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <h4>${{ "%.2f"|format(outstanding_amount) }}</h4>
+                    <p class="mb-0">Outstanding Amount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h4>{{ outstanding_count }}</h4>
+                    <p class="mb-0">Unpaid Invoices</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h4>{{ overdue_invoices|length }}</h4>
+                    <p class="mb-0">Overdue Invoices</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Revenue Trend Chart -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Revenue Trend (Last 6 Months)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Payments</h5>
+                </div>
+                <div class="card-body">
+                    {% for payment in recent_payments %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>${{ "%.2f"|format(payment.amount|float) }}</span>
+                        <span class="text-muted">{{ payment.payment_method }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Overdue Invoices -->
+    {% if overdue_invoices %}
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h5>Overdue Invoices - Immediate Attention Required</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Days Overdue</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in overdue_invoices %}
+                        <tr>
+                            <td>{{ invoice.invoice_number }}</td>
+                            <td>{{ invoice.customer_name }}</td>
+                            <td>${{ "%.2f"|format(invoice.total_amount|float) }}</td>
+                            <td>{{ invoice.due_date }}</td>
+                            <td class="text-danger">
+                                {{ (moment().diff(moment(invoice.due_date), 'days')) }} days
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-warning">Send Reminder</button>
+                                <button class="btn btn-sm btn-success">Mark Paid</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Revenue Trend Chart
+const ctx = document.getElementById('revenueChart').getContext('2d');
+const revenueData = {{ revenue_trend|tojson }};
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: revenueData.map(item => item.month),
+        datasets: [{
+            label: 'Revenue',
+            data: revenueData.map(item => item.revenue),
+            borderColor: '#28a745',
+            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return '$' + value.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

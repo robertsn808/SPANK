@@ -1,398 +1,264 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Management - SPANKKS Construction</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        
-        .dashboard-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            margin: 20px;
-            padding: 30px;
-        }
-        
-        .invoice-card {
-            border: 1px solid #dee2e6;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-        }
-        
-        .invoice-card:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
-        
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .status-paid {
-            background: #d1e7dd;
-            color: #0f5132;
-        }
-        
-        .status-overdue {
-            background: #f8d7da;
-            color: #842029;
-        }
-        
-        .payment-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .payment-method-select {
-            min-width: 120px;
-        }
-    </style>
-</head>
-<body>
-    {% include 'admin_base.html' %}
+{% extends "admin_base.html" %}
+
+{% block title %}Invoice Management - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Invoice Management</h2>
+        <div>
+            <button class="btn btn-primary me-2" onclick="generateInvoice()">
+                <i class="fas fa-plus me-2"></i>New Invoice
+            </button>
+            <button class="btn btn-success" onclick="bulkActions()">
+                <i class="fas fa-list me-2"></i>Bulk Actions
+            </button>
+        </div>
+    </div>
     
-    <div class="container-fluid">
-        <div class="dashboard-container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="fas fa-file-invoice-dollar me-2"></i>Invoice Management</h2>
-                <div class="d-flex gap-2">
-                    <select class="form-select" id="statusFilter" onchange="filterInvoices()">
-                        <option value="all">All Invoices</option>
-                        <option value="pending">Pending Payment</option>
+    <!-- Invoice Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-control" id="statusFilter" onchange="filterInvoices()">
+                        <option value="">All Status</option>
                         <option value="paid">Paid</option>
+                        <option value="unpaid">Unpaid</option>
                         <option value="overdue">Overdue</option>
                     </select>
-                    <button class="btn btn-primary" onclick="generateNewInvoice()">
-                        <i class="fas fa-plus me-2"></i>New Invoice
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Invoice Statistics -->
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <h5 class="card-title text-warning">Pending</h5>
-                            <h3 id="pendingCount">0</h3>
-                            <p class="text-muted" id="pendingAmount">$0.00</p>
-                        </div>
-                    </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <h5 class="card-title text-success">Paid</h5>
-                            <h3 id="paidCount">0</h3>
-                            <p class="text-muted" id="paidAmount">$0.00</p>
-                        </div>
-                    </div>
+                    <label class="form-label">Date Range</label>
+                    <select class="form-control" id="dateFilter" onchange="filterInvoices()">
+                        <option value="">All Time</option>
+                        <option value="this_month">This Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="this_year">This Year</option>
+                    </select>
                 </div>
-                <div class="col-md-3">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <h5 class="card-title text-danger">Overdue</h5>
-                            <h3 id="overdueCount">0</h3>
-                            <p class="text-muted" id="overdueAmount">$0.00</p>
-                        </div>
-                    </div>
+                <div class="col-md-4">
+                    <label class="form-label">Search Customer</label>
+                    <input type="text" class="form-control" id="customerSearch" 
+                           placeholder="Search by customer name or email" onkeyup="filterInvoices()">
                 </div>
-                <div class="col-md-3">
-                    <div class="card text-center">
-                        <div class="card-body">
-                            <h5 class="card-title text-info">Total</h5>
-                            <h3 id="totalCount">0</h3>
-                            <p class="text-muted" id="totalAmount">$0.00</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Invoices List -->
-            <div id="invoicesList">
-                <!-- Invoices will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Payment Modal -->
-    <div class="modal fade" id="paymentModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Mark Invoice as Paid</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="paymentForm">
-                        <input type="hidden" id="invoiceId" name="invoice_id">
-                        
-                        <div class="mb-3">
-                            <label for="paymentMethod" class="form-label">Payment Method</label>
-                            <select class="form-select" id="paymentMethod" name="payment_method" required>
-                                <option value="">Select payment method</option>
-                                <option value="cash">Cash</option>
-                                <option value="check">Check</option>
-                                <option value="venmo">Venmo</option>
-                                <option value="zelle">Zelle</option>
-                                <option value="bank_transfer">Bank Transfer</option>
-                                <option value="credit_card">Credit Card</option>
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="paymentAmount" class="form-label">Payment Amount</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" class="form-control" id="paymentAmount" name="payment_amount" step="0.01" required>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="paymentDate" class="form-label">Payment Date</label>
-                            <input type="date" class="form-control" id="paymentDate" name="payment_date" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="paymentNotes" class="form-label">Notes (Optional)</label>
-                            <textarea class="form-control" id="paymentNotes" name="payment_notes" rows="3" placeholder="Reference number, check details, etc."></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success" onclick="submitPayment()">
-                        <i class="fas fa-check me-2"></i>Mark as Paid
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                        <i class="fas fa-times me-2"></i>Clear
                     </button>
                 </div>
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        let allInvoices = [];
-        
-        // Load invoices on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadInvoices();
-            setTodayDate();
-        });
-        
-        function setTodayDate() {
-            document.getElementById('paymentDate').valueAsDate = new Date();
-        }
-        
-        async function loadInvoices() {
-            try {
-                const response = await fetch('/api/invoices');
-                allInvoices = await response.json();
-                displayInvoices(allInvoices);
-                updateStatistics();
-            } catch (error) {
-                console.error('Error loading invoices:', error);
-                showAlert('Error loading invoices', 'danger');
-            }
-        }
-        
-        function displayInvoices(invoices) {
-            const container = document.getElementById('invoicesList');
-            
-            if (invoices.length === 0) {
-                container.innerHTML = '<div class="text-center text-muted py-5"><i class="fas fa-file-invoice fa-3x mb-3"></i><p>No invoices found</p></div>';
-                return;
-            }
-            
-            container.innerHTML = invoices.map(invoice => `
-                <div class="invoice-card" data-status="${invoice.status}">
-                    <div class="row align-items-center">
-                        <div class="col-md-2">
-                            <strong>${invoice.id}</strong><br>
-                            <small class="text-muted">${formatDate(invoice.created_date)}</small>
-                        </div>
-                        <div class="col-md-3">
-                            <strong>${invoice.customer_name}</strong><br>
-                            <small class="text-muted">${invoice.phone || ''}</small>
-                        </div>
-                        <div class="col-md-2">
-                            <span class="badge status-badge status-${invoice.status}">${invoice.status.toUpperCase()}</span>
-                        </div>
-                        <div class="col-md-2">
-                            <strong>$${invoice.total_amount.toFixed(2)}</strong>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="payment-actions">
-                                ${invoice.status === 'pending' ? `
-                                    <button class="btn btn-success btn-sm" onclick="openPaymentModal('${invoice.id}', ${invoice.total_amount})">
-                                        <i class="fas fa-check me-1"></i>Mark Paid
+    
+    <!-- Invoice Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="invoiceTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                            </th>
+                            <th>Invoice #</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for invoice in invoices %}
+                        <tr data-status="{{ invoice.status }}" data-customer="{{ invoice.customer_name|lower }}">
+                            <td>
+                                <input type="checkbox" class="invoice-select" value="{{ invoice.id }}">
+                            </td>
+                            <td>
+                                <strong>{{ invoice.invoice_number or invoice.id }}</strong>
+                            </td>
+                            <td>
+                                <div>{{ invoice.customer_name }}</div>
+                                <small class="text-muted">{{ invoice.customer_email }}</small>
+                            </td>
+                            <td>
+                                <strong>${{ "%.2f"|format(invoice.total_amount|float) }}</strong>
+                            </td>
+                            <td>
+                                {% set status_class = 'success' if invoice.status == 'paid' else 'warning' if invoice.status == 'unpaid' else 'danger' %}
+                                <span class="badge bg-{{ status_class }}">{{ invoice.status|title }}</span>
+                            </td>
+                            <td>
+                                {{ invoice.due_date }}
+                                {% if invoice.status == 'unpaid' and invoice.due_date %}
+                                    {% set due_date = moment(invoice.due_date) %}
+                                    {% if due_date.isBefore(moment()) %}
+                                        <br><small class="text-danger">Overdue</small>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>{{ invoice.created_date }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="viewInvoice('{{ invoice.id }}')">
+                                        <i class="fas fa-eye"></i>
                                     </button>
-                                ` : `
-                                    <span class="text-success">
-                                        <i class="fas fa-check-circle me-1"></i>Paid ${invoice.payment_date ? formatDate(invoice.payment_date) : ''}
-                                    </span>
-                                `}
-                                <button class="btn btn-outline-primary btn-sm" onclick="downloadInvoice('${invoice.id}')">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                                <button class="btn btn-outline-secondary btn-sm" onclick="viewInvoiceDetails('${invoice.id}')">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
+                                    <button class="btn btn-outline-secondary" onclick="downloadInvoice('{{ invoice.id }}')">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="markPaid('{{ invoice.id }}')">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="sendReminder('{{ invoice.id }}')">
+                                        <i class="fas fa-envelope"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoice Actions Modal -->
+<div class="modal fade" id="invoiceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invoice Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="invoiceModalBody">
+                <!-- Invoice details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="printInvoice()">Print</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterInvoices() {
+    const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+    const customerSearch = document.getElementById('customerSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('#invoiceTable tbody tr');
+    
+    rows.forEach(row => {
+        const status = row.dataset.status.toLowerCase();
+        const customer = row.dataset.customer;
         
-        function updateStatistics() {
-            const stats = {
-                pending: { count: 0, amount: 0 },
-                paid: { count: 0, amount: 0 },
-                overdue: { count: 0, amount: 0 },
-                total: { count: allInvoices.length, amount: 0 }
-            };
-            
-            allInvoices.forEach(invoice => {
-                stats.total.amount += invoice.total_amount;
-                
-                if (invoice.status === 'paid') {
-                    stats.paid.count++;
-                    stats.paid.amount += invoice.total_amount;
-                } else if (invoice.status === 'pending') {
-                    // Check if overdue (30 days)
-                    const createdDate = new Date(invoice.created_date);
-                    const daysDiff = (new Date() - createdDate) / (1000 * 60 * 60 * 24);
-                    
-                    if (daysDiff > 30) {
-                        stats.overdue.count++;
-                        stats.overdue.amount += invoice.total_amount;
-                    } else {
-                        stats.pending.count++;
-                        stats.pending.amount += invoice.total_amount;
-                    }
-                }
-            });
-            
-            // Update UI
-            document.getElementById('pendingCount').textContent = stats.pending.count;
-            document.getElementById('pendingAmount').textContent = `$${stats.pending.amount.toFixed(2)}`;
-            document.getElementById('paidCount').textContent = stats.paid.count;
-            document.getElementById('paidAmount').textContent = `$${stats.paid.amount.toFixed(2)}`;
-            document.getElementById('overdueCount').textContent = stats.overdue.count;
-            document.getElementById('overdueAmount').textContent = `$${stats.overdue.amount.toFixed(2)}`;
-            document.getElementById('totalCount').textContent = stats.total.count;
-            document.getElementById('totalAmount').textContent = `$${stats.total.amount.toFixed(2)}`;
-        }
+        const statusMatch = !statusFilter || status === statusFilter;
+        const customerMatch = !customerSearch || customer.includes(customerSearch);
         
-        function filterInvoices() {
-            const filter = document.getElementById('statusFilter').value;
-            let filteredInvoices = allInvoices;
-            
-            if (filter !== 'all') {
-                if (filter === 'overdue') {
-                    filteredInvoices = allInvoices.filter(invoice => {
-                        if (invoice.status !== 'pending') return false;
-                        const createdDate = new Date(invoice.created_date);
-                        const daysDiff = (new Date() - createdDate) / (1000 * 60 * 60 * 24);
-                        return daysDiff > 30;
-                    });
-                } else {
-                    filteredInvoices = allInvoices.filter(invoice => invoice.status === filter);
-                }
+        row.style.display = statusMatch && customerMatch ? '' : 'none';
+    });
+}
+
+function clearFilters() {
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('customerSearch').value = '';
+    document.getElementById('dateFilter').value = '';
+    filterInvoices();
+}
+
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.invoice-select');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+}
+
+function generateInvoice() {
+    window.location.href = '/admin/quote-builder?mode=invoice';
+}
+
+function viewInvoice(invoiceId) {
+    fetch(`/api/invoices/${invoiceId}`)
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('invoiceModalBody').innerHTML = `
+            <div class="invoice-preview">
+                <h4>Invoice #${data.invoice_number}</h4>
+                <p><strong>Customer:</strong> ${data.customer_name}</p>
+                <p><strong>Amount:</strong> $${data.total_amount}</p>
+                <p><strong>Status:</strong> ${data.status}</p>
+                <p><strong>Due Date:</strong> ${data.due_date}</p>
+            </div>
+        `;
+        new bootstrap.Modal(document.getElementById('invoiceModal')).show();
+    });
+}
+
+function downloadInvoice(invoiceId) {
+    window.open(`/api/download-invoice?invoice_id=${invoiceId}`, '_blank');
+}
+
+function markPaid(invoiceId) {
+    if (confirm('Mark this invoice as paid?')) {
+        fetch('/api/invoices/mark-paid', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({invoice_id: invoiceId})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
             }
-            
-            displayInvoices(filteredInvoices);
-        }
-        
-        function openPaymentModal(invoiceId, amount) {
-            document.getElementById('invoiceId').value = invoiceId;
-            document.getElementById('paymentAmount').value = amount.toFixed(2);
-            
-            const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
-            modal.show();
-        }
-        
-        async function submitPayment() {
-            const form = document.getElementById('paymentForm');
-            const formData = new FormData(form);
-            
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/invoices/mark-paid', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    showAlert('Invoice marked as paid successfully!', 'success');
-                    bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
-                    loadInvoices(); // Reload the list
-                } else {
-                    throw new Error(result.error || 'Failed to mark invoice as paid');
-                }
-            } catch (error) {
-                console.error('Error marking invoice as paid:', error);
-                showAlert('Error: ' + error.message, 'danger');
-            }
-        }
-        
-        function downloadInvoice(invoiceId) {
-            window.open(`/api/download-invoice?invoice_id=${invoiceId}`, '_blank');
-        }
-        
-        function viewInvoiceDetails(invoiceId) {
-            // Navigate to invoice details page
-            window.location.href = `/admin/invoice-details/${invoiceId}`;
-        }
-        
-        function generateNewInvoice() {
-            window.location.href = '/invoice-generator';
-        }
-        
-        function formatDate(dateString) {
-            if (!dateString) return '';
-            return new Date(dateString).toLocaleDateString();
-        }
-        
-        function showAlert(message, type) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            
-            document.querySelector('.dashboard-container').prepend(alertDiv);
-            
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 5000);
-        }
-    </script>
-</body>
-</html>
+        });
+    }
+}
+
+function sendReminder(invoiceId) {
+    fetch('/api/invoices/send-reminder', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({invoice_id: invoiceId})
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.success ? 'Reminder sent successfully!' : 'Error: ' + data.error);
+    });
+}
+
+function bulkActions() {
+    const selected = Array.from(document.querySelectorAll('.invoice-select:checked')).map(cb => cb.value);
+    
+    if (selected.length === 0) {
+        alert('Please select invoices first');
+        return;
+    }
+    
+    const action = prompt('Enter action (mark-paid, send-reminder, export):');
+    if (action) {
+        fetch('/api/invoices/bulk-action', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({invoice_ids: selected, action: action})
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.success ? 'Bulk action completed!' : 'Error: ' + data.error);
+            if (data.success) location.reload();
+        });
+    }
+}
+
+function printInvoice() {
+    window.print();
+}
+</script>
+{% endblock %}
