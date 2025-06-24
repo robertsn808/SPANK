@@ -8139,6 +8139,57 @@ def log_appointment_action(action, appointment_id, user):
     except Exception as e:
         logging.error(f"Error logging appointment action: {e}")
 
+@app.route('/templates/crm_section.html')
+def serve_crm_section():
+    """Serve CRM section template with contact data"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        contacts = []
+        
+        # Load from contacts.json
+        contacts_file = os.path.join('data', 'contacts.json')
+        if os.path.exists(contacts_file):
+            with open(contacts_file, 'r') as f:
+                contact_data = json.load(f)
+                for contact in contact_data:
+                    contacts.append({
+                        'id': contact.get('id', 'Unknown'),
+                        'name': contact.get('name', 'Unknown'),
+                        'phone': contact.get('phone', ''),
+                        'email': contact.get('email', ''),
+                        'address': contact.get('address', ''),
+                        'service_type': contact.get('service_type', 'General Contact'),
+                        'status': contact.get('status', 'active'),
+                        'created_date': contact.get('created_date', ''),
+                        'source': 'Contact Database'
+                    })
+        
+        # Load from clients.json
+        clients_file = os.path.join('data', 'clients.json')
+        if os.path.exists(clients_file):
+            with open(clients_file, 'r') as f:
+                client_data = json.load(f)
+                for client in client_data:
+                    contacts.append({
+                        'id': client.get('id', 'Unknown'),
+                        'name': client.get('name', 'Unknown'),
+                        'phone': client.get('phone', ''),
+                        'email': client.get('email', ''),
+                        'address': client.get('address', ''),
+                        'service_type': 'Client Portal User',
+                        'status': 'active',
+                        'created_date': client.get('created_date', ''),
+                        'source': 'Client Database'
+                    })
+        
+        logging.info(f"CRM: Loading {len(contacts)} contacts from 2 data sources")
+        return render_template('crm_section.html', contacts=contacts)
+    except Exception as e:
+        logging.error(f"Error serving CRM section: {e}")
+        return jsonify({'error': 'Template error'}), 500
+
 @app.route('/templates/<path:filename>')
 def serve_template(filename):
     """Serve template files for dynamic loading"""
