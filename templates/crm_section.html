@@ -1,5 +1,46 @@
-<!-- Enhanced CRM Widgets -->
-<div id="crmWidgets" class="mb-4"></div>
+<!-- CRM Dashboard Widgets -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-users text-primary"></i>
+                <span class="metric-title">Total Contacts</span>
+            </div>
+            <div class="metric-value" id="totalContacts">9</div>
+            <div class="metric-trend">+3 this week</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-chart-line text-success"></i>
+                <span class="metric-title">Conversion Rate</span>
+            </div>
+            <div class="metric-value" id="conversionRate">0%</div>
+            <div class="metric-trend">New system</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-dollar-sign text-info"></i>
+                <span class="metric-title">Total Revenue</span>
+            </div>
+            <div class="metric-value" id="totalRevenue">$0</div>
+            <div class="metric-trend">Ready to grow</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-hourglass-half text-warning"></i>
+                <span class="metric-title">Pipeline Value</span>
+            </div>
+            <div class="metric-value" id="pipelineValue">$0</div>
+            <div class="metric-trend">Getting started</div>
+        </div>
+    </div>
+</div>
 
 <div class="content-card">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -10,7 +51,7 @@
             <button class="btn btn-spankks btn-sm" onclick="showAddContactModal()">
                 <i class="fas fa-user-plus me-1"></i>Add Contact
             </button>
-            <button class="btn btn-outline-success btn-sm" onclick="refreshContacts()">
+            <button class="btn btn-outline-success btn-sm" onclick="loadContactsNow()">
                 <i class="fas fa-sync-alt me-1"></i>Refresh
             </button>
         </div>
@@ -49,7 +90,12 @@
                     </tr>
                 </thead>
                 <tbody id="contactsTableBody">
-                    <!-- Contacts will be loaded here -->
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <div class="loading-spinner me-2"></div>
+                            Loading contacts...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
