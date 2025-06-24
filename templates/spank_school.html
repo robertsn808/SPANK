@@ -295,29 +295,26 @@
                         Master DIY repairs with professional guidance from Hawaii's trusted handyman experts.
                     </p>
                     
-                    <!-- Combined Action Cards -->
+                    <!-- Single SPANK Buck Card -->
                     <div class="row g-3 mb-4">
-                        <div class="col-md-6 col-12">
-                            <div class="action-card bg-dark text-warning p-3 p-md-4 rounded-3 h-100">
-                                <h5 class="fw-bold mb-2">🎓 Monthly Knowledge Quiz</h5>
-                                <p class="mb-3 small">Answer 4/5 questions correctly for $5 SPANK Bucks!</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <button class="btn btn-warning btn-lg" onclick="startKnowledgeQuiz()">
-                                        <i class="fas fa-brain me-2"></i>Take Quiz
-                                    </button>
-                                    <img src="{{ url_for('static', filename='images/spank-buck-5.png') }}" alt="$5 SPANK Buck" style="height: 45px;">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-12">
-                            <div class="action-card bg-primary text-white p-3 p-md-4 rounded-3 h-100">
-                                <h5 class="fw-bold mb-2">📚 Learn DIY Skills</h5>
-                                <p class="mb-3 small">Complete courses and earn $5 SPANK Bucks per course!</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <button class="btn btn-warning btn-lg" onclick="scrollToCourses()">
-                                        <i class="fas fa-play me-2"></i>Start Learning
-                                    </button>
-                                    <img src="{{ url_for('static', filename='images/spank-buck-5.png') }}" alt="$5 SPANK Buck" style="height: 45px;">
+                        <div class="col-12">
+                            <div class="action-card bg-primary text-white p-4 p-md-5 rounded-3">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <h4 class="fw-bold mb-3">🎓 Earn $5 SPANK Bucks</h4>
+                                        <p class="mb-4 lead">Complete DIY courses or take our monthly knowledge quiz to earn rewards!</p>
+                                        <div class="d-flex justify-content-start gap-3 flex-wrap">
+                                            <button class="btn btn-warning btn-lg" onclick="scrollToCourses()">
+                                                <i class="fas fa-graduation-cap me-2"></i>Start Learning
+                                            </button>
+                                            <button class="btn btn-outline-light btn-lg" onclick="startKnowledgeQuiz()">
+                                                <i class="fas fa-brain me-2"></i>Take Quiz
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center mt-3 mt-md-0">
+                                        <img src="{{ url_for('static', filename='images/spank-buck-5.png') }}" alt="$5 SPANK Buck" style="height: 120px; max-width: 100%;" class="img-fluid">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -325,9 +322,13 @@
                     
                     <!-- Problem Solver Button -->
                     <div class="text-center text-lg-start">
-                        <button class="btn btn-outline-dark btn-lg px-4" onclick="showProblemSolver()">
-                            <i class="fas fa-tools me-2"></i>Problem Solver
-                        </button>
+                        <div class="action-card bg-secondary text-white p-3 rounded-3">
+                            <h6 class="fw-bold mb-2">🛠️ Problem Solver</h6>
+                            <p class="mb-3 small">Troubleshoot common home issues step by step</p>
+                            <button class="btn btn-light text-dark" onclick="showProblemSolver()">
+                                <i class="fas fa-tools me-2"></i>Start Solving
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
