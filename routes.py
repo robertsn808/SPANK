@@ -336,14 +336,16 @@ def consultation():
             
             appointment_result = unified_scheduler.create_appointment(appointment_data)
             
-            # Handle appointment result properly (it may return different formats)
+            # Handle appointment result properly (create_appointment returns the appointment dict)
             appointment_info = ""
             if appointment_result and isinstance(appointment_result, dict):
                 client_ref = appointment_result.get('client_id', f'CLI{client_id:03d}')
                 job_ref = appointment_result.get('job_id', request_id)
                 appointment_info = f"Appointment created: {client_ref}/{job_ref}"
+                logging.info(f"Appointment successfully created: {client_ref}/{job_ref} for {name}")
             else:
                 appointment_info = f"Appointment created for client ID: {client_id}"
+                logging.warning(f"Unexpected appointment result format: {type(appointment_result)}")
             
             # Send inquiry alert to admin
             notification_service.send_inquiry_alert(
