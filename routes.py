@@ -7341,3 +7341,188 @@ def create_email_campaign():
         logging.error(f"Error creating email campaign: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# Additional API endpoints for comprehensive dashboard
+@app.route('/api/quotes/create', methods=['POST'])
+def api_create_quote():
+    """API endpoint to create new quote with Hawaii GET tax calculation"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        
+        # Generate quote number
+        quotes = storage_service.get_all_quotes()
+        quote_number = f"Q2025-{len(quotes) + 1:03d}"
+        
+        # Create quote record
+        quote = {
+            'quote_number': quote_number,
+            'client_name': data.get('client_name'),
+            'client_phone': phone_formatter.format_phone(data.get('client_phone', '')),
+            'client_email': data.get('client_email', ''),
+            'service_type': data.get('service_type'),
+            'job_location': data.get('job_location', ''),
+            'line_items': data.get('line_items', []),
+            'subtotal': float(data.get('subtotal', 0)),
+            'tax_amount': float(data.get('tax_amount', 0)),
+            'total_amount': float(data.get('total_amount', 0)),
+            'notes': data.get('notes', ''),
+            'status': 'pending',
+            'date_created': datetime.now().strftime('%Y-%m-%d'),
+            'expires_date': (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d'),
+            'created_by': 'admin',
+            'source': 'admin_dashboard'
+        }
+        
+        # Save quote
+        quotes.append(quote)
+        storage_service.save_data('quotes.json', quotes)
+        
+        # Create or update contact
+        contacts = storage_service.get_all_contacts()
+        existing_contact = next((c for c in contacts if c.get('name') == data.get('client_name')), None)
+        
+        if not existing_contact:
+            contact = {
+                'id': f"CLI{len(contacts) + 1:03d}",
+                'name': data.get('client_name'),
+                'email': data.get('client_email', ''),
+                'phone': phone_formatter.format_phone(data.get('client_phone', '')),
+                'address': data.get('job_location', ''),
+                'notes': f"Quote {quote_number} - {data.get('service_type')}",
+                'tags': [data.get('service_type')],
+                'created_date': datetime.now().strftime('%Y-%m-%d'),
+                'status': 'potential',
+                'source': 'admin_quote'
+            }
+            contacts.append(contact)
+            storage_service.save_data('contacts.json', contacts)
+        
+        return jsonify({'success': True, 'quote_number': quote_number})
+        
+    except Exception as e:
+        logging.error(f"Error creating quote: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/appointments/create', methods=['POST'])
+def api_create_appointment():
+    """API endpoint to create new appointment with calendar integration"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        
+        # Validate appointment time is within business hours
+        scheduled_time = data.get('scheduled_time', '')
+        if scheduled_time:
+            hour = int(scheduled_time.split(':')[0])
+            # Business hours: Mon-Fri 7AM-5PM, Sat 8AM-3PM, Sunday closed
+            if hour < 7 or hour > 17:
+                return jsonify({'error': 'Appointment must be during business hours (7 AM - 5 PM)'}), 400
+        
+        # Generate appointment ID
+        appointments = storage_service.load_data('unified_appointments.json')
+        new_id = f"APT{len(appointments) + 1:03d}"
+        
+        # Create appointment record
+        appointment = {
+            'appointment_id': new_id,
+            'client_id': f"CLI{len(storage_service.get_all_contacts()) + 1:03d}",
+            'job_id': f"JOB{len(appointments) + 1:03d}",
+            'client_name': data.get('client_name'),
+            'phone': phone_formatter.format_phone(data.get('phone', '')),
+            'email': data.get('email', ''),
+            'service_type': data.get('service_type'),
+            'scheduled_date': data.get('scheduled_date'),
+            'scheduled_time': data.get('scheduled_time'),
+            'status': data.get('status', 'tentative'),
+            'location': data.get('location', ''),
+            'notes': data.get('notes', ''),
+            'estimated_amount': data.get('estimated_amount', ''),
+            'created_at': datetime.now().isoformat(),
+            'source': 'admin_dashboard'
+        }
+        
+        # Save appointment
+        appointments.append(appointment)
+        storage_service.save_data('unified_appointments.json', appointments)
+        
+        # Create contact if needed
+        contacts = storage_service.get_all_contacts()
+        existing_contact = next((c for c in contacts if c.get('name') == data.get('client_name')), None)
+        
+        if not existing_contact:
+            contact = {
+                'id': appointment['client_id'],
+                'name': data.get('client_name'),
+                'email': data.get('email', ''),
+                'phone': appointment['phone'],
+                'address': data.get('location', ''),
+                'notes': f"Appointment {new_id} - {data.get('service_type')}",
+                'tags': [data.get('service_type')],
+                'created_date': datetime.now().strftime('%Y-%m-%d'),
+                'status': 'active',
+                'source': 'admin_appointment'
+            }
+            contacts.append(contact)
+            storage_service.save_data('contacts.json', contacts)
+        
+        return jsonify({'success': True, 'appointment_id': new_id})
+        
+    except Exception as e:
+        logging.error(f"Error creating appointment: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/contacts/create', methods=['POST'])
+def api_create_contact():
+    """API endpoint to create new contact"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    try:
+        data = request.get_json()
+        
+        # Generate contact ID
+        contacts = storage_service.get_all_contacts()
+        new_id = f"CLI{len(contacts) + 1:03d}"
+        
+        # Format phone number
+        phone = data.get('phone', '')
+        if phone:
+            phone = phone_formatter.format_phone(phone)
+        
+        # Create contact record
+        contact = {
+            'id': new_id,
+            'name': data.get('name'),
+            'email': data.get('email', ''),
+            'phone': phone,
+            'address': data.get('address', ''),
+            'notes': data.get('notes', ''),
+            'tags': data.get('tags', []),
+            'created_date': datetime.now().strftime('%Y-%m-%d'),
+            'status': data.get('status', 'active'),
+            'source': data.get('source', 'admin_crm')
+        }
+        
+        # Save contact
+        contacts.append(contact)
+        storage_service.save_data('contacts.json', contacts)
+        
+        return jsonify({'success': True, 'contact_id': new_id})
+        
+    except Exception as e:
+        logging.error(f"Error creating contact: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/templates/<path:filename>')
+def serve_template(filename):
+    """Serve template files for dynamic loading"""
+    try:
+        return render_template(filename)
+    except Exception as e:
+        logging.error(f"Error serving template {filename}: {e}")
+        return jsonify({'error': 'Template not found'}), 404
+

@@ -1234,16 +1234,32 @@
         }
 
         function loadFinancialSection() {
-            document.getElementById('dynamic-content').innerHTML = `
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-chart-line me-2"></i>Financial Reports</h3>
-                    </div>
-                    <div class="card-body">
-                        <p>Financial reporting and P&L statements will be implemented here.</p>
-                    </div>
-                </div>
-            `;
+            fetch('/templates/financial_section.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('dynamic-content').innerHTML = html;
+                    // Initialize financial section
+                    setTimeout(() => {
+                        if (typeof loadFinancialData === 'function') {
+                            loadFinancialData();
+                        }
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error loading financial section:', error);
+                    document.getElementById('dynamic-content').innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-chart-line me-2"></i>Financial Reports</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    Financial reporting section is being loaded. Please try refreshing the page.
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
         }
 
         function loadPhotosSection() {
