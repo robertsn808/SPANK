@@ -46,5 +46,23 @@
     "last_contact": null,
     "preferred_contact": "email",
     "status": "active"
+  },
+  {
+    "id": 4,
+    "name": "Debug Test Client",
+    "email": "debug@test.com",
+    "phone": "(808) 555-9999",
+    "address": "",
+    "notes": "Created from consultation request. Project: Kitchen. Consultation type: Phone. Sq ft: 200",
+    "tags": [
+      "consultation_client",
+      "new_lead"
+    ],
+    "created_date": "2025-06-23",
+    "job_history": [],
+    "total_spent": 0.0,
+    "last_contact": null,
+    "preferred_contact": "email",
+    "status": "active"
   }
 ]

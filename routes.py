@@ -302,19 +302,30 @@ def consultation():
                 # Note: Update functionality would need to be implemented in storage service
                 logging.info(f"Existing client found: {name} (ID: {client_id})")
 
-            # Store service request
-            request_id = handyman_storage.add_service_request({
-                'name': name,
-                'email': email,
-                'phone': phone,
-                'service': service,
-                'preferred_date': preferred_date,
-                'preferred_time': preferred_time,
-                'location': f"{consultation_type} consultation" if consultation_type else None,
-                'description': f"Project: {project_type}. Consultation: {consultation_type}. Square footage: {square_footage}. Message: {message}",
-                'budget_range': None,
-                'client_id': client_id
-            })
+            # Store service request with properly mapped parameters
+            # Create service request with explicit error handling
+            try:
+                service_request_data = {
+                    'name': name,
+                    'email': email,
+                    'phone': phone,
+                    'service': service,
+                    'priority': 'medium',
+                    'preferred_date': preferred_date,
+                    'preferred_time': preferred_time,
+                    'location': f"{consultation_type} consultation" if consultation_type else None,
+                    'description': f"Project: {project_type}. Consultation: {consultation_type}. Square footage: {square_footage}. Message: {message}",
+                    'budget_range': None,
+                    'client_id': client_id
+                }
+                logging.info(f"Creating service request with data: {service_request_data}")
+                request_id = handyman_storage.add_service_request(service_request_data)
+                logging.info(f"Service request created successfully with ID: {request_id}")
+            except Exception as service_error:
+                logging.error(f"Service request creation failed: {service_error}")
+                # Generate a fallback request ID
+                request_id = f"REQ_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                logging.info(f"Using fallback request ID: {request_id}")
 
             # Create unified appointment with proper client/job IDs
             appointment_data = {
@@ -334,28 +345,39 @@ def consultation():
                 'client_id': client_id
             }
             
-            appointment_result = unified_scheduler.create_appointment(appointment_data)
-            
-            # Handle appointment result properly (create_appointment returns the appointment dict)
-            appointment_info = ""
-            if appointment_result and isinstance(appointment_result, dict):
-                client_ref = appointment_result.get('client_id', f'CLI{client_id:03d}')
-                job_ref = appointment_result.get('job_id', request_id)
-                appointment_info = f"Appointment created: {client_ref}/{job_ref}"
-                logging.info(f"Appointment successfully created: {client_ref}/{job_ref} for {name}")
-            else:
-                appointment_info = f"Appointment created for client ID: {client_id}"
-                logging.warning(f"Unexpected appointment result format: {type(appointment_result)}")
-            
-            # Send inquiry alert to admin
-            notification_service.send_inquiry_alert(
-                inquiry_type="consultation",
-                customer_name=name,
-                phone_number=phone,
-                email=email,
-                service_type=service,
-                additional_info=f"{appointment_info} for {preferred_date or 'next available day'}. Project: {project_type}, {consultation_type}, {square_footage} sq ft"
-            )
+            try:
+                appointment_result = unified_scheduler.create_appointment(appointment_data)
+                logging.info(f"Appointment creation result type: {type(appointment_result)}")
+                
+                # Handle appointment result properly (create_appointment returns the appointment dict)
+                appointment_info = ""
+                if appointment_result and isinstance(appointment_result, dict):
+                    client_ref = appointment_result.get('client_id', f'CLI{client_id:03d}')
+                    job_ref = appointment_result.get('job_id', request_id)
+                    appointment_info = f"Appointment created: {client_ref}/{job_ref}"
+                    logging.info(f"Appointment successfully created: {client_ref}/{job_ref} for {name}")
+                else:
+                    appointment_info = f"Appointment created for client ID: {client_id}"
+                    logging.warning(f"Unexpected appointment result format: {type(appointment_result)}")
+                
+                # Send inquiry alert to admin with detailed error handling
+                try:
+                    notification_service.send_inquiry_alert(
+                        inquiry_type="consultation",
+                        customer_name=name,
+                        phone_number=phone,
+                        email=email,
+                        service_type=service,
+                        additional_info=f"{appointment_info} for {preferred_date or 'next available day'}. Project: {project_type}, {consultation_type}, {square_footage} sq ft"
+                    )
+                    logging.info(f"Admin notification sent successfully for {name}")
+                except Exception as notification_error:
+                    logging.error(f"Notification service error: {notification_error}")
+                    # Continue without notification
+                    
+            except Exception as appointment_error:
+                logging.error(f"Appointment creation failed: {appointment_error}")
+                appointment_info = f"Consultation request logged for client ID: {client_id}"
             
             # Automatically add customer to MailerLite leads list
             if mailerlite_service and email:
