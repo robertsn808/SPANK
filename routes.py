@@ -7107,6 +7107,42 @@ def get_service_types():
 # MAILERLITE EMAIL MARKETING ROUTES
 # ===============================
 
+@app.route('/admin/inventory')
+def admin_inventory():
+    """Admin inventory management page"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get inventory data from inventory service
+        from inventory_service import inventory_service
+        inventory_items = inventory_service.get_all_items() if inventory_service else []
+        
+        return render_template('admin/inventory.html', 
+                             inventory_items=inventory_items)
+    except Exception as e:
+        logging.error(f"Error loading inventory: {e}")
+        flash('Error loading inventory', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/checklists')
+def admin_checklists():
+    """Admin checklist management page"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get checklist data from checklist service
+        from checklist_service import checklist_service
+        all_checklists = checklist_service.get_all_checklists() if checklist_service else []
+        
+        return render_template('admin/checklists.html', 
+                             checklists=all_checklists)
+    except Exception as e:
+        logging.error(f"Error loading checklists: {e}")
+        flash('Error loading checklists', 'error')
+        return redirect(url_for('admin_dashboard'))
+
 @app.route('/admin/email-marketing')
 def admin_email_marketing():
     """MailerLite Email Marketing Dashboard"""
