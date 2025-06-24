@@ -573,9 +573,9 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{ url_for('admin_inquiries') }}" class="nav-link">
+                    <a href="/admin/inquiries" class="nav-link">
                         <i class="fas fa-inbox"></i>View Inquiries
-                        <span class="notification-badge" id="inquiriesCount">{{ (contact_messages|length + service_requests|length) if contact_messages and service_requests else 0 }}</span>
+                        <span class="notification-badge" id="inquiriesCount">0</span>
                     </a>
                 </div>
             </div>
