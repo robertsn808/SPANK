@@ -1199,6 +1199,8 @@ class UnifiedScheduler:
             return None
         
         return None
+        
+        return None
     
     def _update_client_project_history(self, client_id: str, new_job_id: str):
         """Update related jobs for client project continuity"""

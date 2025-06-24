@@ -829,6 +829,18 @@ def admin_dashboard():
             logging.warning(f"Error reading contacts data: {e}")
             unread_messages = []
         
+        # Get consultation requests for badge count
+        consultation_requests = [req for req in service_requests if 'consultation' in req.service.lower()]
+        
+        # Stats for header badges
+        stats = {
+            'total_requests': len(service_requests),
+            'pending': len([req for req in service_requests if req.status == 'pending']),
+            'messages': len([msg for msg in contact_messages if msg.status == 'unread']),
+            'appointments': len(appointments),
+            'consultation_requests': len(consultation_requests)
+        }
+
         return render_template('admin_dashboard.html',
                              bookings=service_requests,
                              service_requests=service_requests, 
@@ -847,7 +859,9 @@ def admin_dashboard():
                              urgent_requests=urgent_requests,
                              completed_requests=completed_requests,
                              unread_messages=unread_messages,
-                             admin_notifications=admin_notifications)
+                             admin_notifications=admin_notifications,
+                             consultation_requests=consultation_requests,
+                             stats=stats)
     
     except Exception as e:
         import traceback

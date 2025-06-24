@@ -465,6 +465,18 @@
             <div class="menu-section">
                 <div class="menu-section-title">Core Business</div>
                 
+                <a href="/admin/consultations" class="menu-item position-relative" 
+                   data-help="consultations">
+                    <i class="fas fa-handshake text-warning"></i>
+                    <div>
+                        <div class="menu-item-text">Consultations</div>
+                        <div class="menu-item-desc">Review consultation requests</div>
+                    </div>
+                    {% if stats.consultation_requests and stats.consultation_requests > 0 %}
+                    <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">{{ stats.consultation_requests }}</span>
+                    {% endif %}
+                </a>
+                
                 <a href="{{ url_for('quote_invoice_generator') }}" class="menu-item" 
                    data-help="quote-builder">
                     <i class="fas fa-file-invoice-dollar text-success"></i>
