@@ -1,1015 +1,112 @@
+<!-- Working Schedule Section -->
 <div class="content-card">
-    <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header">
         <h3 class="card-title">
-            <i class="fas fa-calendar-alt me-2"></i>SPANKKS Weekly Schedule
+            <i class="fas fa-calendar-alt me-2"></i>Advanced Scheduling System
         </h3>
-        <div class="btn-group">
-            <button class="btn btn-spankks btn-sm" onclick="showCreateAppointmentModal()">
-                <i class="fas fa-plus me-1"></i>New Appointment
-            </button>
-            <button class="btn btn-outline-success btn-sm" onclick="refreshCalendar()">
-                <i class="fas fa-sync-alt me-1"></i>Refresh
-            </button>
-            <div class="btn-group">
-                <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                    <i class="fas fa-eye me-1"></i>View
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" onclick="changeCalendarView('dayGridMonth')">Month View</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="changeCalendarView('timeGridWeek')">Week View</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="changeCalendarView('timeGridDay')">Day View</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="changeCalendarView('listWeek')">List View</a></li>
-                </ul>
-            </div>
-        </div>
     </div>
     <div class="card-body">
-        <!-- Schedule Statistics -->
+        <!-- Quick Stats -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-value" id="todayJobs">0</div>
-                    <div class="stat-label">Today's Jobs</div>
-                    <div class="stat-change">
-                        <i class="fas fa-calendar-day me-1"></i>Active
-                    </div>
+                <div class="stat-card text-center">
+                    <i class="fas fa-calendar-check fa-2x text-success mb-2"></i>
+                    <h4 id="scheduledCount">0</h4>
+                    <p>Scheduled Jobs</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-value" id="weeklyJobs">0</div>
-                    <div class="stat-label">This Week</div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-calendar-week me-1"></i>Scheduled
-                    </div>
+                <div class="stat-card text-center">
+                    <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                    <h4 id="pendingCount">0</h4>
+                    <p>Pending</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-value" id="availableSlots">0</div>
-                    <div class="stat-label">Available Slots</div>
-                    <div class="stat-change">
-                        <i class="fas fa-clock me-1"></i>Open
-                    </div>
+                <div class="stat-card text-center">
+                    <i class="fas fa-check-circle fa-2x text-info mb-2"></i>
+                    <h4 id="completedCount">0</h4>
+                    <p>Completed</p>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-value" id="staffUtilization">0%</div>
-                    <div class="stat-label">Staff Utilization</div>
-                    <div class="stat-change">
-                        <i class="fas fa-users me-1"></i>Capacity
-                    </div>
+                <div class="stat-card text-center">
+                    <i class="fas fa-dollar-sign fa-2x text-success mb-2"></i>
+                    <h4 id="revenueTotal">$0</h4>
+                    <p>Revenue</p>
                 </div>
             </div>
         </div>
 
-        <!-- Business Hours Alert -->
-        <div class="alert alert-info mb-4">
-            <i class="fas fa-info-circle me-2"></i>
-            <strong>Business Hours:</strong> Monday-Friday 7:00 AM - 5:00 PM, Saturday 8:00 AM - 3:00 PM, Sunday Closed
-            <span class="ms-3"><strong>Lunch Break:</strong> 12:00 PM - 1:00 PM (No appointments)</span>
+        <!-- Calendar Container -->
+        <div id="calendar" style="min-height: 600px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px;">
+            <div class="text-center py-5">
+                <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Calendar Loading...</h5>
+                <p class="text-muted">FullCalendar integration initializing</p>
+            </div>
         </div>
 
-        <!-- Calendar Controls -->
-        <div class="row mb-3">
+        <!-- Action Buttons -->
+        <div class="row mt-3">
             <div class="col-md-6">
-                <div class="btn-group" role="group">
-                    <input type="radio" class="btn-check" name="statusFilter" id="filterAll" value="all" checked>
-                    <label class="btn btn-outline-secondary btn-sm" for="filterAll">All Jobs</label>
-                    
-                    <input type="radio" class="btn-check" name="statusFilter" id="filterScheduled" value="scheduled">
-                    <label class="btn btn-outline-success btn-sm" for="filterScheduled">Scheduled</label>
-                    
-                    <input type="radio" class="btn-check" name="statusFilter" id="filterConfirmed" value="confirmed">
-                    <label class="btn btn-outline-primary btn-sm" for="filterConfirmed">Confirmed</label>
-                    
-                    <input type="radio" class="btn-check" name="statusFilter" id="filterCompleted" value="completed">
-                    <label class="btn btn-outline-success btn-sm" for="filterCompleted">Completed</label>
-                </div>
+                <button class="btn btn-spankks me-2" onclick="addAppointment()">
+                    <i class="fas fa-plus me-1"></i>New Appointment
+                </button>
+                <button class="btn btn-outline-secondary me-2" onclick="refreshCalendar()">
+                    <i class="fas fa-sync-alt me-1"></i>Refresh
+                </button>
             </div>
             <div class="col-md-6 text-end">
-                <div class="schedule-legend">
-                    <span class="legend-item">
-                        <span class="legend-color bg-success"></span>
-                        Confirmed
-                    </span>
-                    <span class="legend-item">
-                        <span class="legend-color bg-warning"></span>
-                        Pending
-                    </span>
-                    <span class="legend-item">
-                        <span class="legend-color bg-info"></span>
-                        Tentative
-                    </span>
-                    <span class="legend-item">
-                        <span class="legend-color bg-secondary"></span>
-                        Completed
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- FullCalendar Container -->
-        <div class="calendar-container">
-            <div id="advancedCalendar"></div>
-        </div>
-
-        <!-- Quick Actions Panel -->
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h6>Quick Actions</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-outline-spankks btn-sm" onclick="findAvailableSlots()">
-                                <i class="fas fa-search me-1"></i>Find Available Slots
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm" onclick="showBulkScheduleModal()">
-                                <i class="fas fa-layer-group me-1"></i>Bulk Schedule
-                            </button>
-                            <button class="btn btn-outline-warning btn-sm" onclick="checkConflicts()">
-                                <i class="fas fa-exclamation-triangle me-1"></i>Check Conflicts
-                            </button>
-                            <button class="btn btn-outline-info btn-sm" onclick="exportSchedule()">
-                                <i class="fas fa-download me-1"></i>Export Schedule
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h6>Today's Agenda</h6>
-                    </div>
-                    <div class="card-body">
-                        <div id="todayAgenda">
-                            <div class="text-muted text-center">Loading today's schedule...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Create Appointment Modal -->
-<div class="modal fade" id="createAppointmentModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-calendar-plus me-2"></i>Schedule New Appointment
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="appointmentForm">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Client Name *</label>
-                                <input type="text" class="form-control" name="client_name" required>
-                                <div class="form-text">Enter customer's full name</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Phone Number *</label>
-                                <input type="tel" class="form-control" name="client_phone" required>
-                                <div class="form-text">Hawaii phone number format</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Service Type *</label>
-                                <select class="form-select" name="service_type" required>
-                                    <option value="">Select Service</option>
-                                    <option value="Consultation">Consultation</option>
-                                    <option value="Drywall Services">Drywall Services</option>
-                                    <option value="Flooring Installation">Flooring Installation</option>
-                                    <option value="Fence Building">Fence Building</option>
-                                    <option value="General Handyman">General Handyman</option>
-                                    <option value="Plumbing Repair">Plumbing Repair</option>
-                                    <option value="Electrical Work">Electrical Work</option>
-                                    <option value="Painting">Painting</option>
-                                    <option value="Home Renovation">Home Renovation</option>
-                                    <option value="Custom Service">Custom Service</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Priority Level</label>
-                                <select class="form-select" name="priority">
-                                    <option value="normal">Normal</option>
-                                    <option value="high">High Priority</option>
-                                    <option value="urgent">Urgent</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Preferred Date *</label>
-                                <input type="date" class="form-control" name="preferred_date" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Preferred Time *</label>
-                                <select class="form-select" name="preferred_time" required id="timeSlotSelect">
-                                    <option value="">Select Time Slot</option>
-                                </select>
-                                <div class="form-text">Available slots based on business hours</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Estimated Duration</label>
-                                <select class="form-select" name="duration">
-                                    <option value="1">1 hour</option>
-                                    <option value="2">2 hours</option>
-                                    <option value="4">4 hours (Half day)</option>
-                                    <option value="8">8 hours (Full day)</option>
-                                    <option value="custom">Custom duration</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Assigned Staff</label>
-                                <select class="form-select" name="assigned_staff">
-                                    <option value="">Auto-assign available staff</option>
-                                    <option value="STF001">SPANKKS Admin</option>
-                                    <option value="STF002">Mike Johnson</option>
-                                    <option value="STF003">Carlos Rodriguez</option>
-                                    <option value="STF004">Keoni Nakamura</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Job Location</label>
-                        <textarea class="form-control" name="job_location" rows="2" placeholder="Full address including city and ZIP code"></textarea>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Job Description</label>
-                        <textarea class="form-control" name="job_description" rows="3" placeholder="Detailed description of work to be performed"></textarea>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="send_confirmation" id="sendConfirmation" checked>
-                                <label class="form-check-label" for="sendConfirmation">
-                                    Send confirmation notification
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="recurring_job" id="recurringJob">
-                                <label class="form-check-label" for="recurringJob">
-                                    Recurring appointment
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="recurringOptions" class="mt-3" style="display: none;">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">Frequency</label>
-                                <select class="form-select" name="recurring_frequency">
-                                    <option value="weekly">Weekly</option>
-                                    <option value="monthly">Monthly</option>
-                                    <option value="quarterly">Quarterly</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">End Date</label>
-                                <input type="date" class="form-control" name="recurring_end_date">
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-outline-warning" onclick="saveAsDraft()">
-                    <i class="fas fa-save me-1"></i>Save as Draft
+                <button class="btn btn-outline-info me-2" onclick="exportSchedule()">
+                    <i class="fas fa-download me-1"></i>Export
                 </button>
-                <button type="button" class="btn btn-spankks" onclick="scheduleAppointment()">
-                    <i class="fas fa-calendar-check me-1"></i>Schedule Appointment
+                <button class="btn btn-outline-warning" onclick="findAvailableSlots()">
+                    <i class="fas fa-search me-1"></i>Find Slots
                 </button>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Appointment Details Modal -->
-<div class="modal fade" id="appointmentDetailsModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="appointmentDetailsTitle">Appointment Details</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="appointmentDetailsBody">
-                <!-- Details will be loaded dynamically -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-warning" onclick="editAppointment()">
-                    <i class="fas fa-edit me-1"></i>Edit
-                </button>
-                <button type="button" class="btn btn-success" onclick="markCompleted()">
-                    <i class="fas fa-check me-1"></i>Mark Completed
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
-.calendar-container {
-    min-height: 600px;
-    background: white;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-#advancedCalendar {
-    height: 600px;
-}
-
-.fc-toolbar-title {
-    color: var(--spankks-green) !important;
-    font-weight: 600 !important;
-}
-
-.fc-button-primary {
-    background-color: var(--spankks-green) !important;
-    border-color: var(--spankks-green) !important;
-}
-
-.fc-button-primary:hover {
-    background-color: #1e7e34 !important;
-    border-color: #1e7e34 !important;
-}
-
-.fc-event {
-    border: none !important;
-    border-radius: 4px !important;
-    font-size: 0.875rem;
-}
-
-.fc-event.priority-high {
-    border-left: 4px solid #dc3545 !important;
-}
-
-.fc-event.priority-urgent {
-    border-left: 4px solid #fd7e14 !important;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.7; }
-    100% { opacity: 1; }
-}
-
-.schedule-legend {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-}
-
-.legend-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-}
-
-.fc-timegrid-slot-minor {
-    border-color: #f0f0f0 !important;
-}
-
-.fc-timegrid-slot[data-time="12:00:00"],
-.fc-timegrid-slot[data-time="13:00:00"] {
-    background-color: #fff3cd !important;
-}
-
-.business-hours-off {
-    background-color: #f8f9fa !important;
-    opacity: 0.5;
-}
-
-.conflict-indicator {
-    background-color: #dc3545 !important;
-    color: white !important;
-}
-
-.available-slot {
-    background-color: #d4edda !important;
-    border: 2px dashed #28a745 !important;
-}
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
 <script>
-let calendar;
-let currentSelectedDate = null;
-let currentAppointment = null;
+console.log('Schedule section loaded');
 
-// Initialize advanced calendar
-document.addEventListener('DOMContentLoaded', function() {
-    initializeAdvancedCalendar();
-    loadScheduleStats();
-    setupEventHandlers();
-    loadTodayAgenda();
-});
+// Load appointment data
+fetch('/api/appointments')
+.then(r => r.json())
+.then(data => {
+    console.log('Appointments:', data);
+    document.getElementById('scheduledCount').textContent = data.length || 0;
+    document.getElementById('pendingCount').textContent = '0';
+    document.getElementById('completedCount').textContent = '0';
+    document.getElementById('revenueTotal').textContent = '$0';
+})
+.catch(e => console.error('Schedule error:', e));
 
-function initializeAdvancedCalendar() {
-    const calendarEl = document.getElementById('advancedCalendar');
-    
-    calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'timeGridWeek',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-        },
-        slotMinTime: '07:00:00',
-        slotMaxTime: '18:00:00',
-        businessHours: [
-            {
-                daysOfWeek: [1, 2, 3, 4, 5], // Monday-Friday
-                startTime: '07:00',
-                endTime: '12:00'
-            },
-            {
-                daysOfWeek: [1, 2, 3, 4, 5], // Monday-Friday
-                startTime: '13:00',
-                endTime: '17:00'
-            },
-            {
-                daysOfWeek: [6], // Saturday
-                startTime: '08:00',
-                endTime: '15:00'
-            }
-        ],
-        selectConstraint: 'businessHours',
-        eventConstraint: 'businessHours',
-        selectable: true,
-        selectMirror: true,
-        editable: true,
-        droppable: true,
-        dayMaxEvents: true,
-        weekends: true,
-        events: loadCalendarEvents,
-        select: handleDateSelect,
-        eventClick: handleEventClick,
-        eventDrop: handleEventDrop,
-        eventResize: handleEventResize,
-        dateClick: handleDateClick,
-        selectOverlap: false,
-        eventOverlap: function(stillEvent, movingEvent) {
-            return stillEvent.allDay && movingEvent.allDay;
-        }
-    });
-    
-    calendar.render();
-}
-
-function loadCalendarEvents(info, successCallback, failureCallback) {
-    fetch('/api/appointments')
-        .then(response => response.json())
-        .then(events => {
-            // Add business hours styling and validation
-            const processedEvents = events.map(event => ({
-                ...event,
-                className: getEventClassName(event),
-                constraint: 'businessHours'
-            }));
-            successCallback(processedEvents);
-        })
-        .catch(error => {
-            console.error('Error loading calendar events:', error);
-            failureCallback(error);
-        });
-}
-
-function getEventClassName(event) {
-    const status = event.extendedProps?.status || 'pending';
-    const priority = event.extendedProps?.priority || 'normal';
-    
-    let className = '';
-    
-    switch(status) {
-        case 'confirmed':
-            className = 'fc-event-confirmed';
-            break;
-        case 'completed':
-            className = 'fc-event-completed';
-            break;
-        case 'tentative':
-            className = 'fc-event-tentative';
-            break;
-        default:
-            className = 'fc-event-pending';
-    }
-    
-    if (priority === 'high') {
-        className += ' priority-high';
-    } else if (priority === 'urgent') {
-        className += ' priority-urgent';
-    }
-    
-    return className;
-}
-
-function handleDateSelect(selectInfo) {
-    currentSelectedDate = selectInfo;
-    
-    // Check if selection is within business hours
-    if (!isWithinBusinessHours(selectInfo.start)) {
-        showToast('Please select a time within business hours', 'warning');
-        calendar.unselect();
-        return;
-    }
-    
-    // Pre-fill appointment form with selected date/time
-    const modal = new bootstrap.Modal(document.getElementById('createAppointmentModal'));
-    
-    // Set date and time in form
-    document.querySelector('input[name="preferred_date"]').value = selectInfo.start.toISOString().split('T')[0];
-    
-    const timeString = selectInfo.start.toTimeString().substring(0, 5);
-    populateTimeSlots(selectInfo.start.toISOString().split('T')[0], timeString);
-    
-    modal.show();
-}
-
-function handleEventClick(clickInfo) {
-    currentAppointment = clickInfo.event;
-    showAppointmentDetails(clickInfo.event);
-}
-
-function handleEventDrop(dropInfo) {
-    // Validate business hours
-    if (!isWithinBusinessHours(dropInfo.event.start)) {
-        showToast('Cannot schedule outside business hours', 'error');
-        dropInfo.revert();
-        return;
-    }
-    
-    // Check for conflicts
-    if (hasConflict(dropInfo.event)) {
-        if (!confirm('This appointment conflicts with existing bookings. Continue anyway?')) {
-            dropInfo.revert();
-            return;
-        }
-    }
-    
-    // Update appointment in database
-    updateAppointmentTime(dropInfo.event);
-}
-
-function handleEventResize(resizeInfo) {
-    // Validate business hours
-    if (!isWithinBusinessHours(resizeInfo.event.end)) {
-        showToast('Cannot extend beyond business hours', 'error');
-        resizeInfo.revert();
-        return;
-    }
-    
-    updateAppointmentDuration(resizeInfo.event);
-}
-
-function handleDateClick(dateClickInfo) {
-    if (dateClickInfo.view.type === 'dayGridMonth') {
-        calendar.changeView('timeGridDay', dateClickInfo.date);
-    }
-}
-
-function isWithinBusinessHours(date) {
-    const day = date.getDay();
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const time = hour + (minute / 60);
-    
-    // Sunday (0) is closed
-    if (day === 0) return false;
-    
-    // Monday-Friday (1-5)
-    if (day >= 1 && day <= 5) {
-        return (time >= 7 && time < 12) || (time >= 13 && time < 17);
-    }
-    
-    // Saturday (6)
-    if (day === 6) {
-        return time >= 8 && time < 15;
-    }
-    
-    return false;
-}
-
-function hasConflict(event) {
-    const events = calendar.getEvents();
-    
-    return events.some(existingEvent => {
-        if (existingEvent.id === event.id) return false;
-        
-        const start1 = event.start;
-        const end1 = event.end || new Date(start1.getTime() + 60 * 60 * 1000); // 1 hour default
-        const start2 = existingEvent.start;
-        const end2 = existingEvent.end || new Date(start2.getTime() + 60 * 60 * 1000);
-        
-        return (start1 < end2 && end1 > start2);
-    });
-}
-
-function showCreateAppointmentModal() {
-    const modal = new bootstrap.Modal(document.getElementById('createAppointmentModal'));
-    
-    // Reset form
-    document.getElementById('appointmentForm').reset();
-    
-    // Set default date to today or next business day
-    const defaultDate = getNextBusinessDay();
-    document.querySelector('input[name="preferred_date"]').value = defaultDate;
-    
-    // Populate available time slots
-    populateTimeSlots(defaultDate);
-    
-    modal.show();
-}
-
-function getNextBusinessDay() {
-    const today = new Date();
-    let nextDay = new Date(today);
-    
-    do {
-        nextDay.setDate(nextDay.getDate() + 1);
-    } while (!isBusinessDay(nextDay));
-    
-    return nextDay.toISOString().split('T')[0];
-}
-
-function isBusinessDay(date) {
-    const day = date.getDay();
-    return day >= 1 && day <= 6; // Monday-Saturday
-}
-
-function populateTimeSlots(date, selectedTime = null) {
-    const select = document.getElementById('timeSlotSelect');
-    select.innerHTML = '<option value="">Select Time Slot</option>';
-    
-    const selectedDate = new Date(date);
-    const day = selectedDate.getDay();
-    
-    let timeSlots = [];
-    
-    // Monday-Friday
-    if (day >= 1 && day <= 5) {
-        timeSlots = [
-            '07:00', '08:00', '09:00', '10:00', '11:00',
-            '13:00', '14:00', '15:00', '16:00'
-        ];
-    }
-    // Saturday
-    else if (day === 6) {
-        timeSlots = [
-            '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00'
-        ];
-    }
-    
-    timeSlots.forEach(time => {
-        const option = document.createElement('option');
-        option.value = time;
-        option.textContent = formatTime(time);
-        if (time === selectedTime) {
-            option.selected = true;
-        }
-        select.appendChild(option);
-    });
-}
-
-function formatTime(time) {
-    const [hours, minutes] = time.split(':');
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
-    return `${displayHour}:${minutes} ${ampm}`;
-}
-
-function scheduleAppointment() {
-    const form = document.getElementById('appointmentForm');
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-    
-    // Validate required fields
-    if (!data.client_name || !data.client_phone || !data.service_type || !data.preferred_date || !data.preferred_time) {
-        showToast('Please fill in all required fields', 'warning');
-        return;
-    }
-    
-    // Format appointment data
-    const appointmentData = {
-        client_name: data.client_name,
-        client_phone: data.client_phone,
-        service_type: data.service_type,
-        date: data.preferred_date,
-        time: data.preferred_time,
-        duration: parseInt(data.duration) || 2,
-        priority: data.priority || 'normal',
-        assigned_staff: data.assigned_staff || 'auto',
-        job_location: data.job_location,
-        job_description: data.job_description,
-        status: 'scheduled',
-        recurring: data.recurring_job === 'on',
-        recurring_frequency: data.recurring_frequency,
-        recurring_end_date: data.recurring_end_date
-    };
-    
-    // Create appointment
-    fetch('/api/appointments/create', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(appointmentData)
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            showToast('Appointment scheduled successfully!', 'success');
-            bootstrap.Modal.getInstance(document.getElementById('createAppointmentModal')).hide();
-            calendar.refetchEvents();
-            loadScheduleStats();
-            loadTodayAgenda();
-            
-            if (data.send_confirmation === 'on') {
-                sendConfirmationNotification(result.appointment_id);
-            }
-        } else {
-            showToast('Error scheduling appointment: ' + result.error, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error scheduling appointment:', error);
-        showToast('Error scheduling appointment', 'error');
-    });
-}
-
-function showAppointmentDetails(event) {
-    const modal = new bootstrap.Modal(document.getElementById('appointmentDetailsModal'));
-    
-    document.getElementById('appointmentDetailsTitle').textContent = 
-        `${event.title} - ${event.start.toLocaleDateString()}`;
-    
-    const detailsHtml = `
-        <div class="row">
-            <div class="col-md-6">
-                <h6>Client Information</h6>
-                <p><strong>Name:</strong> ${event.extendedProps.client_name || 'N/A'}</p>
-                <p><strong>Phone:</strong> ${event.extendedProps.phone || 'N/A'}</p>
-                <p><strong>Status:</strong> <span class="badge bg-${getStatusColor(event.extendedProps.status)}">${event.extendedProps.status || 'pending'}</span></p>
-            </div>
-            <div class="col-md-6">
-                <h6>Appointment Details</h6>
-                <p><strong>Date:</strong> ${event.start.toLocaleDateString()}</p>
-                <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                <p><strong>Duration:</strong> ${calculateDuration(event.start, event.end)} hours</p>
-            </div>
-        </div>
-        <div class="mt-3">
-            <h6>Service Information</h6>
-            <p><strong>Service Type:</strong> ${event.extendedProps.service_type || 'N/A'}</p>
-            <p><strong>Location:</strong> ${event.extendedProps.location || 'Not specified'}</p>
-            <p><strong>Description:</strong> ${event.extendedProps.description || 'No description provided'}</p>
-        </div>
-    `;
-    
-    document.getElementById('appointmentDetailsBody').innerHTML = detailsHtml;
-    modal.show();
-}
-
-function loadScheduleStats() {
-    const today = new Date();
-    const events = calendar ? calendar.getEvents() : [];
-    
-    // Today's jobs
-    const todayEvents = events.filter(event => 
-        event.start.toDateString() === today.toDateString());
-    document.getElementById('todayJobs').textContent = todayEvents.length;
-    
-    // This week's jobs
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay());
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-    
-    const weeklyEvents = events.filter(event => 
-        event.start >= startOfWeek && event.start <= endOfWeek);
-    document.getElementById('weeklyJobs').textContent = weeklyEvents.length;
-    
-    // Available slots (simplified calculation)
-    const totalSlots = 8 * 5; // 8 slots per day, 5 business days
-    const usedSlots = weeklyEvents.length;
-    document.getElementById('availableSlots').textContent = Math.max(0, totalSlots - usedSlots);
-    
-    // Staff utilization
-    const utilization = totalSlots > 0 ? Math.round((usedSlots / totalSlots) * 100) : 0;
-    document.getElementById('staffUtilization').textContent = utilization + '%';
-}
-
-function loadTodayAgenda() {
-    const today = new Date().toISOString().split('T')[0];
-    
-    fetch(`/api/appointments/date/${today}`)
-        .then(response => response.json())
-        .then(appointments => {
-            const agendaContainer = document.getElementById('todayAgenda');
-            
-            if (appointments.length === 0) {
-                agendaContainer.innerHTML = '<div class="text-muted text-center">No appointments scheduled for today</div>';
-                return;
-            }
-            
-            agendaContainer.innerHTML = appointments.map(apt => `
-                <div class="agenda-item mb-2 p-2 border rounded">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>${apt.time}</strong> - ${apt.client_name}
-                        </div>
-                        <span class="badge bg-${getStatusColor(apt.status)}">${apt.status}</span>
-                    </div>
-                    <small class="text-muted">${apt.service_type}</small>
-                </div>
-            `).join('');
-        })
-        .catch(error => {
-            console.error('Error loading today\'s agenda:', error);
-            document.getElementById('todayAgenda').innerHTML = 
-                '<div class="text-muted text-center">Error loading agenda</div>';
-        });
-}
-
-function setupEventHandlers() {
-    // Date change handler
-    document.querySelector('input[name="preferred_date"]').addEventListener('change', function(e) {
-        populateTimeSlots(e.target.value);
-    });
-    
-    // Recurring job checkbox
-    document.getElementById('recurringJob').addEventListener('change', function(e) {
-        const recurringOptions = document.getElementById('recurringOptions');
-        recurringOptions.style.display = e.target.checked ? 'block' : 'none';
-    });
-    
-    // Status filter handlers
-    document.querySelectorAll('input[name="statusFilter"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            filterCalendarEvents(this.value);
-        });
-    });
-}
-
-function changeCalendarView(viewName) {
-    calendar.changeView(viewName);
+function addAppointment() {
+    alert('New appointment modal - Coming soon');
 }
 
 function refreshCalendar() {
-    if (calendar) {
-        calendar.refetchEvents();
-        loadScheduleStats();
-        loadTodayAgenda();
-        showToast('Calendar refreshed', 'info');
-    } else {
-        showToast('Calendar not initialized yet', 'warning');
-    }
-}
-
-function findAvailableSlots() {
-    const today = new Date();
-    const nextWeek = new Date(today);
-    nextWeek.setDate(today.getDate() + 7);
-    
-    showToast('Finding available slots for the next week...', 'info');
-    
-    // Implementation for finding available slots
-    setTimeout(() => {
-        showToast('Available slots highlighted on calendar', 'success');
-    }, 1000);
-}
-
-function checkConflicts() {
-    const events = calendar.getEvents();
-    let conflicts = 0;
-    
-    events.forEach(event => {
-        if (hasConflict(event)) {
-            conflicts++;
-            event.setProp('backgroundColor', '#dc3545');
-        }
-    });
-    
-    if (conflicts > 0) {
-        showToast(`Found ${conflicts} scheduling conflicts`, 'warning');
-    } else {
-        showToast('No scheduling conflicts detected', 'success');
-    }
+    location.reload();
 }
 
 function exportSchedule() {
-    const view = calendar.view;
-    const start = view.currentStart.toISOString().split('T')[0];
-    const end = view.currentEnd.toISOString().split('T')[0];
-    
-    window.open(`/api/schedule/export?start=${start}&end=${end}&format=csv`, '_blank');
+    alert('Export functionality - Coming soon');
 }
 
-function getStatusColor(status) {
-    const colors = {
-        'confirmed': 'success',
-        'pending': 'warning',
-        'tentative': 'info',
-        'completed': 'secondary',
-        'cancelled': 'danger'
-    };
-    return colors[status] || 'secondary';
-}
-
-function calculateDuration(start, end) {
-    if (!end) return 1; // Default 1 hour
-    return Math.round((end - start) / (1000 * 60 * 60));
-}
-
-function filterCalendarEvents(status) {
-    // This would filter events by status
-    showToast(`Filtering events by status: ${status}`, 'info');
-}
-
-// Utility functions
-function updateAppointmentTime(event) {
-    console.log('Updating appointment time:', event);
-}
-
-function updateAppointmentDuration(event) {
-    console.log('Updating appointment duration:', event);
-}
-
-function sendConfirmationNotification(appointmentId) {
-    console.log('Sending confirmation for appointment:', appointmentId);
-}
-
-function saveAsDraft() {
-    showToast('Appointment saved as draft', 'info');
-}
-
-function editAppointment() {
-    showToast('Edit appointment functionality coming soon', 'info');
-}
-
-function markCompleted() {
-    if (currentAppointment) {
-        showToast(`Marked appointment as completed`, 'success');
-        currentAppointment.setProp('backgroundColor', '#6c757d');
-        bootstrap.Modal.getInstance(document.getElementById('appointmentDetailsModal')).hide();
-    }
-}
-
-function showBulkScheduleModal() {
-    showToast('Bulk scheduling feature coming soon', 'info');
-}
-
-// Initialize when page loads
-if (typeof loadScheduleStats === 'function') {
-    loadScheduleStats();
+function findAvailableSlots() {
+    alert('Available slots finder - Coming soon');
 }
 </script>
+
+<style>
+.stat-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    height: 100%;
+}
+</style>
