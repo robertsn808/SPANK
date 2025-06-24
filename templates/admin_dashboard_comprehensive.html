@@ -1372,45 +1372,59 @@
         }
 
         function loadManagementSection() {
-            document.getElementById('dynamic-content').innerHTML = `
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-cogs me-2"></i>System Management</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="list-group">
-                                    <h6 class="mb-3">Database Management</h6>
-                                    <a href="#" class="list-group-item list-group-item-action" onclick="showToast('Database backup functionality coming soon', 'info')">
-                                        <i class="fas fa-database me-2"></i>Backup Database
-                                    </a>
-                                    <a href="#" class="list-group-item list-group-item-action" onclick="showToast('Data cleanup functionality coming soon', 'info')">
-                                        <i class="fas fa-broom me-2"></i>Clean Up Data
-                                    </a>
-                                    <a href="#" class="list-group-item list-group-item-action" onclick="showToast('Export functionality coming soon', 'info')">
-                                        <i class="fas fa-download me-2"></i>Export All Data
-                                    </a>
-                                </div>
+            fetch('/templates/csv_management_section.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('dynamic-content').innerHTML = html;
+                    setTimeout(() => {
+                        if (typeof loadCsvStats === 'function') {
+                            loadCsvStats();
+                        }
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error loading CSV management section:', error);
+                    document.getElementById('dynamic-content').innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-file-csv me-2"></i>CSV Data Management</h3>
                             </div>
-                            <div class="col-md-6">
-                                <div class="list-group">
-                                    <h6 class="mb-3">System Settings</h6>
-                                    <a href="#" class="list-group-item list-group-item-action" onclick="showToast('User management coming soon', 'info')">
-                                        <i class="fas fa-users-cog me-2"></i>User Management
-                                    </a>
-                                    <a href="#" class="list-group-item list-group-item-action" onclick="showToast('System logs coming soon', 'info')">
-                                        <i class="fas fa-file-alt me-2"></i>System Logs
-                                    </a>
-                                    <a href="#" class="list-group-item list-group-item-action" onclick="showToast('Settings configuration coming soon', 'info')">
-                                        <i class="fas fa-cog me-2"></i>Configuration
-                                    </a>
+                            <div class="card-body">
+                                <div class="alert alert-info">CSV management section is being loaded. Please try refreshing the page.</div>
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <div class="list-group">
+                                            <h6 class="mb-3">Quick Actions</h6>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="showToast('CSV templates functionality loading...', 'info')">
+                                                <i class="fas fa-download me-2"></i>Download CSV Templates
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="showToast('CSV upload functionality loading...', 'info')">
+                                                <i class="fas fa-upload me-2"></i>Upload CSV Data
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="showToast('Data export functionality loading...', 'info')">
+                                                <i class="fas fa-file-export me-2"></i>Export Current Data
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="list-group">
+                                            <h6 class="mb-3">System Management</h6>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="showToast('Database backup functionality coming soon', 'info')">
+                                                <i class="fas fa-database me-2"></i>Backup Database
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="showToast('System logs coming soon', 'info')">
+                                                <i class="fas fa-file-alt me-2"></i>System Logs
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="showToast('Settings configuration coming soon', 'info')">
+                                                <i class="fas fa-cog me-2"></i>Configuration
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            `;
+                    `;
+                });
         }
 
         function showNewQuoteModal() {

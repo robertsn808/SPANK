@@ -1,0 +1,695 @@
+<div class="content-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">
+            <i class="fas fa-file-csv me-2"></i>CSV Data Management
+        </h3>
+        <div class="btn-group">
+            <button class="btn btn-spankks btn-sm" onclick="downloadAllTemplates()">
+                <i class="fas fa-download me-1"></i>Download All Templates
+            </button>
+            <button class="btn btn-outline-success btn-sm" onclick="refreshCsvStats()">
+                <i class="fas fa-sync-alt me-1"></i>Refresh Stats
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- CSV Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTemplates">7</div>
+                    <div class="stat-label">Available Templates</div>
+                    <div class="stat-change">
+                        <i class="fas fa-file-alt me-1"></i>Ready
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="uploadsToday">0</div>
+                    <div class="stat-label">Uploads Today</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-upload me-1"></i>Files
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="recordsImported">0</div>
+                    <div class="stat-label">Records Imported</div>
+                    <div class="stat-change">
+                        <i class="fas fa-database me-1"></i>Total
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="lastUpload">Never</div>
+                    <div class="stat-label">Last Upload</div>
+                    <div class="stat-change">
+                        <i class="fas fa-clock me-1"></i>Time
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CSV Management Tabs -->
+        <ul class="nav nav-tabs mb-4" id="csvTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="templates-tab" data-bs-toggle="tab" data-bs-target="#templates" type="button" role="tab">
+                    <i class="fas fa-download me-1"></i>Download Templates
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab">
+                    <i class="fas fa-upload me-1"></i>Upload Data
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="export-tab" data-bs-toggle="tab" data-bs-target="#export" type="button" role="tab">
+                    <i class="fas fa-file-export me-1"></i>Export Data
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
+                    <i class="fas fa-history me-1"></i>Upload History
+                </button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="csvTabContent">
+            <!-- Templates Tab -->
+            <div class="tab-pane fade show active" id="templates" role="tabpanel">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Download CSV templates to populate your SPANKKS Construction database with bulk data. Each template includes sample data and proper formatting.
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="template-group">
+                            <h6 class="mb-3">Core Business Data</h6>
+                            <div class="list-group">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Clients Template</strong>
+                                        <div class="text-muted small">Customer information, contact details, and addresses</div>
+                                    </div>
+                                    <button class="btn btn-outline-spankks btn-sm" onclick="downloadTemplate('clients')">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </button>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Jobs Template</strong>
+                                        <div class="text-muted small">Job details, schedules, and status tracking</div>
+                                    </div>
+                                    <button class="btn btn-outline-spankks btn-sm" onclick="downloadTemplate('jobs')">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </button>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Quotes Template</strong>
+                                        <div class="text-muted small">Quote information with Hawaii GET tax calculations</div>
+                                    </div>
+                                    <button class="btn btn-outline-spankks btn-sm" onclick="downloadTemplate('quotes')">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </button>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Invoices Template</strong>
+                                        <div class="text-muted small">Invoice data with payment tracking and tax details</div>
+                                    </div>
+                                    <button class="btn btn-outline-spankks btn-sm" onclick="downloadTemplate('invoices')">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="template-group">
+                            <h6 class="mb-3">Operations Data</h6>
+                            <div class="list-group">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Staff Template</strong>
+                                        <div class="text-muted small">Employee information, roles, and contact details</div>
+                                    </div>
+                                    <button class="btn btn-outline-spankks btn-sm" onclick="downloadTemplate('staff')">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </button>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Schedule Template</strong>
+                                        <div class="text-muted small">Appointment schedules and availability data</div>
+                                    </div>
+                                    <button class="btn btn-outline-spankks btn-sm" onclick="downloadTemplate('schedule')">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </button>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Service Types Template</strong>
+                                        <div class="text-muted small">Service categories and pricing information</div>
+                                    </div>
+                                    <button class="btn btn-outline-spankks btn-sm" onclick="downloadTemplate('service_types')">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upload Tab -->
+            <div class="tab-pane fade" id="upload" role="tabpanel">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Important:</strong> CSV uploads will add new records to your database. Ensure your CSV files follow the exact template format to avoid import errors.
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="upload-zone" id="csvUploadZone">
+                            <div class="upload-content text-center">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
+                                <h5>Drag and drop CSV files here</h5>
+                                <p class="text-muted">or click to browse files</p>
+                                <input type="file" id="csvFileInput" multiple accept=".csv" style="display: none;">
+                                <button class="btn btn-spankks" onclick="document.getElementById('csvFileInput').click()">
+                                    <i class="fas fa-folder-open me-1"></i>Browse Files
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="uploadPreview" class="mt-3" style="display: none;">
+                            <h6>Files Ready for Upload:</h6>
+                            <div id="filePreviewList"></div>
+                            <button class="btn btn-success mt-2" onclick="processUploadedFiles()">
+                                <i class="fas fa-upload me-1"></i>Process Upload
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Upload Guidelines</h6>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Use provided templates
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Keep header row intact
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Validate phone formats
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Check required fields
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-times text-danger me-2"></i>
+                                        No special characters in IDs
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-times text-danger me-2"></i>
+                                        Avoid duplicate entries
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Export Tab -->
+            <div class="tab-pane fade" id="export" role="tabpanel">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Export your current SPANKKS Construction data to CSV format for backup or analysis.
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Export Options</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="export-options">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="exportClients" checked>
+                                        <label class="form-check-label" for="exportClients">
+                                            <strong>Clients Data</strong>
+                                            <div class="text-muted small" id="clientsCount">0 records</div>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="exportJobs" checked>
+                                        <label class="form-check-label" for="exportJobs">
+                                            <strong>Jobs Data</strong>
+                                            <div class="text-muted small" id="jobsCount">0 records</div>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="exportQuotes" checked>
+                                        <label class="form-check-label" for="exportQuotes">
+                                            <strong>Quotes Data</strong>
+                                            <div class="text-muted small" id="quotesCount">0 records</div>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="exportInvoices" checked>
+                                        <label class="form-check-label" for="exportInvoices">
+                                            <strong>Invoices Data</strong>
+                                            <div class="text-muted small" id="invoicesCount">0 records</div>
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="exportStaff" checked>
+                                        <label class="form-check-label" for="exportStaff">
+                                            <strong>Staff Data</strong>
+                                            <div class="text-muted small" id="staffCount">0 records</div>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-spankks" onclick="exportSelectedData()">
+                                    <i class="fas fa-download me-1"></i>Export Selected Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Export History</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="exportHistory">
+                                    <div class="text-muted text-center">No exports yet</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upload History Tab -->
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>File Name</th>
+                                <th>Type</th>
+                                <th>Records</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="uploadHistoryTable">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    No upload history available. Upload history will appear after CSV imports.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-zone {
+    border: 2px dashed var(--spankks-green);
+    border-radius: 0.5rem;
+    padding: 3rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #f8f9fa;
+}
+
+.upload-zone:hover {
+    background: #e8f5e8;
+    border-color: #1e7e34;
+}
+
+.upload-zone.dragover {
+    background: #d4edda;
+    border-color: #1e7e34;
+}
+
+.template-group {
+    margin-bottom: 2rem;
+}
+
+.file-preview-item {
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+    background: white;
+}
+
+.export-options .form-check {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #dee2e6;
+}
+</style>
+
+<script>
+let uploadedCsvFiles = [];
+
+// Initialize CSV management
+document.addEventListener('DOMContentLoaded', function() {
+    loadCsvStats();
+    setupCsvUpload();
+    loadExportCounts();
+});
+
+function setupCsvUpload() {
+    const uploadZone = document.getElementById('csvUploadZone');
+    const fileInput = document.getElementById('csvFileInput');
+    
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', handleCsvDragOver);
+    uploadZone.addEventListener('drop', handleCsvDrop);
+    fileInput.addEventListener('change', handleCsvFileSelect);
+}
+
+function handleCsvDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('dragover');
+}
+
+function handleCsvDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('dragover');
+    const files = Array.from(e.dataTransfer.files).filter(file => file.name.endsWith('.csv'));
+    processCsvFiles(files);
+}
+
+function handleCsvFileSelect(e) {
+    const files = Array.from(e.target.files).filter(file => file.name.endsWith('.csv'));
+    processCsvFiles(files);
+}
+
+function processCsvFiles(files) {
+    uploadedCsvFiles = files;
+    displayCsvPreview();
+}
+
+function displayCsvPreview() {
+    const preview = document.getElementById('uploadPreview');
+    const fileList = document.getElementById('filePreviewList');
+    
+    if (uploadedCsvFiles.length === 0) {
+        preview.style.display = 'none';
+        return;
+    }
+    
+    preview.style.display = 'block';
+    fileList.innerHTML = uploadedCsvFiles.map((file, index) => `
+        <div class="file-preview-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>${file.name}</strong>
+                <div class="text-muted small">${(file.size / 1024).toFixed(1)} KB</div>
+            </div>
+            <div>
+                <span class="badge bg-info me-2">${detectCsvType(file.name)}</span>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCsvFile(${index})">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function detectCsvType(filename) {
+    const name = filename.toLowerCase();
+    if (name.includes('client')) return 'Clients';
+    if (name.includes('job')) return 'Jobs';
+    if (name.includes('quote')) return 'Quotes';
+    if (name.includes('invoice')) return 'Invoices';
+    if (name.includes('staff')) return 'Staff';
+    if (name.includes('schedule')) return 'Schedule';
+    if (name.includes('service')) return 'Services';
+    return 'Unknown';
+}
+
+function removeCsvFile(index) {
+    uploadedCsvFiles.splice(index, 1);
+    displayCsvPreview();
+}
+
+function downloadTemplate(templateType) {
+    fetch(`/api/csv/template/${templateType}`)
+        .then(response => {
+            if (response.ok) {
+                return response.blob();
+            }
+            throw new Error('Template not available');
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${templateType}_template.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            showToast(`${templateType} template downloaded`, 'success');
+        })
+        .catch(error => {
+            console.error('Download error:', error);
+            showToast(`Error downloading ${templateType} template`, 'error');
+        });
+}
+
+function downloadAllTemplates() {
+    const templates = ['clients', 'jobs', 'quotes', 'invoices', 'staff', 'schedule', 'service_types'];
+    
+    showToast('Downloading all templates...', 'info');
+    
+    fetch('/api/csv/templates/zip')
+        .then(response => {
+            if (response.ok) {
+                return response.blob();
+            }
+            throw new Error('Templates not available');
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'spankks_csv_templates.zip';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            showToast('All templates downloaded as ZIP file', 'success');
+        })
+        .catch(error => {
+            console.error('Download error:', error);
+            showToast('Error downloading template package', 'error');
+        });
+}
+
+function processUploadedFiles() {
+    if (uploadedCsvFiles.length === 0) {
+        showToast('No files selected for upload', 'warning');
+        return;
+    }
+    
+    showToast(`Processing ${uploadedCsvFiles.length} CSV files...`, 'info');
+    
+    const uploadPromises = uploadedCsvFiles.map(file => {
+        const formData = new FormData();
+        formData.append('csv_file', file);
+        formData.append('file_type', detectCsvType(file.name).toLowerCase());
+        
+        return fetch('/api/csv/upload', {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json());
+    });
+    
+    Promise.all(uploadPromises)
+        .then(results => {
+            const successful = results.filter(r => r.success);
+            const failed = results.filter(r => !r.success);
+            
+            if (successful.length > 0) {
+                showToast(`${successful.length} files uploaded successfully!`, 'success');
+                loadCsvStats();
+                loadUploadHistory();
+            }
+            
+            if (failed.length > 0) {
+                showToast(`${failed.length} files failed to upload`, 'error');
+                console.error('Failed uploads:', failed);
+            }
+            
+            // Clear upload
+            uploadedCsvFiles = [];
+            displayCsvPreview();
+        })
+        .catch(error => {
+            console.error('Upload error:', error);
+            showToast('Error processing uploads', 'error');
+        });
+}
+
+function loadCsvStats() {
+    // Load upload statistics
+    fetch('/api/csv/stats')
+        .then(response => response.json())
+        .then(stats => {
+            document.getElementById('uploadsToday').textContent = stats.uploads_today || 0;
+            document.getElementById('recordsImported').textContent = stats.total_records || 0;
+            document.getElementById('lastUpload').textContent = stats.last_upload || 'Never';
+        })
+        .catch(error => {
+            console.error('Error loading CSV stats:', error);
+        });
+}
+
+function loadExportCounts() {
+    // Load current data counts for export
+    Promise.all([
+        fetch('/api/contacts').then(r => r.json()),
+        fetch('/api/quotes').then(r => r.json()),
+        fetch('/api/invoices').then(r => r.json()),
+        fetch('/api/staff/enhanced').then(r => r.json())
+    ]).then(([contacts, quotes, invoices, staff]) => {
+        document.getElementById('clientsCount').textContent = `${contacts.length || 0} records`;
+        document.getElementById('quotesCount').textContent = `${quotes.length || 0} records`;
+        document.getElementById('invoicesCount').textContent = `${invoices.length || 0} records`;
+        document.getElementById('staffCount').textContent = `${staff.length || 0} records`;
+        document.getElementById('jobsCount').textContent = '0 records'; // Jobs would need separate endpoint
+    }).catch(error => {
+        console.error('Error loading export counts:', error);
+    });
+}
+
+function exportSelectedData() {
+    const selections = {
+        clients: document.getElementById('exportClients').checked,
+        jobs: document.getElementById('exportJobs').checked,
+        quotes: document.getElementById('exportQuotes').checked,
+        invoices: document.getElementById('exportInvoices').checked,
+        staff: document.getElementById('exportStaff').checked
+    };
+    
+    const selectedTypes = Object.keys(selections).filter(type => selections[type]);
+    
+    if (selectedTypes.length === 0) {
+        showToast('Please select at least one data type to export', 'warning');
+        return;
+    }
+    
+    showToast(`Exporting ${selectedTypes.join(', ')} data...`, 'info');
+    
+    fetch('/api/csv/export', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ types: selectedTypes })
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.blob();
+        }
+        throw new Error('Export failed');
+    })
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `spankks_data_export_${new Date().toISOString().split('T')[0]}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        showToast('Data exported successfully', 'success');
+    })
+    .catch(error => {
+        console.error('Export error:', error);
+        showToast('Error exporting data', 'error');
+    });
+}
+
+function loadUploadHistory() {
+    fetch('/api/csv/history')
+        .then(response => response.json())
+        .then(history => {
+            const tbody = document.getElementById('uploadHistoryTable');
+            
+            if (history.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            No upload history available. Upload history will appear after CSV imports.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = history.map(record => `
+                <tr>
+                    <td>${formatDate(record.date)}</td>
+                    <td>${record.filename}</td>
+                    <td><span class="badge bg-info">${record.type}</span></td>
+                    <td>${record.records_count}</td>
+                    <td>
+                        <span class="badge bg-${record.status === 'success' ? 'success' : 'danger'}">
+                            ${record.status}
+                        </span>
+                    </td>
+                    <td>${record.details || '-'}</td>
+                </tr>
+            `).join('');
+        })
+        .catch(error => {
+            console.error('Error loading upload history:', error);
+        });
+}
+
+function refreshCsvStats() {
+    loadCsvStats();
+    loadExportCounts();
+    loadUploadHistory();
+    showToast('CSV statistics refreshed', 'info');
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+}
+
+// Load CSV management data when section is shown
+if (typeof loadCsvStats === 'function') {
+    loadCsvStats();
+}
+</script>
