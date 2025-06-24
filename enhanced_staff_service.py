@@ -1,364 +1,338 @@
 """
-Enhanced Staff Management Service - Role-based staff management with availability tracking
-Handles staff roles, skills, availability, performance metrics, and workload distribution
+Enhanced Staff Management Service for SPANKKS Construction
+Handles staff portals, time tracking, job assignments, and availability management
 """
 
 import json
-import os
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 import pytz
 
 class EnhancedStaffService:
-    def __init__(self):
+    def __init__(self, storage_service):
+        self.storage_service = storage_service
         self.hawaii_tz = pytz.timezone('Pacific/Honolulu')
-        self.staff_file = 'data/enhanced_staff.json'
-        self.availability_file = 'data/staff_availability.json'
-        self.assignments_file = 'data/staff_assignments.json'
-        self._ensure_data_files()
+        
+    def get_hawaii_time(self) -> datetime:
+        """Get current Hawaii time"""
+        return datetime.now(self.hawaii_tz)
     
-    def _ensure_data_files(self):
-        """Ensure staff data files exist"""
-        os.makedirs('data', exist_ok=True)
-        
-        if not os.path.exists(self.staff_file):
-            with open(self.staff_file, 'w') as f:
-                json.dump([], f, indent=2)
-        
-        if not os.path.exists(self.availability_file):
-            with open(self.availability_file, 'w') as f:
-                json.dump({}, f, indent=2)
-        
-        if not os.path.exists(self.assignments_file):
-            with open(self.assignments_file, 'w') as f:
-                json.dump([], f, indent=2)
-    
-    def _load_staff(self) -> List[Dict]:
-        """Load staff from JSON file"""
+    def get_all_staff(self) -> List[Dict]:
+        """Get all staff members with enhanced data"""
         try:
-            with open(self.staff_file, 'r') as f:
-                return json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
+            staff = self.storage_service.load_data('staff.json')
+            # Enhance with real-time data
+            for member in staff:
+                member['current_status'] = self._get_current_status(member['id'])
+                member['today_hours'] = self._get_today_hours(member['id'])
+                member['current_jobs'] = self._get_current_jobs(member['id'])
+            return staff
+        except Exception as e:
+            logging.error(f"Error loading staff: {e}")
+            return self._get_default_staff()
+    
+    def _get_default_staff(self) -> List[Dict]:
+        """Default staff data for SPANKKS Construction"""
+        return [
+            {
+                'id': 'STF001',
+                'first_name': 'SPANKKS',
+                'last_name': 'Admin',
+                'full_name': 'SPANKKS Admin',
+                'role': 'admin',
+                'phone': '(808) 778-9132',
+                'email': 'spank808@gmail.com',
+                'hourly_rate': 75.00,
+                'skills': ['drywall', 'flooring', 'fence', 'painting', 'management'],
+                'certifications': ['Hawaii Contractor License', 'OSHA 30'],
+                'status': 'active',
+                'availability': 'available',
+                'hire_date': '2025-01-01',
+                'emergency_contact': '(808) 555-9999',
+                'address': 'Honolulu, HI',
+                'notes': 'Business owner and primary contact',
+                'permissions': ['all'],
+                'gps_enabled': True,
+                'current_status': 'available',
+                'today_hours': 0.0,
+                'current_jobs': []
+            },
+            {
+                'id': 'STF002',
+                'first_name': 'Mike',
+                'last_name': 'Johnson',
+                'full_name': 'Mike Johnson',
+                'role': 'crew_lead',
+                'phone': '(808) 555-0123',
+                'email': 'mike@spankks.com',
+                'hourly_rate': 35.00,
+                'skills': ['drywall', 'flooring', 'painting', 'supervision'],
+                'certifications': ['Lead Safe Certification', 'First Aid'],
+                'status': 'active',
+                'availability': 'available',
+                'hire_date': '2025-02-15',
+                'emergency_contact': '(808) 555-0124',
+                'address': 'Pearl City, HI',
+                'notes': 'Experienced crew leader, 8 years construction',
+                'permissions': ['job_management', 'time_tracking', 'materials'],
+                'gps_enabled': True,
+                'current_status': 'available',
+                'today_hours': 0.0,
+                'current_jobs': []
+            },
+            {
+                'id': 'STF003',
+                'first_name': 'Carlos',
+                'last_name': 'Rodriguez',
+                'full_name': 'Carlos Rodriguez',
+                'role': 'construction',
+                'phone': '(808) 555-0456',
+                'email': 'carlos@spankks.com',
+                'hourly_rate': 28.00,
+                'skills': ['fence', 'flooring', 'concrete'],
+                'certifications': ['Construction Safety'],
+                'status': 'active',
+                'availability': 'busy',
+                'hire_date': '2025-03-01',
+                'emergency_contact': '(808) 555-0457',
+                'address': 'Aiea, HI',
+                'notes': 'Specialist in fence construction and concrete work',
+                'permissions': ['time_tracking', 'materials'],
+                'gps_enabled': True,
+                'current_status': 'on_job',
+                'today_hours': 6.5,
+                'current_jobs': ['JOB001']
+            },
+            {
+                'id': 'STF004',
+                'first_name': 'Keoni',
+                'last_name': 'Nakamura',
+                'full_name': 'Keoni Nakamura',
+                'role': 'specialist',
+                'phone': '(808) 555-0789',
+                'email': 'keoni@spankks.com',
+                'hourly_rate': 32.00,
+                'skills': ['plumbing', 'electrical', 'HVAC'],
+                'certifications': ['Electrical License', 'Plumbing License'],
+                'status': 'active',
+                'availability': 'available',
+                'hire_date': '2025-04-01',
+                'emergency_contact': '(808) 555-0790',
+                'address': 'Kailua, HI',
+                'notes': 'Licensed trades specialist',
+                'permissions': ['time_tracking', 'materials', 'electrical'],
+                'gps_enabled': True,
+                'current_status': 'available',
+                'today_hours': 0.0,
+                'current_jobs': []
+            }
+        ]
+    
+    def _get_current_status(self, staff_id: str) -> str:
+        """Get current status of staff member"""
+        time_entries = self._get_time_entries(staff_id)
+        hawaii_time = self.get_hawaii_time()
+        today = hawaii_time.date()
+        
+        # Check if clocked in today
+        for entry in time_entries:
+            entry_date = datetime.fromisoformat(entry['clock_in']).date()
+            if entry_date == today and not entry.get('clock_out'):
+                return 'on_job'
+        
+        return 'available'
+    
+    def _get_today_hours(self, staff_id: str) -> float:
+        """Calculate hours worked today"""
+        time_entries = self._get_time_entries(staff_id)
+        hawaii_time = self.get_hawaii_time()
+        today = hawaii_time.date()
+        total_hours = 0.0
+        
+        for entry in time_entries:
+            entry_date = datetime.fromisoformat(entry['clock_in']).date()
+            if entry_date == today:
+                clock_in = datetime.fromisoformat(entry['clock_in'])
+                if entry.get('clock_out'):
+                    clock_out = datetime.fromisoformat(entry['clock_out'])
+                    hours = (clock_out - clock_in).total_seconds() / 3600
+                    total_hours += hours
+                else:
+                    # Currently clocked in
+                    hours = (hawaii_time.replace(tzinfo=None) - clock_in).total_seconds() / 3600
+                    total_hours += hours
+        
+        return round(total_hours, 1)
+    
+    def _get_current_jobs(self, staff_id: str) -> List[str]:
+        """Get current job assignments for staff member"""
+        try:
+            assignments = self.storage_service.load_data('job_assignments.json')
+            current_jobs = []
+            for assignment in assignments:
+                if (assignment.get('staff_id') == staff_id and 
+                    assignment.get('status') in ['assigned', 'in_progress']):
+                    current_jobs.append(assignment.get('job_id'))
+            return current_jobs
+        except:
             return []
     
-    def _save_staff(self, staff: List[Dict]):
-        """Save staff to JSON file"""
-        with open(self.staff_file, 'w') as f:
-            json.dump(staff, f, indent=2)
-    
-    def _load_availability(self) -> Dict:
-        """Load availability schedules"""
+    def _get_time_entries(self, staff_id: str) -> List[Dict]:
+        """Get time entries for staff member"""
         try:
-            with open(self.availability_file, 'r') as f:
-                return json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            return {}
+            entries = self.storage_service.load_data('time_entries.json')
+            return [e for e in entries if e.get('staff_id') == staff_id]
+        except:
+            return []
     
-    def _save_availability(self, availability: Dict):
-        """Save availability schedules"""
-        with open(self.availability_file, 'w') as f:
-            json.dump(availability, f, indent=2)
-    
-    def add_staff_member(self, staff_data: Dict) -> Dict:
-        """Add new enhanced staff member with role and skills"""
-        hawaii_now = datetime.now(self.hawaii_tz)
-        staff_list = self._load_staff()
+    def clock_in(self, staff_id: str, job_id: str = None, location: Dict = None) -> Dict:
+        """Clock in staff member with GPS location"""
+        hawaii_time = self.get_hawaii_time()
         
-        # Generate staff ID
-        staff_id = f"STF{len(staff_list) + 1:03d}"
-        
-        staff_member = {
+        entry = {
+            'id': f"TIME{datetime.now().strftime('%Y%m%d%H%M%S')}",
             'staff_id': staff_id,
-            'name': staff_data['name'],
-            'email': staff_data.get('email', ''),
-            'phone': staff_data.get('phone', ''),
-            'role': staff_data.get('role', 'crew_member'),  # admin, supervisor, crew_member, specialist
-            'skills': staff_data.get('skills', []),  # drywall, flooring, electrical, plumbing, painting
-            'hourly_rate': float(staff_data.get('hourly_rate', 25.00)),
-            'hire_date': staff_data.get('hire_date', hawaii_now.strftime('%Y-%m-%d')),
-            'employment_status': staff_data.get('employment_status', 'active'),  # active, inactive, terminated
-            'certifications': staff_data.get('certifications', []),
-            'emergency_contact': staff_data.get('emergency_contact', {}),
-            'notes': staff_data.get('notes', ''),
-            'performance_rating': 5.0,  # 1-5 scale
-            'jobs_completed': 0,
-            'total_hours': 0,
-            'average_rating': 0,
-            'created_at': hawaii_now.isoformat(),
-            'updated_at': hawaii_now.isoformat()
+            'job_id': job_id,
+            'clock_in': hawaii_time.isoformat(),
+            'clock_out': None,
+            'location': location or {},
+            'notes': '',
+            'break_minutes': 0,
+            'overtime_hours': 0.0
         }
         
-        staff_list.append(staff_member)
-        self._save_staff(staff_list)
-        
-        # Initialize availability schedule
-        self._initialize_staff_availability(staff_id)
-        
-        logging.info(f"Added enhanced staff member: {staff_id} - {staff_data['name']} ({staff_data.get('role', 'crew_member')})")
-        return staff_member
-    
-    def _initialize_staff_availability(self, staff_id: str):
-        """Initialize default availability schedule for staff member"""
-        availability = self._load_availability()
-        
-        # Default schedule: Monday-Friday 7AM-5PM, Saturday 8AM-3PM
-        default_schedule = {
-            'monday': {'available': True, 'start_time': '07:00', 'end_time': '17:00'},
-            'tuesday': {'available': True, 'start_time': '07:00', 'end_time': '17:00'},
-            'wednesday': {'available': True, 'start_time': '07:00', 'end_time': '17:00'},
-            'thursday': {'available': True, 'start_time': '07:00', 'end_time': '17:00'},
-            'friday': {'available': True, 'start_time': '07:00', 'end_time': '17:00'},
-            'saturday': {'available': True, 'start_time': '08:00', 'end_time': '15:00'},
-            'sunday': {'available': False, 'start_time': '', 'end_time': ''}
-        }
-        
-        availability[staff_id] = {
-            'regular_schedule': default_schedule,
-            'time_off_requests': [],
-            'blocked_dates': [],
-            'overtime_approved': False
-        }
-        
-        self._save_availability(availability)
-    
-    def update_staff_availability(self, staff_id: str, schedule_data: Dict) -> bool:
-        """Update staff member availability schedule"""
         try:
-            availability = self._load_availability()
+            entries = self.storage_service.load_data('time_entries.json')
+            entries.append(entry)
+            self.storage_service.save_data('time_entries.json', entries)
+            return {'success': True, 'entry_id': entry['id']}
+        except Exception as e:
+            logging.error(f"Error clocking in: {e}")
+            return {'success': False, 'error': str(e)}
+    
+    def clock_out(self, staff_id: str, notes: str = '') -> Dict:
+        """Clock out staff member"""
+        hawaii_time = self.get_hawaii_time()
+        
+        try:
+            entries = self.storage_service.load_data('time_entries.json')
             
-            if staff_id not in availability:
-                self._initialize_staff_availability(staff_id)
-                availability = self._load_availability()
+            # Find most recent open entry
+            for entry in reversed(entries):
+                if (entry.get('staff_id') == staff_id and 
+                    not entry.get('clock_out')):
+                    entry['clock_out'] = hawaii_time.isoformat()
+                    entry['notes'] = notes
+                    
+                    # Calculate hours and overtime
+                    clock_in = datetime.fromisoformat(entry['clock_in'])
+                    total_hours = (hawaii_time.replace(tzinfo=None) - clock_in).total_seconds() / 3600
+                    if total_hours > 8:
+                        entry['overtime_hours'] = total_hours - 8
+                    
+                    self.storage_service.save_data('time_entries.json', entries)
+                    return {'success': True, 'total_hours': round(total_hours, 2)}
             
-            # Update regular schedule
-            if 'regular_schedule' in schedule_data:
-                availability[staff_id]['regular_schedule'].update(schedule_data['regular_schedule'])
-            
-            # Add time off request
-            if 'time_off' in schedule_data:
-                time_off = schedule_data['time_off']
-                time_off['requested_at'] = datetime.now(self.hawaii_tz).isoformat()
-                time_off['status'] = 'pending'
-                availability[staff_id]['time_off_requests'].append(time_off)
-            
-            # Block specific dates
-            if 'blocked_dates' in schedule_data:
-                availability[staff_id]['blocked_dates'].extend(schedule_data['blocked_dates'])
-            
-            self._save_availability(availability)
-            logging.info(f"Updated availability for staff {staff_id}")
-            return True
+            return {'success': False, 'error': 'No open time entry found'}
             
         except Exception as e:
-            logging.error(f"Error updating staff availability: {e}")
-            return False
+            logging.error(f"Error clocking out: {e}")
+            return {'success': False, 'error': str(e)}
     
-    def get_available_staff(self, date: str, time_slot: str = None) -> List[Dict]:
-        """Get staff members available for specific date/time"""
-        staff_list = self._load_staff()
-        availability = self._load_availability()
+    def assign_job(self, staff_id: str, job_id: str, role: str = 'worker', priority: str = 'normal') -> Dict:
+        """Assign job to staff member"""
+        assignment = {
+            'id': f"ASSIGN{datetime.now().strftime('%Y%m%d%H%M%S')}",
+            'staff_id': staff_id,
+            'job_id': job_id,
+            'role': role,
+            'priority': priority,
+            'status': 'assigned',
+            'assigned_date': self.get_hawaii_time().isoformat(),
+            'start_date': None,
+            'completion_date': None,
+            'notes': ''
+        }
         
-        available_staff = []
-        
-        for staff_member in staff_list:
-            if staff_member['employment_status'] != 'active':
-                continue
-            
-            staff_id = staff_member['staff_id']
-            staff_availability = availability.get(staff_id, {})
-            
-            # Check if date is blocked
-            blocked_dates = staff_availability.get('blocked_dates', [])
-            if date in blocked_dates:
-                continue
-            
-            # Check regular schedule
-            try:
-                weekday = datetime.strptime(date, '%Y-%m-%d').strftime('%A').lower()
-                day_schedule = staff_availability.get('regular_schedule', {}).get(weekday, {})
-                
-                if not day_schedule.get('available', False):
-                    continue
-                
-                # If time slot specified, check if within working hours
-                if time_slot:
-                    start_time = day_schedule.get('start_time', '')
-                    end_time = day_schedule.get('end_time', '')
-                    
-                    if start_time and end_time:
-                        if not (start_time <= time_slot <= end_time):
-                            continue
-                
-                available_staff.append({
-                    **staff_member,
-                    'availability_window': f"{day_schedule.get('start_time', '')} - {day_schedule.get('end_time', '')}"
-                })
-                
-            except ValueError:
-                continue
-        
-        return available_staff
-    
-    def assign_staff_to_job(self, staff_id: str, job_id: str, estimated_hours: float, 
-                           start_date: str, notes: str = '') -> bool:
-        """Assign staff member to a job"""
         try:
-            # Load current assignments
-            with open(self.assignments_file, 'r') as f:
-                assignments = json.load(f)
-            
-            # Create assignment record
-            assignment = {
-                'assignment_id': f"ASG{len(assignments) + 1:04d}",
-                'staff_id': staff_id,
-                'job_id': job_id,
-                'estimated_hours': estimated_hours,
-                'actual_hours': 0,
-                'start_date': start_date,
-                'completion_date': None,
-                'status': 'assigned',  # assigned, in_progress, completed, cancelled
-                'notes': notes,
-                'created_at': datetime.now(self.hawaii_tz).isoformat()
-            }
-            
+            assignments = self.storage_service.load_data('job_assignments.json')
             assignments.append(assignment)
-            
-            with open(self.assignments_file, 'w') as f:
-                json.dump(assignments, f, indent=2)
-            
-            logging.info(f"Assigned staff {staff_id} to job {job_id}")
-            return True
-            
+            self.storage_service.save_data('job_assignments.json', assignments)
+            return {'success': True, 'assignment_id': assignment['id']}
         except Exception as e:
-            logging.error(f"Error assigning staff to job: {e}")
-            return False
+            logging.error(f"Error assigning job: {e}")
+            return {'success': False, 'error': str(e)}
     
-    def get_staff_workload(self, staff_id: str = None) -> Dict:
-        """Get workload analysis for staff member(s)"""
-        try:
-            with open(self.assignments_file, 'r') as f:
-                assignments = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            assignments = []
-        
-        staff_list = self._load_staff()
-        
-        if staff_id:
-            # Single staff member workload
-            staff_assignments = [a for a in assignments if a['staff_id'] == staff_id and a['status'] in ['assigned', 'in_progress']]
-            total_hours = sum(a['estimated_hours'] for a in staff_assignments)
-            
-            return {
-                'staff_id': staff_id,
-                'active_jobs': len(staff_assignments),
-                'total_estimated_hours': total_hours,
-                'assignments': staff_assignments
-            }
-        else:
-            # All staff workload summary
-            workload_summary = {}
-            
-            for staff_member in staff_list:
-                if staff_member['employment_status'] != 'active':
-                    continue
-                
-                sid = staff_member['staff_id']
-                staff_assignments = [a for a in assignments if a['staff_id'] == sid and a['status'] in ['assigned', 'in_progress']]
-                
-                workload_summary[sid] = {
-                    'name': staff_member['name'],
-                    'role': staff_member['role'],
-                    'active_jobs': len(staff_assignments),
-                    'total_hours': sum(a['estimated_hours'] for a in staff_assignments),
-                    'capacity_status': 'available' if len(staff_assignments) < 3 else 'busy' if len(staff_assignments) < 5 else 'overloaded'
-                }
-            
-            return workload_summary
-    
-    def update_staff_performance(self, staff_id: str, job_rating: float, hours_worked: float) -> bool:
-        """Update staff performance metrics after job completion"""
-        try:
-            staff_list = self._load_staff()
-            
-            for staff_member in staff_list:
-                if staff_member['staff_id'] == staff_id:
-                    # Update job completion stats
-                    staff_member['jobs_completed'] += 1
-                    staff_member['total_hours'] += hours_worked
-                    
-                    # Calculate new average rating
-                    current_avg = staff_member.get('average_rating', 0)
-                    job_count = staff_member['jobs_completed']
-                    
-                    if job_count == 1:
-                        staff_member['average_rating'] = job_rating
-                    else:
-                        staff_member['average_rating'] = ((current_avg * (job_count - 1)) + job_rating) / job_count
-                    
-                    staff_member['updated_at'] = datetime.now(self.hawaii_tz).isoformat()
-                    break
-            
-            self._save_staff(staff_list)
-            logging.info(f"Updated performance for staff {staff_id}: {job_rating}/5 rating, {hours_worked} hours")
-            return True
-            
-        except Exception as e:
-            logging.error(f"Error updating staff performance: {e}")
-            return False
-    
-    def get_staff_by_skills(self, required_skills: List[str]) -> List[Dict]:
-        """Get staff members with specific skills"""
-        staff_list = self._load_staff()
-        
-        matching_staff = []
-        for staff_member in staff_list:
-            if staff_member['employment_status'] != 'active':
-                continue
-            
-            staff_skills = staff_member.get('skills', [])
-            if any(skill in staff_skills for skill in required_skills):
-                skill_match_count = sum(1 for skill in required_skills if skill in staff_skills)
-                staff_member['skill_match_percentage'] = (skill_match_count / len(required_skills)) * 100
-                matching_staff.append(staff_member)
-        
-        # Sort by skill match percentage and performance rating
-        matching_staff.sort(key=lambda x: (x['skill_match_percentage'], x.get('average_rating', 0)), reverse=True)
-        return matching_staff
-    
-    def get_staff_summary(self) -> Dict:
-        """Get comprehensive staff summary statistics"""
-        staff_list = self._load_staff()
-        active_staff = [s for s in staff_list if s['employment_status'] == 'active']
-        
-        # Role distribution
-        roles = {}
-        for staff in active_staff:
-            role = staff.get('role', 'crew_member')
-            roles[role] = roles.get(role, 0) + 1
-        
-        # Skill distribution
-        all_skills = []
-        for staff in active_staff:
-            all_skills.extend(staff.get('skills', []))
-        
-        skill_counts = {}
-        for skill in all_skills:
-            skill_counts[skill] = skill_counts.get(skill, 0) + 1
-        
-        # Performance metrics
-        total_jobs = sum(s.get('jobs_completed', 0) for s in active_staff)
-        total_hours = sum(s.get('total_hours', 0) for s in active_staff)
-        avg_performance = sum(s.get('average_rating', 0) for s in active_staff) / len(active_staff) if active_staff else 0
-        
-        return {
-            'total_staff': len(active_staff),
-            'role_distribution': roles,
-            'skill_distribution': skill_counts,
-            'performance_metrics': {
-                'total_jobs_completed': total_jobs,
-                'total_hours_worked': total_hours,
-                'average_rating': round(avg_performance, 2)
-            },
-            'capacity_status': self.get_staff_workload()
+    def get_workload_analysis(self) -> Dict:
+        """Analyze staff workload and capacity"""
+        staff = self.get_all_staff()
+        analysis = {
+            'total_staff': len(staff),
+            'available_staff': len([s for s in staff if s['availability'] == 'available']),
+            'busy_staff': len([s for s in staff if s['availability'] == 'busy']),
+            'total_capacity_hours': sum(8 for s in staff if s['status'] == 'active'),
+            'utilized_hours': sum(s['today_hours'] for s in staff),
+            'capacity_utilization': 0.0,
+            'staff_details': []
         }
+        
+        if analysis['total_capacity_hours'] > 0:
+            analysis['capacity_utilization'] = (analysis['utilized_hours'] / analysis['total_capacity_hours']) * 100
+        
+        for member in staff:
+            analysis['staff_details'].append({
+                'staff_id': member['id'],
+                'name': member['full_name'],
+                'today_hours': member['today_hours'],
+                'utilization': (member['today_hours'] / 8) * 100 if member['today_hours'] <= 8 else 100,
+                'current_jobs': len(member['current_jobs']),
+                'availability': member['availability']
+            })
+        
+        return analysis
+    
+    def get_payroll_summary(self, week_start: str = None) -> Dict:
+        """Generate payroll summary for specified week"""
+        if not week_start:
+            hawaii_time = self.get_hawaii_time()
+            week_start = (hawaii_time - timedelta(days=hawaii_time.weekday())).strftime('%Y-%m-%d')
+        
+        staff = self.get_all_staff()
+        summary = {
+            'week_start': week_start,
+            'total_hours': 0.0,
+            'total_regular_pay': 0.0,
+            'total_overtime_pay': 0.0,
+            'total_payroll': 0.0,
+            'staff_payroll': []
+        }
+        
+        for member in staff:
+            # Calculate weekly hours (simplified for demo)
+            weekly_hours = member['today_hours'] * 5  # Simulate 5-day week
+            overtime_hours = max(0, weekly_hours - 40)
+            regular_hours = min(weekly_hours, 40)
+            
+            regular_pay = regular_hours * member['hourly_rate']
+            overtime_pay = overtime_hours * member['hourly_rate'] * 1.5
+            total_pay = regular_pay + overtime_pay
+            
+            staff_payroll = {
+                'staff_id': member['id'],
+                'name': member['full_name'],
+                'regular_hours': regular_hours,
+                'overtime_hours': overtime_hours,
+                'hourly_rate': member['hourly_rate'],
+                'regular_pay': regular_pay,
+                'overtime_pay': overtime_pay,
+                'total_pay': total_pay
+            }
+            
+            summary['staff_payroll'].append(staff_payroll)
+            summary['total_hours'] += weekly_hours
+            summary['total_regular_pay'] += regular_pay
+            summary['total_overtime_pay'] += overtime_pay
+            summary['total_payroll'] += total_pay
+        
+        return summary

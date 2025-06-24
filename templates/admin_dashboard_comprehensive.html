@@ -1289,16 +1289,29 @@
         }
 
         function loadPhotosSection() {
-            document.getElementById('dynamic-content').innerHTML = `
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-camera me-2"></i>Job Photos</h3>
-                    </div>
-                    <div class="card-body">
-                        <p>Before/after photo documentation will be implemented here.</p>
-                    </div>
-                </div>
-            `;
+            fetch('/templates/enhanced_photos_section.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('dynamic-content').innerHTML = html;
+                    setTimeout(() => {
+                        if (typeof loadPhotoGallery === 'function') {
+                            loadPhotoGallery();
+                        }
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error loading photos section:', error);
+                    document.getElementById('dynamic-content').innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-camera me-2"></i>Job Photos</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">Photo management section is being loaded. Please try refreshing the page.</div>
+                            </div>
+                        </div>
+                    `;
+                });
         }
 
         function loadBusinessIntelligenceSection() {
