@@ -720,12 +720,12 @@ def admin_dashboard():
             'overdue_count': overdue_count
         }
         
-        return render_template('admin_dashboard_modern.html', **dashboard_data)
+        return render_template('admin_dashboard_simple.html', **dashboard_data)
     
     except Exception as e:
         logging.error(f"Modern dashboard error: {e}")
         # Return minimal dashboard with safe defaults
-        return render_template('admin_dashboard_modern.html',
+        return render_template('admin_dashboard_simple.html',
                                today_stats={'jobs': 0, 'quotes': 0, 'revenue': 0},
                                new_contacts=0, low_stock_count=0, overdue_count=0)
 
