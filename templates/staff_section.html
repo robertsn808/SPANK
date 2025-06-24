@@ -1,0 +1,587 @@
+<div class="content-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">
+            <i class="fas fa-users me-2"></i>Staff Management Portal
+        </h3>
+        <div class="btn-group">
+            <button class="btn btn-spankks btn-sm" onclick="showAddStaffModal()">
+                <i class="fas fa-user-plus me-1"></i>Add Staff
+            </button>
+            <a href="/portal" target="_blank" class="btn btn-outline-success btn-sm">
+                <i class="fas fa-external-link-alt me-1"></i>Staff Portal
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Staff Overview Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalStaff">0</div>
+                    <div class="stat-label">Total Staff</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-users me-1"></i>Active
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="onDutyStaff">0</div>
+                    <div class="stat-label">On Duty Today</div>
+                    <div class="stat-change">
+                        <i class="fas fa-clock me-1"></i>Working
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="avgHourlyRate">$0</div>
+                    <div class="stat-label">Avg Hourly Rate</div>
+                    <div class="stat-change">
+                        <i class="fas fa-dollar-sign me-1"></i>Current
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="availableStaff">0</div>
+                    <div class="stat-label">Available</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-user-check me-1"></i>Ready
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Staff Tabs -->
+        <ul class="nav nav-tabs mb-4" id="staffTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="staff-list-tab" data-bs-toggle="tab" data-bs-target="#staff-list" type="button" role="tab">
+                    <i class="fas fa-list me-1"></i>Staff Directory
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="time-tracking-tab" data-bs-toggle="tab" data-bs-target="#time-tracking" type="button" role="tab">
+                    <i class="fas fa-clock me-1"></i>Time Tracking
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="assignments-tab" data-bs-toggle="tab" data-bs-target="#assignments" type="button" role="tab">
+                    <i class="fas fa-tasks me-1"></i>Job Assignments
+                </button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="staffTabContent">
+            <!-- Staff Directory Tab -->
+            <div class="tab-pane fade show active" id="staff-list" role="tabpanel">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="Search staff..." id="staffSearch">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="roleFilter">
+                            <option value="">All Roles</option>
+                            <option value="admin">Admin</option>
+                            <option value="crew_lead">Crew Lead</option>
+                            <option value="construction">Construction Worker</option>
+                            <option value="specialist">Specialist</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="on_leave">On Leave</option>
+                            <option value="busy">Busy</option>
+                            <option value="available">Available</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-success" onclick="refreshStaff()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table data-table" id="staffTable">
+                        <thead>
+                            <tr>
+                                <th>Staff Member</th>
+                                <th>Role</th>
+                                <th>Skills</th>
+                                <th>Hourly Rate</th>
+                                <th>Status</th>
+                                <th>Contact</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    <div class="loading-spinner me-2"></div>
+                                    Loading staff...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Time Tracking Tab -->
+            <div class="tab-pane fade" id="time-tracking" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-success">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Today's Time Clock</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span>Current Hawaii Time:</span>
+                                    <span class="fw-bold" id="hawaiiTimeClock"></span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span>Staff Clocked In:</span>
+                                    <span id="clockedInCount">0</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Total Hours Today:</span>
+                                    <span id="totalHoursToday">0.0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-info">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Payroll Summary</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span>This Week Hours:</span>
+                                    <span id="weeklyHours">0.0</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span>Estimated Payroll:</span>
+                                    <span id="estimatedPayroll">$0.00</span>
+                                </div>
+                                <button class="btn btn-sm btn-outline-info" onclick="generatePayrollReport()">
+                                    <i class="fas fa-file-excel me-1"></i>Generate Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Recent Time Entries</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Staff</th>
+                                    <th>Clock In</th>
+                                    <th>Clock Out</th>
+                                    <th>Hours</th>
+                                    <th>Job Site</th>
+                                </tr>
+                            </thead>
+                            <tbody id="timeEntriesTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">
+                                        No time entries for today
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Job Assignments Tab -->
+            <div class="tab-pane fade" id="assignments" role="tabpanel">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <button class="btn btn-spankks" onclick="showAssignJobModal()">
+                            <i class="fas fa-plus me-1"></i>Assign Job
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table data-table">
+                        <thead>
+                            <tr>
+                                <th>Job ID</th>
+                                <th>Client</th>
+                                <th>Assigned Staff</th>
+                                <th>Service Type</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assignmentsTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    <i class="fas fa-tasks fa-2x mb-2"></i>
+                                    <div>No job assignments yet.</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Staff Modal -->
+<div class="modal fade" id="addStaffModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-plus me-2"></i>Add Staff Member
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addStaffForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" name="first_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" name="last_name" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" name="phone" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Role</label>
+                                <select class="form-select" name="role" required>
+                                    <option value="">Select Role</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="crew_lead">Crew Lead</option>
+                                    <option value="construction">Construction Worker</option>
+                                    <option value="specialist">Specialist</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Hourly Rate</label>
+                                <input type="number" class="form-control" name="hourly_rate" step="0.01" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Skills</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="skills" value="drywall" id="skill_drywall">
+                                    <label class="form-check-label" for="skill_drywall">Drywall</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="skills" value="flooring" id="skill_flooring">
+                                    <label class="form-check-label" for="skill_flooring">Flooring</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="skills" value="fence" id="skill_fence">
+                                    <label class="form-check-label" for="skill_fence">Fence Building</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="skills" value="painting" id="skill_painting">
+                                    <label class="form-check-label" for="skill_painting">Painting</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="skills" value="plumbing" id="skill_plumbing">
+                                    <label class="form-check-label" for="skill_plumbing">Basic Plumbing</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="skills" value="electrical" id="skill_electrical">
+                                    <label class="form-check-label" for="skill_electrical">Basic Electrical</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="2" placeholder="Additional notes about this staff member"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-spankks" onclick="saveStaffMember()">
+                    <i class="fas fa-save me-1"></i>Add Staff
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Sample staff data for SPANKKS Construction
+const sampleStaff = [
+    {
+        id: 'STF001',
+        first_name: 'SPANKKS',
+        last_name: 'Admin',
+        full_name: 'SPANKKS Admin',
+        role: 'admin',
+        phone: '(808) 778-9132',
+        email: 'spank808@gmail.com',
+        hourly_rate: 75.00,
+        skills: ['drywall', 'flooring', 'fence', 'painting'],
+        status: 'active',
+        availability: 'available',
+        hire_date: '2025-01-01',
+        notes: 'Business owner and primary contact'
+    },
+    {
+        id: 'STF002',
+        first_name: 'Mike',
+        last_name: 'Johnson',
+        full_name: 'Mike Johnson',
+        role: 'crew_lead',
+        phone: '(808) 555-0123',
+        email: 'mike@spankks.com',
+        hourly_rate: 35.00,
+        skills: ['drywall', 'flooring', 'painting'],
+        status: 'active',
+        availability: 'available',
+        hire_date: '2025-02-15',
+        notes: 'Experienced crew leader'
+    },
+    {
+        id: 'STF003',
+        first_name: 'Carlos',
+        last_name: 'Rodriguez',
+        full_name: 'Carlos Rodriguez',
+        role: 'construction',
+        phone: '(808) 555-0456',
+        email: 'carlos@spankks.com',
+        hourly_rate: 28.00,
+        skills: ['fence', 'flooring'],
+        status: 'active',
+        availability: 'busy',
+        hire_date: '2025-03-01',
+        notes: 'Specialist in fence construction'
+    }
+];
+
+function loadStaffData() {
+    const staff = sampleStaff;
+    const tbody = document.getElementById('staffTableBody');
+    
+    if (staff.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <div>No staff members found. Add your first team member to get started.</div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    let totalHourlyRates = 0;
+    let availableCount = 0;
+    let onDutyCount = 0;
+    
+    tbody.innerHTML = staff.map(member => {
+        totalHourlyRates += member.hourly_rate;
+        if (member.availability === 'available') availableCount++;
+        if (member.status === 'active') onDutyCount++;
+        
+        return `
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success rounded-circle text-white d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                            ${member.first_name.charAt(0)}${member.last_name.charAt(0)}
+                        </div>
+                        <div>
+                            <strong>${member.full_name}</strong>
+                            <div class="text-muted small">ID: ${member.id}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge bg-primary">${getRoleDisplay(member.role)}</span>
+                </td>
+                <td>
+                    ${member.skills.map(skill => `<span class="badge bg-secondary me-1">${skill}</span>`).join('')}
+                </td>
+                <td>
+                    <strong>$${member.hourly_rate.toFixed(2)}/hr</strong>
+                </td>
+                <td>
+                    <span class="badge bg-${member.availability === 'available' ? 'success' : member.availability === 'busy' ? 'warning' : 'secondary'}">
+                        ${getAvailabilityDisplay(member.availability)}
+                    </span>
+                </td>
+                <td>
+                    <div>
+                        <a href="tel:${member.phone}" class="text-decoration-none">${member.phone}</a>
+                    </div>
+                    ${member.email ? `<div><a href="mailto:${member.email}" class="text-decoration-none small">${member.email}</a></div>` : ''}
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="viewStaffDetails('${member.id}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-success" onclick="assignJobToStaff('${member.id}')" title="Assign Job">
+                            <i class="fas fa-tasks"></i>
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="editStaffMember('${member.id}')" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+    
+    // Update overview cards
+    document.getElementById('totalStaff').textContent = staff.length;
+    document.getElementById('onDutyStaff').textContent = onDutyCount;
+    document.getElementById('avgHourlyRate').textContent = `$${(totalHourlyRates / staff.length).toFixed(0)}`;
+    document.getElementById('availableStaff').textContent = availableCount;
+    
+    // Update Hawaii time
+    updateHawaiiTimeClock();
+}
+
+function getRoleDisplay(role) {
+    const roles = {
+        'admin': 'Admin',
+        'crew_lead': 'Crew Lead',
+        'construction': 'Construction',
+        'specialist': 'Specialist'
+    };
+    return roles[role] || role;
+}
+
+function getAvailabilityDisplay(availability) {
+    const statuses = {
+        'available': 'Available',
+        'busy': 'Busy',
+        'on_leave': 'On Leave'
+    };
+    return statuses[availability] || availability;
+}
+
+function updateHawaiiTimeClock() {
+    const now = new Date();
+    const hawaiiTime = new Date(now.toLocaleString("en-US", {timeZone: "Pacific/Honolulu"}));
+    const timeElement = document.getElementById('hawaiiTimeClock');
+    if (timeElement) {
+        timeElement.textContent = hawaiiTime.toLocaleTimeString();
+    }
+}
+
+function showAddStaffModal() {
+    const modal = new bootstrap.Modal(document.getElementById('addStaffModal'));
+    modal.show();
+}
+
+function saveStaffMember() {
+    const form = document.getElementById('addStaffForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Collect skills
+    const skills = Array.from(form.querySelectorAll('input[name="skills"]:checked')).map(cb => cb.value);
+    
+    // Create staff member object
+    const staffMember = {
+        id: `STF${String(sampleStaff.length + 1).padStart(3, '0')}`,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        full_name: `${data.first_name} ${data.last_name}`,
+        role: data.role,
+        phone: data.phone,
+        email: data.email,
+        hourly_rate: parseFloat(data.hourly_rate) || 0,
+        skills: skills,
+        status: 'active',
+        availability: 'available',
+        hire_date: new Date().toISOString().split('T')[0],
+        notes: data.notes
+    };
+    
+    // Add to sample data
+    sampleStaff.push(staffMember);
+    
+    bootstrap.Modal.getInstance(document.getElementById('addStaffModal')).hide();
+    form.reset();
+    loadStaffData();
+    showToast(`Staff member ${staffMember.full_name} added successfully!`, 'success');
+}
+
+function viewStaffDetails(staffId) {
+    const staff = sampleStaff.find(s => s.id === staffId);
+    if (staff) {
+        showToast(`Staff details for ${staff.full_name} - Feature coming soon`, 'info');
+    }
+}
+
+function assignJobToStaff(staffId) {
+    showToast('Job assignment feature coming soon', 'info');
+}
+
+function editStaffMember(staffId) {
+    showToast(`Edit staff member ${staffId} feature coming soon`, 'info');
+}
+
+function showAssignJobModal() {
+    showToast('Job assignment modal coming soon', 'info');
+}
+
+function generatePayrollReport() {
+    showToast('Generating payroll report...', 'info');
+}
+
+function refreshStaff() {
+    loadStaffData();
+}
+
+// Update Hawaii time every second
+setInterval(updateHawaiiTimeClock, 1000);
+
+// Load staff data when section is shown
+if (typeof loadStaffData === 'function') {
+    loadStaffData();
+}
+</script>

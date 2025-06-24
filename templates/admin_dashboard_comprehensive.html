@@ -1208,29 +1208,55 @@
         }
 
         function loadStaffSection() {
-            document.getElementById('dynamic-content').innerHTML = `
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-users me-2"></i>Staff Portal</h3>
-                    </div>
-                    <div class="card-body">
-                        <p>Staff management and portal features will be implemented here.</p>
-                    </div>
-                </div>
-            `;
+            fetch('/templates/staff_section.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('dynamic-content').innerHTML = html;
+                    setTimeout(() => {
+                        if (typeof loadStaffData === 'function') {
+                            loadStaffData();
+                        }
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error loading staff section:', error);
+                    document.getElementById('dynamic-content').innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-users me-2"></i>Staff Portal</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">Staff management section is being loaded. Please try refreshing the page.</div>
+                            </div>
+                        </div>
+                    `;
+                });
         }
 
         function loadInventorySection() {
-            document.getElementById('dynamic-content').innerHTML = `
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-boxes me-2"></i>Inventory Management</h3>
-                    </div>
-                    <div class="card-body">
-                        <p>Inventory tracking and management features will be implemented here.</p>
-                    </div>
-                </div>
-            `;
+            fetch('/templates/inventory_section.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('dynamic-content').innerHTML = html;
+                    setTimeout(() => {
+                        if (typeof loadInventoryData === 'function') {
+                            loadInventoryData();
+                        }
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error loading inventory section:', error);
+                    document.getElementById('dynamic-content').innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-boxes me-2"></i>Inventory Management</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">Inventory section is being loaded. Please try refreshing the page.</div>
+                            </div>
+                        </div>
+                    `;
+                });
         }
 
         function loadFinancialSection() {

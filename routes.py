@@ -7526,3 +7526,5 @@ def serve_template(filename):
         logging.error(f"Error serving template {filename}: {e}")
         return jsonify({'error': 'Template not found'}), 404
 
+
+
