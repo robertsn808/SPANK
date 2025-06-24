@@ -1,0 +1,333 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Customer Inquiries - SPANKKS Construction Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .inquiry-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        background: white;
+        transition: all 0.2s;
+    }
+    
+    .inquiry-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .inquiry-header {
+        background: linear-gradient(135deg, var(--spankks-green) 0%, #1e7e34 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .inquiry-body {
+        padding: 1.5rem;
+    }
+    
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-weight: 600;
+    }
+    
+    .status-new {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .status-pending {
+        background: #ffc107;
+        color: #212529;
+    }
+    
+    .status-contacted {
+        background: #17a2b8;
+        color: white;
+    }
+    
+    .status-completed {
+        background: #28a745;
+        color: white;
+    }
+    
+    .source-badge {
+        background: #6c757d;
+        color: white;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.5rem;
+    }
+    
+    .quick-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .filter-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        border: 1px solid #e0e0e0;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--spankks-green);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="fas fa-inbox me-2"></i>Customer Inquiries</h1>
+            <p class="text-muted mb-0">Manage contact messages and consultation requests from your website</p>
+        </div>
+        <div>
+            <button class="btn btn-outline-secondary" onclick="location.reload()">
+                <i class="fas fa-sync-alt me-1"></i>Refresh
+            </button>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-spankks">
+                <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ inquiries|length }}</div>
+            <div class="stat-label">Total Inquiries</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ inquiries|selectattr('status', 'equalto', 'new')|list|length }}</div>
+            <div class="stat-label">New Messages</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ inquiries|selectattr('type', 'equalto', 'Consultation Request')|list|length }}</div>
+            <div class="stat-label">Consultation Requests</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ inquiries|selectattr('status', 'equalto', 'pending')|list|length }}</div>
+            <div class="stat-label">Pending Follow-up</div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-section">
+        <div class="row">
+            <div class="col-md-3">
+                <label class="form-label">Search</label>
+                <input type="text" class="form-control" id="searchInput" placeholder="Search by name, email, or message...">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Type</label>
+                <select class="form-select" id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="Contact Message">Contact Messages</option>
+                    <option value="Consultation Request">Consultation Requests</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="new">New</option>
+                    <option value="pending">Pending</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Service Type</label>
+                <select class="form-select" id="serviceFilter">
+                    <option value="">All Services</option>
+                    <option value="General Handyman">General Handyman</option>
+                    <option value="Drywall Services">Drywall Services</option>
+                    <option value="Flooring Installation">Flooring Installation</option>
+                    <option value="Fence Building">Fence Building</option>
+                    <option value="Plumbing Repair">Plumbing Repair</option>
+                    <option value="Electrical Work">Electrical Work</option>
+                    <option value="Painting">Painting</option>
+                    <option value="Home Renovation">Home Renovation</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                    <i class="fas fa-times me-1"></i>Clear
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inquiries List -->
+    <div id="inquiriesList">
+        {% if inquiries %}
+            {% for inquiry in inquiries %}
+            <div class="inquiry-card" 
+                 data-type="{{ inquiry.type }}" 
+                 data-status="{{ inquiry.status }}" 
+                 data-service="{{ inquiry.service_type }}">
+                <div class="inquiry-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">{{ inquiry.name }}</h5>
+                            <small>{{ inquiry.created_date or 'Date unknown' }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="source-badge">{{ inquiry.source }}</span>
+                            <br>
+                            <span class="status-badge status-{{ inquiry.status }}">{{ inquiry.status|title }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="inquiry-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <strong>Service Type:</strong> {{ inquiry.service_type }}
+                            </div>
+                            <div class="mb-3">
+                                <strong>Message:</strong>
+                                <p class="mt-2">{{ inquiry.message or 'No message provided' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-2">
+                                <strong>Contact Information:</strong>
+                            </div>
+                            {% if inquiry.phone %}
+                            <div class="mb-1">
+                                <i class="fas fa-phone me-2"></i>
+                                <a href="tel:{{ inquiry.phone }}" class="text-decoration-none">{{ inquiry.phone }}</a>
+                            </div>
+                            {% endif %}
+                            {% if inquiry.email %}
+                            <div class="mb-1">
+                                <i class="fas fa-envelope me-2"></i>
+                                <a href="mailto:{{ inquiry.email }}" class="text-decoration-none">{{ inquiry.email }}</a>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="quick-actions">
+                                <button class="btn btn-success btn-sm" onclick="createQuote('{{ inquiry.id }}', '{{ inquiry.name }}', '{{ inquiry.phone }}', '{{ inquiry.email }}')">
+                                    <i class="fas fa-file-invoice-dollar me-1"></i>Quote
+                                </button>
+                                <button class="btn btn-primary btn-sm" onclick="updateStatus('{{ inquiry.id }}', 'contacted')">
+                                    <i class="fas fa-phone me-1"></i>Contacted
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="addToCRM('{{ inquiry.id }}')">
+                                    <i class="fas fa-user-plus me-1"></i>Add to CRM
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <h4>No inquiries found</h4>
+                <p class="text-muted">When customers submit contact forms or consultation requests on your website, they will appear here.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function filterInquiries() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const typeFilter = document.getElementById('typeFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    const serviceFilter = document.getElementById('serviceFilter').value;
+    
+    const cards = document.querySelectorAll('.inquiry-card');
+    
+    cards.forEach(card => {
+        const type = card.dataset.type;
+        const status = card.dataset.status;
+        const service = card.dataset.service;
+        const text = card.textContent.toLowerCase();
+        
+        const matchesSearch = text.includes(searchTerm);
+        const matchesType = !typeFilter || type === typeFilter;
+        const matchesStatus = !statusFilter || status === statusFilter;
+        const matchesService = !serviceFilter || service === serviceFilter;
+        
+        if (matchesSearch && matchesType && matchesStatus && matchesService) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function clearFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('typeFilter').value = '';
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('serviceFilter').value = '';
+    filterInquiries();
+}
+
+function createQuote(inquiryId, name, phone, email) {
+    const params = new URLSearchParams({
+        customerName: name || '',
+        customerPhone: phone || '',
+        customerEmail: email || ''
+    });
+    
+    window.open(`/admin/quote-invoice-form?${params.toString()}`, '_blank');
+}
+
+function updateStatus(inquiryId, newStatus) {
+    // This would need backend implementation
+    alert(`Status update to ${newStatus} would be implemented with backend API`);
+}
+
+function addToCRM(inquiryId) {
+    // This would need backend implementation
+    alert('Add to CRM functionality would be implemented with backend API');
+}
+
+// Initialize filters
+document.getElementById('searchInput').addEventListener('input', filterInquiries);
+document.getElementById('typeFilter').addEventListener('change', filterInquiries);
+document.getElementById('statusFilter').addEventListener('change', filterInquiries);
+document.getElementById('serviceFilter').addEventListener('change', filterInquiries);
+</script>
+{% endblock %}
