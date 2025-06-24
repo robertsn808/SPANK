@@ -465,7 +465,7 @@
             <div class="menu-section">
                 <div class="menu-section-title">Core Business</div>
                 
-                <a href="/admin/consultations" class="menu-item position-relative" 
+                <a href="{{ url_for('admin_consultations') }}" class="menu-item position-relative" 
                    data-help="consultations">
                     <i class="fas fa-handshake text-warning"></i>
                     <div>
@@ -496,7 +496,7 @@
                     </div>
                 </a>
                 
-                <a href="/admin/scheduler/unified" class="menu-item" 
+                <a href="{{ url_for('scheduler_dashboard') }}" class="menu-item" 
                    data-help="scheduler">
                     <i class="fas fa-calendar-alt text-info"></i>
                     <div>
@@ -519,7 +519,7 @@
                     </div>
                 </a>
                 
-                <a href="/admin/inventory" class="menu-item" 
+                <a href="{{ url_for('admin_inventory') }}" class="menu-item" 
                    data-help="inventory-dashboard">
                     <i class="fas fa-boxes text-info"></i>
                     <div>
@@ -528,7 +528,7 @@
                     </div>
                 </a>
                 
-                <a href="/admin/checklists" class="menu-item" 
+                <a href="{{ url_for('admin_checklists') }}" class="menu-item" 
                    data-help="checklist-management">
                     <i class="fas fa-tasks text-secondary"></i>
                     <div>
@@ -537,7 +537,7 @@
                     </div>
                 </a>
                 
-                <a href="/admin/email-marketing" class="menu-item" 
+                <a href="{{ url_for('admin_email_marketing') }}" class="menu-item" 
                    data-help="email-marketing">
                     <i class="fas fa-envelope text-primary"></i>
                     <div>
