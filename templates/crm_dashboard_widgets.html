@@ -1,250 +1,180 @@
 <!-- CRM Dashboard Widgets -->
-<div class="crm-widgets-section">
-    <!-- CRM Quick Actions -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="quick-actions-panel">
-                <h5 class="mb-3"><i class="fas fa-rocket"></i> CRM Quick Actions</h5>
-                <div class="row">
-                    <div class="col-md-3 col-sm-6 mb-3">
-                        <button class="btn btn-spankks w-100 quick-action-btn" onclick="showAddContactModal()">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Add New Contact</span>
-                        </button>
-                    </div>
-                    <div class="col-md-3 col-sm-6 mb-3">
-                        <button class="btn btn-outline-spankks w-100 quick-action-btn" onclick="importCrmData()">
-                            <i class="fas fa-upload"></i>
-                            <span>Import Contacts</span>
-                        </button>
-                    </div>
-                    <div class="col-md-3 col-sm-6 mb-3">
-                        <button class="btn btn-outline-spankks w-100 quick-action-btn" onclick="exportCrmData()">
-                            <i class="fas fa-download"></i>
-                            <span>Export Data</span>
-                        </button>
-                    </div>
-                    <div class="col-md-3 col-sm-6 mb-3">
-                        <button class="btn btn-outline-spankks w-100 quick-action-btn" onclick="generateCrmReport()">
-                            <i class="fas fa-chart-pie"></i>
-                            <span>CRM Report</span>
-                        </button>
-                    </div>
+<div class="row mb-4">
+    <!-- Metrics Widgets -->
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-users text-primary"></i>
+                <span class="metric-title">Total Contacts</span>
+            </div>
+            <div class="metric-value" id="totalContacts">-</div>
+            <div class="metric-trend" id="contactsTrend">Loading...</div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-chart-line text-success"></i>
+                <span class="metric-title">Conversion Rate</span>
+            </div>
+            <div class="metric-value" id="conversionRate">-</div>
+            <div class="metric-trend" id="conversionTrend">Loading...</div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-dollar-sign text-info"></i>
+                <span class="metric-title">Total Revenue</span>
+            </div>
+            <div class="metric-value" id="totalRevenue">-</div>
+            <div class="metric-trend" id="revenueTrend">Loading...</div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-hourglass-half text-warning"></i>
+                <span class="metric-title">Pipeline Value</span>
+            </div>
+            <div class="metric-value" id="pipelineValue">-</div>
+            <div class="metric-trend" id="pipelineTrend">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions and Activity Feed -->
+<div class="row mb-4">
+    <!-- Quick Actions -->
+    <div class="col-md-6">
+        <div class="widget-card">
+            <div class="widget-header">
+                <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="widget-body">
+                <div class="quick-actions-grid">
+                    <button class="quick-action-btn" onclick="showAddContactModal()">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add Contact</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="window.open('/admin/quote-invoice-form', '_blank')">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>New Quote</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="exportContacts()">
+                        <i class="fas fa-download"></i>
+                        <span>Export</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="importContacts()">
+                        <i class="fas fa-upload"></i>
+                        <span>Import</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- CRM Metrics Grid -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="metric-card contacts-card">
-                <div class="metric-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="metric-content">
-                    <h3 id="totalContacts">0</h3>
-                    <p>Total Contacts</p>
-                    <div class="metric-trend">
-                        <span class="trend-indicator positive" id="contactsTrend">+5 this week</span>
-                        <small>new contacts</small>
+    
+    <!-- Recent Activity -->
+    <div class="col-md-6">
+        <div class="widget-card">
+            <div class="widget-header">
+                <h5><i class="fas fa-clock me-2"></i>Recent Activity</h5>
+            </div>
+            <div class="widget-body">
+                <div id="recentActivity" class="activity-feed">
+                    <div class="activity-item">
+                        <div class="activity-icon bg-primary">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Loading activity...</div>
+                            <div class="activity-time">Please wait</div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="metric-card conversion-card">
-                <div class="metric-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="metric-content">
-                    <h3 id="conversionRate">0%</h3>
-                    <p>Conversion Rate</p>
-                    <div class="metric-trend">
-                        <span class="trend-indicator positive" id="conversionTrend">85%</span>
-                        <small>last 30 days</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="metric-card revenue-card">
-                <div class="metric-icon">
-                    <i class="fas fa-dollar-sign"></i>
-                </div>
-                <div class="metric-content">
-                    <h3 id="totalRevenue">$0</h3>
-                    <p>Total Revenue</p>
-                    <div class="metric-trend">
-                        <span class="trend-indicator positive" id="revenueTrend">+15%</span>
-                        <small>vs last month</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="metric-card pipeline-card">
-                <div class="metric-icon">
-                    <i class="fas fa-funnel-dollar"></i>
-                </div>
-                <div class="metric-content">
-                    <h3 id="pipelineValue">$0</h3>
-                    <p>Pipeline Value</p>
-                    <div class="metric-trend">
-                        <span class="trend-indicator neutral" id="pipelineTrend">3 pending</span>
-                        <small>quotes</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CRM Activity Feed -->
-    <div class="row mb-4">
-        <div class="col-lg-8">
-            <div class="activity-timeline-panel">
-                <h5 class="mb-3"><i class="fas fa-history"></i> Recent CRM Activity</h5>
-                <div id="crmActivityTimeline" class="timeline-container">
-                    <!-- Activity items will be loaded dynamically -->
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-4">
-            <div class="top-customers-panel">
-                <h5 class="mb-3"><i class="fas fa-star"></i> Top Customers</h5>
-                <div id="topCustomers" class="customers-container">
-                    <!-- Top customers will be loaded dynamically -->
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-.crm-widgets-section {
-    padding: 1rem 0;
-}
-
-.contacts-card::before { background: var(--primary-blue); }
-.conversion-card::before { background: var(--success-green); }
-.revenue-card::before { background: var(--spankks-green); }
-.pipeline-card::before { background: var(--accent-orange); }
-
-.contacts-card .metric-icon { background: var(--primary-blue); color: white; }
-.conversion-card .metric-icon { background: var(--success-green); color: white; }
-.revenue-card .metric-icon { background: var(--spankks-green); color: white; }
-.pipeline-card .metric-icon { background: var(--accent-orange); color: white; }
-
-.top-customers-panel {
-    background: white;
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    border: 1px solid #E5E7EB;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.customers-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.customer-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    background: #F9FAFB;
-    border-radius: 0.5rem;
-    border-left: 4px solid var(--spankks-green);
-}
-
-.customer-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--spankks-green);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-
-.customer-info h6 {
-    margin: 0;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-dark);
-}
-
-.customer-info .customer-revenue {
-    font-size: 0.75rem;
-    color: var(--success-green);
-    font-weight: 600;
-}
-
-.customer-info .customer-jobs {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-}
-</style>
+<!-- Top Customers -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="widget-card">
+            <div class="widget-header">
+                <h5><i class="fas fa-star me-2"></i>Top Customers</h5>
+            </div>
+            <div class="widget-body">
+                <div id="topCustomers" class="top-customers-list">
+                    <div class="text-center py-3">
+                        <div class="loading-spinner me-2"></div>Loading top customers...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
+// Load CRM widgets data
+function loadCrmWidgets() {
+    loadCrmMetrics();
+    loadCrmActivity();
+    loadTopCustomers();
+}
+
 function loadCrmMetrics() {
     fetch('/api/crm/metrics')
         .then(response => response.json())
         .then(data => {
             document.getElementById('totalContacts').textContent = data.total_contacts || 0;
-            document.getElementById('conversionRate').textContent = `${data.conversion_rate || 0}%`;
-            document.getElementById('totalRevenue').textContent = `$${(data.total_revenue || 0).toLocaleString()}`;
-            document.getElementById('pipelineValue').textContent = `$${(data.pipeline_value || 0).toLocaleString()}`;
+            document.getElementById('conversionRate').textContent = (data.conversion_rate || 0) + '%';
+            document.getElementById('totalRevenue').textContent = '$' + (data.total_revenue || 0).toLocaleString();
+            document.getElementById('pipelineValue').textContent = '$' + (data.pipeline_value || 0).toLocaleString();
             
-            // Update trend indicators
-            updateCrmTrendIndicator('contactsTrend', data.contacts_trend);
-            updateCrmTrendIndicator('conversionTrend', data.conversion_trend);
-            updateCrmTrendIndicator('revenueTrend', data.revenue_trend);
-            updateCrmTrendIndicator('pipelineTrend', data.pipeline_trend);
+            document.getElementById('contactsTrend').textContent = data.contacts_trend?.text || 'No data';
+            document.getElementById('conversionTrend').textContent = data.conversion_trend?.text || 'No data';
+            document.getElementById('revenueTrend').textContent = data.revenue_trend?.text || 'No data';
+            document.getElementById('pipelineTrend').textContent = data.pipeline_trend?.text || 'No data';
         })
         .catch(error => {
             console.error('Error loading CRM metrics:', error);
         });
 }
 
-function updateCrmTrendIndicator(elementId, trendData) {
-    const element = document.getElementById(elementId);
-    if (element && trendData) {
-        element.textContent = trendData.text;
-        element.className = `trend-indicator ${trendData.type}`;
-    }
-}
-
 function loadCrmActivity() {
     fetch('/api/crm/activity')
         .then(response => response.json())
         .then(activities => {
-            const container = document.getElementById('crmActivityTimeline');
+            const activityContainer = document.getElementById('recentActivity');
+            
             if (activities.length === 0) {
-                container.innerHTML = '<div class="alert alert-info mb-0">No recent CRM activity</div>';
+                activityContainer.innerHTML = `
+                    <div class="activity-item">
+                        <div class="activity-icon bg-secondary">
+                            <i class="fas fa-info"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">No recent activity</div>
+                            <div class="activity-time">Activity will appear here as you work</div>
+                        </div>
+                    </div>
+                `;
                 return;
             }
             
-            container.innerHTML = activities.map(activity => `
-                <div class="timeline-item">
-                    <div class="timeline-marker bg-${activity.type}">
+            activityContainer.innerHTML = activities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon bg-${activity.type}">
                         <i class="fas fa-${activity.icon}"></i>
                     </div>
-                    <div class="timeline-content">
-                        <h6>${activity.title}</h6>
-                        <p>${activity.description}</p>
-                        <small class="text-muted">${activity.time}</small>
+                    <div class="activity-content">
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-description">${activity.description}</div>
+                        <div class="activity-time">${activity.time}</div>
                     </div>
                 </div>
             `).join('');
@@ -258,19 +188,29 @@ function loadTopCustomers() {
     fetch('/api/crm/top-customers')
         .then(response => response.json())
         .then(customers => {
-            const container = document.getElementById('topCustomers');
+            const customersContainer = document.getElementById('topCustomers');
+            
             if (customers.length === 0) {
-                container.innerHTML = '<div class="alert alert-info mb-0">No customer data available</div>';
+                customersContainer.innerHTML = `
+                    <div class="text-center py-3 text-muted">
+                        <i class="fas fa-users fa-2x mb-2"></i>
+                        <div>No customer data available yet</div>
+                    </div>
+                `;
                 return;
             }
             
-            container.innerHTML = customers.map(customer => `
+            customersContainer.innerHTML = customers.map(customer => `
                 <div class="customer-item">
-                    <div class="customer-avatar">${customer.initials}</div>
-                    <div class="customer-info flex-grow-1">
-                        <h6>${customer.name}</h6>
-                        <div class="customer-revenue">$${customer.revenue.toLocaleString()}</div>
-                        <div class="customer-jobs">${customer.jobs} jobs completed</div>
+                    <div class="customer-avatar">
+                        ${customer.initials}
+                    </div>
+                    <div class="customer-info">
+                        <div class="customer-name">${customer.name}</div>
+                        <div class="customer-stats">
+                            <span class="customer-revenue">$${customer.revenue.toLocaleString()}</span>
+                            <span class="customer-jobs">${customer.jobs} jobs</span>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -280,30 +220,221 @@ function loadTopCustomers() {
         });
 }
 
-// CRM Action Functions
-function importCrmData() {
-    window.open('/admin/csv-management', '_blank');
+function exportContacts() {
+    alert('Export functionality would download a CSV file of all contacts');
 }
 
-function exportCrmData() {
-    window.location.href = '/api/csv/export/clients';
+function importContacts() {
+    alert('Import functionality would allow uploading a CSV file of contacts');
 }
-
-function generateCrmReport() {
-    window.open('/admin/business-intelligence', '_blank');
-}
-
-// Initialize CRM widgets
-document.addEventListener('DOMContentLoaded', function() {
-    loadCrmMetrics();
-    loadCrmActivity();
-    loadTopCustomers();
-    
-    // Refresh every 5 minutes
-    setInterval(() => {
-        loadCrmMetrics();
-        loadCrmActivity();
-        loadTopCustomers();
-    }, 300000);
-});
 </script>
+
+<style>
+.metric-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    height: 100%;
+}
+
+.metric-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.metric-header i {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+}
+
+.metric-title {
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d3436;
+    margin-bottom: 0.5rem;
+}
+
+.metric-trend {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.widget-card {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    height: 100%;
+}
+
+.widget-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+}
+
+.widget-header h5 {
+    margin: 0;
+    font-size: 1rem;
+    color: #495057;
+}
+
+.widget-body {
+    padding: 1.5rem;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.quick-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    background: white;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.quick-action-btn:hover {
+    border-color: var(--spankks-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.quick-action-btn i {
+    font-size: 1.5rem;
+    color: var(--spankks-green);
+    margin-bottom: 0.5rem;
+}
+
+.quick-action-btn span {
+    font-size: 0.875rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+.activity-feed {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.activity-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.activity-icon i {
+    color: white;
+    font-size: 0.875rem;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 0.25rem;
+}
+
+.activity-description {
+    font-size: 0.875rem;
+    color: #636e72;
+    margin-bottom: 0.25rem;
+}
+
+.activity-time {
+    font-size: 0.75rem;
+    color: #b2bec3;
+}
+
+.top-customers-list {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.customer-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.customer-item:last-child {
+    border-bottom: none;
+}
+
+.customer-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--spankks-green);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.customer-info {
+    flex: 1;
+}
+
+.customer-name {
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 0.25rem;
+}
+
+.customer-stats {
+    display: flex;
+    gap: 1rem;
+}
+
+.customer-revenue {
+    font-weight: 600;
+    color: var(--spankks-green);
+}
+
+.customer-jobs {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+</style>

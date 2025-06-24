@@ -8168,10 +8168,10 @@ def api_contacts():
                     'phone': contact.get('phone'),
                     'email': contact.get('email'),
                     'address': contact.get('address'),
-                    'service_type': contact.get('service_tags', 'General'),
+                    'service_type': ', '.join(contact.get('tags', [])) if contact.get('tags') else 'General Contact',
                     'status': contact.get('status', 'active'),
-                    'created_date': contact.get('date_created'),
-                    'source': 'Database'
+                    'created_date': contact.get('created_date'),  # Fixed: use 'created_date' not 'date_created'
+                    'source': 'Contact Database'
                 })
         except Exception as e:
             print(f"Error loading contacts: {e}")
@@ -8182,11 +8182,11 @@ def api_contacts():
             for client in clients_data:
                 contacts.append({
                     'id': f"CLI_{client.get('client_id')}",
-                    'name': client.get('client_name'),
-                    'phone': client.get('client_phone'),
-                    'email': client.get('client_email'),
+                    'name': client.get('name'),  # Fixed: use 'name' not 'client_name'
+                    'phone': client.get('phone'),  # Fixed: use 'phone' not 'client_phone'
+                    'email': client.get('email'),  # Fixed: use 'email' not 'client_email'
                     'address': client.get('address'),
-                    'service_type': 'Client',
+                    'service_type': 'Client Portal User',
                     'status': client.get('status', 'active'),
                     'created_date': client.get('created_date'),
                     'source': 'Client Database'
