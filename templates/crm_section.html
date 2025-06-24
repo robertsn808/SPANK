@@ -218,42 +218,43 @@
 </style>
 
 <script>
-// CRM functionality - no loading required, data is server-rendered
+// CRM functionality - Global functions defined immediately
 console.log('CRM section loaded with server-rendered data');
 
-function viewContact(id) { 
+// Global function definitions
+window.viewContact = function(id) { 
     alert('View contact details for ID: ' + id); 
-}
+};
 
-function createQuote(id) { 
+window.createQuote = function(id) { 
     window.open('/admin/quote-invoice-form?contactId=' + id, '_blank'); 
-}
+};
 
-function addContact() { 
+window.addContact = function() { 
     alert('Add contact modal - Coming soon'); 
-}
+};
 
-function importContacts() {
+window.importContacts = function() {
     alert('Import contacts from CSV - Coming soon');
-}
+};
 
-function crmSettings() {
+window.crmSettings = function() {
     alert('CRM settings and configuration - Coming soon');
-}
+};
 
-function refreshTable() { 
+window.refreshTable = function() { 
     location.reload(); 
-}
+};
 
-function editContact(id) {
+window.editContact = function(id) {
     alert('Edit contact functionality for ID: ' + id + ' - Coming soon');
-}
+};
 
-function scheduleJob(id) {
+window.scheduleJob = function(id) {
     alert('Schedule job for contact ID: ' + id + ' - Coming soon');
-}
+};
 
-function exportContacts() {
+window.exportContacts = function() {
     // Simple CSV export
     const rows = document.querySelectorAll('#crmTableBody tr');
     let csv = 'Name,Phone,Email,Service Type,Status,Source\n';
@@ -278,17 +279,17 @@ function exportContacts() {
     a.download = 'spankks_contacts.csv';
     a.click();
     window.URL.revokeObjectURL(url);
-}
+};
 
-function bulkActions() {
+window.bulkActions = function() {
     alert('Bulk actions - Coming soon');
-}
+};
 
-function syncData() {
+window.syncData = function() {
     alert('Data synchronization - Coming soon');
-}
+};
 
-function filterContacts() {
+window.filterContacts = function() {
     const searchTerm = document.getElementById('contactSearch').value.toLowerCase();
     const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
     const sourceFilter = document.getElementById('sourceFilter').value;
@@ -321,7 +322,7 @@ function filterContacts() {
     });
     
     document.getElementById('contactCount').textContent = `Showing ${visibleCount} contacts`;
-}
+};
 
 // Initialize tooltips
 document.addEventListener('DOMContentLoaded', function() {
