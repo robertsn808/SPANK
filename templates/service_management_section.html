@@ -1,0 +1,635 @@
+<!-- Service Type Management Section -->
+<div class="content-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">
+            <i class="fas fa-tools me-2"></i>Service Type Management
+        </h3>
+        <div class="btn-group">
+            <button class="btn btn-spankks btn-sm" onclick="addServiceType()">
+                <i class="fas fa-plus me-1"></i>Add Service
+            </button>
+            <button class="btn btn-outline-success btn-sm" onclick="refreshServices()">
+                <i class="fas fa-sync-alt me-1"></i>Refresh
+            </button>
+            <button class="btn btn-outline-info btn-sm" onclick="exportServices()">
+                <i class="fas fa-download me-1"></i>Export
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Search and Filter Controls -->
+        <div class="row mb-4">
+            <div class="col-12 col-lg-4 mb-3 mb-lg-0">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="serviceSearch" placeholder="Search services..." onkeyup="filterServices()">
+                </div>
+            </div>
+            <div class="col-6 col-lg-3 mb-3 mb-lg-0">
+                <select class="form-select" id="portalFilter" onchange="filterServices()">
+                    <option value="">All Portal Access</option>
+                    <option value="true">Requires Portal</option>
+                    <option value="false">No Portal</option>
+                </select>
+            </div>
+            <div class="col-6 col-lg-3 mb-3 mb-lg-0">
+                <select class="form-select" id="userTypeFilter" onchange="filterServices()">
+                    <option value="">All User Types</option>
+                    <option value="client">Clients</option>
+                    <option value="bizcontacts">Business Contacts</option>
+                    <option value="staff">Staff</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="col-12 col-lg-2">
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="bulkEdit()">
+                    <i class="fas fa-edit me-1"></i>Bulk Edit
+                </button>
+            </div>
+        </div>
+
+        <!-- Services Table -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                        <th>Service Name</th>
+                        <th>Price Range</th>
+                        <th>Duration</th>
+                        <th>Portal Access</th>
+                        <th>User Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="servicesTableBody">
+                    <!-- Services will be loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Service Type Metrics -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="metric-card text-center">
+                    <i class="fas fa-tools fa-2x text-primary mb-2"></i>
+                    <h4 id="totalServices">0</h4>
+                    <p class="text-muted">Total Services</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card text-center">
+                    <i class="fas fa-key fa-2x text-success mb-2"></i>
+                    <h4 id="portalServices">0</h4>
+                    <p class="text-muted">Portal Required</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card text-center">
+                    <i class="fas fa-users fa-2x text-warning mb-2"></i>
+                    <h4 id="clientServices">0</h4>
+                    <p class="text-muted">Client Services</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card text-center">
+                    <i class="fas fa-dollar-sign fa-2x text-info mb-2"></i>
+                    <h4 id="avgPrice">$0</h4>
+                    <p class="text-muted">Avg. Price</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Service Modal -->
+<div class="modal fade" id="serviceModal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-spankks text-white">
+                <h5 class="modal-title" id="serviceModalLabel">
+                    <i class="fas fa-plus-circle me-2"></i>Add New Service Type
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="serviceForm">
+                    <input type="hidden" id="serviceId" name="serviceId">
+                    
+                    <!-- Basic Information -->
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label for="serviceName" class="form-label">Service Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="serviceName" name="serviceName" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="serviceCode" class="form-label">Service Code</label>
+                            <input type="text" class="form-control" id="serviceCode" name="serviceCode" placeholder="AUTO">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="serviceDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="serviceDescription" name="serviceDescription" rows="2"></textarea>
+                    </div>
+
+                    <!-- Pricing Information -->
+                    <h6 class="fw-bold mb-3"><i class="fas fa-dollar-sign me-2"></i>Pricing</h6>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="priceMin" class="form-label">Min Price ($)</label>
+                            <input type="number" class="form-control" id="priceMin" name="priceMin" min="0" step="0.01">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="priceMax" class="form-label">Max Price ($)</label>
+                            <input type="number" class="form-control" id="priceMax" name="priceMax" min="0" step="0.01">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="priceType" class="form-label">Pricing Type</label>
+                            <select class="form-select" id="priceType" name="priceType">
+                                <option value="fixed">Fixed Price</option>
+                                <option value="hourly">Hourly Rate</option>
+                                <option value="sqft">Per Sq Ft</option>
+                                <option value="linear">Per Linear Ft</option>
+                                <option value="estimate">Estimate Only</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Duration Information -->
+                    <h6 class="fw-bold mb-3"><i class="fas fa-clock me-2"></i>Duration</h6>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="durationMin" class="form-label">Min Duration (hours)</label>
+                            <input type="number" class="form-control" id="durationMin" name="durationMin" min="0.5" step="0.5">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="durationMax" class="form-label">Max Duration (hours)</label>
+                            <input type="number" class="form-control" id="durationMax" name="durationMax" min="0.5" step="0.5">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="durationUnit" class="form-label">Duration Unit</label>
+                            <select class="form-select" id="durationUnit" name="durationUnit">
+                                <option value="hours">Hours</option>
+                                <option value="days">Days</option>
+                                <option value="weeks">Weeks</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Access & User Configuration -->
+                    <h6 class="fw-bold mb-3"><i class="fas fa-users-cog me-2"></i>Access Configuration</h6>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Portal Access Required</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="requiresPortal" name="requiresPortal">
+                                <label class="form-check-label" for="requiresPortal">
+                                    Requires Job Portal Access
+                                </label>
+                            </div>
+                            <small class="text-muted">Enable for services that need project tracking</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="userType" class="form-label">Primary User Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="userType" name="userType" required>
+                                <option value="">Select User Type</option>
+                                <option value="client">Clients</option>
+                                <option value="bizcontacts">Business Contacts</option>
+                                <option value="staff">Staff</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Additional Settings -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">Service Category</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="consultation">Consultation</option>
+                                <option value="drywall">Drywall Services</option>
+                                <option value="flooring">Flooring</option>
+                                <option value="electrical">Electrical</option>
+                                <option value="plumbing">Plumbing</option>
+                                <option value="general">General Handyman</option>
+                                <option value="renovation">Home Renovation</option>
+                                <option value="custom">Custom Service</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="seasonal">Seasonal</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Tax & Business Settings -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="taxable" name="taxable" checked>
+                                <label class="form-check-label" for="taxable">
+                                    Subject to Hawaii GET Tax (4.712%)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="availableOnline" name="availableOnline" checked>
+                                <label class="form-check-label" for="availableOnline">
+                                    Available for Online Booking
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-spankks" onclick="saveService()">
+                    <i class="fas fa-save me-1"></i>Save Service
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.content-card {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--spankks-green) 0%, #1e7e34 100%);
+    color: white;
+    padding: 1rem;
+    border-bottom: none;
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.metric-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    height: 100%;
+    transition: transform 0.2s;
+    text-align: center;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.bg-spankks {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+}
+
+.btn-spankks {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    border: none;
+    color: white;
+}
+
+.btn-spankks:hover {
+    background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+    color: white;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .card-header {
+        padding: 0.75rem;
+        text-align: center;
+    }
+    
+    .card-header .btn-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.25rem;
+    }
+    
+    .card-header .btn-group .btn {
+        width: 100%;
+        font-size: 0.875rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .table td {
+        padding: 0.5rem 0.25rem;
+        vertical-align: middle;
+    }
+    
+    .metric-card {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .table td:nth-child(3), 
+    .table th:nth-child(3) {
+        display: none; /* Hide price range on very small screens */
+    }
+    
+    .table td:nth-child(4), 
+    .table th:nth-child(4) {
+        display: none; /* Hide duration */
+    }
+}
+</style>
+
+<script>
+console.log('Service management section loaded');
+
+// Data storage
+let serviceTypes = [];
+let serviceCategories = [];
+let packageTypes = [];
+let servicePackages = [];
+let membershipTypes = [];
+
+// Global function definitions
+window.addServiceType = function() {
+    document.getElementById('serviceModalLabel').innerHTML = '<i class="fas fa-plus-circle me-2"></i>Add New Service Type';
+    document.getElementById('serviceForm').reset();
+    document.getElementById('serviceId').value = '';
+    new bootstrap.Modal(document.getElementById('serviceModal')).show();
+};
+
+window.editService = function(serviceId) {
+    const service = serviceTypes.find(s => s.id === serviceId);
+    if (!service) {
+        alert('Service not found');
+        return;
+    }
+    
+    document.getElementById('serviceModalLabel').innerHTML = '<i class="fas fa-edit me-2"></i>Edit Service Type';
+    
+    // Populate form fields with API field mapping
+    document.getElementById('serviceId').value = service.id;
+    document.getElementById('serviceName').value = service.name || '';
+    document.getElementById('serviceCode').value = service.service_code || '';
+    document.getElementById('serviceDescription').value = service.description || '';
+    document.getElementById('priceMin').value = service.price_min || '';
+    document.getElementById('priceMax').value = service.price_max || '';
+    document.getElementById('priceType').value = service.price_type || 'fixed';
+    document.getElementById('durationMin').value = service.duration_min || '';
+    document.getElementById('durationMax').value = service.duration_max || '';
+    document.getElementById('durationUnit').value = service.duration_unit || 'hours';
+    document.getElementById('requiresPortal').checked = service.requires_portal || false;
+    document.getElementById('userType').value = service.user_type || '';
+    document.getElementById('category').value = service.category_id || '';
+    document.getElementById('status').value = service.status || 'active';
+    document.getElementById('taxable').checked = service.taxable !== false;
+    document.getElementById('availableOnline').checked = service.available_online !== false;
+    
+    new bootstrap.Modal(document.getElementById('serviceModal')).show();
+};
+
+window.deleteService = function(serviceId) {
+    if (!confirm('Are you sure you want to delete this service type?')) {
+        return;
+    }
+    
+    fetch(`/api/service-types/${serviceId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadServices();
+            updateMetrics();
+            alert('Service type deleted successfully');
+        } else {
+            alert('Error deleting service: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error deleting service. Please try again.');
+    });
+};
+
+window.saveService = function() {
+    const form = document.getElementById('serviceForm');
+    const formData = new FormData(form);
+    const serviceData = {};
+    
+    // Convert FormData to object
+    for (let [key, value] of formData.entries()) {
+        if (value !== '') {
+            serviceData[key] = value;
+        }
+    }
+    
+    // Handle checkboxes
+    serviceData.requires_portal = document.getElementById('requiresPortal').checked;
+    serviceData.taxable = document.getElementById('taxable').checked;
+    serviceData.available_online = document.getElementById('availableOnline').checked;
+    
+    // Convert field names to match API
+    const apiData = {
+        service_code: serviceData.serviceCode || undefined,
+        name: serviceData.serviceName,
+        description: serviceData.serviceDescription,
+        category_id: serviceData.category,
+        price_min: parseFloat(serviceData.priceMin) || null,
+        price_max: parseFloat(serviceData.priceMax) || null,
+        price_type: serviceData.priceType,
+        duration_min: parseFloat(serviceData.durationMin) || null,
+        duration_max: parseFloat(serviceData.durationMax) || null,
+        duration_unit: serviceData.durationUnit,
+        requires_portal: serviceData.requires_portal,
+        user_type: serviceData.userType,
+        status: serviceData.status,
+        taxable: serviceData.taxable,
+        available_online: serviceData.available_online
+    };
+    
+    const isEdit = serviceData.serviceId;
+    const url = isEdit ? `/api/service-types/${serviceData.serviceId}` : '/api/service-types';
+    const method = isEdit ? 'PUT' : 'POST';
+    
+    fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(apiData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('serviceModal')).hide();
+            loadServices();
+            updateMetrics();
+            alert(isEdit ? 'Service type updated successfully' : 'Service type created successfully');
+        } else {
+            alert('Error saving service: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving service. Please try again.');
+    });
+};
+
+window.refreshServices = function() {
+    loadServices();
+    updateMetrics();
+};
+
+window.exportServices = function() {
+    alert('Export services functionality - Coming soon');
+};
+
+window.bulkEdit = function() {
+    alert('Bulk edit functionality - Coming soon');
+};
+
+window.toggleSelectAll = function() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('#servicesTableBody input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+};
+
+window.filterServices = function() {
+    const searchTerm = document.getElementById('serviceSearch').value.toLowerCase();
+    const portalFilter = document.getElementById('portalFilter').value;
+    const userTypeFilter = document.getElementById('userTypeFilter').value;
+    
+    const rows = document.querySelectorAll('#servicesTableBody tr');
+    let visibleCount = 0;
+    
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length > 1) {
+            const name = cells[1].textContent.toLowerCase();
+            const portal = cells[4].textContent.toLowerCase().includes('yes');
+            const userType = cells[5].textContent.toLowerCase();
+            
+            const matchesSearch = name.includes(searchTerm);
+            const matchesPortal = !portalFilter || (portalFilter === 'true' ? portal : !portal);
+            const matchesUserType = !userTypeFilter || userType.includes(userTypeFilter);
+            
+            if (matchesSearch && matchesPortal && matchesUserType) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+};
+
+function loadServices() {
+    fetch('/api/service-types')
+    .then(response => response.json())
+    .then(data => {
+        serviceTypes = data;
+        renderServicesTable();
+    })
+    .catch(error => {
+        console.error('Error loading services:', error);
+        alert('Error loading services');
+    });
+}
+
+function renderServicesTable() {
+    const tbody = document.getElementById('servicesTableBody');
+    tbody.innerHTML = '';
+    
+    serviceTypes.forEach(service => {
+        const priceRange = service.price_type === 'fixed' 
+            ? `$${service.price_min || 0}-$${service.price_max || 0}`
+            : `$${service.price_min || 0}-$${service.price_max || 0}/${service.price_type}`;
+        
+        const duration = `${service.duration_min || 0}-${service.duration_max || 0} ${service.duration_unit}`;
+        const portalBadge = service.requires_portal 
+            ? '<span class="badge bg-success">Yes</span>'
+            : '<span class="badge bg-secondary">No</span>';
+        
+        const userTypeBadge = {
+            'client': '<span class="badge bg-primary">Client</span>',
+            'bizcontacts': '<span class="badge bg-warning">Business</span>',
+            'staff': '<span class="badge bg-info">Staff</span>',
+            'other': '<span class="badge bg-secondary">Other</span>'
+        }[service.user_type] || '<span class="badge bg-secondary">Unknown</span>';
+        
+        const statusBadge = {
+            'active': '<span class="badge bg-success">Active</span>',
+            'inactive': '<span class="badge bg-danger">Inactive</span>',
+            'seasonal': '<span class="badge bg-warning">Seasonal</span>'
+        }[service.status] || '<span class="badge bg-secondary">Unknown</span>';
+        
+        const row = `
+            <tr>
+                <td><input type="checkbox" value="${service.id}"></td>
+                <td>
+                    <strong>${service.name}</strong><br>
+                    <small class="text-muted">${service.description || 'No description'}</small><br>
+                    <small class="text-info">${service.service_code}</small>
+                </td>
+                <td>${priceRange}</td>
+                <td>${duration}</td>
+                <td>${portalBadge}</td>
+                <td>${userTypeBadge}</td>
+                <td>${statusBadge}</td>
+                <td>
+                    <div class="d-flex flex-wrap gap-1">
+                        <button class="btn btn-outline-primary btn-sm" onclick="editService(${service.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="deleteService(${service.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
+function updateMetrics() {
+    const totalServices = serviceTypes.length;
+    const portalServices = serviceTypes.filter(s => s.requiresPortal).length;
+    const clientServices = serviceTypes.filter(s => s.userType === 'client').length;
+    const avgPrice = serviceTypes.reduce((sum, s) => sum + ((s.priceMin + s.priceMax) / 2), 0) / totalServices || 0;
+    
+    document.getElementById('totalServices').textContent = totalServices;
+    document.getElementById('portalServices').textContent = portalServices;
+    document.getElementById('clientServices').textContent = clientServices;
+    document.getElementById('avgPrice').textContent = '$' + Math.round(avgPrice);
+}
+
+// Initialize
+loadServices();
+updateMetrics();
+console.log('Service management: Loaded', serviceTypes.length, 'service types');
+</script>

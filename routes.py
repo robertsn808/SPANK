@@ -8408,6 +8408,394 @@ def serve_business_contacts_section():
         logging.error(f"Error serving business contacts section: {e}")
         return jsonify({'error': 'Template error'}), 500
 
+@app.route('/templates/service_management_section.html')
+def serve_service_management_section():
+    """Serve service management section"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        return render_template('service_management_section.html')
+    except Exception as e:
+        logging.error(f"Error serving service management section: {e}")
+        return jsonify({'error': 'Template error'}), 500
+
+# Service Type Management API Routes
+@app.route('/api/service-types', methods=['GET'])
+def get_service_types():
+    """Get all service types"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        from models_db import ServiceType
+        service_types = ServiceType.query.all()
+        return jsonify([service.to_dict() for service in service_types])
+    except Exception as e:
+        logging.error(f"Error getting service types: {e}")
+        return jsonify({'error': 'Failed to load service types'}), 500
+
+@app.route('/api/service-types', methods=['POST'])
+def create_service_type():
+    """Create new service type"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        from models_db import ServiceType
+        data = request.get_json()
+        
+        # Generate service code if not provided
+        if not data.get('service_code'):
+            service_count = ServiceType.query.count()
+            data['service_code'] = f"SRV{str(service_count + 1).zfill(3)}"
+        
+        # Create new service type
+        service_type = ServiceType(
+            service_code=data['service_code'],
+            name=data['name'],
+            description=data.get('description'),
+            price_min=data.get('price_min'),
+            price_max=data.get('price_max'),
+            price_type=data.get('price_type', 'fixed'),
+            duration_min=data.get('duration_min'),
+            duration_max=data.get('duration_max'),
+            duration_unit=data.get('duration_unit', 'hours'),
+            requires_portal=data.get('requires_portal', False),
+            user_type=data['user_type'],
+            category=data.get('category'),
+            status=data.get('status', 'active'),
+            taxable=data.get('taxable', True),
+            available_online=data.get('available_online', True),
+            created_by=session.get('admin_username', 'admin')
+        )
+        
+        db.session.add(service_type)
+        db.session.commit()
+        
+        logging.info(f"Created service type: {service_type.name} ({service_type.service_code})")
+        return jsonify({'success': True, 'service_type': service_type.to_dict()}), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error creating service type: {e}")
+        return jsonify({'error': 'Failed to create service type'}), 500
+
+@app.route('/api/service-types/<int:service_id>', methods=['PUT'])
+def update_service_type(service_id):
+    """Update service type"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        from models import ServiceType
+        service_type = ServiceType.query.get_or_404(service_id)
+        data = request.get_json()
+        
+        # Update fields
+        for field in ['name', 'description', 'price_min', 'price_max', 'price_type',
+                     'duration_min', 'duration_max', 'duration_unit', 'requires_portal',
+                     'user_type', 'category', 'status', 'taxable', 'available_online']:
+            if field in data:
+                setattr(service_type, field, data[field])
+        
+        service_type.updated_at = datetime.utcnow()
+        db.session.commit()
+        
+        logging.info(f"Updated service type: {service_type.name} ({service_type.service_code})")
+        return jsonify({'success': True, 'service_type': service_type.to_dict()})
+        
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error updating service type: {e}")
+        return jsonify({'error': 'Failed to update service type'}), 500
+
+@app.route('/api/service-types/<int:service_id>', methods=['DELETE'])
+def delete_service_type(service_id):
+    """Delete service type"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        from models import ServiceType
+        service_type = ServiceType.query.get_or_404(service_id)
+        service_name = service_type.name
+        
+        db.session.delete(service_type)
+        db.session.commit()
+        
+        logging.info(f"Deleted service type: {service_name}")
+        return jsonify({'success': True, 'message': 'Service type deleted successfully'})
+        
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error deleting service type: {e}")
+        return jsonify({'error': 'Failed to delete service type'}), 500
+
+@app.route('/api/service-types/seed', methods=['POST'])
+def seed_service_types():
+    """Seed database with default service types"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        from models_db import ServiceType
+        
+        # Check if service types already exist
+        if ServiceType.query.count() > 0:
+            return jsonify({'message': 'Service types already exist'})
+        
+        # Default service types
+        default_services = [
+            {
+                'service_code': 'SRV001',
+                'name': 'Consultation',
+                'description': 'Initial project consultation and assessment',
+                'price_min': 0,
+                'price_max': 100,
+                'price_type': 'fixed',
+                'duration_min': 1,
+                'duration_max': 2,
+                'duration_unit': 'hours',
+                'requires_portal': False,
+                'user_type': 'client',
+                'category': 'consultation',
+                'status': 'active',
+                'taxable': False,
+                'available_online': True
+            },
+            {
+                'service_code': 'SRV002',
+                'name': 'Drywall Services',
+                'description': 'Drywall patching, repair, and finishing',
+                'price_min': 155,
+                'price_max': 600,
+                'price_type': 'fixed',
+                'duration_min': 4,
+                'duration_max': 8,
+                'duration_unit': 'hours',
+                'requires_portal': True,
+                'user_type': 'client',
+                'category': 'drywall',
+                'status': 'active',
+                'taxable': True,
+                'available_online': True
+            },
+            {
+                'service_code': 'SRV003',
+                'name': 'Flooring Installation',
+                'description': 'Professional flooring installation services',
+                'price_min': 3,
+                'price_max': 8,
+                'price_type': 'sqft',
+                'duration_min': 8,
+                'duration_max': 24,
+                'duration_unit': 'hours',
+                'requires_portal': True,
+                'user_type': 'client',
+                'category': 'flooring',
+                'status': 'active',
+                'taxable': True,
+                'available_online': True
+            },
+            {
+                'service_code': 'SRV004',
+                'name': 'Electrical Work',
+                'description': 'Basic electrical repairs and installations',
+                'price_min': 90,
+                'price_max': 200,
+                'price_type': 'hourly',
+                'duration_min': 2,
+                'duration_max': 6,
+                'duration_unit': 'hours',
+                'requires_portal': True,
+                'user_type': 'client',
+                'category': 'electrical',
+                'status': 'active',
+                'taxable': True,
+                'available_online': True
+            },
+            {
+                'service_code': 'SRV005',
+                'name': 'General Handyman',
+                'description': 'General repair and maintenance services',
+                'price_min': 90,
+                'price_max': 200,
+                'price_type': 'hourly',
+                'duration_min': 2,
+                'duration_max': 8,
+                'duration_unit': 'hours',
+                'requires_portal': True,
+                'user_type': 'client',
+                'category': 'general',
+                'status': 'active',
+                'taxable': True,
+                'available_online': True
+            },
+            {
+                'service_code': 'SRV006',
+                'name': 'Home Renovation',
+                'description': 'Complete home renovation projects',
+                'price_min': 2500,
+                'price_max': 25000,
+                'price_type': 'estimate',
+                'duration_min': 1,
+                'duration_max': 8,
+                'duration_unit': 'weeks',
+                'requires_portal': True,
+                'user_type': 'client',
+                'category': 'renovation',
+                'status': 'active',
+                'taxable': True,
+                'available_online': True
+            }
+        ]
+        
+        # Create service types
+        created_count = 0
+        for service_data in default_services:
+            service_type = ServiceType(**service_data)
+            db.session.add(service_type)
+            created_count += 1
+        
+        db.session.commit()
+        
+        logging.info(f"Seeded {created_count} default service types")
+        return jsonify({'success': True, 'message': f'Created {created_count} service types'})
+        
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error seeding service types: {e}")
+        return jsonify({'error': 'Failed to seed service types'}), 500
+
+@app.route('/api/seed-all-data', methods=['POST'])
+def seed_all_data():
+    """Seed all business data including categories, services, packages, and memberships"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        from models_db import ServiceCategory, ServiceType, PackageType, ServicePackage, MembershipType
+        
+        # Check if data already exists
+        if ServiceCategory.query.count() > 0:
+            return jsonify({'message': 'Database already seeded'})
+        
+        # 1. Create Service Categories
+        categories = [
+            {'name': 'Consultation', 'description': 'Initial assessments and project planning', 'display_order': 1, 'icon': 'fa-comments', 'color': '#17a2b8'},
+            {'name': 'Drywall Services', 'description': 'Drywall repair, patching, and finishing', 'display_order': 2, 'icon': 'fa-square', 'color': '#28a745'},
+            {'name': 'Flooring', 'description': 'Professional flooring installation and repair', 'display_order': 3, 'icon': 'fa-th-large', 'color': '#ffc107'},
+            {'name': 'Electrical', 'description': 'Electrical repairs and installations', 'display_order': 4, 'icon': 'fa-bolt', 'color': '#dc3545'},
+            {'name': 'General Handyman', 'description': 'General repair and maintenance services', 'display_order': 5, 'icon': 'fa-tools', 'color': '#6f42c1'},
+            {'name': 'Home Renovation', 'description': 'Complete home renovation projects', 'display_order': 6, 'icon': 'fa-home', 'color': '#fd7e14'}
+        ]
+        
+        category_map = {}
+        for cat_data in categories:
+            category = ServiceCategory(**cat_data)
+            db.session.add(category)
+            db.session.flush()  # Get ID
+            category_map[cat_data['name']] = category.id
+        
+        # 2. Create Service Types from pricing page
+        services = [
+            # Consultation Services
+            {'service_code': 'CON001', 'name': 'Consultation', 'description': 'Initial project consultation and assessment', 'category_id': category_map['Consultation'], 'price_min': 0, 'price_max': 100, 'price_type': 'fixed', 'duration_min': 1, 'duration_max': 2, 'requires_portal': False, 'user_type': 'client', 'taxable': False},
+            
+            # Drywall Services
+            {'service_code': 'DRY001', 'name': 'Small Patch (under 12")', 'description': 'Spackle, tape, sand, prime, paint', 'category_id': category_map['Drywall Services'], 'price_min': 155, 'price_max': 155, 'price_type': 'fixed', 'duration_min': 3, 'duration_max': 4, 'requires_portal': True, 'user_type': 'client'},
+            {'service_code': 'DRY002', 'name': 'Medium Patch (12-24")', 'description': 'Cut drywall, tape, mud, sand, prime, paint', 'category_id': category_map['Drywall Services'], 'price_min': 275, 'price_max': 275, 'price_type': 'fixed', 'duration_min': 4, 'duration_max': 6, 'requires_portal': True, 'user_type': 'client'},
+            {'service_code': 'DRY003', 'name': 'Large Patch (24"+ or multiple)', 'description': 'Full drywall repair with texture matching', 'category_id': category_map['Drywall Services'], 'price_min': 400, 'price_max': 600, 'price_type': 'fixed', 'duration_min': 6, 'duration_max': 8, 'requires_portal': True, 'user_type': 'client'},
+            
+            # Flooring Services  
+            {'service_code': 'FLR001', 'name': 'Vinyl/LVP Installation', 'description': 'Luxury vinyl plank installation', 'category_id': category_map['Flooring'], 'price_min': 3, 'price_max': 5, 'price_type': 'sqft', 'duration_min': 8, 'duration_max': 16, 'requires_portal': True, 'user_type': 'client'},
+            {'service_code': 'FLR002', 'name': 'Laminate Installation', 'description': 'Professional laminate flooring installation', 'category_id': category_map['Flooring'], 'price_min': 4, 'price_max': 6, 'price_type': 'sqft', 'duration_min': 8, 'duration_max': 16, 'requires_portal': True, 'user_type': 'client'},
+            {'service_code': 'FLR003', 'name': 'Hardwood Installation', 'description': 'Solid or engineered hardwood installation', 'category_id': category_map['Flooring'], 'price_min': 6, 'price_max': 8, 'price_type': 'sqft', 'duration_min': 12, 'duration_max': 24, 'requires_portal': True, 'user_type': 'client'},
+            
+            # Electrical Services
+            {'service_code': 'ELE001', 'name': 'Outlet/Switch Replacement', 'description': 'Standard outlet or switch replacement', 'category_id': category_map['Electrical'], 'price_min': 90, 'price_max': 150, 'price_type': 'fixed', 'duration_min': 1, 'duration_max': 2, 'requires_portal': True, 'user_type': 'client'},
+            {'service_code': 'ELE002', 'name': 'Light Fixture Installation', 'description': 'Ceiling or wall light fixture installation', 'category_id': category_map['Electrical'], 'price_min': 125, 'price_max': 200, 'price_type': 'fixed', 'duration_min': 2, 'duration_max': 3, 'requires_portal': True, 'user_type': 'client'},
+            
+            # General Handyman
+            {'service_code': 'GEN001', 'name': 'General Handyman Services', 'description': 'General repair and maintenance', 'category_id': category_map['General Handyman'], 'price_min': 90, 'price_max': 200, 'price_type': 'hourly', 'duration_min': 2, 'duration_max': 8, 'requires_portal': True, 'user_type': 'client'},
+            
+            # Home Renovation
+            {'service_code': 'REN001', 'name': 'Bathroom Renovation', 'description': 'Complete bathroom renovation', 'category_id': category_map['Home Renovation'], 'price_min': 5000, 'price_max': 15000, 'price_type': 'estimate', 'duration_min': 1, 'duration_max': 3, 'duration_unit': 'weeks', 'requires_portal': True, 'user_type': 'client'},
+            {'service_code': 'REN002', 'name': 'Kitchen Renovation', 'description': 'Complete kitchen renovation', 'category_id': category_map['Home Renovation'], 'price_min': 10000, 'price_max': 25000, 'price_type': 'estimate', 'duration_min': 2, 'duration_max': 6, 'duration_unit': 'weeks', 'requires_portal': True, 'user_type': 'client'}
+        ]
+        
+        service_map = {}
+        for service_data in services:
+            service = ServiceType(**service_data)
+            db.session.add(service)
+            db.session.flush()
+            service_map[service_data['service_code']] = service.id
+        
+        # 3. Create Package Types
+        package_types = [
+            {'name': 'Seasonal Packages', 'description': 'Special seasonal service bundles', 'package_type': 'seasonal'},
+            {'name': 'Bundle Deals', 'description': 'Multi-service discount packages', 'package_type': 'bundle'},
+            {'name': 'Promotional Offers', 'description': 'Limited time promotional packages', 'package_type': 'promotional'},
+            {'name': 'Room Packages', 'description': 'Complete room renovation packages', 'package_type': 'bundle'}
+        ]
+        
+        package_type_map = {}
+        for pt_data in package_types:
+            pt = PackageType(**pt_data)
+            db.session.add(pt)
+            db.session.flush()
+            package_type_map[pt_data['name']] = pt.id
+        
+        # 4. Create Service Packages
+        packages = [
+            {'package_code': 'PKG001', 'name': 'Drywall Repair Bundle', 'description': 'Complete drywall repair for small room', 'package_type_id': package_type_map['Bundle Deals'], 'base_price': 450, 'discount_percentage': 10, 'final_price': 405, 'estimated_duration': '1 day', 'includes_materials': True},
+            {'package_code': 'PKG002', 'name': 'New Home Setup', 'description': 'Essential repairs and setup for new homeowners', 'package_type_id': package_type_map['Bundle Deals'], 'base_price': 800, 'discount_percentage': 15, 'final_price': 680, 'estimated_duration': '2-3 days', 'includes_materials': True},
+            {'package_code': 'PKG003', 'name': 'Holiday Prep Package', 'description': 'Get your home ready for the holidays', 'package_type_id': package_type_map['Seasonal Packages'], 'base_price': 600, 'discount_percentage': 20, 'final_price': 480, 'estimated_duration': '2 days', 'limited_time': True}
+        ]
+        
+        for package_data in packages:
+            package = ServicePackage(**package_data)
+            db.session.add(package)
+        
+        # 5. Create Membership Types
+        memberships = [
+            {'name': 'Basic Plan', 'description': 'Essential home maintenance support', 'membership_level': 'basic', 'monthly_price': 89, 'yearly_price': 950, 'discount_percentage': 10, 'free_consultations': 1, 'monthly_service_limit': 2, 'display_order': 1},
+            {'name': 'Pro Plan', 'description': 'Professional home care with priority service', 'membership_level': 'premium', 'monthly_price': 149, 'yearly_price': 1590, 'discount_percentage': 15, 'priority_booking': True, 'free_consultations': 2, 'monthly_service_limit': 4, 'display_order': 2},
+            {'name': 'Elite Plan', 'description': 'Complete home management solution', 'membership_level': 'enterprise', 'monthly_price': 249, 'yearly_price': 2650, 'discount_percentage': 20, 'priority_booking': True, 'free_consultations': 3, 'emergency_service': True, 'display_order': 3}
+        ]
+        
+        for membership_data in memberships:
+            membership = MembershipType(**membership_data)
+            db.session.add(membership)
+        
+        # Commit all changes
+        db.session.commit()
+        
+        # Count created items
+        categories_count = len(categories)
+        services_count = len(services)
+        packages_count = len(packages)
+        memberships_count = len(memberships)
+        
+        logging.info(f"Seeded complete database: {categories_count} categories, {services_count} services, {packages_count} packages, {memberships_count} memberships")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Database seeded successfully',
+            'created': {
+                'categories': categories_count,
+                'services': services_count,
+                'packages': packages_count,
+                'memberships': memberships_count
+            }
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error seeding database: {e}")
+        return jsonify({'error': f'Failed to seed database: {str(e)}'}), 500
+
 @app.route('/templates/<path:filename>')
 def serve_template(filename):
     """Serve template files for dynamic loading"""
