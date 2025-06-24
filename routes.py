@@ -8422,7 +8422,7 @@ def serve_service_management_section():
 
 # Service Type Management API Routes
 @app.route('/api/service-types', methods=['GET'])
-def get_service_types():
+def api_get_service_types():
     """Get all service types"""
     if not session.get('admin_logged_in'):
         return jsonify({'error': 'Admin authentication required'}), 401
@@ -8436,7 +8436,7 @@ def get_service_types():
         return jsonify({'error': 'Failed to load service types'}), 500
 
 @app.route('/api/service-types', methods=['POST'])
-def create_service_type():
+def api_create_service_type():
     """Create new service type"""
     if not session.get('admin_logged_in'):
         return jsonify({'error': 'Admin authentication required'}), 401
@@ -8455,6 +8455,7 @@ def create_service_type():
             service_code=data['service_code'],
             name=data['name'],
             description=data.get('description'),
+            category_id=data.get('category_id'),
             price_min=data.get('price_min'),
             price_max=data.get('price_max'),
             price_type=data.get('price_type', 'fixed'),
@@ -8463,7 +8464,6 @@ def create_service_type():
             duration_unit=data.get('duration_unit', 'hours'),
             requires_portal=data.get('requires_portal', False),
             user_type=data['user_type'],
-            category=data.get('category'),
             status=data.get('status', 'active'),
             taxable=data.get('taxable', True),
             available_online=data.get('available_online', True),
@@ -8482,7 +8482,7 @@ def create_service_type():
         return jsonify({'error': 'Failed to create service type'}), 500
 
 @app.route('/api/service-types/<int:service_id>', methods=['PUT'])
-def update_service_type(service_id):
+def api_update_service_type(service_id):
     """Update service type"""
     if not session.get('admin_logged_in'):
         return jsonify({'error': 'Admin authentication required'}), 401
@@ -8511,7 +8511,7 @@ def update_service_type(service_id):
         return jsonify({'error': 'Failed to update service type'}), 500
 
 @app.route('/api/service-types/<int:service_id>', methods=['DELETE'])
-def delete_service_type(service_id):
+def api_delete_service_type(service_id):
     """Delete service type"""
     if not session.get('admin_logged_in'):
         return jsonify({'error': 'Admin authentication required'}), 401
@@ -8795,6 +8795,49 @@ def seed_all_data():
         db.session.rollback()
         logging.error(f"Error seeding database: {e}")
         return jsonify({'error': f'Failed to seed database: {str(e)}'}), 500
+
+# Additional API routes for categories, packages, and memberships
+@app.route('/api/service-categories', methods=['GET'])
+def get_service_categories():
+    """Get all service categories"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        from models_db import ServiceCategory
+        categories = ServiceCategory.query.order_by(ServiceCategory.display_order).all()
+        return jsonify([category.to_dict() for category in categories])
+    except Exception as e:
+        logging.error(f"Error getting service categories: {e}")
+        return jsonify({'error': 'Failed to load service categories'}), 500
+
+@app.route('/api/service-packages', methods=['GET'])
+def get_service_packages():
+    """Get all service packages"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        from models_db import ServicePackage
+        packages = ServicePackage.query.order_by(ServicePackage.display_order).all()
+        return jsonify([package.to_dict() for package in packages])
+    except Exception as e:
+        logging.error(f"Error getting service packages: {e}")
+        return jsonify({'error': 'Failed to load service packages'}), 500
+
+@app.route('/api/membership-types', methods=['GET'])
+def get_membership_types():
+    """Get all membership types"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        from models_db import MembershipType
+        memberships = MembershipType.query.order_by(MembershipType.display_order).all()
+        return jsonify([membership.to_dict() for membership in memberships])
+    except Exception as e:
+        logging.error(f"Error getting membership types: {e}")
+        return jsonify({'error': 'Failed to load membership types'}), 500
 
 @app.route('/templates/<path:filename>')
 def serve_template(filename):

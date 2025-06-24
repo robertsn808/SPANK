@@ -11,6 +11,9 @@
             <button class="btn btn-outline-success btn-sm" onclick="refreshServices()">
                 <i class="fas fa-sync-alt me-1"></i>Refresh
             </button>
+            <button class="btn btn-outline-warning btn-sm" onclick="seedDatabase()">
+                <i class="fas fa-database me-1"></i>Seed DB
+            </button>
             <button class="btn btn-outline-info btn-sm" onclick="exportServices()">
                 <i class="fas fa-download me-1"></i>Export
             </button>
@@ -208,14 +211,8 @@
                         <div class="col-md-6">
                             <label for="category" class="form-label">Service Category</label>
                             <select class="form-select" id="category" name="category">
-                                <option value="consultation">Consultation</option>
-                                <option value="drywall">Drywall Services</option>
-                                <option value="flooring">Flooring</option>
-                                <option value="electrical">Electrical</option>
-                                <option value="plumbing">Plumbing</option>
-                                <option value="general">General Handyman</option>
-                                <option value="renovation">Home Renovation</option>
-                                <option value="custom">Custom Service</option>
+                                <option value="">Select Category</option>
+                                <!-- Categories will be loaded dynamically -->
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -502,6 +499,34 @@ window.refreshServices = function() {
     updateMetrics();
 };
 
+window.seedDatabase = function() {
+    if (!confirm('This will populate the database with default services, categories, packages, and memberships. Continue?')) {
+        return;
+    }
+    
+    fetch('/api/seed-all-data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Database seeded successfully!\nCreated:\n- ${data.created.categories} categories\n- ${data.created.services} services\n- ${data.created.packages} packages\n- ${data.created.memberships} memberships`);
+            loadCategories();
+            loadServices();
+            updateMetrics();
+        } else {
+            alert('Database seeding result: ' + (data.message || 'Already seeded'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error seeding database. Please try again.');
+    });
+};
+
 window.exportServices = function() {
     alert('Export services functionality - Coming soon');
 };
@@ -628,8 +653,25 @@ function updateMetrics() {
     document.getElementById('avgPrice').textContent = '$' + Math.round(avgPrice);
 }
 
+// Load categories for dropdown
+function loadCategories() {
+    fetch('/api/service-categories')
+    .then(response => response.json())
+    .then(data => {
+        const categorySelect = document.getElementById('category');
+        categorySelect.innerHTML = '<option value="">Select Category</option>';
+        data.forEach(category => {
+            categorySelect.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+        });
+    })
+    .catch(error => {
+        console.error('Error loading categories:', error);
+    });
+}
+
 // Initialize
+loadCategories();
 loadServices();
 updateMetrics();
-console.log('Service management: Loaded', serviceTypes.length, 'service types');
+console.log('Service management: Initialized');
 </script>
