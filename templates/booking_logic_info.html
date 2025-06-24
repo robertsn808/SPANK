@@ -53,21 +53,21 @@
                 <h6 class="fw-bold mb-3">Automatic Conversion Rules</h6>
                 
                 <div class="alert alert-warning">
-                    <h6><i class="fas fa-exchange-alt me-2"></i>When Does Auto-Conversion Happen?</h6>
+                    <h6><i class="fas fa-key me-2"></i>When Is Portal Access Granted?</h6>
                     <ol class="mb-0">
-                        <li><strong>Service Booking:</strong> Contact books any non-consultation service</li>
-                        <li><strong>Appointment Confirmation:</strong> Status changes to "confirmed" or "scheduled"</li>
-                        <li><strong>Manual Admin Action:</strong> Admin clicks "Convert to Client" button</li>
+                        <li><strong>Service Booking:</strong> Any service except consultation automatically grants portal access</li>
+                        <li><strong>Status Change:</strong> When appointment status becomes "confirmed" or "scheduled"</li>
+                        <li><strong>Manual Activation:</strong> Admin clicks "Activate Project" button</li>
                     </ol>
                 </div>
 
                 <div class="alert alert-info">
-                    <h6><i class="fas fa-calendar me-2"></i>Calendar Booking Logic</h6>
+                    <h6><i class="fas fa-calendar me-2"></i>Service Booking & Portal Logic</h6>
                     <ul class="mb-0">
-                        <li><strong>Consultations:</strong> Remain as contacts (inquiry stage)</li>
-                        <li><strong>Service Appointments:</strong> Auto-convert to clients</li>
-                        <li><strong>Manual Bookings:</strong> Admin can choose conversion</li>
-                        <li><strong>Returning Customers:</strong> Always book as existing clients</li>
+                        <li><strong>Consultations Only:</strong> Remain in inquiry stage (no portal)</li>
+                        <li><strong>Service Bookings:</strong> Automatic portal access granted</li>
+                        <li><strong>Drywall, Flooring, etc.:</strong> Immediate portal activation</li>
+                        <li><strong>Returning Customers:</strong> Existing portal access maintained</li>
                     </ul>
                 </div>
 
@@ -76,14 +76,14 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="bg-light p-3 rounded">
-                            <h6><i class="fas fa-lock me-2"></i>Contacts</h6>
-                            <p class="mb-0 text-muted">No portal access - inquiry stage only</p>
+                            <h6><i class="fas fa-lock me-2"></i>Inquiry Stage</h6>
+                            <p class="mb-0 text-muted">Consultation only - no portal access</p>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="bg-success text-white p-3 rounded">
-                            <h6><i class="fas fa-unlock me-2"></i>Clients</h6>
-                            <p class="mb-0">Portal credentials (Client ID + Job ID)</p>
+                            <h6><i class="fas fa-unlock me-2"></i>Active Projects</h6>
+                            <p class="mb-0">Service bookings - automatic portal access</p>
                         </div>
                     </div>
                 </div>

@@ -139,18 +139,36 @@ class UnifiedScheduler:
         appointments.append(appointment)
         self._save_appointments(appointments)
         
-        # Auto-convert contact to client if this is a booking (not just consultation)
-        if appointment_data.get('service_type') != 'Consultation' or appointment_data.get('status') in ['confirmed', 'scheduled']:
+        # Auto-convert contact to client and assign portal access for non-consultation services
+        service_type = appointment_data.get('service_type', '')
+        appointment_status = appointment_data.get('status', '')
+        
+        # Check if this requires portal access (any service except consultation)
+        requires_portal = (
+            service_type.lower() != 'consultation' or 
+            appointment_status in ['confirmed', 'scheduled', 'booked']
+        )
+        
+        if requires_portal:
             conversion_result = self._auto_convert_contact_to_client(
                 appointment_data.get('client_email', ''),
                 appointment_data.get('client_phone', ''),
                 appointment_data['client_name'],
-                appointment_data['service_type'],
+                service_type,
                 appointment['appointment_id']
             )
             if conversion_result:
                 appointment['auto_conversion'] = conversion_result
-                logging.info(f"Auto-converted contact to client: {conversion_result}")
+                appointment['portal_access_granted'] = True
+                logging.info(f"Auto-converted contact to client with portal access: {conversion_result}")
+            else:
+                # Even if no conversion, assign portal access for service bookings
+                appointment['portal_access_granted'] = True
+                logging.info(f"Portal access granted for service booking: {service_type}")
+        else:
+            # Consultation only - no portal access needed
+            appointment['portal_access_granted'] = False
+            logging.info(f"Consultation booking - no portal access assigned: {service_type}")
         
         # Update related jobs for client continuity
         self._update_client_project_history(client_id, job_id)

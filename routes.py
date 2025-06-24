@@ -328,6 +328,9 @@ def consultation():
                 logging.info(f"Using fallback request ID: {request_id}")
 
             # Create unified appointment with proper client/job IDs
+            # Auto-determine if this needs portal access based on service type
+            is_consultation_only = service.lower() == 'consultation'
+            
             appointment_data = {
                 'client_name': name,
                 'client_phone': phone,
@@ -335,14 +338,15 @@ def consultation():
                 'service_type': service,
                 'scheduled_date': preferred_date if preferred_date else (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d'),
                 'scheduled_time': preferred_time if preferred_time else '09:00',
-                'status': 'pending',
+                'status': 'pending' if is_consultation_only else 'scheduled',  # Service bookings get scheduled status
                 'priority': 'normal',
                 'location': f"{consultation_type} consultation" if consultation_type else '',
-                'notes': f"Consultation request: {project_type}. Type: {consultation_type}. Sq ft: {square_footage}. Details: {message}",
+                'notes': f"{'Consultation request' if is_consultation_only else 'Service booking'}: {project_type}. Type: {consultation_type}. Sq ft: {square_footage}. Details: {message}",
                 'booking_reference': request_id,
                 'created_by': 'consultation_form',
-                'tags': ['consultation', 'new_request'],
-                'client_id': client_id
+                'tags': ['consultation', 'new_request'] if is_consultation_only else ['service_booking', 'portal_access'],
+                'client_id': client_id,
+                'portal_access_required': not is_consultation_only
             }
             
             try:
@@ -351,19 +355,29 @@ def consultation():
                 
                 # Handle appointment result properly (create_appointment returns the appointment dict)
                 appointment_info = ""
+                portal_access_info = ""
+                
                 if appointment_result and isinstance(appointment_result, dict):
                     client_ref = appointment_result.get('client_id', f'CLI{client_id:03d}')
                     job_ref = appointment_result.get('job_id', request_id)
-                    appointment_info = f"Appointment scheduled: {client_ref}/{job_ref} on {preferred_date or 'next available day'} at {preferred_time or '09:00'}"
-                    logging.info(f"Appointment successfully created: {client_ref}/{job_ref} for {name}")
+                    
+                    # Check if portal access was granted
+                    if appointment_result.get('portal_access_granted'):
+                        portal_access_info = f" Portal access granted."
+                        if appointment_result.get('auto_conversion'):
+                            portal_access_info += f" Client credentials: {appointment_result['auto_conversion']['client_id']}/{appointment_result['auto_conversion']['job_id']}"
+                    
+                    appointment_info = f"{'Service booking' if not is_consultation_only else 'Consultation'} scheduled: {client_ref}/{job_ref} on {preferred_date or 'next available day'} at {preferred_time or '09:00'}.{portal_access_info}"
+                    logging.info(f"Appointment successfully created: {client_ref}/{job_ref} for {name} - Portal access: {appointment_result.get('portal_access_granted', False)}")
                 else:
-                    appointment_info = f"Consultation scheduled for client ID: {client_id}"
+                    appointment_info = f"{'Service booking' if not is_consultation_only else 'Consultation'} scheduled for client ID: {client_id}"
                     logging.warning(f"Unexpected appointment result format: {type(appointment_result)}")
                 
                 # Send inquiry alert to admin with detailed error handling
                 try:
+                    alert_type = "service_booking" if not is_consultation_only else "consultation"
                     notification_service.send_inquiry_alert(
-                        inquiry_type="consultation",
+                        inquiry_type=alert_type,
                         customer_name=name,
                         phone_number=phone,
                         email=email,
@@ -494,13 +508,19 @@ def contact():
                 appointment = unified_scheduler.create_appointment(appointment_data)
                 
                 # Send enhanced notification with appointment details
+                portal_info = ""
+                if appointment.get('portal_access_granted'):
+                    portal_info = " Portal access granted."
+                    if appointment.get('auto_conversion'):
+                        portal_info += f" Client credentials: {appointment['auto_conversion']['client_id']}/{appointment['auto_conversion']['job_id']}"
+                
                 notification_service.send_inquiry_alert(
-                    inquiry_type="contact",
+                    inquiry_type="service_booking",
                     customer_name=name,
                     phone_number=phone,
                     email=email,
                     service_type=service_type,
-                    additional_info=f"Service inquiry auto-scheduled: {appointment['client_id']}/{appointment['job_id']} for {appointment['scheduled_date']}"
+                    additional_info=f"Service inquiry auto-scheduled: {appointment['client_id']}/{appointment['job_id']} for {appointment['scheduled_date']}.{portal_info}"
                 )
             else:
                 # Send standard notification for general inquiries
