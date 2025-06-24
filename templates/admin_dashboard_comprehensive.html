@@ -1400,24 +1400,100 @@
         }
 
         function loadStaffCrmSection() {
+            const content = document.getElementById('dynamic-content');
+            content.innerHTML = '<div class="text-center py-5"><div class="loading-spinner me-2"></div>Loading Staff CRM...</div>';
+            
             fetch('/templates/staff_crm_section.html')
                 .then(response => response.text())
                 .then(html => {
-                    document.getElementById('dynamic-content').innerHTML = html;
+                    content.innerHTML = html;
+                    initializeStaffCrm();
                 })
                 .catch(error => {
                     console.error('Error loading staff CRM section:', error);
-                    document.getElementById('dynamic-content').innerHTML = `
+                    content.innerHTML = `
                         <div class="content-card">
                             <div class="card-header">
                                 <h3 class="card-title"><i class="fas fa-users-cog me-2"></i>Staff CRM Management</h3>
                             </div>
                             <div class="card-body">
-                                <div class="alert alert-info">Staff CRM section is being loaded. Please try refreshing the page.</div>
+                                <div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error loading Staff CRM section. Please check server connection.</div>
                             </div>
                         </div>
                     `;
                 });
+        }
+
+        function initializeStaffCrm() {
+            // Initialize staff authentication modal
+            const authModal = document.getElementById('staffAuthModal');
+            if (authModal) {
+                authModal.addEventListener('shown.bs.modal', function () {
+                    document.getElementById('staffId').focus();
+                });
+            }
+            
+            // Initialize client search functionality
+            const searchInput = document.getElementById('clientSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', filterClients);
+            }
+            
+            // Initialize filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    filterClients();
+                });
+            });
+        }
+
+        function filterClients() {
+            const searchTerm = document.getElementById('clientSearch')?.value.toLowerCase() || '';
+            const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+            
+            const clientCards = document.querySelectorAll('.client-card');
+            
+            clientCards.forEach(card => {
+                const clientName = card.querySelector('.client-name')?.textContent.toLowerCase() || '';
+                const clientStatus = card.dataset.status || '';
+                
+                const matchesSearch = clientName.includes(searchTerm);
+                const matchesFilter = activeFilter === 'all' || clientStatus === activeFilter;
+                
+                if (matchesSearch && matchesFilter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Missing function definitions for dashboard functionality
+        function showStaffLoginModal() {
+            const modal = new bootstrap.Modal(document.getElementById('staffAuthModal'));
+            modal.show();
+        }
+
+        function showCreateAppointmentModal() {
+            const modal = new bootstrap.Modal(document.getElementById('newAppointmentModal'));
+            modal.show();
+        }
+
+        function refreshCalendar() {
+            if (typeof calendar !== 'undefined' && calendar) {
+                calendar.refetchEvents();
+            }
+        }
+
+        function showAddContactModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addContactModal'));
+            modal.show();
+        }
+
+        function refreshContacts() {
+            loadContactsSection();
         }
 
         function loadManagementSection() {
@@ -1482,6 +1558,63 @@
 
         function generateInvoice() {
             window.open('/admin/quote-invoice-form', '_blank');
+        }
+
+        function loadEnhancedWidgets() {
+            fetch('/templates/enhanced_dashboard_widgets.html')
+                .then(response => response.text())
+                .then(html => {
+                    const widgetsContainer = document.getElementById('enhancedWidgets');
+                    if (widgetsContainer) {
+                        widgetsContainer.innerHTML = html;
+                        // Initialize widgets after loading
+                        setTimeout(() => {
+                            if (typeof loadEnhancedMetrics === 'function') {
+                                loadEnhancedMetrics();
+                            }
+                            if (typeof loadPriorityAlerts === 'function') {
+                                loadPriorityAlerts();
+                            }
+                            if (typeof loadStaffStatus === 'function') {
+                                loadStaffStatus();
+                            }
+                        }, 100);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading enhanced widgets:', error);
+                });
+        }
+
+        // Enhanced widget functions
+        function showNewQuoteModal() {
+            window.open('/admin/quote-invoice-form', '_blank');
+        }
+
+        function showScheduleModal() {
+            showCreateAppointmentModal();
+        }
+
+        function showClientModal() {
+            showAddContactModal();
+        }
+
+        function generateReport() {
+            window.open('/admin/business-intelligence', '_blank');
+        }
+
+        function viewInvoices() {
+            // Switch to financial section
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector('[data-section="financial"]').classList.add('active');
+            loadFinancialSection();
+        }
+
+        function viewQuotes() {
+            // Switch to quotes section
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector('[data-section="quotes"]').classList.add('active');
+            loadQuotesSection();
         }
     </script>
 </body>
