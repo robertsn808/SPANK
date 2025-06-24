@@ -159,135 +159,135 @@
 </div>
 
 <script>
-function loadContactsData() {
-    fetch('/api/contacts')
-        .then(response => response.json())
-        .then(contacts => {
-            const tbody = document.getElementById('contactsTableBody');
-            if (contacts.length === 0) {
+// Immediate execution CRM system - loads contacts instantly
+(function() {
+    console.log('CRM: Starting immediate load');
+    
+    // Check if table exists
+    function waitForTable() {
+        const tbody = document.getElementById('contactsTableBody');
+        if (tbody) {
+            loadContactsNow();
+        } else {
+            console.log('CRM: Waiting for table...');
+            setTimeout(waitForTable, 100);
+        }
+    }
+    
+    function loadContactsNow() {
+        const tbody = document.getElementById('contactsTableBody');
+        console.log('CRM: Loading contacts into table');
+        
+        // Show loading state
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading contacts...</td></tr>';
+        
+        fetch('/api/contacts')
+            .then(response => {
+                console.log('CRM: API response status:', response.status);
+                return response.json();
+            })
+            .then(contacts => {
+                console.log('CRM: Received', contacts.length, 'contacts');
+                
+                if (!contacts || contacts.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="fas fa-address-book fa-2x mb-2"></i>
+                                <div>No contacts found</div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                const rows = contacts.map(contact => {
+                    const statusClass = contact.status === 'active' ? 'success' : 
+                                       contact.status === 'potential' ? 'warning' : 'secondary';
+                    
+                    return `
+                        <tr>
+                            <td>
+                                <div>
+                                    <strong>${contact.name}</strong>
+                                    <div class="text-muted small">ID: ${contact.id}</div>
+                                    ${contact.address ? `<div class="text-muted small">${contact.address}</div>` : ''}
+                                </div>
+                            </td>
+                            <td>
+                                <a href="tel:${contact.phone}" class="text-decoration-none">
+                                    ${contact.phone}
+                                </a>
+                            </td>
+                            <td>
+                                ${contact.email ? `<a href="mailto:${contact.email}" class="text-decoration-none">${contact.email}</a>` : '<span class="text-muted">—</span>'}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">${contact.service_type || 'General'}</span>
+                                <br><small class="text-info">${contact.source || 'Database'}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-${statusClass}">${contact.status || 'Active'}</span>
+                            </td>
+                            <td>
+                                <small>${contact.created_date || 'N/A'}</small>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="viewContact('${contact.id}')" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="createQuote('${contact.id}')" title="Create Quote">
+                                        <i class="fas fa-file-invoice-dollar"></i>
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="editContact('${contact.id}')" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                tbody.innerHTML = rows;
+                console.log('CRM: Table updated with', contacts.length, 'contacts');
+            })
+            .catch(error => {
+                console.error('CRM: Error loading contacts:', error);
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="text-center text-muted">
-                            <i class="fas fa-address-book fa-2x mb-2"></i>
-                            <div>No contacts yet. Add your first contact to get started.</div>
+                        <td colspan="7" class="text-center text-danger py-4">
+                            <i class="fas fa-exclamation-triangle"></i> Error loading contacts: ${error.message}
                         </td>
                     </tr>
                 `;
-                return;
-            }
-            
-            tbody.innerHTML = contacts.map(contact => `
-                <tr>
-                    <td>
-                        <strong>${contact.name}</strong>
-                        <div class="text-muted small">ID: ${contact.id}</div>
-                    </td>
-                    <td>
-                        <a href="tel:${contact.phone}" class="text-decoration-none">
-                            ${contact.phone}
-                        </a>
-                    </td>
-                    <td>
-                        ${contact.email ? `<a href="mailto:${contact.email}" class="text-decoration-none">${contact.email}</a>` : '<span class="text-muted">—</span>'}
-                    </td>
-                    <td>
-                        ${contact.tags ? contact.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('') : '—'}
-                    </td>
-                    <td>
-                        <span class="badge bg-${contact.status === 'active' ? 'success' : contact.status === 'potential' ? 'warning' : 'secondary'}">
-                            ${contact.status || 'active'}
-                        </span>
-                    </td>
-                    <td>${contact.created_date}</td>
-                    <td>
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-primary" onclick="viewContactDetails('${contact.id}')" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-outline-success" onclick="createQuoteForContact('${contact.id}')" title="Create Quote">
-                                <i class="fas fa-file-invoice-dollar"></i>
-                            </button>
-                            <button class="btn btn-outline-warning" onclick="scheduleJobForContact('${contact.id}')" title="Schedule Job">
-                                <i class="fas fa-calendar-plus"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-        })
-        .catch(error => {
-            console.error('Error loading contacts:', error);
-            document.getElementById('contactsTableBody').innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center text-danger">
-                        <i class="fas fa-exclamation-triangle"></i> Error loading contacts
-                    </td>
-                </tr>
-            `;
-        });
-}
-
-function showAddContactModal() {
-    const modal = new bootstrap.Modal(document.getElementById('addContactModal'));
-    modal.show();
-}
-
-function saveContact() {
-    const form = document.getElementById('addContactForm');
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
+            });
+    }
     
-    // Add default fields
-    data.status = 'active';
-    data.source = 'admin_crm';
-    data.tags = data.service_tag ? [data.service_tag] : [];
+    // Global functions for buttons
+    window.viewContact = function(id) {
+        alert('View contact: ' + id);
+    };
     
-    fetch('/api/contacts/create', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            bootstrap.Modal.getInstance(document.getElementById('addContactModal')).hide();
-            form.reset();
-            loadContactsData();
-            loadRecentActivity();
-            showToast('Contact added successfully!', 'success');
-        } else {
-            showToast('Error adding contact: ' + (result.error || 'Unknown error'), 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showToast('Error adding contact', 'error');
-    });
-}
-
-function refreshContacts() {
-    loadContactsData();
-}
-
-function viewContactDetails(contactId) {
-    // Implementation for viewing contact details
-    showToast('Contact details view coming soon', 'info');
-}
-
-function createQuoteForContact(contactId) {
-    // Implementation for creating quote
-    window.open('/admin/quote-invoice-form', '_blank');
-}
-
-function scheduleJobForContact(contactId) {
-    // Implementation for scheduling job
-    showNewAppointmentModal();
-}
-
-// Load contacts when section is shown
-if (typeof loadContactsData === 'function') {
-    loadContactsData();
-}
+    window.createQuote = function(id) {
+        window.open('/admin/quote-invoice-form?contactId=' + id, '_blank');
+    };
+    
+    window.editContact = function(id) {
+        alert('Edit contact: ' + id);
+    };
+    
+    window.showAddContactModal = function() {
+        alert('Add contact modal - Coming soon');
+    };
+    
+    window.refreshContacts = function() {
+        loadContactsNow();
+    };
+    
+    // Start loading immediately
+    waitForTable();
+    
+    console.log('CRM: Setup complete');
+})();
 </script>
