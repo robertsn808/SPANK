@@ -126,6 +126,11 @@
                                     <button class="btn btn-outline-warning btn-sm d-none d-lg-inline-block" onclick="window.scheduleJob('{{ contact.id }}')" title="Schedule Job">
                                         <i class="fas fa-calendar-plus"></i>
                                     </button>
+                                    {% if contact.source == 'Contact Database' %}
+                                    <button class="btn btn-outline-primary btn-sm d-none d-md-inline-block" onclick="window.convertToClient('{{ contact.id }}')" title="Convert to Client">
+                                        <i class="fas fa-user-plus"></i>
+                                    </button>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -343,6 +348,26 @@ window.viewContact = function(id) {
     document.getElementById('profileSource').textContent = contact.source || 'Unknown';
     document.getElementById('profileCreated').textContent = contact.created_date || 'Unknown';
     
+    // Populate client actions based on source
+    const clientActionsContainer = document.getElementById('clientActions');
+    if (contact.source === 'Contact Database') {
+        clientActionsContainer.innerHTML = `
+            <button class="btn btn-primary btn-sm me-2" onclick="window.convertToClient('${contact.id}')">
+                <i class="fas fa-user-plus me-1"></i>Convert to Client
+            </button>
+            <small class="text-muted">Convert this contact to create portal access</small>
+        `;
+    } else if (contact.source === 'Client Database') {
+        clientActionsContainer.innerHTML = `
+            <button class="btn btn-success btn-sm me-2" onclick="generatePortalLink('${contact.id}')">
+                <i class="fas fa-link me-1"></i>Portal Access
+            </button>
+            <small class="text-muted">Client has portal access credentials</small>
+        `;
+    } else {
+        clientActionsContainer.innerHTML = '<small class="text-muted">No special actions available</small>';
+    }
+    
     // Populate job history
     const jobHistoryContainer = document.getElementById('jobHistoryList');
     if (contact.job_history && contact.job_history.length > 0) {
@@ -531,5 +556,69 @@ window.editClientProfile = function() {
 
 window.createQuoteForClient = function() {
     alert('Create quote for client - Coming soon');
+};
+
+window.convertToClient = function(contactId) {
+    if (!confirm('Convert this contact to a client? This will create portal access credentials and move them to the client database.')) {
+        return;
+    }
+    
+    // Find the contact
+    const contacts = {{ contacts|tojson }};
+    const contact = contacts.find(c => c.id === contactId);
+    
+    if (!contact) {
+        alert('Contact not found');
+        return;
+    }
+    
+    // Generate client credentials
+    const clientId = 'CLI' + String(Math.floor(Math.random() * 900) + 100);
+    const jobId = 'JOB' + String(Math.floor(Math.random() * 9000) + 1000);
+    
+    // Prepare client data
+    const clientData = {
+        client_id: clientId,
+        job_id: jobId,
+        name: contact.name,
+        phone: contact.phone,
+        email: contact.email,
+        address: contact.address || '',
+        access_level: 'client',
+        created_date: new Date().toISOString().split('T')[0],
+        converted_from_contact: contactId,
+        staff_notes: [{
+            note: `Converted from contact database on ${new Date().toLocaleDateString()}`,
+            date: new Date().toISOString().split('T')[0],
+            author: 'admin'
+        }]
+    };
+    
+    // Call API to convert contact
+    fetch('/api/convert-contact-to-client', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            contact_id: contactId,
+            client_data: clientData
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Successfully converted to client!\n\nPortal Credentials:\nClient ID: ${clientId}\nJob ID: ${jobId}\n\nThese credentials have been saved to the client database.`);
+            
+            // Refresh the CRM to show updated data
+            location.reload();
+        } else {
+            alert('Error converting contact: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error converting contact. Please try again.');
+    });
 };
 </script>
