@@ -1,389 +1,145 @@
 {% extends "admin/admin_base.html" %}
 
-{% block title %}Management - SPANKKS Construction Admin{% endblock %}
+{% block title %}Management Center - SPANKKS Construction Admin{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <!-- Page Header -->
+<div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
-            <div class="page-header">
-                <h1 class="page-title">
-                    <i class="fas fa-cogs text-spankks-green me-2"></i>
-                    Management Center
-                </h1>
-                <p class="page-subtitle">Manage system settings, staff, and data operations</p>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-cogs me-2"></i>Management Center</h2>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
             </div>
-        </div>
-    </div>
-
-    <!-- Management Sections -->
-    <div class="row">
-        <!-- CSV Data Management -->
-        <div class="col-lg-6 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-file-csv me-2"></i>
-                        CSV Data Management
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted">Download templates and upload bulk data for clients, jobs, quotes, and more.</p>
-                    
-                    <!-- Quick Actions -->
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <a href="{{ url_for('csv_templates_dashboard') }}" class="btn btn-primary btn-sm w-100">
-                                <i class="fas fa-download me-1"></i>Templates
-                            </a>
-                        </div>
-                        <div class="col-6">
-                            <a href="{{ url_for('csv_templates_dashboard') }}#upload" class="btn btn-success btn-sm w-100">
-                                <i class="fas fa-upload me-1"></i>Upload Data
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- Available Templates -->
-                    <div class="small">
-                        <strong>Available Templates:</strong>
-                        <ul class="mb-0 mt-1">
-                            <li>Clients Database</li>
-                            <li>Jobs & Projects</li>
-                            <li>Quotes & Invoices</li>
-                            <li>Staff Records</li>
-                            <li>Schedule & Appointments</li>
-                            <li>Service Types</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Staff Management -->
-        <div class="col-lg-6 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-users me-2"></i>
-                        Staff Management
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted">Manage staff members, roles, schedules, and performance tracking.</p>
-                    
-                    <!-- Quick Actions -->
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <a href="{{ url_for('enhanced_staff_management') }}" class="btn btn-warning btn-sm w-100">
-                                <i class="fas fa-user-plus me-1"></i>Add Staff
-                            </a>
-                        </div>
-                        <div class="col-6">
-                            <a href="{{ url_for('enhanced_staff_management') }}" class="btn btn-outline-warning btn-sm w-100">
-                                <i class="fas fa-list me-1"></i>View All
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- Staff Features -->
-                    <div class="small">
-                        <strong>Features:</strong>
-                        <ul class="mb-0 mt-1">
-                            <li>Staff profiles & skills</li>
-                            <li>Schedule management</li>
-                            <li>Performance tracking</li>
-                            <li>Role assignments</li>
-                            <li>Availability planning</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Company Settings -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-header bg-info text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-building me-2"></i>
-                        Company Settings
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <!-- Business Information -->
-                        <div class="col-lg-4 mb-4">
-                            <h6><i class="fas fa-info-circle text-info me-2"></i>Business Information</h6>
-                            <form id="businessInfoForm">
-                                <div class="mb-3">
-                                    <label class="form-label">Company Name</label>
-                                    <input type="text" class="form-control" id="companyName" value="SPANKKS Construction">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Phone Number</label>
-                                    <input type="text" class="form-control" id="companyPhone" value="(808) 778-9132">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Email Address</label>
-                                    <input type="email" class="form-control" id="companyEmail" value="spank808@gmail.com">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">License Number</label>
-                                    <input type="text" class="form-control" id="licenseNumber" placeholder="HI License #">
-                                </div>
-                                <button type="submit" class="btn btn-info btn-sm">
-                                    <i class="fas fa-save me-1"></i>Save Changes
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- Business Hours -->
-                        <div class="col-lg-4 mb-4">
-                            <h6><i class="fas fa-clock text-success me-2"></i>Business Hours</h6>
-                            <form id="businessHoursForm">
-                                <div class="mb-2">
-                                    <label class="form-label small">Monday - Friday</label>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <input type="time" class="form-control form-control-sm" id="weekdayStart" value="07:00">
-                                        </div>
-                                        <div class="col-6">
-                                            <input type="time" class="form-control form-control-sm" id="weekdayEnd" value="17:00">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label small">Saturday</label>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <input type="time" class="form-control form-control-sm" id="saturdayStart" value="08:00">
-                                        </div>
-                                        <div class="col-6">
-                                            <input type="time" class="form-control form-control-sm" id="saturdayEnd" value="15:00">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label small">Lunch Break</label>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <input type="time" class="form-control form-control-sm" id="lunchStart" value="12:00">
-                                        </div>
-                                        <div class="col-6">
-                                            <input type="time" class="form-control form-control-sm" id="lunchEnd" value="13:00">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="sundayClosed" checked>
-                                    <label class="form-check-label small" for="sundayClosed">
-                                        Closed Sundays
-                                    </label>
-                                </div>
-                                <button type="submit" class="btn btn-success btn-sm">
-                                    <i class="fas fa-save me-1"></i>Update Hours
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- System Settings -->
-                        <div class="col-lg-4 mb-4">
-                            <h6><i class="fas fa-cog text-warning me-2"></i>System Settings</h6>
-                            <form id="systemSettingsForm">
-                                <div class="mb-3">
-                                    <label class="form-label">Next Client ID</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">CLI</span>
-                                        <input type="number" class="form-control" id="nextClientId" value="001" min="1">
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Next Job ID</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">JOB</span>
-                                        <input type="number" class="form-control" id="nextJobId" value="001" min="1">
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Hawaii GET Tax Rate</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control" id="hawaiiTaxRate" value="4.712" step="0.001" readonly>
-                                        <span class="input-group-text">%</span>
-                                    </div>
-                                    <div class="form-text">O'ahu County rate (locked)</div>
-                                </div>
-                                <button type="submit" class="btn btn-warning btn-sm">
-                                    <i class="fas fa-save me-1"></i>Save Settings
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Service Data Synchronization -->
-                    <div class="card mb-4">
-                        <div class="card-header bg-primary text-white">
-                            <h6 class="mb-0"><i class="fas fa-sync me-2"></i>Service Data Synchronization</h6>
+            
+            <div class="row">
+                <!-- CSV Templates Section -->
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-file-csv me-2"></i>CSV Templates</h5>
                         </div>
                         <div class="card-body">
-                            <p class="mb-3">Ensure pricing page, CSV templates, and database are synchronized with consistent service information.</p>
-                            
+                            <p class="text-muted">Download templates for bulk data import</p>
+                            <div class="d-grid gap-2">
+                                <a href="/admin/csv-templates/clients" class="btn btn-outline-primary">
+                                    <i class="fas fa-users me-2"></i>Clients Template
+                                </a>
+                                <a href="/admin/csv-templates/jobs" class="btn btn-outline-primary">
+                                    <i class="fas fa-briefcase me-2"></i>Jobs Template
+                                </a>
+                                <a href="/admin/csv-templates/staff" class="btn btn-outline-primary">
+                                    <i class="fas fa-user-tie me-2"></i>Staff Template
+                                </a>
+                                <a href="/admin/csv-templates/services" class="btn btn-outline-primary">
+                                    <i class="fas fa-tools me-2"></i>Service Types Template
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Staff Management Section -->
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-users-cog me-2"></i>Staff Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">Manage staff roles, schedules, and permissions</p>
+                            <div class="d-grid gap-2">
+                                <a href="/admin/staff" class="btn btn-outline-success">
+                                    <i class="fas fa-user-plus me-2"></i>Add Staff Member
+                                </a>
+                                <a href="/admin/staff/schedule" class="btn btn-outline-info">
+                                    <i class="fas fa-calendar-check me-2"></i>Staff Schedules
+                                </a>
+                                <a href="/admin/staff/roles" class="btn btn-outline-warning">
+                                    <i class="fas fa-user-shield me-2"></i>Roles & Permissions
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Company Settings Section -->
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-building me-2"></i>Company Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">Configure business information and preferences</p>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary" onclick="editCompanyInfo()">
+                                    <i class="fas fa-edit me-2"></i>Business Information
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="updateSettings()">
+                                    <i class="fas fa-sliders-h me-2"></i>System Preferences
+                                </button>
+                                <button class="btn btn-outline-info" onclick="manageIntegrations()">
+                                    <i class="fas fa-plug me-2"></i>API Integrations
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Management Section -->
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-database me-2"></i>Data Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">Import, export, and backup system data</p>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-success" onclick="importData()">
+                                    <i class="fas fa-upload me-2"></i>Import Data
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="exportData()">
+                                    <i class="fas fa-download me-2"></i>Export Data
+                                </button>
+                                <button class="btn btn-outline-warning" onclick="backupData()">
+                                    <i class="fas fa-shield-alt me-2"></i>Backup System
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Status Section -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-heartbeat me-2"></i>System Status</h5>
+                        </div>
+                        <div class="card-body">
                             <div class="row">
-                                <div class="col-md-6">
-                                    <button type="button" class="btn btn-primary btn-sm me-2" onclick="syncServiceData()">
-                                        <i class="fas fa-sync me-1"></i>Sync Service Data
-                                    </button>
-                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="viewServiceTypes()">
-                                        <i class="fas fa-eye me-1"></i>View Services
-                                    </button>
+                                <div class="col-md-3 text-center">
+                                    <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                                    <h6>Database</h6>
+                                    <small class="text-muted">Connected</small>
                                 </div>
-                                <div class="col-md-6">
-                                    <div id="syncStatus" class="text-muted small">
-                                        Last sync: Never
-                                    </div>
+                                <div class="col-md-3 text-center">
+                                    <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                                    <h6>MailerLite</h6>
+                                    <small class="text-muted">Active</small>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                                    <h6>File Storage</h6>
+                                    <small class="text-muted">Available</small>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                                    <h6>Scheduler</h6>
+                                    <small class="text-muted">Running</small>
                                 </div>
                             </div>
-                            
-                            <div id="syncResults" class="mt-3" style="display: none;"></div>
-                        </div>
-                    </div>
-
-                    <!-- Service Types & Pricing -->
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <h6><i class="fas fa-money-bill-wave text-primary me-2"></i>Service Types & Public Pricing</h6>
-                            <div class="table-responsive">
-                                <table class="table table-sm">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Service Type</th>
-                                            <th>Rate/Price</th>
-                                            <th>Unit</th>
-                                            <th>Display on Website</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="serviceTypesTable">
-                                        <tr>
-                                            <td>General Handyman</td>
-                                            <td>$95.00</td>
-                                            <td>hour</td>
-                                            <td><span class="badge bg-success">Yes</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary" onclick="editService('general')">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Drywall Repair</td>
-                                            <td>$155-$600</td>
-                                            <td>project</td>
-                                            <td><span class="badge bg-success">Yes</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary" onclick="editService('drywall')">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Flooring Installation</td>
-                                            <td>$3.75-$6.25</td>
-                                            <td>sq ft</td>
-                                            <td><span class="badge bg-success">Yes</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary" onclick="editService('flooring')">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Fence Installation</td>
-                                            <td>$35-$70</td>
-                                            <td>linear ft</td>
-                                            <td><span class="badge bg-success">Yes</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary" onclick="editService('fence')">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <button class="btn btn-sm btn-success" onclick="addNewService()">
-                                <i class="fas fa-plus me-1"></i>Add Service Type
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Payment Methods -->
-                    <div class="row mt-4">
-                        <div class="col-lg-6">
-                            <h6><i class="fas fa-credit-card text-success me-2"></i>Accepted Payment Methods</h6>
-                            <form id="paymentMethodsForm">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="paymentCash" checked>
-                                            <label class="form-check-label" for="paymentCash">Cash</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="paymentCheck" checked>
-                                            <label class="form-check-label" for="paymentCheck">Check</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="paymentVenmo" checked>
-                                            <label class="form-check-label" for="paymentVenmo">Venmo</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="paymentZelle" checked>
-                                            <label class="form-check-label" for="paymentZelle">Zelle</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="paymentBank">
-                                            <label class="form-check-label" for="paymentBank">Bank Transfer</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="paymentCredit">
-                                            <label class="form-check-label" for="paymentCredit">Credit Card</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-success btn-sm mt-2">
-                                    <i class="fas fa-save me-1"></i>Update Payment Methods
-                                </button>
-                            </form>
-                        </div>
-                        
-                        <div class="col-lg-6">
-                            <h6><i class="fas fa-bell text-info me-2"></i>Notification Settings</h6>
-                            <form id="notificationForm">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="notifyNewInquiry" checked>
-                                    <label class="form-check-label" for="notifyNewInquiry">New Customer Inquiries</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="notifyQuoteAccepted" checked>
-                                    <label class="form-check-label" for="notifyQuoteAccepted">Quote Acceptances</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="notifyPaymentReceived" checked>
-                                    <label class="form-check-label" for="notifyPaymentReceived">Payment Received</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="notifyAppointmentReminder" checked>
-                                    <label class="form-check-label" for="notifyAppointmentReminder">Appointment Reminders</label>
-                                </div>
-                                <button type="submit" class="btn btn-info btn-sm mt-2">
-                                    <i class="fas fa-save me-1"></i>Save Preferences
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -391,296 +147,30 @@
         </div>
     </div>
 </div>
-
-<!-- Service Edit Modal -->
-<div class="modal fade" id="serviceEditModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Service Type</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="serviceEditForm">
-                    <div class="mb-3">
-                        <label class="form-label">Service Name</label>
-                        <input type="text" class="form-control" id="editServiceName">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Price/Rate</label>
-                        <input type="text" class="form-control" id="editServicePrice">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Unit</label>
-                        <select class="form-select" id="editServiceUnit">
-                            <option value="hour">Hour</option>
-                            <option value="sq ft">Square Foot</option>
-                            <option value="linear ft">Linear Foot</option>
-                            <option value="project">Project</option>
-                            <option value="each">Each</option>
-                        </select>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="editServiceDisplay">
-                        <label class="form-check-label" for="editServiceDisplay">
-                            Display on public website
-                        </label>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="saveService()">Save Changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Include Quick Actions Navigation -->
-{% include 'admin/quick_actions_nav.html' %}
 
 <script>
-// Business Information Form
-document.getElementById('businessInfoForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    // Save business info logic here
-    showToast('Business information updated successfully', 'success');
-});
-
-// Business Hours Form  
-document.getElementById('businessHoursForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    // Save business hours logic here
-    showToast('Business hours updated successfully', 'success');
-});
-
-// System Settings Form
-document.getElementById('systemSettingsForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    // Save system settings logic here
-    showToast('System settings saved successfully', 'success');
-});
-
-// Payment Methods Form
-document.getElementById('paymentMethodsForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    // Save payment methods logic here
-    showToast('Payment methods updated successfully', 'success');
-});
-
-// Notification Form
-document.getElementById('notificationForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    // Save notification settings logic here
-    showToast('Notification preferences saved successfully', 'success');
-});
-
-// Service Management Functions
-function editService(serviceType) {
-    // Populate modal with service data
-    const modal = new bootstrap.Modal(document.getElementById('serviceEditModal'));
-    modal.show();
+function editCompanyInfo() {
+    alert('Company information editing will be available soon.');
 }
 
-function addNewService() {
-    // Clear modal and show for new service
-    document.getElementById('serviceEditForm').reset();
-    const modal = new bootstrap.Modal(document.getElementById('serviceEditModal'));
-    modal.show();
+function updateSettings() {
+    alert('System preferences will be available soon.');
 }
 
-function saveService() {
-    // Save service data
-    showToast('Service updated successfully', 'success');
-    bootstrap.Modal.getInstance(document.getElementById('serviceEditModal')).hide();
+function manageIntegrations() {
+    alert('API integration management will be available soon.');
 }
 
-// Service Data Synchronization Functions
-function syncServiceData() {
-    const button = document.querySelector('[onclick="syncServiceData()"]');
-    const originalText = button.innerHTML;
-    
-    // Show loading state
-    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Syncing...';
-    button.disabled = true;
-    
-    fetch('/api/management/sync-services', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update sync status
-            const now = new Date();
-            document.getElementById('syncStatus').innerHTML = `
-                <span class="text-success">Last sync: ${now.toLocaleString()}</span>
-            `;
-            
-            // Show results
-            document.getElementById('syncResults').innerHTML = `
-                <div class="alert alert-success">
-                    <h6><i class="fas fa-check-circle me-2"></i>Synchronization Complete</h6>
-                    <ul class="mb-0">
-                        <li>${data.details.services_saved} services synchronized</li>
-                        <li>Categories: ${data.details.categories.join(', ')}</li>
-                        <li>CSV template updated</li>
-                        <li>Database validation: ${data.details.validation_passed ? 'PASSED' : 'FAILED'}</li>
-                    </ul>
-                </div>
-            `;
-            document.getElementById('syncResults').style.display = 'block';
-            
-            showToast('Service data synchronized successfully', 'success');
-        } else {
-            document.getElementById('syncResults').innerHTML = `
-                <div class="alert alert-danger">
-                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Synchronization Failed</h6>
-                    <p class="mb-0">Error: ${data.error}</p>
-                </div>
-            `;
-            document.getElementById('syncResults').style.display = 'block';
-            
-            showToast('Service synchronization failed', 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Sync error:', error);
-        showToast('Network error during synchronization', 'danger');
-    })
-    .finally(() => {
-        // Restore button
-        button.innerHTML = originalText;
-        button.disabled = false;
-    });
+function importData() {
+    alert('Data import functionality will be available soon.');
 }
 
-function viewServiceTypes() {
-    fetch('/api/management/service-types')
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const services = data.data.services;
-            let tableHTML = `
-                <div class="modal fade" id="serviceTypesModal" tabindex="-1">
-                    <div class="modal-dialog modal-xl">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Service Types Database</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-striped">
-                                        <thead class="table-dark">
-                                            <tr>
-                                                <th>Service Name</th>
-                                                <th>Category</th>
-                                                <th>Unit Price</th>
-                                                <th>Unit Type</th>
-                                                <th>Est. Hours</th>
-                                                <th>Skill Level</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-            `;
-            
-            services.forEach(service => {
-                tableHTML += `
-                    <tr>
-                        <td><strong>${service.service_name}</strong></td>
-                        <td><span class="badge bg-secondary">${service.category}</span></td>
-                        <td>$${service.unit_price}</td>
-                        <td>${service.unit_type}</td>
-                        <td>${service.estimated_hours}h</td>
-                        <td><span class="badge bg-${service.skill_level === 'beginner' ? 'success' : service.skill_level === 'intermediate' ? 'warning' : 'danger'}">${service.skill_level}</span></td>
-                    </tr>
-                `;
-            });
-            
-            tableHTML += `
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="mt-3">
-                                    <p class="text-muted small">
-                                        <strong>Total Services:</strong> ${data.data.total_services} |
-                                        <strong>Categories:</strong> ${data.data.categories.join(', ')} |
-                                        <strong>Last Updated:</strong> ${new Date(data.data.last_updated).toLocaleString()}
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Remove existing modal if present
-            const existingModal = document.getElementById('serviceTypesModal');
-            if (existingModal) {
-                existingModal.remove();
-            }
-            
-            // Add new modal to body
-            document.body.insertAdjacentHTML('beforeend', tableHTML);
-            
-            // Show modal
-            const modal = new bootstrap.Modal(document.getElementById('serviceTypesModal'));
-            modal.show();
-        } else {
-            showToast('Failed to load service types', 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Error loading service types:', error);
-        showToast('Network error loading service types', 'danger');
-    });
+function exportData() {
+    alert('Data export functionality will be available soon.');
 }
 
-function checkServiceSyncStatus() {
-    fetch('/api/management/service-types')
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const lastUpdated = new Date(data.data.last_updated);
-            document.getElementById('syncStatus').innerHTML = `
-                <span class="text-success">Last sync: ${lastUpdated.toLocaleString()}</span>
-            `;
-        }
-    })
-    .catch(error => {
-        console.log('Service types not yet synchronized');
-    });
+function backupData() {
+    alert('Backup system will be available soon.');
 }
-
-// Toast notification function
-function showToast(message, type) {
-    // Create and show toast notification
-    const toast = document.createElement('div');
-    toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-    toast.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        if (toast.parentNode) {
-            toast.parentNode.removeChild(toast);
-        }
-    }, 4000);
-}
-
-// Initialize service sync status on page load
-document.addEventListener('DOMContentLoaded', function() {
-    checkServiceSyncStatus();
-});
 </script>
-
 {% endblock %}
