@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPANKKS Construction - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --spankks-green: #28a745;
+            --spankks-blue: #007bff;
+            --spankks-orange: #fd7e14;
+            --primary-blue: #2E86AB;
+            --accent-orange: #F24236;
+            --success-green: #10B981;
+            --warning-yellow: #F59E0B;
+            --text-dark: #1F2937;
+            --bg-light: #F8FAFC;
+            --border-gray: #E5E7EB;
+        }
+
+        body {
+            background: var(--bg-light);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 14px;
+        }
+
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            border-bottom: 3px solid var(--spankks-green);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--spankks-green) !important;
+            font-size: 1.5rem;
+        }
+
+        .hawaii-time {
+            background: var(--spankks-green);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: calc(100vh - 76px);
+        }
+
+        .sidebar {
+            background: white;
+            border-right: 1px solid var(--border-gray);
+            box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-gray);
+            background: linear-gradient(135deg, var(--spankks-green) 0%, #1e7e34 100%);
+            color: white;
+        }
+
+        .sidebar-header h5 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .nav-section {
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-item {
+            margin: 0 0.75rem;
+        }
+
+        .nav-link {
+            color: var(--text-dark);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background: var(--bg-light);
+            color: var(--spankks-green);
+            transform: translateX(2px);
+        }
+
+        .nav-link.active {
+            background: var(--spankks-green);
+            color: white;
+        }
+
+        .nav-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--accent-orange);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid var(--border-gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--spankks-green) 0%, var(--spankks-blue) 100%);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6B7280;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-change.positive {
+            color: var(--success-green);
+        }
+
+        .stat-change.negative {
+            color: var(--accent-orange);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-gray);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-gray);
+            background: #FAFBFC;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .calendar-container {
+            min-height: 600px;
+        }
+
+        #calendar {
+            height: 100%;
+        }
+
+        .fc-toolbar-title {
+            color: var(--spankks-green) !important;
+            font-weight: 600 !important;
+        }
+
+        .fc-button-primary {
+            background-color: var(--spankks-green) !important;
+            border-color: var(--spankks-green) !important;
+        }
+
+        .fc-button-primary:hover {
+            background-color: #1e7e34 !important;
+            border-color: #1e7e34 !important;
+        }
+
+        .fc-event {
+            border: none !important;
+        }
+
+        .fc-event.scheduled {
+            background-color: var(--success-green) !important;
+        }
+
+        .fc-event.tentative {
+            background-color: var(--warning-yellow) !important;
+        }
+
+        .fc-event.completed {
+            background-color: #6c757d !important;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--border-gray);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-action-btn:hover {
+            border-color: var(--spankks-green);
+            color: var(--spankks-green);
+            background: #f0fff4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+        }
+
+        .quick-action-btn i {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .activity-icon.contact {
+            background: var(--primary-blue);
+        }
+
+        .activity-icon.quote {
+            background: var(--success-green);
+        }
+
+        .activity-icon.invoice {
+            background: var(--warning-yellow);
+        }
+
+        .activity-icon.appointment {
+            background: var(--spankks-green);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: #6B7280;
+        }
+
+        .alert-panel {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffd93d;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .alert-panel h6 {
+            color: #856404;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-panel h6 i {
+            margin-right: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .alert-item {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .alert-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .btn-spankks {
+            background: linear-gradient(135deg, var(--spankks-green) 0%, #1e7e34 100%);
+            border: none;
+            color: white;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-spankks:hover {
+            background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        .modal-content {
+            border-radius: 0.75rem;
+            border: none;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--spankks-green) 0%, #1e7e34 100%);
+            color: white;
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+
+        .form-control:focus {
+            border-color: var(--spankks-green);
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+
+        .form-select:focus {
+            border-color: var(--spankks-green);
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+        }
+
+        .data-table {
+            font-size: 0.875rem;
+        }
+
+        .data-table th {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            font-weight: 600;
+            border-top: none;
+            padding: 1rem 0.75rem;
+        }
+
+        .data-table td {
+            padding: 0.75rem;
+            vertical-align: middle;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 0.125rem solid #f3f3f3;
+            border-top: 0.125rem solid var(--spankks-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="fas fa-hammer me-2"></i>SPANKKS Construction
+            </span>
+            <div class="d-flex align-items-center">
+                <div class="hawaii-time me-3">
+                    <i class="fas fa-clock me-1"></i>
+                    Hawaii: <span id="hawaiiTime"></span>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-1"></i>Admin
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('admin_logout') }}">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h5><i class="fas fa-tachometer-alt me-2"></i>Business Dashboard</h5>
+                <small>Professional Construction Management</small>
+            </div>
+
+            <!-- Core Business -->
+            <div class="nav-section">
+                <div class="nav-section-title">Core Business</div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link active" data-section="dashboard">
+                        <i class="fas fa-home"></i>Dashboard
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="schedule">
+                        <i class="fas fa-calendar-alt"></i>SPANKKS Schedule
+                        <span class="notification-badge" id="scheduleCount">{{ today_stats.jobs or 0 }}</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="contacts">
+                        <i class="fas fa-address-book"></i>Customer CRM
+                        <span class="notification-badge" id="contactsCount">{{ new_contacts or 0 }}</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="quotes">
+                        <i class="fas fa-file-invoice-dollar"></i>Quote Builder
+                    </a>
+                </div>
+            </div>
+
+            <!-- Operations -->
+            <div class="nav-section">
+                <div class="nav-section-title">Operations</div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="staff">
+                        <i class="fas fa-users"></i>Staff Portal
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="inventory">
+                        <i class="fas fa-boxes"></i>Inventory
+                        {% if low_stock_count > 0 %}
+                        <span class="notification-badge">{{ low_stock_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="financial">
+                        <i class="fas fa-chart-line"></i>Financial Reports
+                        {% if overdue_count > 0 %}
+                        <span class="notification-badge">{{ overdue_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="photos">
+                        <i class="fas fa-camera"></i>Job Photos
+                    </a>
+                </div>
+            </div>
+
+            <!-- Analytics -->
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="business-intelligence">
+                        <i class="fas fa-brain"></i>Business Intelligence
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="performance">
+                        <i class="fas fa-chart-bar"></i>Performance
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tools -->
+            <div class="nav-section">
+                <div class="nav-section-title">Tools</div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="portal">
+                        <i class="fas fa-user-circle"></i>Client Portal
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="management">
+                        <i class="fas fa-cogs"></i>Management
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="todayJobs">{{ today_stats.jobs or 0 }}</div>
+                        <div class="stat-label">Jobs Today</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-hammer me-1"></i>Active Projects
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pendingQuotes">{{ today_stats.quotes or 0 }}</div>
+                        <div class="stat-label">Pending Quotes</div>
+                        <div class="stat-change">
+                            <i class="fas fa-clock me-1"></i>Awaiting Response
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="weekRevenue">${{ today_stats.revenue or 0 }}</div>
+                        <div class="stat-label">Week Revenue</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up me-1"></i>This Week
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="newContacts">{{ new_contacts or 0 }}</div>
+                        <div class="stat-label">New Contacts</div>
+                        <div class="stat-change">
+                            <i class="fas fa-user-plus me-1"></i>Last 24h
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Priority Alerts -->
+                {% if low_stock_count > 0 or overdue_count > 0 %}
+                <div class="alert-panel">
+                    <h6><i class="fas fa-exclamation-triangle"></i>Priority Alerts</h6>
+                    {% if low_stock_count > 0 %}
+                    <div class="alert-item">
+                        <div>
+                            <strong>Low Inventory:</strong> {{ low_stock_count }} items need restocking
+                        </div>
+                        <button class="btn btn-sm btn-warning" onclick="showSection('inventory')">
+                            <i class="fas fa-boxes"></i> Check Inventory
+                        </button>
+                    </div>
+                    {% endif %}
+                    {% if overdue_count > 0 %}
+                    <div class="alert-item">
+                        <div>
+                            <strong>Overdue Payments:</strong> {{ overdue_count }} invoices need follow-up
+                        </div>
+                        <button class="btn btn-sm btn-danger" onclick="showSection('financial')">
+                            <i class="fas fa-dollar-sign"></i> Review Payments
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- SPANKKS Weekly Schedule -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-calendar-week me-2"></i>SPANKKS Weekly Schedule
+                            </h3>
+                            <button class="btn btn-spankks btn-sm" onclick="showNewAppointmentModal()">
+                                <i class="fas fa-plus me-1"></i>New Job
+                            </button>
+                        </div>
+                        <div class="card-body calendar-container">
+                            <div id="calendar"></div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions & Activity -->
+                    <div>
+                        <!-- Quick Actions -->
+                        <div class="content-card mb-4">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="quick-actions">
+                                    <a href="#" class="quick-action-btn" onclick="showNewQuoteModal()">
+                                        <i class="fas fa-plus"></i>New Quote
+                                    </a>
+                                    <a href="#" class="quick-action-btn" onclick="showSection('contacts')">
+                                        <i class="fas fa-address-book"></i>Add Contact
+                                    </a>
+                                    <a href="#" class="quick-action-btn" onclick="generateInvoice()">
+                                        <i class="fas fa-file-invoice"></i>Create Invoice
+                                    </a>
+                                    <a href="/portal" class="quick-action-btn" target="_blank">
+                                        <i class="fas fa-user-circle"></i>Client Portal
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-clock me-2"></i>Recent Activity
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="activity-feed" id="activityFeed">
+                                    <div class="text-center py-3">
+                                        <div class="loading-spinner me-2"></div>
+                                        Loading activity...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other sections will be loaded dynamically -->
+            <div id="dynamic-content" class="d-none">
+                <!-- Content sections loaded via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- New Appointment Modal -->
+    <div class="modal fade" id="newAppointmentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-calendar-plus me-2"></i>Schedule New Job
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="appointmentForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Client Name</label>
+                                    <input type="text" class="form-control" name="client_name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" name="phone" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Service Type</label>
+                                    <select class="form-select" name="service_type" required>
+                                        <option value="">Select Service</option>
+                                        <option value="Drywall">Drywall Services</option>
+                                        <option value="Flooring">Flooring Installation</option>
+                                        <option value="Fence">Fence Building</option>
+                                        <option value="General">General Handyman</option>
+                                        <option value="Consultation">Consultation</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" class="form-control" name="scheduled_date" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Time</label>
+                                    <select class="form-select" name="scheduled_time" required>
+                                        <option value="">Select Time</option>
+                                        <option value="07:00">7:00 AM</option>
+                                        <option value="08:00">8:00 AM</option>
+                                        <option value="09:00">9:00 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="13:00">1:00 PM</option>
+                                        <option value="14:00">2:00 PM</option>
+                                        <option value="15:00">3:00 PM</option>
+                                        <option value="16:00">4:00 PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" name="status" required>
+                                        <option value="tentative">Tentative</option>
+                                        <option value="scheduled">Confirmed</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-control" name="location" placeholder="Job site address">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" name="notes" rows="3" placeholder="Additional details about the job"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-spankks" onclick="saveAppointment()">
+                        <i class="fas fa-calendar-plus me-1"></i>Schedule Job
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script>
+        let calendar;
+        let currentSection = 'dashboard';
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCalendar();
+            loadRecentActivity();
+            updateHawaiiTime();
+            setInterval(updateHawaiiTime, 1000);
+            
+            // Initialize navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.dataset.section;
+                    if (section) {
+                        showSection(section);
+                    }
+                });
+            });
+        });
+
+        function updateHawaiiTime() {
+            const now = new Date();
+            const hawaiiTime = new Date(now.toLocaleString("en-US", {timeZone: "Pacific/Honolulu"}));
+            document.getElementById('hawaiiTime').textContent = hawaiiTime.toLocaleTimeString();
+        }
+
+        function initializeCalendar() {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                slotMinTime: '07:00:00',
+                slotMaxTime: '18:00:00',
+                businessHours: [
+                    {
+                        daysOfWeek: [1, 2, 3, 4, 5],
+                        startTime: '07:00',
+                        endTime: '12:00'
+                    },
+                    {
+                        daysOfWeek: [1, 2, 3, 4, 5],
+                        startTime: '13:00',
+                        endTime: '17:00'
+                    },
+                    {
+                        daysOfWeek: [6],
+                        startTime: '08:00',
+                        endTime: '15:00'
+                    }
+                ],
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    fetch('/api/appointments')
+                        .then(response => response.json())
+                        .then(data => {
+                            const events = data.map(apt => ({
+                                id: apt.appointment_id,
+                                title: `${apt.client_name} - ${apt.service_type}`,
+                                start: `${apt.scheduled_date}T${apt.scheduled_time}`,
+                                className: apt.status,
+                                extendedProps: {
+                                    phone: apt.phone,
+                                    location: apt.location,
+                                    notes: apt.notes,
+                                    status: apt.status
+                                }
+                            }));
+                            successCallback(events);
+                        })
+                        .catch(error => {
+                            console.error('Error loading calendar events:', error);
+                            failureCallback(error);
+                        });
+                },
+                eventClick: function(info) {
+                    showAppointmentDetails(info.event);
+                },
+                dateClick: function(info) {
+                    showNewAppointmentModal(info.date);
+                }
+            });
+            calendar.render();
+        }
+
+        function loadRecentActivity() {
+            fetch('/api/dashboard/activity')
+                .then(response => response.json())
+                .then(data => {
+                    const feed = document.getElementById('activityFeed');
+                    if (data.activities && data.activities.length > 0) {
+                        feed.innerHTML = data.activities.map(activity => `
+                            <div class="activity-item">
+                                <div class="activity-icon ${activity.type}">
+                                    <i class="fas fa-${getActivityIcon(activity.type)}"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">${activity.title}</div>
+                                    <div class="activity-time">${formatActivityTime(activity.timestamp)}</div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        feed.innerHTML = `
+                            <div class="activity-item">
+                                <div class="activity-icon contact">
+                                    <i class="fas fa-info"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">System ready for business operations</div>
+                                    <div class="activity-time">Ready to track activity</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading activity:', error);
+                    document.getElementById('activityFeed').innerHTML = `
+                        <div class="activity-item">
+                            <div class="activity-icon contact">
+                                <i class="fas fa-info"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Activity feed ready</div>
+                                <div class="activity-time">Monitoring business activity</div>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+
+        function getActivityIcon(type) {
+            const icons = {
+                'new-contact': 'user',
+                'new-quote': 'file-invoice-dollar',
+                'new-invoice': 'file-invoice',
+                'appointment': 'calendar',
+                'payment': 'dollar-sign'
+            };
+            return icons[type] || 'bell';
+        }
+
+        function formatActivityTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffHrs / 24);
+            
+            if (diffDays > 0) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+            if (diffHrs > 0) return `${diffHrs} hour${diffHrs > 1 ? 's' : ''} ago`;
+            return 'Just now';
+        }
+
+        function showSection(section) {
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${section}"]`).classList.add('active');
+            
+            currentSection = section;
+            
+            // Show/hide content
+            if (section === 'dashboard') {
+                document.getElementById('dashboard-section').style.display = 'block';
+                document.getElementById('dynamic-content').classList.add('d-none');
+            } else {
+                document.getElementById('dashboard-section').style.display = 'none';
+                document.getElementById('dynamic-content').classList.remove('d-none');
+                loadSectionContent(section);
+            }
+        }
+
+        function loadSectionContent(section) {
+            const content = document.getElementById('dynamic-content');
+            content.innerHTML = '<div class="text-center py-5"><div class="loading-spinner me-2"></div>Loading...</div>';
+            
+            // Load section-specific content
+            switch (section) {
+                case 'schedule':
+                    loadScheduleSection();
+                    break;
+                case 'contacts':
+                    loadContactsSection();
+                    break;
+                case 'quotes':
+                    loadQuotesSection();
+                    break;
+                case 'staff':
+                    loadStaffSection();
+                    break;
+                case 'inventory':
+                    loadInventorySection();
+                    break;
+                case 'financial':
+                    loadFinancialSection();
+                    break;
+                case 'photos':
+                    loadPhotosSection();
+                    break;
+                case 'business-intelligence':
+                    loadBusinessIntelligenceSection();
+                    break;
+                case 'performance':
+                    loadPerformanceSection();
+                    break;
+                case 'portal':
+                    loadPortalSection();
+                    break;
+                case 'management':
+                    loadManagementSection();
+                    break;
+                default:
+                    content.innerHTML = '<div class="alert alert-info">Section under development</div>';
+            }
+        }
+
+        function showNewAppointmentModal(date = null) {
+            const modal = new bootstrap.Modal(document.getElementById('newAppointmentModal'));
+            if (date) {
+                document.querySelector('[name="scheduled_date"]').value = date.toISOString().split('T')[0];
+            }
+            modal.show();
+        }
+
+        function saveAppointment() {
+            const form = document.getElementById('appointmentForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            fetch('/api/appointments/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('newAppointmentModal')).hide();
+                    calendar.refetchEvents();
+                    loadRecentActivity();
+                    showToast('Job scheduled successfully!', 'success');
+                } else {
+                    showToast('Error scheduling job: ' + (result.error || 'Unknown error'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Error scheduling job', 'error');
+            });
+        }
+
+        function showToast(message, type = 'info') {
+            // Simple toast notification
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} position-fixed`;
+            toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            toast.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        // Placeholder functions for other sections
+        function loadScheduleSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-calendar-alt me-2"></i>Advanced Scheduling</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Advanced scheduling features will be implemented here.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadContactsSection() {
+            fetch('/templates/crm_section.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('dynamic-content').innerHTML = html;
+                    // Initialize contacts section
+                    setTimeout(() => {
+                        if (typeof loadContactsData === 'function') {
+                            loadContactsData();
+                        }
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error loading CRM section:', error);
+                    document.getElementById('dynamic-content').innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-address-book me-2"></i>Customer CRM</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    CRM section is being loaded. Please try refreshing the page.
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+
+        function loadQuotesSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-file-invoice-dollar me-2"></i>Quote Builder</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Multi-line quote builder with Hawaii GET tax will be implemented here.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadStaffSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-users me-2"></i>Staff Portal</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Staff management and portal features will be implemented here.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadInventorySection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-boxes me-2"></i>Inventory Management</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Inventory tracking and management features will be implemented here.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadFinancialSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chart-line me-2"></i>Financial Reports</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Financial reporting and P&L statements will be implemented here.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadPhotosSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-camera me-2"></i>Job Photos</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Before/after photo documentation will be implemented here.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadBusinessIntelligenceSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-brain me-2"></i>Business Intelligence</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>AI-powered business insights and analytics will be implemented here.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadPerformanceSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-chart-bar me-2"></i>Performance Analytics</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Performance monitoring and metrics will be implemented here.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadPortalSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-user-circle me-2"></i>Client Portal Management</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>Client portal configuration and management will be implemented here.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadManagementSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-cogs me-2"></i>System Management</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>System configuration and management tools will be implemented here.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showNewQuoteModal() {
+            window.open('/admin/quote-invoice-form', '_blank');
+        }
+
+        function generateInvoice() {
+            window.open('/admin/quote-invoice-form', '_blank');
+        }
+    </script>
+</body>
+</html>

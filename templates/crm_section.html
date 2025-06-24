@@ -1,0 +1,249 @@
+<div class="content-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">
+            <i class="fas fa-address-book me-2"></i>Customer CRM
+        </h3>
+        <button class="btn btn-spankks btn-sm" onclick="showAddContactModal()">
+            <i class="fas fa-user-plus me-1"></i>Add Contact
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="Search contacts..." id="contactSearch">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="contactFilter">
+                    <option value="">All Contacts</option>
+                    <option value="active">Active</option>
+                    <option value="potential">Potential</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-outline-success" onclick="refreshContacts()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table data-table" id="contactsTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Service Tags</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="contactsTableBody">
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            <div class="loading-spinner me-2"></div>
+                            Loading contacts...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Contact Modal -->
+<div class="modal fade" id="addContactModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-user-plus me-2"></i>Add New Contact
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addContactForm">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" name="phone" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <input type="text" class="form-control" name="address" placeholder="Job site or mailing address">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Service Interest</label>
+                        <select class="form-select" name="service_tag">
+                            <option value="">Select Service</option>
+                            <option value="Drywall">Drywall Services</option>
+                            <option value="Flooring">Flooring Installation</option>
+                            <option value="Fence">Fence Building</option>
+                            <option value="General">General Handyman</option>
+                            <option value="Consultation">Consultation</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="3" placeholder="Additional information about the contact"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-spankks" onclick="saveContact()">
+                    <i class="fas fa-save me-1"></i>Save Contact
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function loadContactsData() {
+    fetch('/api/contacts')
+        .then(response => response.json())
+        .then(contacts => {
+            const tbody = document.getElementById('contactsTableBody');
+            if (contacts.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            <i class="fas fa-address-book fa-2x mb-2"></i>
+                            <div>No contacts yet. Add your first contact to get started.</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = contacts.map(contact => `
+                <tr>
+                    <td>
+                        <strong>${contact.name}</strong>
+                        <div class="text-muted small">ID: ${contact.id}</div>
+                    </td>
+                    <td>
+                        <a href="tel:${contact.phone}" class="text-decoration-none">
+                            ${contact.phone}
+                        </a>
+                    </td>
+                    <td>
+                        ${contact.email ? `<a href="mailto:${contact.email}" class="text-decoration-none">${contact.email}</a>` : '<span class="text-muted">—</span>'}
+                    </td>
+                    <td>
+                        ${contact.tags ? contact.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('') : '—'}
+                    </td>
+                    <td>
+                        <span class="badge bg-${contact.status === 'active' ? 'success' : contact.status === 'potential' ? 'warning' : 'secondary'}">
+                            ${contact.status || 'active'}
+                        </span>
+                    </td>
+                    <td>${contact.created_date}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="viewContactDetails('${contact.id}')" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-outline-success" onclick="createQuoteForContact('${contact.id}')" title="Create Quote">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="scheduleJobForContact('${contact.id}')" title="Schedule Job">
+                                <i class="fas fa-calendar-plus"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        })
+        .catch(error => {
+            console.error('Error loading contacts:', error);
+            document.getElementById('contactsTableBody').innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Error loading contacts
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+function showAddContactModal() {
+    const modal = new bootstrap.Modal(document.getElementById('addContactModal'));
+    modal.show();
+}
+
+function saveContact() {
+    const form = document.getElementById('addContactForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Add default fields
+    data.status = 'active';
+    data.source = 'admin_crm';
+    data.tags = data.service_tag ? [data.service_tag] : [];
+    
+    fetch('/api/contacts/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('addContactModal')).hide();
+            form.reset();
+            loadContactsData();
+            loadRecentActivity();
+            showToast('Contact added successfully!', 'success');
+        } else {
+            showToast('Error adding contact: ' + (result.error || 'Unknown error'), 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error adding contact', 'error');
+    });
+}
+
+function refreshContacts() {
+    loadContactsData();
+}
+
+function viewContactDetails(contactId) {
+    // Implementation for viewing contact details
+    showToast('Contact details view coming soon', 'info');
+}
+
+function createQuoteForContact(contactId) {
+    // Implementation for creating quote
+    window.open('/admin/quote-invoice-form', '_blank');
+}
+
+function scheduleJobForContact(contactId) {
+    // Implementation for scheduling job
+    showNewAppointmentModal();
+}
+
+// Load contacts when section is shown
+if (typeof loadContactsData === 'function') {
+    loadContactsData();
+}
+</script>
