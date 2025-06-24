@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SPANKKS Construction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #2E86AB;
+            --accent-orange: #F24236;
+            --success-green: #10B981;
+            --warning-yellow: #F59E0B;
+            --text-dark: #1F2937;
+            --bg-light: #F8FAFC;
+            --border-gray: #E5E7EB;
+        }
+
+        body {
+            background: var(--bg-light);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .navbar {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-blue) !important;
+        }
+
+        .sidebar {
+            background: white;
+            min-height: 100vh;
+            border-right: 1px solid var(--border-gray);
+            box-shadow: 1px 0 3px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            margin: 0 0.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-dark);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link:hover {
+            background: var(--bg-light);
+            color: var(--primary-blue);
+        }
+
+        .nav-link.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .nav-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-gray);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: #6B7280;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.25rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success-green);
+        }
+
+        .stat-change.negative {
+            color: var(--accent-orange);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-gray);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-gray);
+            background: #FAFBFC;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--border-gray);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .quick-action-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            background: #F0F8FF;
+        }
+
+        .quick-action-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .activity-icon.contact {
+            background: var(--primary-blue);
+        }
+
+        .activity-icon.quote {
+            background: var(--success-green);
+        }
+
+        .activity-icon.invoice {
+            background: var(--warning-yellow);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.875rem;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: #6B7280;
+        }
+
+        .calendar-widget {
+            background: white;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-gray);
+            overflow: hidden;
+        }
+
+        .calendar-header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border-gray);
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .calendar-day.today {
+            background: #EEF2FF;
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .calendar-day.has-appointments {
+            background: #FEF3F2;
+        }
+
+        .appointment-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-orange);
+            border-radius: 50%;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+        }
+
+        .hawaii-time {
+            font-size: 0.875rem;
+            color: #6B7280;
+            margin-left: auto;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent-orange);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="fas fa-hammer me-2"></i>SPANKKS Construction
+            </span>
+            <div class="hawaii-time" id="hawaiiTime">
+                Hawaii Time: <span id="currentTime"></span>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-user me-1"></i>Admin
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ url_for('admin_logout') }}">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 col-md-3 p-0">
+                <div class="sidebar">
+                    <div class="sidebar-nav">
+                        <!-- Core Business -->
+                        <div class="nav-section">
+                            <div class="nav-section-title">Core Business</div>
+                            <div class="nav-item">
+                                <a href="{{ url_for('admin_dashboard') }}" class="nav-link active">
+                                    <i class="fas fa-tachometer-alt"></i>Dashboard
+                                </a>
+                            </div>
+                            <div class="nav-item">
+                                <a href="{{ url_for('contact_management') }}" class="nav-link">
+                                    <i class="fas fa-address-book"></i>Contacts
+                                    {% if new_contacts > 0 %}
+                                    <span class="notification-badge">{{ new_contacts }}</span>
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="nav-item">
+                                <a href="{{ url_for('unified_scheduler_dashboard') }}" class="nav-link">
+                                    <i class="fas fa-calendar-alt"></i>Calendar
+                                </a>
+                            </div>
+                            <div class="nav-item">
+                                <a href="/admin/quotes" class="nav-link">
+                                    <i class="fas fa-file-invoice-dollar"></i>Quotes
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Operations -->
+                        <div class="nav-section">
+                            <div class="nav-section-title">Operations</div>
+                            <div class="nav-item">
+                                <a href="{{ url_for('admin_staff_dashboard') }}" class="nav-link">
+                                    <i class="fas fa-users"></i>Staff
+                                </a>
+                            </div>
+                            <div class="nav-item">
+                                <a href="/admin/inventory" class="nav-link">
+                                    <i class="fas fa-boxes"></i>Inventory
+                                    {% if low_stock_count > 0 %}
+                                    <span class="notification-badge">{{ low_stock_count }}</span>
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="nav-item">
+                                <a href="/admin/financial" class="nav-link">
+                                    <i class="fas fa-chart-line"></i>Financial
+                                    {% if overdue_count > 0 %}
+                                    <span class="notification-badge">{{ overdue_count }}</span>
+                                    {% endif %}
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Tools -->
+                        <div class="nav-section">
+                            <div class="nav-section-title">Tools</div>
+                            <div class="nav-item">
+                                <a href="/admin/analytics" class="nav-link">
+                                    <i class="fas fa-analytics"></i>Analytics
+                                </a>
+                            </div>
+                            <div class="nav-item">
+                                <a href="/admin/portal" class="nav-link">
+                                    <i class="fas fa-user-circle"></i>Portals
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-10 col-md-9">
+                <div class="main-content">
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">{{ today_stats.jobs or 0 }}</div>
+                            <div class="stat-label">Jobs Today</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> Active
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">{{ today_stats.quotes or 0 }}</div>
+                            <div class="stat-label">Pending Quotes</div>
+                            <div class="stat-change">
+                                <i class="fas fa-clock"></i> Awaiting Response
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${{ today_stats.revenue or 0 }}</div>
+                            <div class="stat-label">Week Revenue</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> This Week
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">{{ new_contacts or 0 }}</div>
+                            <div class="stat-label">New Contacts</div>
+                            <div class="stat-change">
+                                <i class="fas fa-user-plus"></i> Last 24h
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Grid -->
+                    <div class="content-grid">
+                        <!-- Main Content -->
+                        <div>
+                            <!-- Quick Actions -->
+                            <div class="content-card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Quick Actions</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="quick-actions">
+                                        <a href="/admin/quote-builder" class="quick-action-btn">
+                                            <i class="fas fa-plus"></i>New Quote
+                                        </a>
+                                        <a href="/admin/create-appointment" class="quick-action-btn">
+                                            <i class="fas fa-calendar-plus"></i>Schedule Job
+                                        </a>
+                                        <a href="/admin/add-contact" class="quick-action-btn">
+                                            <i class="fas fa-user-plus"></i>Add Contact
+                                        </a>
+                                        <a href="/admin/invoice-generator" class="quick-action-btn">
+                                            <i class="fas fa-file-invoice"></i>Create Invoice
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Activity -->
+                            <div class="content-card mt-4">
+                                <div class="card-header">
+                                    <h3 class="card-title">Recent Activity</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div id="recentActivity">
+                                        <!-- Activity will be loaded via JavaScript -->
+                                        <div class="activity-item">
+                                            <div class="activity-icon contact">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div class="activity-content">
+                                                <div class="activity-title">System initialized</div>
+                                                <div class="activity-time">Ready for new activity</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar Content -->
+                        <div>
+                            <!-- This Week Calendar -->
+                            <div class="calendar-widget">
+                                <div class="calendar-header">
+                                    This Week
+                                </div>
+                                <div class="calendar-grid" id="weekCalendar">
+                                    <!-- Calendar will be generated via JavaScript -->
+                                </div>
+                            </div>
+
+                            <!-- Notifications -->
+                            <div class="content-card mt-4">
+                                <div class="card-header">
+                                    <h3 class="card-title">Notifications</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div id="notifications">
+                                        {% if low_stock_count > 0 %}
+                                        <div class="activity-item">
+                                            <div class="activity-icon" style="background: var(--warning-yellow);">
+                                                <i class="fas fa-exclamation"></i>
+                                            </div>
+                                            <div class="activity-content">
+                                                <div class="activity-title">{{ low_stock_count }} items low in stock</div>
+                                                <div class="activity-time">Check inventory</div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if overdue_count > 0 %}
+                                        <div class="activity-item">
+                                            <div class="activity-icon" style="background: var(--accent-orange);">
+                                                <i class="fas fa-dollar-sign"></i>
+                                            </div>
+                                            <div class="activity-content">
+                                                <div class="activity-title">{{ overdue_count }} overdue payments</div>
+                                                <div class="activity-time">Follow up required</div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        {% if (low_stock_count or 0) == 0 and (overdue_count or 0) == 0 %}
+                                        <div class="activity-item">
+                                            <div class="activity-icon" style="background: var(--success-green);">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                            <div class="activity-content">
+                                                <div class="activity-title">All systems normal</div>
+                                                <div class="activity-time">No urgent actions needed</div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update Hawaii time
+        function updateTime() {
+            const now = new Date();
+            const hawaiiTime = new Date(now.toLocaleString("en-US", {timeZone: "Pacific/Honolulu"}));
+            document.getElementById('currentTime').textContent = hawaiiTime.toLocaleTimeString();
+        }
+        
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Generate week calendar
+        function generateWeekCalendar() {
+            const today = new Date();
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay());
+            
+            const calendar = document.getElementById('weekCalendar');
+            calendar.innerHTML = '';
+            
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(startOfWeek);
+                date.setDate(startOfWeek.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                if (date.toDateString() === today.toDateString()) {
+                    dayElement.classList.add('today');
+                }
+                
+                dayElement.innerHTML = `
+                    <div style="font-weight: 600; margin-bottom: 4px;">${days[i]}</div>
+                    <div>${date.getDate()}</div>
+                `;
+                
+                calendar.appendChild(dayElement);
+            }
+        }
+
+        // Load recent activity
+        function loadRecentActivity() {
+            fetch('/api/dashboard/activity')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('recentActivity');
+                    if (data.activities && data.activities.length > 0) {
+                        container.innerHTML = data.activities.map(activity => `
+                            <div class="activity-item">
+                                <div class="activity-icon ${activity.type}">
+                                    <i class="fas fa-${activity.type === 'new-contact' ? 'user' : activity.type === 'new-quote' ? 'file-invoice-dollar' : 'bell'}"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">${activity.title}</div>
+                                    <div class="activity-time">${new Date(activity.timestamp).toLocaleDateString()}</div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                })
+                .catch(error => {
+                    console.log('Activity loading not available yet');
+                });
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            generateWeekCalendar();
+            loadRecentActivity();
+        });
+    </script>
+</body>
+</html>

@@ -1,1 +1,43 @@
-[]
+[
+  {
+    "client_id": "ABC123",
+    "job_id": "23456",
+    "name": "Demo Client",
+    "phone": "(808) 555-0123",
+    "email": "demo@example.com",
+    "access_level": "client"
+  },
+  {
+    "client_id": "CUST001",
+    "job_id": "1",
+    "name": "Jessica Houtz",
+    "phone": "(808) 456-7890",
+    "email": "jessica@example.com",
+    "access_level": "client"
+  },
+  {
+    "client_id": "CUST002", 
+    "job_id": "Q001",
+    "name": "John Smith",
+    "phone": "(808) 123-4567", 
+    "email": "john@example.com",
+    "access_level": "client"
+  },
+  {
+    "client_id": "CUST003",
+    "job_id": "WRK",
+    "name": "Mike Johnson",
+    "phone": "(808) 987-6543",
+    "email": "mike@example.com", 
+    "access_level": "client"
+  },
+  {
+    "client_id": "SPK001",
+    "job_id": "30078",
+    "name": "SPANKKS Staff",
+    "phone": "(808) 778-9132",
+    "email": "spank808@gmail.com",
+    "access_level": "staff",
+    "staff_pin": "Money$$"
+  }
+]
