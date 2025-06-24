@@ -1,0 +1,90 @@
+// FullCalendar.js setup for SPANKKS Admin Dashboard
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+
+const calendarEl = document.getElementById('calendar');
+
+const calendar = new Calendar(calendarEl, {
+  plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+  initialView: 'timeGridWeek',
+  slotMinTime: '07:00:00',
+  slotMaxTime: '17:00:00',
+  businessHours: [
+    {
+      daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
+      startTime: '07:00',
+      endTime: '12:00'
+    },
+    {
+      daysOfWeek: [1, 2, 3, 4, 5],
+      startTime: '13:00', // post-lunch
+      endTime: '17:00'
+    }
+  ],
+  editable: true,
+  selectable: true,
+  eventOverlap: false,
+  events: '/api/schedule', // Fetch jobs from backend
+
+  eventDrop: function(info) {
+    if (hasConflict(info.event)) {
+      alert('Conflict detected! Job overlaps with another.');
+      info.revert();
+    } else {
+      updateEvent(info.event);
+    }
+  },
+
+  eventResize: function(info) {
+    if (hasConflict(info.event)) {
+      alert('Resizing creates a conflict. Reverting.');
+      info.revert();
+    } else {
+      updateEvent(info.event);
+    }
+  },
+
+  dateClick: function(info) {
+    openJobForm(info.dateStr);
+  },
+
+  eventClick: function(info) {
+    openJobDetails(info.event.id);
+  }
+});
+
+calendar.render();
+
+// Helper functions
+function hasConflict(event) {
+  const events = calendar.getEvents();
+  for (let e of events) {
+    if (e.id !== event.id && e.start < event.end && e.end > event.start) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function updateEvent(event) {
+  fetch(`/api/update-job/${event.id}`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      start: event.start.toISOString(),
+      end: event.end.toISOString()
+    })
+  });
+}
+
+function openJobForm(dateStr) {
+  // Logic to show a modal form to add a new job
+  console.log('Create job at', dateStr);
+}
+
+function openJobDetails(jobId) {
+  // Logic to open job detail modal
+  console.log('View job:', jobId);
+}

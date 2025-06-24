@@ -1,0 +1,103 @@
+🗓️ Advanced Scheduling System — Setup Overview
+1. Visual Dashboard Centerpiece
+Uses FullCalendar.js as the rendering engine.
+
+Default Weekly View (Mon–Fri, 7AM–5PM) with green-themed SPANKKS branding.
+
+Toggle views: Day / Week / Month / Agenda / List.
+
+2. Job Block Color Coding
+Status	Color	Description
+Scheduled	Green	Confirmed jobs with locked times
+Tentative	Yellow	Awaiting confirmation or payment
+Completed	Gray	Finished jobs
+Conflict	Red outline	Overlaps or violates job rules
+
+3. Job Assignment Details
+Each scheduled job block includes:
+
+Client name & project type
+
+Job ID (e.g. J2025-0342)
+
+Address & assigned staff
+
+Est. duration (with 30-min buffer)
+
+Link to Job Portal or full details
+
+4. Recurring Appointment Logic
+Built-in support for:
+
+Weekly (e.g., every Tuesday at 10AM)
+
+Monthly (e.g., 1st Monday of the month)
+
+Custom intervals (every 2 weeks, etc.)
+
+Auto-reminder toggles per job
+
+5. Conflict Management
+Business Hours hard-set to: Mon–Fri, 7AM–5PM (no weekends)
+
+Lunch buffer: Enforced 12–1PM break
+
+Auto-conflict checker:
+
+30-minute buffer required between jobs
+
+No overbooking of staff
+
+Error to reassign unavailable team members
+
+6. Drag & Drop Interface
+Jobs can be dragged to new times/days.
+
+System runs live validation checks:
+
+Conflicts
+
+Overlapping jobs
+
+Staff availability
+
+On success: updates are auto-saved & logged in the Audit Trail.
+
+7. Reminder System
+Email reminder 24 hours before (via MailerLite)
+
+SMS reminder 2 hours before (via Twilio)
+
+Toggle reminders per job or per client
+
+8. Crew-Specific Features
+Each staff sees only their assigned jobs
+
+Daily schedule view accessible in Staff Portal
+
+Clock-in / out functionality linked to assigned jobs
+
+Weekly capacity meter per staff (visible to admins)
+
+9. Smart Job Input Form
+When creating a new job:
+
+Select from template services (e.g., drywall, flooring)
+
+Autofill client info if pre-existing
+
+Suggested best time slots based on:
+
+Staff availability
+
+Type of job
+
+Recent job history for repeat clients
+
+10. Calendar Export & Integration
+Export calendar view as PDF
+
+Sync available with external platforms (Google Calendar iCal feed)
+
+Export job blocks as CSV for planning
+
