@@ -42,7 +42,7 @@ class BusinessIntelligence:
         monthly_acquisition = defaultdict(int)
         for contact in contacts:
             created_date = None
-            if contact.get('created_date') is not None:
+            if hasattr(contact, 'created_date') and contact.created_date is not None:
                 created_date = contact.created_date
             elif isinstance(contact, dict) and 'created_date' in contact:
                 created_date = contact['created_date']

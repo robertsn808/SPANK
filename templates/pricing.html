@@ -244,6 +244,32 @@
         }
     }
 
+    /* SPANK Buck Card Background */
+    .spank-buck-card {
+        background-image: url('/static/images/spank-buck-bg.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .spank-buck-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 1;
+    }
+
+    .spank-buck-card > * {
+        position: relative;
+        z-index: 2;
+    }
+
     /* Prevent card overlap and ensure proper spacing */
     .row.g-4 {
         --bs-gutter-x: 2rem;
@@ -738,13 +764,13 @@
                         <div class="h5 mb-0 fw-bold text-warning">15% Off</div>
                         <small class="text-muted">3+ services</small>
                     </div>
-                    <div class="pricing-notes-card">
+                    <div class="pricing-notes-card spank-buck-card">
                         <div class="mb-3">
-                            <i class="fas fa-dollar-sign fa-2x text-info"></i>
+                            <i class="fas fa-dollar-sign fa-2x text-white"></i>
                         </div>
-                        <h6 class="text-muted">Spankks Bucks</h6>
-                        <div class="h5 mb-0 fw-bold text-info">Rewards</div>
-                        <small class="text-muted">Earn on every job</small>
+                        <h6 class="text-white">Spankks Bucks</h6>
+                        <div class="h5 mb-0 fw-bold text-white">Rewards</div>
+                        <small class="text-white">Earn on every job</small>
                     </div>
                 </div>
                     </div>
