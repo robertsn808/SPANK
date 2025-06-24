@@ -1,0 +1,97 @@
+[
+  {
+    "client_id": "CLI001",
+    "job_id": "JOB001",
+    "client_name": "Jessica Houtz",
+    "client_phone": "(808) 555-0101",
+    "client_email": "jessica@example.com",
+    "address": "123 Kailua Beach Rd, Kailua, HI 96734",
+    "status": "active",
+    "created_date": "2025-06-20",
+    "total_revenue": 1500.00,
+    "total_jobs": 2,
+    "active_jobs": 1,
+    "pending_quotes": 0,
+    "last_activity": "2025-06-22",
+    "follow_up_required": false,
+    "staff_notes": [
+      {
+        "id": "NOTE001",
+        "content": "Client prefers morning appointments. Very satisfied with flooring work.",
+        "author": "SPK001",
+        "date": "2025-06-22 09:15",
+        "hawaii_time": "2025-06-22 09:15"
+      }
+    ],
+    "access_level": "client",
+    "notes": "Repeat customer - excellent payment history"
+  },
+  {
+    "client_id": "CLI002",
+    "job_id": "JOB002",
+    "client_name": "Mike Chen",
+    "client_phone": "(808) 555-0102",
+    "client_email": "mike.chen@example.com",
+    "address": "456 Diamond Head Ave, Honolulu, HI 96815",
+    "status": "active",
+    "created_date": "2025-06-18",
+    "total_revenue": 3200.00,
+    "total_jobs": 3,
+    "active_jobs": 2,
+    "pending_quotes": 1,
+    "last_activity": "2025-06-23",
+    "follow_up_required": true,
+    "staff_notes": [
+      {
+        "id": "NOTE001",
+        "content": "Drywall project completed successfully. Client interested in additional work.",
+        "author": "SPK002",
+        "date": "2025-06-23 14:30",
+        "hawaii_time": "2025-06-23 14:30"
+      }
+    ],
+    "access_level": "client",
+    "notes": "Commercial property owner - potential for ongoing contracts",
+    "recent_activity": [
+      {
+        "description": "Drywall project marked complete",
+        "date": "2025-06-23",
+        "icon": "check-circle",
+        "type": "success"
+      },
+      {
+        "description": "Follow-up required for additional work",
+        "date": "2025-06-23",
+        "icon": "phone",
+        "type": "warning"
+      }
+    ]
+  },
+  {
+    "client_id": "CLI003",
+    "job_id": "JOB003",
+    "client_name": "Sarah Williams",
+    "client_phone": "(808) 555-0103",
+    "client_email": "sarah.w@example.com",
+    "address": "789 Lanikai Loop, Kailua, HI 96734",
+    "status": "pending",
+    "created_date": "2025-06-24",
+    "total_revenue": 0.00,
+    "total_jobs": 1,
+    "active_jobs": 0,
+    "pending_quotes": 1,
+    "last_activity": "2025-06-24",
+    "follow_up_required": false,
+    "staff_notes": [],
+    "access_level": "client",
+    "notes": "New client - fence installation inquiry",
+    "recent_activity": [
+      {
+        "description": "Initial consultation scheduled",
+        "date": "2025-06-24",
+        "icon": "calendar",
+        "type": "info"
+      }
+    ]
+  }
+]

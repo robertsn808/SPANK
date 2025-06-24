@@ -7491,8 +7491,14 @@ def api_clients_staff_view():
         return jsonify({'error': 'Staff authentication required'}), 401
     
     try:
-        # Load all client data
-        clients = storage_service.load_data('clients.json')
+        # Load all client data with fallback to sample data
+        try:
+            clients = storage_service.load_data('clients.json')
+            if not clients:
+                clients = storage_service.load_data('sample_client_data.json')
+        except:
+            clients = storage_service.load_data('sample_client_data.json')
+        
         quotes = storage_service.load_data('quotes.json')
         invoices = storage_service.load_data('invoices.json')
         appointments = storage_service.load_data('unified_appointments.json')

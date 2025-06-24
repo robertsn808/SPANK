@@ -5,7 +5,16 @@
     "name": "Demo Client",
     "phone": "(808) 555-0123",
     "email": "demo@example.com",
-    "access_level": "client"
+    "access_level": "client",
+    "staff_notes": [
+      {
+        "id": "NOTE001",
+        "content": "Test note from staff CRM system - excellent customer service required",
+        "author": "SPK001",
+        "date": "2025-06-24 22:36",
+        "hawaii_time": "2025-06-24 12:36"
+      }
+    ]
   },
   {
     "client_id": "CUST001",
@@ -16,10 +25,10 @@
     "access_level": "client"
   },
   {
-    "client_id": "CUST002", 
+    "client_id": "CUST002",
     "job_id": "Q001",
     "name": "John Smith",
-    "phone": "(808) 123-4567", 
+    "phone": "(808) 123-4567",
     "email": "john@example.com",
     "access_level": "client"
   },
@@ -28,7 +37,7 @@
     "job_id": "WRK",
     "name": "Mike Johnson",
     "phone": "(808) 987-6543",
-    "email": "mike@example.com", 
+    "email": "mike@example.com",
     "access_level": "client"
   },
   {
