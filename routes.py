@@ -684,7 +684,9 @@ def admin_dashboard():
         
         # Calculate today's stats
         today = datetime.now().date()
-        today_jobs = len([apt for apt in unified_scheduler.get_appointments_for_date(today.strftime('%Y-%m-%d'))])
+        # Get today's appointments
+        today_appointments = unified_scheduler.get_appointments_for_date(today.strftime('%Y-%m-%d'))
+        today_jobs = len(today_appointments) if today_appointments else 0
         pending_quotes = len([q for q in quotes if q.get('status', 'pending') == 'pending'])
         
         # Calculate week revenue
@@ -1307,6 +1309,8 @@ def api_calendar_weekly():
         for i in range(7):
             day = week_start + timedelta(days=i)
             day_appointments = unified_scheduler.get_appointments_for_date(day.strftime('%Y-%m-%d'))
+            if day_appointments is None:
+                day_appointments = []
             
             for apt in day_appointments:
                 appointments.append({
