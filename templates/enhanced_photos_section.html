@@ -566,31 +566,16 @@ function loadPhotoStats() {
 }
 
 function loadPhotoGallery() {
-    // For demo purposes, show sample photo data
-    const samplePhotos = [
-        {
-            id: 'PHOTO001',
-            job_id: 'JOB001',
-            filename: 'before_kitchen_001.jpg',
-            photo_type: 'before',
-            upload_date: '2025-06-24T14:30:00',
-            uploaded_by: 'STF002',
-            file_size: 2048000,
-            notes: 'Kitchen before renovation'
-        },
-        {
-            id: 'PHOTO002',
-            job_id: 'JOB001',
-            filename: 'after_kitchen_001.jpg',
-            photo_type: 'after',
-            upload_date: '2025-06-24T16:45:00',
-            uploaded_by: 'STF002',
-            file_size: 1856000,
-            notes: 'Kitchen after drywall completion'
-        }
-    ];
-    
-    displayPhotoGallery(samplePhotos);
+    // Load authentic photo data from all jobs
+    fetch('/api/photos/all')
+        .then(response => response.json())
+        .then(photos => {
+            displayPhotoGallery(photos);
+        })
+        .catch(error => {
+            console.error('Error loading photos:', error);
+            displayPhotoGallery([]);
+        });
 }
 
 function displayPhotoGallery(photos) {

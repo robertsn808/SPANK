@@ -541,8 +541,26 @@ function saveStaffMember() {
         notes: data.notes
     };
     
-    // Add to sample data
-    sampleStaff.push(staffMember);
+    // Save to authentic staff database via API
+    fetch('/api/staff/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(staffMember)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            loadStaffData(); // Reload from database
+        } else {
+            showToast('Error adding staff member: ' + result.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error adding staff member:', error);
+        showToast('Error adding staff member', 'error');
+    });
     
     bootstrap.Modal.getInstance(document.getElementById('addStaffModal')).hide();
     form.reset();

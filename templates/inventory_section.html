@@ -200,85 +200,20 @@
 </div>
 
 <script>
-// Sample inventory data for SPANKKS Construction
-const sampleInventory = [
-    {
-        id: 'INV001',
-        item_name: 'Drywall Sheets 4x8',
-        category: 'drywall',
-        current_stock: 25,
-        reorder_level: 10,
-        unit: 'sheet',
-        unit_cost: 12.50,
-        supplier: 'Home Depot',
-        notes: 'Standard 1/2 inch thickness',
-        last_updated: '2025-06-24'
-    },
-    {
-        id: 'INV002',
-        item_name: 'Joint Compound',
-        category: 'drywall',
-        current_stock: 8,
-        reorder_level: 5,
-        unit: 'bucket',
-        unit_cost: 15.99,
-        supplier: 'Lowes',
-        notes: 'Ready-mix compound',
-        last_updated: '2025-06-24'
-    },
-    {
-        id: 'INV003',
-        item_name: 'Drywall Screws 1-1/4"',
-        category: 'hardware',
-        current_stock: 150,
-        reorder_level: 50,
-        unit: 'box',
-        unit_cost: 8.75,
-        supplier: 'Ace Hardware',
-        notes: 'Fine thread screws',
-        last_updated: '2025-06-24'
-    },
-    {
-        id: 'INV004',
-        item_name: 'Vinyl Plank Flooring',
-        category: 'flooring',
-        current_stock: 500,
-        reorder_level: 100,
-        unit: 'sq_ft',
-        unit_cost: 3.25,
-        supplier: 'Floor & Decor',
-        notes: 'Waterproof luxury vinyl',
-        last_updated: '2025-06-24'
-    },
-    {
-        id: 'INV005',
-        item_name: 'Fence Posts 8ft',
-        category: 'fence',
-        current_stock: 20,
-        reorder_level: 10,
-        unit: 'each',
-        unit_cost: 25.00,
-        supplier: 'Fence Supply Co',
-        notes: 'Pressure treated pine',
-        last_updated: '2025-06-24'
-    },
-    {
-        id: 'INV006',
-        item_name: 'Paint Primer Gallon',
-        category: 'paint',
-        current_stock: 12,
-        reorder_level: 8,
-        unit: 'gallon',
-        unit_cost: 32.50,
-        supplier: 'Sherwin Williams',
-        notes: 'High-hide primer',
-        last_updated: '2025-06-24'
-    }
-];
-
 function loadInventoryData() {
-    // Use sample data for demonstration
-    const inventory = sampleInventory;
+    // Load authentic inventory data from API
+    fetch('/api/inventory')
+        .then(response => response.json())
+        .then(inventory => {
+            displayInventoryData(inventory);
+        })
+        .catch(error => {
+            console.error('Error loading inventory:', error);
+            displayInventoryData([]);
+        });
+}
+
+function displayInventoryData(inventory) {
     const tbody = document.getElementById('inventoryTableBody');
     
     if (inventory.length === 0) {
@@ -388,8 +323,26 @@ function saveInventoryItem() {
     data.id = `INV${String(sampleInventory.length + 1).padStart(3, '0')}`;
     data.last_updated = new Date().toISOString().split('T')[0];
     
-    // Add to sample data (in real implementation, this would be an API call)
-    sampleInventory.push(data);
+    // Save to authentic inventory database via API
+    fetch('/api/inventory/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            loadInventoryData(); // Reload from database
+        } else {
+            showToast('Error adding inventory item: ' + result.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error adding inventory item:', error);
+        showToast('Error adding inventory item', 'error');
+    });
     
     bootstrap.Modal.getInstance(document.getElementById('addInventoryModal')).hide();
     form.reset();
@@ -404,13 +357,29 @@ function editInventoryItem(itemId) {
 function adjustStock(itemId) {
     const newStock = prompt('Enter new stock quantity:');
     if (newStock !== null && !isNaN(newStock)) {
-        const item = sampleInventory.find(i => i.id === itemId);
-        if (item) {
-            item.current_stock = parseInt(newStock);
-            item.last_updated = new Date().toISOString().split('T')[0];
-            loadInventoryData();
-            showToast(`Stock updated for ${item.item_name}`, 'success');
-        }
+        fetch('/api/inventory/adjust-stock', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                item_id: itemId,
+                new_stock: parseInt(newStock)
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                loadInventoryData();
+                showToast('Stock updated successfully', 'success');
+            } else {
+                showToast('Error updating stock: ' + result.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating stock:', error);
+            showToast('Error updating stock', 'error');
+        });
     }
 }
 
