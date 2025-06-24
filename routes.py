@@ -5598,6 +5598,70 @@ def enhanced_quote_builder():
     # Redirect to the working quote builder
     return redirect(url_for('quote_builder'))
 
+# ===============================
+# MISSING ADMIN ROUTES FOR QUICK ACTIONS
+# ===============================
+
+@app.route('/admin/inventory')
+def admin_inventory():
+    """Admin inventory management page"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get inventory data from inventory service
+        from inventory_service import inventory_service
+        inventory_items = inventory_service.get_all_items() if inventory_service else []
+        
+        return render_template('admin/inventory.html', 
+                             inventory_items=inventory_items)
+    except Exception as e:
+        logging.error(f"Error loading inventory: {e}")
+        flash('Error loading inventory', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/checklists')
+def admin_checklists():
+    """Admin checklist management page"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get checklist data from checklist service
+        from checklist_service import checklist_service
+        all_checklists = checklist_service.get_all_checklists() if checklist_service else []
+        
+        return render_template('admin/checklists.html', 
+                             checklists=all_checklists)
+    except Exception as e:
+        logging.error(f"Error loading checklists: {e}")
+        flash('Error loading checklists', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/email-marketing')
+def admin_email_marketing():
+    """Admin email marketing management page"""
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Get MailerLite data
+        from mailerlite_service import mailerlite_service
+        campaigns = []
+        subscribers = []
+        
+        if mailerlite_service:
+            campaigns = mailerlite_service.get_campaigns() or []
+            subscribers = mailerlite_service.get_subscribers() or []
+        
+        return render_template('admin/email_marketing.html', 
+                             campaigns=campaigns,
+                             subscribers=subscribers)
+    except Exception as e:
+        logging.error(f"Error loading email marketing: {e}")
+        flash('Error loading email marketing', 'error')
+        return redirect(url_for('admin_dashboard'))
+
 # ==================================================
 # CSV EXPORT AND DOWNLOAD ROUTES
 # ==================================================

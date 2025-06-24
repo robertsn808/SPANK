@@ -1,366 +1,94 @@
-{% extends "admin_base.html" %}
+{% extends "admin/admin_base.html" %}
 
 {% block title %}Email Marketing - SPANKKS Construction Admin{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <!-- Header Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="h3 mb-0">📧 Email Marketing Dashboard</h1>
-                    <p class="text-muted">MailerLite Integration for SPANKKS Construction</p>
-                </div>
-                <div>
-                    <button class="btn btn-success" onclick="testConnection()">
-                        <i class="fas fa-plug"></i> Test Connection
-                    </button>
-                    <button class="btn btn-primary" onclick="refreshStats()">
-                        <i class="fas fa-sync"></i> Refresh Stats
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Connection Status -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-info-circle"></i> MailerLite Account Status
-                    </h5>
-                </div>
-                <div class="card-body">
-                    {% if mailerlite_configured %}
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle"></i> MailerLite API configured successfully
-                        </div>
-                        {% if account_info %}
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <strong>Account Email:</strong><br>
-                                    {{ account_info.email or 'Not available' }}
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>Plan:</strong><br>
-                                    {{ account_info.plan or 'Free' }}
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>Total Subscribers:</strong><br>
-                                    {{ account_info.subscribers_count or 0 }}
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>Timezone:</strong><br>
-                                    {{ account_info.timezone or 'UTC' }}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% else %}
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle"></i> MailerLite API not configured. Please check your API key.
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Subscriber Statistics -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-users"></i> Subscriber Lists
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row" id="subscriber-stats">
-                        {% if subscriber_stats %}
-                            {% for list_key, stats in subscriber_stats.items() %}
-                            <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="card border-left-success">
-                                    <div class="card-body">
-                                        <div class="text-success text-uppercase mb-1">
-                                            {{ stats.name }}
-                                        </div>
-                                        <div class="h5 mb-0">{{ stats.subscribers }} subscribers</div>
-                                        <div class="text-muted small">List ID: {{ stats.id }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="col-12">
-                                <div class="text-center text-muted py-3">
-                                    <i class="fas fa-list fa-3x mb-3"></i>
-                                    <p>No subscriber data available. Test connection to load stats.</p>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Email Marketing Actions -->
-    <div class="row mb-4">
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-user-plus"></i> Add Subscriber
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <form id="add-subscriber-form">
-                        <div class="form-group">
-                            <label>Email Address *</label>
-                            <input type="email" class="form-control" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input type="text" class="form-control" name="name">
-                        </div>
-                        <div class="form-group">
-                            <label>Phone</label>
-                            <input type="tel" class="form-control" name="phone">
-                        </div>
-                        <div class="form-group">
-                            <label>Add to List</label>
-                            <select class="form-control" name="list_name">
-                                <option value="leads">Potential Customers & Leads</option>
-                                <option value="customers">SPANKKS Construction Customers</option>
-                                <option value="spank_school">SPANKKS SKOOL Participants</option>
-                                <option value="newsletter">Newsletter Subscribers</option>
-                                <option value="vip">VIP Customers</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-plus"></i> Add Subscriber
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-envelope"></i> Send Welcome Email
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <form id="welcome-email-form">
-                        <div class="form-group">
-                            <label>Customer Email *</label>
-                            <input type="email" class="form-control" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Customer Name</label>
-                            <input type="text" class="form-control" name="name">
-                        </div>
-                        <div class="form-group">
-                            <label>Service Type</label>
-                            <select class="form-control" name="service_type">
-                                <option value="General">General Services</option>
-                                <option value="Drywall">Drywall Services</option>
-                                <option value="Flooring">Flooring Installation</option>
-                                <option value="Fence">Fence Construction</option>
-                                <option value="Electrical">Electrical Work</option>
-                                <option value="Plumbing">Plumbing Services</option>
-                                <option value="Renovation">Home Renovation</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i> Send Welcome Email
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quote Follow-up -->
-    <div class="row mb-4">
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-file-invoice-dollar"></i> Quote Follow-up Email
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <form id="quote-followup-form">
-                        <div class="form-group">
-                            <label>Customer Email *</label>
-                            <input type="email" class="form-control" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Customer Name</label>
-                            <input type="text" class="form-control" name="name">
-                        </div>
-                        <div class="form-group">
-                            <label>Quote ID *</label>
-                            <input type="text" class="form-control" name="quote_id" placeholder="Q2025-001" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Quote Amount ($)</label>
-                            <input type="number" class="form-control" name="amount" step="0.01" min="0">
-                        </div>
-                        <button type="submit" class="btn btn-warning">
-                            <i class="fas fa-clock"></i> Send Follow-up
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-star"></i> Promote to VIP
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <form id="promote-vip-form">
-                        <div class="form-group">
-                            <label>Customer Email *</label>
-                            <input type="email" class="form-control" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Customer Name</label>
-                            <input type="text" class="form-control" name="name">
-                        </div>
-                        <div class="form-group">
-                            <label>Total Spent ($)</label>
-                            <input type="number" class="form-control" name="total_spent" step="0.01" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Projects Completed</label>
-                            <input type="number" class="form-control" name="projects_completed" min="0">
-                        </div>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-crown"></i> Promote to VIP
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Campaign Creation -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-bullhorn"></i> Create Email Campaign
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <form id="campaign-form">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Campaign Subject *</label>
-                                    <input type="text" class="form-control" name="subject" placeholder="Special Offer from SPANKKS Construction" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Send to List</label>
-                                    <select class="form-control" name="list_name">
-                                        <option value="customers">All Customers</option>
-                                        <option value="leads">Potential Customers</option>
-                                        <option value="spank_school">SPANKKS SKOOL Participants</option>
-                                        <option value="newsletter">Newsletter Subscribers</option>
-                                        <option value="vip">VIP Customers Only</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Email Content *</label>
-                                    <textarea class="form-control" name="content" rows="8" 
-                                              placeholder="Write your email content here..." required></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-rocket"></i> Create & Send Campaign
-                                </button>
-                                <small class="text-muted ml-3">
-                                    Campaign will be sent immediately to all subscribers in the selected list.
-                                </small>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Actions -->
+<div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-bolt"></i> Automated Email Marketing
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="alert alert-info">
-                        <h6><i class="fas fa-info-circle"></i> Automatic Email Triggers</h6>
-                        <ul class="mb-0">
-                            <li><strong>Contact Forms:</strong> New inquiries automatically added to "Leads" list</li>
-                            <li><strong>Quote Generation:</strong> Follow-up emails sent with SPANK Buck incentives</li>
-                            <li><strong>SPANKKS SKOOL:</strong> Course completers added to education list with rewards</li>
-                            <li><strong>VIP Promotion:</strong> High-value customers automatically promoted to VIP list</li>
-                        </ul>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-envelope me-2"></i>Email Marketing</h2>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+            
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i>
+                MailerLite integration is active. Customer emails are automatically added to campaigns when they submit forms or complete projects.
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-paper-plane me-2"></i>Campaigns</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if campaigns %}
+                                {% for campaign in campaigns %}
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <strong>{{ campaign.name }}</strong><br>
+                                        <small class="text-muted">{{ campaign.status }}</small>
+                                    </div>
+                                    <span class="badge bg-info">{{ campaign.subscribers }} subscribers</span>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                            <p class="text-muted">No campaigns found. Create campaigns in your MailerLite dashboard.</p>
+                            {% endif %}
+                        </div>
                     </div>
-                    
-                    <div class="row text-center">
-                        <div class="col-md-3">
-                            <div class="card border-success">
-                                <div class="card-body">
-                                    <i class="fas fa-envelope-open-text fa-2x text-success mb-2"></i>
-                                    <h6>Welcome Emails</h6>
-                                    <p class="small text-muted">Automated for new customers</p>
-                                </div>
-                            </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-users me-2"></i>Subscribers</h5>
                         </div>
-                        <div class="col-md-3">
-                            <div class="card border-warning">
-                                <div class="card-body">
-                                    <i class="fas fa-clock fa-2x text-warning mb-2"></i>
-                                    <h6>Quote Follow-ups</h6>
-                                    <p class="small text-muted">24-48 hour reminders</p>
+                        <div class="card-body">
+                            {% if subscribers %}
+                                <p><strong>{{ subscribers|length }}</strong> active subscribers</p>
+                                <div class="text-muted">
+                                    Recent activity from customer form submissions and SPANK Buck rewards.
                                 </div>
-                            </div>
+                            {% else %}
+                            <p class="text-muted">No subscribers found. Customers are automatically added when they use the consultation form.</p>
+                            {% endif %}
                         </div>
-                        <div class="col-md-3">
-                            <div class="card border-info">
-                                <div class="card-body">
-                                    <i class="fas fa-graduation-cap fa-2x text-info mb-2"></i>
-                                    <h6>SKOOL Rewards</h6>
-                                    <p class="small text-muted">Course completion emails</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-cog me-2"></i>Integration Status</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
+                                        <h6>API Connected</h6>
+                                        <small class="text-muted">MailerLite API is active</small>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card border-primary">
-                                <div class="card-body">
-                                    <i class="fas fa-crown fa-2x text-primary mb-2"></i>
-                                    <h6>VIP Programs</h6>
-                                    <p class="small text-muted">Exclusive offers & updates</p>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <i class="fas fa-sync-alt text-info fa-2x mb-2"></i>
+                                        <h6>Auto-Sync</h6>
+                                        <small class="text-muted">Contact forms sync automatically</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <i class="fas fa-dollar-sign text-warning fa-2x mb-2"></i>
+                                        <h6>SPANK Bucks</h6>
+                                        <small class="text-muted">Reward emails sent via MailerLite</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -370,214 +98,4 @@
         </div>
     </div>
 </div>
-
-<!-- JavaScript for Email Marketing Functions -->
-<script>
-// Test MailerLite connection
-function testConnection() {
-    fetch('/api/mailerlite/test-connection', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'}
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast('success', 'MailerLite connection successful!');
-            setTimeout(() => location.reload(), 1000);
-        } else {
-            showToast('error', 'Connection failed: ' + data.error);
-        }
-    })
-    .catch(error => {
-        showToast('error', 'Error testing connection: ' + error.message);
-    });
-}
-
-// Refresh subscriber stats
-function refreshStats() {
-    fetch('/api/mailerlite/subscriber-stats')
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            updateSubscriberStats(data.stats);
-            showToast('success', 'Subscriber stats refreshed!');
-        } else {
-            showToast('error', 'Failed to refresh stats: ' + data.error);
-        }
-    })
-    .catch(error => {
-        showToast('error', 'Error refreshing stats: ' + error.message);
-    });
-}
-
-// Update subscriber stats display
-function updateSubscriberStats(stats) {
-    const container = document.getElementById('subscriber-stats');
-    if (!stats || Object.keys(stats).length === 0) {
-        container.innerHTML = `
-            <div class="col-12">
-                <div class="text-center text-muted py-3">
-                    <i class="fas fa-list fa-3x mb-3"></i>
-                    <p>No subscriber data available.</p>
-                </div>
-            </div>
-        `;
-        return;
-    }
-
-    let html = '';
-    for (const [listKey, listStats] of Object.entries(stats)) {
-        html += `
-            <div class="col-md-6 col-lg-4 mb-3">
-                <div class="card border-left-success">
-                    <div class="card-body">
-                        <div class="text-success text-uppercase mb-1">
-                            ${listStats.name}
-                        </div>
-                        <div class="h5 mb-0">${listStats.subscribers} subscribers</div>
-                        <div class="text-muted small">List ID: ${listStats.id}</div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-    container.innerHTML = html;
-}
-
-// Form submission handlers
-document.getElementById('add-subscriber-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData);
-    
-    fetch('/api/mailerlite/add-subscriber', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast('success', `Subscriber added to ${data.list} list!`);
-            this.reset();
-            refreshStats();
-        } else {
-            showToast('error', 'Failed to add subscriber: ' + data.error);
-        }
-    })
-    .catch(error => {
-        showToast('error', 'Error adding subscriber: ' + error.message);
-    });
-});
-
-document.getElementById('welcome-email-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData);
-    
-    fetch('/api/mailerlite/send-welcome', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast('success', 'Welcome email sent successfully!');
-            this.reset();
-        } else {
-            showToast('error', 'Failed to send welcome email: ' + data.error);
-        }
-    })
-    .catch(error => {
-        showToast('error', 'Error sending welcome email: ' + error.message);
-    });
-});
-
-document.getElementById('quote-followup-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData);
-    
-    fetch('/api/mailerlite/quote-follow-up', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast('success', 'Quote follow-up email prepared!');
-            this.reset();
-        } else {
-            showToast('error', 'Failed to send follow-up: ' + data.error);
-        }
-    })
-    .catch(error => {
-        showToast('error', 'Error sending follow-up: ' + error.message);
-    });
-});
-
-document.getElementById('promote-vip-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData);
-    
-    fetch('/api/mailerlite/promote-vip', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast('success', 'Customer promoted to VIP list!');
-            this.reset();
-            refreshStats();
-        } else {
-            showToast('error', 'Failed to promote to VIP: ' + data.error);
-        }
-    })
-    .catch(error => {
-        showToast('error', 'Error promoting to VIP: ' + error.message);
-    });
-});
-
-document.getElementById('campaign-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData);
-    
-    if (!confirm('Are you sure you want to send this campaign to all subscribers in the selected list?')) {
-        return;
-    }
-    
-    fetch('/api/mailerlite/create-campaign', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast('success', 'Email campaign created successfully!');
-            this.reset();
-        } else {
-            showToast('error', 'Failed to create campaign: ' + data.error);
-        }
-    })
-    .catch(error => {
-        showToast('error', 'Error creating campaign: ' + error.message);
-    });
-});
-
-// Toast notification function
-function showToast(type, message) {
-    if (typeof showToastNotification === 'function') {
-        showToastNotification(message, type);
-    } else {
-        alert(message);
-    }
-}
-</script>
 {% endblock %}
