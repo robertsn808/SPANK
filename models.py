@@ -257,9 +257,17 @@ class HandymanStorage:
         return []
 
     def add_service_request(self, request_data):
-        request = ServiceRequest(**request_data)
-        self.service_requests.append(request)
-        return request.id
+        try:
+            logging.info(f"Creating ServiceRequest with data keys: {list(request_data.keys())}")
+            logging.info(f"ServiceRequest data values: {request_data}")
+            request = ServiceRequest(**request_data)
+            self.service_requests.append(request)
+            return request.id
+        except Exception as e:
+            logging.error(f"ServiceRequest creation failed: {str(e)}")
+            logging.error(f"Exception type: {type(e)}")
+            logging.error(f"Request data: {request_data}")
+            raise e
 
     def get_all_service_requests(self):
         return self.service_requests

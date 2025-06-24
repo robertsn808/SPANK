@@ -1169,24 +1169,34 @@ class UnifiedScheduler:
         if not email and not phone:
             return None
             
-        appointments = self._load_appointments()
-        
-        # Search by email first (most reliable)
-        if email:
+        try:
+            appointments = self._load_appointments()
+            
+            # Ensure appointments is a list
+            if not isinstance(appointments, list):
+                logging.warning(f"Expected list for appointments, got {type(appointments)}")
+                return None
+            
+            # Search by email first (most reliable)
+            if email:
+                for appointment in appointments:
+                    if isinstance(appointment, dict) and appointment.get('client_email', '').lower() == email.lower():
+                        return appointment.get('client_id')
+            
+            # Search by phone number
+            if phone:
+                for appointment in appointments:
+                    if isinstance(appointment, dict) and appointment.get('client_phone', '') == phone:
+                        return appointment.get('client_id')
+            
+            # Search by name (less reliable, only for exact matches)
             for appointment in appointments:
-                if appointment.get('client_email', '').lower() == email.lower():
-                    return appointment['client_id']
-        
-        # Search by phone number
-        if phone:
-            for appointment in appointments:
-                if appointment.get('client_phone', '') == phone:
-                    return appointment['client_id']
-        
-        # Search by name (less reliable, only for exact matches)
-        for appointment in appointments:
-            if appointment.get('client_name', '').lower() == name.lower():
-                return appointment['client_id']
+                if isinstance(appointment, dict) and appointment.get('client_name', '').lower() == name.lower():
+                    return appointment.get('client_id')
+                    
+        except Exception as e:
+            logging.error(f"Error in _find_existing_client: {e}")
+            return None
         
         return None
     
