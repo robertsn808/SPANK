@@ -1179,16 +1179,32 @@
         }
 
         function loadQuotesSection() {
-            document.getElementById('dynamic-content').innerHTML = `
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-file-invoice-dollar me-2"></i>Quote Builder</h3>
-                    </div>
-                    <div class="card-body">
-                        <p>Multi-line quote builder with Hawaii GET tax will be implemented here.</p>
-                    </div>
-                </div>
-            `;
+            fetch('/templates/quotes_section.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('dynamic-content').innerHTML = html;
+                    // Initialize quotes section
+                    setTimeout(() => {
+                        if (typeof loadQuotesData === 'function') {
+                            loadQuotesData();
+                        }
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error loading quotes section:', error);
+                    document.getElementById('dynamic-content').innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-file-invoice-dollar me-2"></i>Quote Builder</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    Quote builder section is being loaded. Please try refreshing the page.
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
         }
 
         function loadStaffSection() {

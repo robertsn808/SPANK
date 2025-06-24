@@ -1,0 +1,440 @@
+<div class="content-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">
+            <i class="fas fa-file-invoice-dollar me-2"></i>Multi-Line Quote Builder
+        </h3>
+        <div class="btn-group">
+            <button class="btn btn-spankks btn-sm" onclick="showNewQuoteModal()">
+                <i class="fas fa-plus me-1"></i>New Quote
+            </button>
+            <a href="/admin/quote-invoice-form" target="_blank" class="btn btn-outline-success btn-sm">
+                <i class="fas fa-external-link-alt me-1"></i>Advanced Builder
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="Search quotes..." id="quoteSearch">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="quoteFilter">
+                    <option value="">All Quotes</option>
+                    <option value="pending">Pending</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="declined">Declined</option>
+                    <option value="expired">Expired</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="serviceFilter">
+                    <option value="">All Services</option>
+                    <option value="Drywall">Drywall</option>
+                    <option value="Flooring">Flooring</option>
+                    <option value="Fence">Fence</option>
+                    <option value="General">General</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-outline-success" onclick="refreshQuotes()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table data-table" id="quotesTable">
+                <thead>
+                    <tr>
+                        <th>Quote #</th>
+                        <th>Client</th>
+                        <th>Service</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="quotesTableBody">
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            <div class="loading-spinner me-2"></div>
+                            Loading quotes...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- New Quote Modal -->
+<div class="modal fade" id="newQuoteModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-file-invoice-dollar me-2"></i>Create New Quote
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newQuoteForm">
+                    <!-- Client Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="fw-bold text-success mb-3">
+                                <i class="fas fa-user me-1"></i>Client Information
+                            </h6>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Client Name</label>
+                            <input type="text" class="form-control" name="client_name" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-control" name="client_phone" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="client_email">
+                        </div>
+                    </div>
+
+                    <!-- Service Details -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="fw-bold text-success mb-3">
+                                <i class="fas fa-tools me-1"></i>Service Details
+                            </h6>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Service Type</label>
+                            <select class="form-select" name="service_type" required>
+                                <option value="">Select Service</option>
+                                <option value="Drywall">Drywall Services</option>
+                                <option value="Flooring">Flooring Installation</option>
+                                <option value="Fence">Fence Building</option>
+                                <option value="General">General Handyman</option>
+                                <option value="Custom">Custom Project</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Job Location</label>
+                            <input type="text" class="form-control" name="job_location" placeholder="Project address">
+                        </div>
+                    </div>
+
+                    <!-- Line Items -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="fw-bold text-success mb-3">
+                                <i class="fas fa-list me-1"></i>Quote Line Items
+                            </h6>
+                        </div>
+                        <div class="col-12">
+                            <div id="lineItems">
+                                <div class="line-item row mb-3">
+                                    <div class="col-md-5">
+                                        <label class="form-label">Description</label>
+                                        <input type="text" class="form-control" name="description[]" placeholder="Service description" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Quantity</label>
+                                        <input type="number" class="form-control" name="quantity[]" value="1" min="1" step="0.01">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Unit Price</label>
+                                        <input type="number" class="form-control" name="unit_price[]" step="0.01" min="0" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Line Total</label>
+                                        <input type="text" class="form-control" name="line_total[]" readonly>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <label class="form-label">&nbsp;</label>
+                                        <button type="button" class="btn btn-outline-danger d-block" onclick="removeLineItem(this)" title="Remove line">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-success btn-sm" onclick="addLineItem()">
+                                <i class="fas fa-plus me-1"></i>Add Line Item
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Summary -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" name="notes" rows="3" placeholder="Additional project details or terms"></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-success">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Quote Summary</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Subtotal:</span>
+                                        <span id="subtotalDisplay">$0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Hawaii GET (4.712%):</span>
+                                        <span id="taxDisplay">$0.00</span>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between fw-bold">
+                                        <span>Total:</span>
+                                        <span id="totalDisplay">$0.00</span>
+                                    </div>
+                                    <input type="hidden" name="subtotal" id="subtotalInput">
+                                    <input type="hidden" name="tax_amount" id="taxInput">
+                                    <input type="hidden" name="total_amount" id="totalInput">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-spankks" onclick="saveQuote()">
+                    <i class="fas fa-save me-1"></i>Create Quote
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function loadQuotesData() {
+    fetch('/api/quotes')
+        .then(response => response.json())
+        .then(quotes => {
+            const tbody = document.getElementById('quotesTableBody');
+            if (quotes.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            <i class="fas fa-file-invoice-dollar fa-2x mb-2"></i>
+                            <div>No quotes yet. Create your first quote to get started.</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = quotes.map(quote => `
+                <tr>
+                    <td>
+                        <strong>${quote.quote_number}</strong>
+                        <div class="text-muted small">ID: ${quote.id || quote.quote_number}</div>
+                    </td>
+                    <td>
+                        <strong>${quote.client_name}</strong>
+                        ${quote.client_phone ? `<div class="text-muted small">${quote.client_phone}</div>` : ''}
+                    </td>
+                    <td>
+                        <span class="badge bg-info">${quote.service_type}</span>
+                    </td>
+                    <td>
+                        <strong>$${parseFloat(quote.total_amount || 0).toFixed(2)}</strong>
+                        ${quote.subtotal ? `<div class="text-muted small">Subtotal: $${parseFloat(quote.subtotal).toFixed(2)}</div>` : ''}
+                    </td>
+                    <td>
+                        <span class="badge bg-${quote.status === 'accepted' ? 'success' : quote.status === 'pending' ? 'warning' : quote.status === 'declined' ? 'danger' : 'secondary'}">
+                            ${quote.status || 'pending'}
+                        </span>
+                    </td>
+                    <td>${quote.date_created || 'N/A'}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="viewQuoteDetails('${quote.quote_number}')" title="View Quote">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-outline-success" onclick="downloadQuotePDF('${quote.quote_number}')" title="Download PDF">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="convertToInvoice('${quote.quote_number}')" title="Convert to Invoice">
+                                <i class="fas fa-file-invoice"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        })
+        .catch(error => {
+            console.error('Error loading quotes:', error);
+            document.getElementById('quotesTableBody').innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Error loading quotes
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+function showNewQuoteModal() {
+    const modal = new bootstrap.Modal(document.getElementById('newQuoteModal'));
+    modal.show();
+    calculateQuoteTotal(); // Initialize calculations
+}
+
+function addLineItem() {
+    const lineItems = document.getElementById('lineItems');
+    const newItem = document.createElement('div');
+    newItem.className = 'line-item row mb-3';
+    newItem.innerHTML = `
+        <div class="col-md-5">
+            <input type="text" class="form-control" name="description[]" placeholder="Service description" required>
+        </div>
+        <div class="col-md-2">
+            <input type="number" class="form-control" name="quantity[]" value="1" min="1" step="0.01">
+        </div>
+        <div class="col-md-2">
+            <input type="number" class="form-control" name="unit_price[]" step="0.01" min="0" required>
+        </div>
+        <div class="col-md-2">
+            <input type="text" class="form-control" name="line_total[]" readonly>
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-outline-danger" onclick="removeLineItem(this)" title="Remove line">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+    lineItems.appendChild(newItem);
+    
+    // Add event listeners for calculation
+    const quantityInput = newItem.querySelector('input[name="quantity[]"]');
+    const unitPriceInput = newItem.querySelector('input[name="unit_price[]"]');
+    quantityInput.addEventListener('input', calculateQuoteTotal);
+    unitPriceInput.addEventListener('input', calculateQuoteTotal);
+}
+
+function removeLineItem(button) {
+    const lineItems = document.querySelectorAll('.line-item');
+    if (lineItems.length > 1) {
+        button.closest('.line-item').remove();
+        calculateQuoteTotal();
+    }
+}
+
+function calculateQuoteTotal() {
+    const lineItems = document.querySelectorAll('.line-item');
+    let subtotal = 0;
+    
+    lineItems.forEach(item => {
+        const quantity = parseFloat(item.querySelector('input[name="quantity[]"]').value) || 0;
+        const unitPrice = parseFloat(item.querySelector('input[name="unit_price[]"]').value) || 0;
+        const lineTotal = quantity * unitPrice;
+        
+        item.querySelector('input[name="line_total[]"]').value = lineTotal.toFixed(2);
+        subtotal += lineTotal;
+    });
+    
+    const taxRate = 0.04712; // Hawaii GET tax 4.712%
+    const taxAmount = subtotal * taxRate;
+    const total = subtotal + taxAmount;
+    
+    // Update displays
+    document.getElementById('subtotalDisplay').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('taxDisplay').textContent = `$${taxAmount.toFixed(2)}`;
+    document.getElementById('totalDisplay').textContent = `$${total.toFixed(2)}`;
+    
+    // Update hidden inputs
+    document.getElementById('subtotalInput').value = subtotal.toFixed(2);
+    document.getElementById('taxInput').value = taxAmount.toFixed(2);
+    document.getElementById('totalInput').value = total.toFixed(2);
+}
+
+function saveQuote() {
+    const form = document.getElementById('newQuoteForm');
+    const formData = new FormData(form);
+    
+    // Collect line items
+    const descriptions = formData.getAll('description[]');
+    const quantities = formData.getAll('quantity[]');
+    const unitPrices = formData.getAll('unit_price[]');
+    const lineTotals = formData.getAll('line_total[]');
+    
+    const lineItems = descriptions.map((desc, index) => ({
+        description: desc,
+        quantity: parseFloat(quantities[index]) || 1,
+        unit_price: parseFloat(unitPrices[index]) || 0,
+        line_total: parseFloat(lineTotals[index]) || 0
+    }));
+    
+    const quoteData = {
+        client_name: formData.get('client_name'),
+        client_phone: formData.get('client_phone'),
+        client_email: formData.get('client_email'),
+        service_type: formData.get('service_type'),
+        job_location: formData.get('job_location'),
+        line_items: lineItems,
+        subtotal: formData.get('subtotal'),
+        tax_amount: formData.get('tax_amount'),
+        total_amount: formData.get('total_amount'),
+        notes: formData.get('notes')
+    };
+    
+    fetch('/api/quotes/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(quoteData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('newQuoteModal')).hide();
+            form.reset();
+            loadQuotesData();
+            loadRecentActivity();
+            showToast(`Quote ${result.quote_number} created successfully!`, 'success');
+        } else {
+            showToast('Error creating quote: ' + (result.error || 'Unknown error'), 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error creating quote', 'error');
+    });
+}
+
+function refreshQuotes() {
+    loadQuotesData();
+}
+
+function viewQuoteDetails(quoteNumber) {
+    showToast(`Quote ${quoteNumber} details view coming soon`, 'info');
+}
+
+function downloadQuotePDF(quoteNumber) {
+    window.open(`/api/download-quote/${quoteNumber}`, '_blank');
+}
+
+function convertToInvoice(quoteNumber) {
+    showToast(`Converting quote ${quoteNumber} to invoice...`, 'info');
+    // Implementation for quote-to-invoice conversion
+}
+
+// Initialize quote calculations when form loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners to initial line item
+    const initialQuantity = document.querySelector('input[name="quantity[]"]');
+    const initialUnitPrice = document.querySelector('input[name="unit_price[]"]');
+    if (initialQuantity) initialQuantity.addEventListener('input', calculateQuoteTotal);
+    if (initialUnitPrice) initialUnitPrice.addEventListener('input', calculateQuoteTotal);
+});
+
+// Load quotes data when section is shown
+if (typeof loadQuotesData === 'function') {
+    loadQuotesData();
+}
+</script>
