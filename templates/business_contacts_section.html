@@ -1,0 +1,370 @@
+<!-- Business Contacts Section for Operations -->
+<div class="content-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title">
+            <i class="fas fa-building me-2"></i>Business Contacts
+        </h3>
+        <div class="btn-group">
+            <button class="btn btn-spankks btn-sm" onclick="addBusinessContact()">
+                <i class="fas fa-plus me-1"></i>Add Contact
+            </button>
+            <button class="btn btn-outline-success btn-sm" onclick="refreshBusinessContacts()">
+                <i class="fas fa-sync-alt me-1"></i>Refresh
+            </button>
+            <button class="btn btn-outline-info btn-sm" onclick="importBusinessContacts()">
+                <i class="fas fa-upload me-1"></i>Import
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Search and Filter Controls -->
+        <div class="row mb-4">
+            <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="businessContactSearch" placeholder="Search business contacts..." onkeyup="window.filterBusinessContacts()">
+                </div>
+            </div>
+            <div class="col-6 col-lg-3 mb-3 mb-lg-0">
+                <select class="form-select" id="businessTypeFilter" onchange="window.filterBusinessContacts()">
+                    <option value="">All Types</option>
+                    <option value="supplier">Suppliers</option>
+                    <option value="vendor">Vendors</option>
+                    <option value="contractor">Contractors</option>
+                    <option value="partner">Partners</option>
+                    <option value="government">Government</option>
+                </select>
+            </div>
+            <div class="col-6 col-lg-3">
+                <select class="form-select" id="businessStatusFilter" onchange="window.filterBusinessContacts()">
+                    <option value="">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="preferred">Preferred</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-3 align-items-center">
+            <div class="col-12 col-md-8 mb-2 mb-md-0">
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-outline-primary btn-sm" onclick="window.exportBusinessContacts()">
+                        <i class="fas fa-download me-1"></i><span class="d-none d-sm-inline">Export CSV</span>
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="window.bulkBusinessActions()">
+                        <i class="fas fa-tasks me-1"></i><span class="d-none d-sm-inline">Bulk</span>
+                    </button>
+                    <button class="btn btn-outline-info btn-sm" onclick="window.syncBusinessData()">
+                        <i class="fas fa-sync me-1"></i><span class="d-none d-sm-inline">Sync</span>
+                    </button>
+                </div>
+            </div>
+            <div class="col-12 col-md-4 text-md-end">
+                <span class="text-muted small" id="businessContactCount">Showing 0 business contacts</span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Company / Contact</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Last Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="businessContactsTableBody">
+                    <!-- Sample business contacts - replace with actual data -->
+                    <tr>
+                        <td>
+                            <strong>Home Depot</strong><br>
+                            <small class="text-muted">Building Supplies</small>
+                        </td>
+                        <td>(808) 555-0100</td>
+                        <td>commercial@homedepot.com</td>
+                        <td><span class="badge bg-primary">Supplier</span></td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>2025-06-20</small></td>
+                        <td>
+                            <div class="d-flex flex-wrap gap-1">
+                                <button class="btn btn-outline-primary btn-sm" onclick="window.viewBusinessContact('HD001')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" onclick="window.contactBusiness('HD001')" title="Contact">
+                                    <i class="fas fa-phone"></i>
+                                </button>
+                                <button class="btn btn-outline-info btn-sm d-none d-lg-inline-block" onclick="window.editBusinessContact('HD001')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>Island Electric Supply</strong><br>
+                            <small class="text-muted">Electrical Contractor</small>
+                        </td>
+                        <td>(808) 555-0200</td>
+                        <td>orders@islandelectric.com</td>
+                        <td><span class="badge bg-warning">Contractor</span></td>
+                        <td><span class="badge bg-info">Preferred</span></td>
+                        <td><small>2025-06-22</small></td>
+                        <td>
+                            <div class="d-flex flex-wrap gap-1">
+                                <button class="btn btn-outline-primary btn-sm" onclick="window.viewBusinessContact('IES001')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" onclick="window.contactBusiness('IES001')" title="Contact">
+                                    <i class="fas fa-phone"></i>
+                                </button>
+                                <button class="btn btn-outline-info btn-sm d-none d-lg-inline-block" onclick="window.editBusinessContact('IES001')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>O'ahu Waste Management</strong><br>
+                            <small class="text-muted">Waste Disposal</small>
+                        </td>
+                        <td>(808) 555-0300</td>
+                        <td>service@oahuwaste.com</td>
+                        <td><span class="badge bg-secondary">Vendor</span></td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><small>2025-06-18</small></td>
+                        <td>
+                            <div class="d-flex flex-wrap gap-1">
+                                <button class="btn btn-outline-primary btn-sm" onclick="window.viewBusinessContact('OWM001')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-success btn-sm" onclick="window.contactBusiness('OWM001')" title="Contact">
+                                    <i class="fas fa-phone"></i>
+                                </button>
+                                <button class="btn btn-outline-info btn-sm d-none d-lg-inline-block" onclick="window.editBusinessContact('OWM001')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Business Contact Metrics Widget -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="metric-card text-center">
+            <i class="fas fa-building fa-2x text-primary mb-2"></i>
+            <h4>3</h4>
+            <p class="text-muted">Active Vendors</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card text-center">
+            <i class="fas fa-handshake fa-2x text-success mb-2"></i>
+            <h4>1</h4>
+            <p class="text-muted">Preferred Partners</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card text-center">
+            <i class="fas fa-tools fa-2x text-warning mb-2"></i>
+            <h4>1</h4>
+            <p class="text-muted">Contractors</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card text-center">
+            <i class="fas fa-calendar fa-2x text-info mb-2"></i>
+            <h4>5</h4>
+            <p class="text-muted">Days Since Last Contact</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.metric-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    height: 100%;
+    transition: transform 0.2s;
+    text-align: center;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.content-card {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--spankks-green) 0%, #1e7e34 100%);
+    color: white;
+    padding: 1rem;
+    border-bottom: none;
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .card-header {
+        padding: 0.75rem;
+        text-align: center;
+    }
+    
+    .card-header .btn-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.25rem;
+    }
+    
+    .card-header .btn-group .btn {
+        width: 100%;
+        font-size: 0.875rem;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .table td {
+        padding: 0.5rem 0.25rem;
+        vertical-align: middle;
+    }
+    
+    .metric-card {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .table td:nth-child(3), 
+    .table th:nth-child(3) {
+        display: none; /* Hide email column on very small screens */
+    }
+    
+    .table td:nth-child(6), 
+    .table th:nth-child(6) {
+        display: none; /* Hide last contact column */
+    }
+}
+</style>
+
+<script>
+// Business contacts functionality
+console.log('Business contacts section loaded');
+
+// Global function definitions
+window.addBusinessContact = function() { 
+    alert('Add business contact functionality - Coming soon'); 
+};
+
+window.refreshBusinessContacts = function() { 
+    location.reload(); 
+};
+
+window.importBusinessContacts = function() {
+    alert('Import business contacts from CSV - Coming soon');
+};
+
+window.viewBusinessContact = function(id) { 
+    alert('View business contact details for ID: ' + id + ' - Coming soon'); 
+};
+
+window.contactBusiness = function(id) { 
+    alert('Contact business for ID: ' + id + ' - Coming soon'); 
+};
+
+window.editBusinessContact = function(id) {
+    alert('Edit business contact for ID: ' + id + ' - Coming soon');
+};
+
+window.exportBusinessContacts = function() {
+    alert('Export business contacts to CSV - Coming soon');
+};
+
+window.bulkBusinessActions = function() {
+    alert('Bulk business actions - Coming soon');
+};
+
+window.syncBusinessData = function() {
+    alert('Sync business data - Coming soon');
+};
+
+window.filterBusinessContacts = function() {
+    const searchTerm = document.getElementById('businessContactSearch').value.toLowerCase();
+    const typeFilter = document.getElementById('businessTypeFilter').value.toLowerCase();
+    const statusFilter = document.getElementById('businessStatusFilter').value.toLowerCase();
+    
+    const rows = document.querySelectorAll('#businessContactsTableBody tr');
+    let visibleCount = 0;
+    
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length > 1) {
+            const company = cells[0].textContent.toLowerCase();
+            const phone = cells[1].textContent.toLowerCase();
+            const email = cells[2].textContent.toLowerCase();
+            const type = cells[3].textContent.toLowerCase();
+            const status = cells[4].textContent.toLowerCase();
+            
+            const matchesSearch = company.includes(searchTerm) || 
+                                phone.includes(searchTerm) || 
+                                email.includes(searchTerm);
+            const matchesType = !typeFilter || type.includes(typeFilter);
+            const matchesStatus = !statusFilter || status.includes(statusFilter);
+            
+            if (matchesSearch && matchesType && matchesStatus) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+    
+    document.getElementById('businessContactCount').textContent = `Showing ${visibleCount} business contacts`;
+};
+
+// Initialize contact count
+const businessContactRows = document.querySelectorAll('#businessContactsTableBody tr');
+const businessContactCount = businessContactRows.length;
+document.getElementById('businessContactCount').textContent = `Showing ${businessContactCount} business contacts`;
+console.log('Business contacts: Displaying', businessContactCount, 'contacts');
+</script>

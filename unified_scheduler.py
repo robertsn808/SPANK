@@ -139,6 +139,19 @@ class UnifiedScheduler:
         appointments.append(appointment)
         self._save_appointments(appointments)
         
+        # Auto-convert contact to client if this is a booking (not just consultation)
+        if appointment_data.get('service_type') != 'Consultation' or appointment_data.get('status') in ['confirmed', 'scheduled']:
+            conversion_result = self._auto_convert_contact_to_client(
+                appointment_data.get('client_email', ''),
+                appointment_data.get('client_phone', ''),
+                appointment_data['client_name'],
+                appointment_data['service_type'],
+                appointment['appointment_id']
+            )
+            if conversion_result:
+                appointment['auto_conversion'] = conversion_result
+                logging.info(f"Auto-converted contact to client: {conversion_result}")
+        
         # Update related jobs for client continuity
         self._update_client_project_history(client_id, job_id)
         

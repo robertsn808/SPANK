@@ -8139,6 +8139,140 @@ def log_appointment_action(action, appointment_id, user):
     except Exception as e:
         logging.error(f"Error logging appointment action: {e}")
 
+@app.route('/api/convert-contact-to-client', methods=['POST'])
+def convert_contact_to_client():
+    """Convert a contact to a client with portal access"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        data = request.get_json()
+        contact_id = data.get('contact_id')
+        client_data = data.get('client_data')
+        
+        if not contact_id or not client_data:
+            return jsonify({'error': 'Missing required data'}), 400
+        
+        # Load existing contacts
+        contacts_file = os.path.join('data', 'contacts.json')
+        contacts = []
+        if os.path.exists(contacts_file):
+            with open(contacts_file, 'r') as f:
+                contacts = json.load(f)
+        
+        # Find and remove the contact
+        contact_to_convert = None
+        updated_contacts = []
+        for contact in contacts:
+            if str(contact.get('id')) == str(contact_id):
+                contact_to_convert = contact
+            else:
+                updated_contacts.append(contact)
+        
+        if not contact_to_convert:
+            return jsonify({'error': 'Contact not found'}), 404
+        
+        # Save updated contacts (without the converted one)
+        with open(contacts_file, 'w') as f:
+            json.dump(updated_contacts, f, indent=2)
+        
+        # Load existing clients
+        clients_file = os.path.join('data', 'clients.json')
+        clients = []
+        if os.path.exists(clients_file):
+            with open(clients_file, 'r') as f:
+                clients = json.load(f)
+        
+        # Add new client
+        clients.append(client_data)
+        
+        # Save updated clients
+        with open(clients_file, 'w') as f:
+            json.dump(clients, f, indent=2)
+        
+        # Log the conversion
+        logging.info(f"Contact {contact_id} ({contact_to_convert.get('name')}) converted to client {client_data.get('client_id')}")
+        
+        return jsonify({
+            'success': True,
+            'client_id': client_data.get('client_id'),
+            'job_id': client_data.get('job_id'),
+            'message': 'Contact successfully converted to client'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error converting contact to client: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+def auto_convert_contact_to_client(contact_email, contact_phone, contact_name, service_type, appointment_id):
+    """Automatically convert contact to client when they book an appointment"""
+    try:
+        # Load contacts to find matching contact
+        contacts_file = os.path.join('data', 'contacts.json')
+        if not os.path.exists(contacts_file):
+            return None
+            
+        with open(contacts_file, 'r') as f:
+            contacts = json.load(f)
+        
+        # Find matching contact by email or phone
+        matching_contact = None
+        for contact in contacts:
+            if (contact.get('email', '').lower() == contact_email.lower() or 
+                contact.get('phone', '') == contact_phone):
+                matching_contact = contact
+                break
+        
+        if not matching_contact:
+            return None  # No existing contact to convert
+        
+        # Generate client credentials
+        client_id = f"CLI{random.randint(100, 999)}"
+        job_id = f"JOB{random.randint(1000, 9999)}"
+        
+        # Create client data
+        client_data = {
+            'client_id': client_id,
+            'job_id': job_id,
+            'name': contact_name,
+            'phone': contact_phone,
+            'email': contact_email,
+            'address': matching_contact.get('address', ''),
+            'access_level': 'client',
+            'created_date': datetime.now().strftime('%Y-%m-%d'),
+            'converted_from_contact': matching_contact.get('id'),
+            'converted_from_appointment': appointment_id,
+            'auto_converted': True,
+            'staff_notes': [{
+                'note': f'Auto-converted from contact when booking {service_type} appointment {appointment_id}',
+                'date': datetime.now().strftime('%Y-%m-%d'),
+                'author': 'system'
+            }]
+        }
+        
+        # Remove from contacts
+        updated_contacts = [c for c in contacts if c.get('id') != matching_contact.get('id')]
+        with open(contacts_file, 'w') as f:
+            json.dump(updated_contacts, f, indent=2)
+        
+        # Add to clients
+        clients_file = os.path.join('data', 'clients.json')
+        clients = []
+        if os.path.exists(clients_file):
+            with open(clients_file, 'r') as f:
+                clients = json.load(f)
+        
+        clients.append(client_data)
+        with open(clients_file, 'w') as f:
+            json.dump(clients, f, indent=2)
+        
+        logging.info(f"Auto-converted contact {matching_contact.get('id')} to client {client_id} for appointment {appointment_id}")
+        return {'client_id': client_id, 'job_id': job_id, 'converted': True}
+        
+    except Exception as e:
+        logging.error(f"Error in auto-conversion: {e}")
+        return None
+
 @app.route('/templates/crm_section.html')
 def serve_crm_section():
     """Serve CRM section template with contact data"""
@@ -8148,7 +8282,7 @@ def serve_crm_section():
     try:
         contacts = []
         
-        # Load from contacts.json
+        # Load from contacts.json (inquiry stage clients)
         contacts_file = os.path.join('data', 'contacts.json')
         if os.path.exists(contacts_file):
             with open(contacts_file, 'r') as f:
@@ -8160,28 +8294,33 @@ def serve_crm_section():
                         'phone': contact.get('phone', ''),
                         'email': contact.get('email', ''),
                         'address': contact.get('address', ''),
-                        'service_type': contact.get('service_type', 'General Contact'),
-                        'status': contact.get('status', 'active'),
+                        'service_type': contact.get('service_type', 'General Inquiry'),
+                        'status': 'inquiry',  # Inquiry stage client
                         'created_date': contact.get('created_date', ''),
-                        'source': 'Contact Database'
+                        'source': 'Inquiry Database',
+                        'stage': 'inquiry',
+                        'client_type': 'inquiry'
                     })
         
-        # Load from clients.json
+        # Load from clients.json (active project clients) 
         clients_file = os.path.join('data', 'clients.json')
         if os.path.exists(clients_file):
             with open(clients_file, 'r') as f:
                 client_data = json.load(f)
                 for client in client_data:
                     contacts.append({
-                        'id': client.get('id', 'Unknown'),
+                        'id': client.get('client_id', client.get('id', 'Unknown')),
                         'name': client.get('name', 'Unknown'),
                         'phone': client.get('phone', ''),
                         'email': client.get('email', ''),
                         'address': client.get('address', ''),
-                        'service_type': 'Client Portal User',
-                        'status': 'active',
+                        'service_type': 'Active Project',
+                        'status': 'active',  # Active project stage
                         'created_date': client.get('created_date', ''),
-                        'source': 'Client Database'
+                        'source': 'Active Projects',
+                        'stage': 'active_project',
+                        'client_type': 'active',
+                        'portal_access': True
                     })
         
         # Add job history, quotes, and invoices for each contact
@@ -8235,6 +8374,18 @@ def serve_crm_section():
         return render_template('crm_section.html', contacts=contacts)
     except Exception as e:
         logging.error(f"Error serving CRM section: {e}")
+        return jsonify({'error': 'Template error'}), 500
+
+@app.route('/templates/business_contacts_section.html')
+def serve_business_contacts_section():
+    """Serve business contacts section for operations"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        return render_template('business_contacts_section.html')
+    except Exception as e:
+        logging.error(f"Error serving business contacts section: {e}")
         return jsonify({'error': 'Template error'}), 500
 
 @app.route('/templates/<path:filename>')

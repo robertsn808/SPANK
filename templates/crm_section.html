@@ -2,11 +2,11 @@
 <div class="content-card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h3 class="card-title">
-            <i class="fas fa-address-book me-2"></i>Customer CRM
+            <i class="fas fa-users me-2"></i>Client Management
         </h3>
         <div class="btn-group">
             <button class="btn btn-spankks btn-sm" onclick="addContact()">
-                <i class="fas fa-user-plus me-1"></i>Add Contact
+                <i class="fas fa-user-plus me-1"></i>Add Client
             </button>
             <button class="btn btn-outline-success btn-sm" onclick="refreshTable()">
                 <i class="fas fa-sync-alt me-1"></i>Refresh
@@ -30,17 +30,17 @@
             </div>
             <div class="col-6 col-lg-3 mb-3 mb-lg-0">
                 <select class="form-select" id="statusFilter" onchange="window.filterContacts()">
-                    <option value="">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="potential">Potential</option>
+                    <option value="">All Clients</option>
+                    <option value="inquiry">Inquiry Stage</option>
+                    <option value="active">Active Projects</option>
                     <option value="completed">Completed</option>
                 </select>
             </div>
             <div class="col-6 col-lg-3">
                 <select class="form-select" id="sourceFilter" onchange="window.filterContacts()">
                     <option value="">All Sources</option>
-                    <option value="Contact Database">Contact DB</option>
-                    <option value="Client Database">Client DB</option>
+                    <option value="Inquiry Database">Inquiry Stage</option>
+                    <option value="Active Projects">Active Projects</option>
                 </select>
             </div>
         </div>
@@ -126,9 +126,9 @@
                                     <button class="btn btn-outline-warning btn-sm d-none d-lg-inline-block" onclick="window.scheduleJob('{{ contact.id }}')" title="Schedule Job">
                                         <i class="fas fa-calendar-plus"></i>
                                     </button>
-                                    {% if contact.source == 'Contact Database' %}
-                                    <button class="btn btn-outline-primary btn-sm d-none d-md-inline-block" onclick="window.convertToClient('{{ contact.id }}')" title="Convert to Client">
-                                        <i class="fas fa-user-plus"></i>
+                                    {% if contact.client_type == 'inquiry' %}
+                                    <button class="btn btn-outline-primary btn-sm d-none d-md-inline-block" onclick="window.activateClient('{{ contact.id }}')" title="Activate Project">
+                                        <i class="fas fa-arrow-up"></i>
                                     </button>
                                     {% endif %}
                                 </div>
@@ -558,67 +558,67 @@ window.createQuoteForClient = function() {
     alert('Create quote for client - Coming soon');
 };
 
-window.convertToClient = function(contactId) {
-    if (!confirm('Convert this contact to a client? This will create portal access credentials and move them to the client database.')) {
+window.activateClient = function(clientId) {
+    if (!confirm('Activate this client for a project? This will create portal access credentials and move them to active projects.')) {
         return;
     }
     
-    // Find the contact
+    // Find the client
     const contacts = {{ contacts|tojson }};
-    const contact = contacts.find(c => c.id === contactId);
+    const client = contacts.find(c => c.id === clientId);
     
-    if (!contact) {
-        alert('Contact not found');
+    if (!client) {
+        alert('Client not found');
         return;
     }
     
-    // Generate client credentials
-    const clientId = 'CLI' + String(Math.floor(Math.random() * 900) + 100);
+    // Generate project credentials
+    const portalClientId = 'CLI' + String(Math.floor(Math.random() * 900) + 100);
     const jobId = 'JOB' + String(Math.floor(Math.random() * 9000) + 1000);
     
-    // Prepare client data
+    // Prepare active client data
     const clientData = {
-        client_id: clientId,
+        client_id: portalClientId,
         job_id: jobId,
-        name: contact.name,
-        phone: contact.phone,
-        email: contact.email,
-        address: contact.address || '',
+        name: client.name,
+        phone: client.phone,
+        email: client.email,
+        address: client.address || '',
         access_level: 'client',
         created_date: new Date().toISOString().split('T')[0],
-        converted_from_contact: contactId,
+        activated_from_inquiry: clientId,
         staff_notes: [{
-            note: `Converted from contact database on ${new Date().toLocaleDateString()}`,
+            note: `Activated from inquiry stage on ${new Date().toLocaleDateString()}`,
             date: new Date().toISOString().split('T')[0],
             author: 'admin'
         }]
     };
     
-    // Call API to convert contact
+    // Call API to activate client
     fetch('/api/convert-contact-to-client', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            contact_id: contactId,
+            contact_id: clientId,
             client_data: clientData
         })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert(`Successfully converted to client!\n\nPortal Credentials:\nClient ID: ${clientId}\nJob ID: ${jobId}\n\nThese credentials have been saved to the client database.`);
+            alert(`Client activated successfully!\n\nPortal Credentials:\nClient ID: ${portalClientId}\nJob ID: ${jobId}\n\nClient can now access the project portal.`);
             
             // Refresh the CRM to show updated data
             location.reload();
         } else {
-            alert('Error converting contact: ' + (data.error || 'Unknown error'));
+            alert('Error activating client: ' + (data.error || 'Unknown error'));
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error converting contact. Please try again.');
+        alert('Error activating client. Please try again.');
     });
 };
 </script>
