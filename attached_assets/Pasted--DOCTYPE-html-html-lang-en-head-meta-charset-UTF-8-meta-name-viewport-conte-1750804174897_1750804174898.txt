@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer CRM – SPANKKS Admin</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h1 {
+      text-align: center;
+      color: #006241;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #006241;
+      color: #fff;
+    }
+    .action-btns button {
+      margin-right: 8px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .view { background-color: #2196f3; color: white; }
+    .edit { background-color: #ffc107; color: black; }
+    .delete { background-color: #f44336; color: white; }
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      border-radius: 8px;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Customer CRM Dashboard</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Client Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Job History</th>
+          <th>Total Revenue</th>
+          <th>Last Project</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Jane Doe</td>
+          <td>jane@example.com</td>
+          <td>(808) 555-5678</td>
+          <td>3 jobs</td>
+          <td>$7,800</td>
+          <td>Kitchen Renovation</td>
+          <td class="action-btns">
+            <button class="view" onclick="openModal('jane-details')">View</button>
+            <button class="edit">Edit</button>
+            <button class="delete">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div id="jane-details" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('jane-details')">&times;</span>
+      <h2>Jane Doe – Job Details</h2>
+      <p><strong>Job Notes:</strong> Completed kitchen remodel with new countertops.</p>
+      <p><strong>Checklist:</strong></p>
+      <ul>
+        <li>✔ Demo old cabinets</li>
+        <li>✔ Install drywall</li>
+        <li>✔ Set counters & backsplash</li>
+        <li>✔ Final walkthrough complete</li>
+      </ul>
+      <p><strong>Job Photos:</strong></p>
+      <img src="/photos/jane-before.jpg" alt="Before" width="200" />
+      <img src="/photos/jane-after.jpg" alt="After" width="200" />
+    </div>
+  </div>
+
+  <script>
+    function openModal(id) {
+      document.getElementById(id).style.display = 'block';
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+  </script>
+</body>
+</html>

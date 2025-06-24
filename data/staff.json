@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "staff_id": "SPK001",
+    "name": "SPANKKS Admin",
+    "role": "Administrator",
+    "pin": "Money$$",
+    "email": "admin@spankks.com",
+    "phone": "(808) 778-9132",
+    "hire_date": "2025-01-01",
+    "status": "active",
+    "permissions": ["full_access", "edit_clients", "view_financials", "manage_staff"],
+    "created_date": "2025-01-01"
+  },
+  {
+    "staff_id": "SPK002",
+    "name": "Mike Johnson",
+    "role": "Lead Technician",
+    "pin": "1234",
+    "email": "mike@spankks.com",
+    "phone": "(808) 555-0102",
+    "hire_date": "2025-01-15",
+    "status": "active",
+    "permissions": ["edit_clients", "view_jobs", "update_checklists"],
+    "created_date": "2025-01-15"
+  },
+  {
+    "staff_id": "SPK003",
+    "name": "Carlos Rodriguez",
+    "role": "Technician",
+    "pin": "5678",
+    "email": "carlos@spankks.com",
+    "phone": "(808) 555-0103",
+    "hire_date": "2025-02-01",
+    "status": "active",
+    "permissions": ["view_jobs", "update_checklists"],
+    "created_date": "2025-02-01"
+  }
+]

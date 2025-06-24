@@ -7449,6 +7449,233 @@ def api_create_contact():
         logging.error(f"Error creating contact: {e}")
         return jsonify({'error': str(e)}), 500
 
+# Staff CRM API Endpoints
+@app.route('/api/staff/authenticate', methods=['POST'])
+def api_staff_authenticate():
+    """Authenticate staff for CRM access"""
+    try:
+        data = request.get_json()
+        staff_id = data.get('staff_id')
+        pin = data.get('pin')
+        
+        # Load staff data
+        staff_data = storage_service.load_data('staff.json')
+        
+        # Find staff member
+        staff_member = next((s for s in staff_data if s.get('staff_id') == staff_id), None)
+        
+        if staff_member and staff_member.get('pin') == pin:
+            # Create session token
+            session_token = f"staff_{staff_id}_{datetime.now().timestamp()}"
+            session['staff_authenticated'] = True
+            session['staff_id'] = staff_id
+            session['staff_session'] = session_token
+            
+            return jsonify({
+                'success': True,
+                'staff_name': staff_member.get('name'),
+                'role': staff_member.get('role'),
+                'session_token': session_token
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
+            
+    except Exception as e:
+        logging.error(f"Error authenticating staff: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/clients/staff-view', methods=['GET'])
+def api_clients_staff_view():
+    """Get client data for staff CRM view"""
+    if not session.get('staff_authenticated'):
+        return jsonify({'error': 'Staff authentication required'}), 401
+    
+    try:
+        # Load all client data
+        clients = storage_service.load_data('clients.json')
+        quotes = storage_service.load_data('quotes.json')
+        invoices = storage_service.load_data('invoices.json')
+        appointments = storage_service.load_data('unified_appointments.json')
+        
+        # Enhance client data with business metrics
+        enhanced_clients = []
+        for client in clients:
+            client_quotes = [q for q in quotes if q.get('client_name') == client.get('client_name')]
+            client_invoices = [i for i in invoices if i.get('client_name') == client.get('client_name')]
+            client_appointments = [a for a in appointments if a.get('client_name') == client.get('client_name')]
+            
+            # Calculate metrics
+            total_revenue = sum(float(inv.get('total_amount', 0)) for inv in client_invoices)
+            total_jobs = len(client_appointments)
+            active_jobs = len([a for a in client_appointments if a.get('status') in ['scheduled', 'in_progress']])
+            pending_quotes = len([q for q in client_quotes if q.get('status') == 'pending'])
+            
+            # Recent activity
+            recent_activity = []
+            if client_appointments:
+                latest_appointment = max(client_appointments, key=lambda x: x.get('created_date', ''))
+                recent_activity.append({
+                    'description': f"Appointment scheduled: {latest_appointment.get('service_type')}",
+                    'date': latest_appointment.get('date'),
+                    'icon': 'calendar',
+                    'type': 'info'
+                })
+            
+            enhanced_client = {
+                **client,
+                'total_revenue': total_revenue,
+                'total_jobs': total_jobs,
+                'active_jobs': active_jobs,
+                'pending_quotes': pending_quotes,
+                'recent_activity': recent_activity,
+                'last_activity': client_appointments[-1].get('date') if client_appointments else None,
+                'follow_up_required': any(a.get('follow_up_required') for a in client_appointments)
+            }
+            enhanced_clients.append(enhanced_client)
+        
+        return jsonify(enhanced_clients)
+        
+    except Exception as e:
+        logging.error(f"Error loading staff client view: {e}")
+        return jsonify([])
+
+@app.route('/api/clients/<client_id>/details', methods=['GET'])
+def api_client_details(client_id):
+    """Get detailed client information"""
+    if not session.get('staff_authenticated'):
+        return jsonify({'error': 'Staff authentication required'}), 401
+    
+    try:
+        # Load client data
+        clients = storage_service.load_data('clients.json')
+        client = next((c for c in clients if c.get('client_id') == client_id), None)
+        
+        if not client:
+            return jsonify({'error': 'Client not found'}), 404
+        
+        # Load related data
+        quotes = storage_service.load_data('quotes.json')
+        invoices = storage_service.load_data('invoices.json')
+        appointments = storage_service.load_data('unified_appointments.json')
+        
+        # Get photos from photo management service
+        try:
+            from photo_management_service import photo_management_service
+            client_photos = photo_management_service.get_client_photos(client_id)
+        except:
+            client_photos = []
+        
+        # Get staff notes
+        staff_notes = client.get('staff_notes', [])
+        
+        # Get job checklists
+        job_checklists = []
+        for appointment in appointments:
+            if appointment.get('client_name') == client.get('client_name'):
+                checklist = {
+                    'id': appointment.get('id'),
+                    'job_title': appointment.get('service_type'),
+                    'date': appointment.get('date'),
+                    'items': appointment.get('checklist_items', [])
+                }
+                job_checklists.append(checklist)
+        
+        # Enhanced client details
+        detailed_client = {
+            **client,
+            'photos': client_photos,
+            'staff_notes': staff_notes,
+            'job_checklists': job_checklists,
+            'quotes': [q for q in quotes if q.get('client_name') == client.get('client_name')],
+            'invoices': [i for i in invoices if i.get('client_name') == client.get('client_name')],
+            'appointments': [a for a in appointments if a.get('client_name') == client.get('client_name')]
+        }
+        
+        return jsonify(detailed_client)
+        
+    except Exception as e:
+        logging.error(f"Error loading client details: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/clients/<client_id>/notes', methods=['POST'])
+def api_add_client_note(client_id):
+    """Add staff note to client"""
+    if not session.get('staff_authenticated'):
+        return jsonify({'error': 'Staff authentication required'}), 401
+    
+    try:
+        data = request.get_json()
+        note_content = data.get('content')
+        
+        if not note_content:
+            return jsonify({'error': 'Note content required'}), 400
+        
+        # Load clients
+        clients = storage_service.load_data('clients.json')
+        
+        # Find and update client
+        for i, client in enumerate(clients):
+            if client.get('client_id') == client_id:
+                if 'staff_notes' not in client:
+                    client['staff_notes'] = []
+                
+                new_note = {
+                    'id': f"NOTE{len(client['staff_notes']) + 1:03d}",
+                    'content': note_content,
+                    'author': session.get('staff_id'),
+                    'date': datetime.now().strftime('%Y-%m-%d %H:%M'),
+                    'hawaii_time': datetime.now(pytz.timezone('Pacific/Honolulu')).strftime('%Y-%m-%d %H:%M')
+                }
+                
+                client['staff_notes'].append(new_note)
+                clients[i] = client
+                break
+        
+        storage_service.save_data('clients.json', clients)
+        
+        return jsonify({'success': True, 'note_id': new_note['id']})
+        
+    except Exception as e:
+        logging.error(f"Error adding client note: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/clients/<client_id>/checklist/<checklist_id>/item/<item_id>', methods=['PUT'])
+def api_update_checklist_item(client_id, checklist_id, item_id):
+    """Update checklist item status"""
+    if not session.get('staff_authenticated'):
+        return jsonify({'error': 'Staff authentication required'}), 401
+    
+    try:
+        data = request.get_json()
+        completed = data.get('completed', False)
+        
+        # Load appointments (where checklists are stored)
+        appointments = storage_service.load_data('unified_appointments.json')
+        
+        # Find and update appointment checklist
+        for i, appointment in enumerate(appointments):
+            if appointment.get('id') == checklist_id:
+                checklist_items = appointment.get('checklist_items', [])
+                
+                for item in checklist_items:
+                    if item.get('id') == item_id:
+                        item['completed'] = completed
+                        item['updated_by'] = session.get('staff_id')
+                        item['updated_at'] = datetime.now().isoformat()
+                        break
+                
+                appointment['checklist_items'] = checklist_items
+                appointments[i] = appointment
+                break
+        
+        storage_service.save_data('unified_appointments.json', appointments)
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        logging.error(f"Error updating checklist item: {e}")
+        return jsonify({'error': str(e)}), 500
+
 # Advanced Scheduling API Endpoints
 @app.route('/api/appointments', methods=['GET'])
 def api_appointments():

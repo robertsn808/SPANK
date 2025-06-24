@@ -905,10 +905,14 @@ function changeCalendarView(viewName) {
 }
 
 function refreshCalendar() {
-    calendar.refetchEvents();
-    loadScheduleStats();
-    loadTodayAgenda();
-    showToast('Calendar refreshed', 'info');
+    if (calendar) {
+        calendar.refetchEvents();
+        loadScheduleStats();
+        loadTodayAgenda();
+        showToast('Calendar refreshed', 'info');
+    } else {
+        showToast('Calendar not initialized yet', 'warning');
+    }
 }
 
 function findAvailableSlots() {
