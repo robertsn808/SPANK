@@ -1291,7 +1291,7 @@ def project_tracking():
                     'days_until': days_until
                 })
     
-    return render_template('admin/project_tracking.html',
+    return jsonify({'message': 'Project tracking feature coming soon'})
                          active_projects=active_projects,
                          pending_projects=pending_projects,
                          completed_projects=completed_projects,
@@ -1461,12 +1461,13 @@ def business_intelligence_dashboard():
     # Generate ML-powered insights
     ml_insights = ml_analytics.generate_ml_insights(handyman_storage)
     
-    return render_template('admin/business_intelligence.html',
-                         executive_briefing=executive_briefing,
-                         market_insights=market_insights,
-                         strategic_recommendations=strategic_recommendations,
-                         roi_projections=roi_projections,
-                         ml_insights=ml_insights)
+    return jsonify({
+        'executive_briefing': executive_briefing,
+        'market_insights': market_insights,
+        'strategic_recommendations': strategic_recommendations,
+        'roi_projections': roi_projections,
+        'ml_insights': ml_insights
+    })
 
 @app.route('/admin/ml-insights')
 def ml_insights_dashboard():
@@ -2127,12 +2128,13 @@ def customer_feedback():
     # Calculate satisfaction metrics
     total_completed = len([req for req in service_requests if req.status == 'completed'])
     
-    return render_template('admin/customer_feedback.html',
-                         recent_completions=recent_completions,
-                         follow_up_needed=follow_up_needed,
-                         urgent_messages=urgent_messages,
-                         total_completed=total_completed,
-                         contact_messages=contact_messages)
+    return jsonify({
+        'recent_completions': recent_completions,
+        'follow_up_needed': follow_up_needed,
+        'urgent_messages': urgent_messages,
+        'total_completed': total_completed,
+        'contact_messages': contact_messages
+    })
 
 @app.route('/admin/send-followup/<int:request_id>', methods=['POST'])
 def send_followup(request_id):
