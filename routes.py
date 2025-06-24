@@ -672,61 +672,203 @@ def admin_analytics():
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
-    if 'admin_logged_in' not in session:
+    """Admin dashboard showing all bookings, contact messages, and weekly calendar"""
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access the admin dashboard.', 'error')
         return redirect(url_for('admin_login'))
-    
+
     try:
-        # Get dashboard statistics from database
-        contacts = storage_service.get_all_contacts()
-        quotes = storage_service.get_all_quotes()
-        service_requests = storage_service.load_data('service_requests.json')
-        contact_messages = storage_service.load_data('contact_messages.json')
+        # Ensure storage service is initialized
+        if handyman_storage is None:
+            flash('Dashboard temporarily unavailable. Please try again.', 'error')
+            return redirect(url_for('admin_login'))
+            
+        service_requests = handyman_storage.get_all_service_requests() or []
+        contact_messages = handyman_storage.get_all_contact_messages() or []
         
-        # Calculate today's stats
-        today = datetime.now().date()
-        # Get today's appointments
-        today_appointments = unified_scheduler.get_appointments_for_date(today.strftime('%Y-%m-%d'))
-        today_jobs = len(today_appointments) if today_appointments else 0
-        pending_quotes = len([q for q in quotes if q.get('status', 'pending') == 'pending'])
+        # Load real appointments from unified scheduler database
+        import json
+        import os
+        appointments_file = os.path.join('data', 'unified_appointments.json')
+        if os.path.exists(appointments_file):
+            with open(appointments_file, 'r') as f:
+                appointments = json.load(f)
+        else:
+            appointments = []
+
+        # Generate extended schedule dates for calendar using Hawaii timezone
+        hawaii_now = get_hawaii_time()
+        hawaii_tz = pytz.timezone('Pacific/Honolulu')
         
-        # Calculate week revenue
-        week_revenue = sum(float(q.get('total_amount', 0)) for q in quotes if q.get('status') == 'accepted')
+        # Get week offset from URL parameter for navigation
+        week_offset = int(request.args.get('week_offset', 0))
+
+        # Get the start of the week (Monday) in Hawaii time with offset
+        start_of_week = hawaii_now - timedelta(days=hawaii_now.weekday()) + timedelta(weeks=week_offset)
         
-        # Count new contacts (last 24 hours)
-        yesterday = datetime.now() - timedelta(days=1)
-        new_contacts = len([c for c in contacts if 
-                           datetime.fromisoformat(c.get('created_at', '2025-01-01')).date() >= yesterday.date()])
+        # Generate 4 weeks of dates (current week + 3 following weeks)
+        all_weeks = []
+        for week_num in range(4):
+            week_start = start_of_week + timedelta(weeks=week_num)
+            week_dates = [(week_start + timedelta(days=i)) for i in range(7)]
+            all_weeks.append({
+                'week_number': week_num + 1,
+                'week_start': week_start,
+                'dates': week_dates,
+                'is_current': week_num == 0
+            })
+
+        # Get appointments for all 4 weeks
+        all_appointments = []
+        end_of_extended_period = start_of_week + timedelta(weeks=4)
         
-        # Count low stock items
-        inventory_items = storage_service.load_data('inventory.json')
-        low_stock_count = len([item for item in inventory_items if 
-                              item.get('current_stock', 0) <= item.get('reorder_level', 5)])
+        for appointment in appointments:
+            try:
+                # Use scheduled_date field from unified scheduler
+                date_field = appointment.get('scheduled_date') or appointment.get('date')
+                if not date_field:
+                    continue
+                    
+                appointment_date = datetime.strptime(date_field, '%Y-%m-%d')
+                # Use naive datetime comparison by converting start_of_week to date only
+                start_date_naive = start_of_week.date()
+                end_date_naive = end_of_extended_period.date()
+                appointment_date_only = appointment_date.date()
+                if start_date_naive <= appointment_date_only < end_date_naive:
+                    # Normalize appointment data for template compatibility
+                    normalized_appointment = {
+                        'id': appointment.get('appointment_id', appointment.get('id')),
+                        'date': date_field,  # Template expects 'date' field
+                        'time': appointment.get('scheduled_time', appointment.get('time', '09:00')),
+                        'service': appointment.get('service_type', appointment.get('service', 'Service')),
+                        'client_name': appointment.get('client_name', 'Client'),
+                        'status': appointment.get('status', 'scheduled'),
+                        'estimated_amount': appointment.get('estimated_amount'),
+                        'location': appointment.get('location', ''),
+                        'notes': appointment.get('notes', ''),
+                        'client_id': appointment.get('client_id'),
+                        'job_id': appointment.get('job_id')
+                    }
+                    all_appointments.append(normalized_appointment)
+            except (KeyError, ValueError, TypeError) as e:
+                logging.warning(f"Invalid appointment data: {appointment} - {e}")
+                continue
+                
+        # Keep legacy week_appointments for current week compatibility
+        week_appointments = []
+        for appointment in appointments:
+            try:
+                date_field = appointment.get('scheduled_date') or appointment.get('date')
+                if not date_field:
+                    continue
+                    
+                appointment_date = datetime.strptime(date_field, '%Y-%m-%d')
+                # Use naive datetime comparison by converting start_of_week to date only
+                start_date_naive = start_of_week.date()
+                end_week_naive = (start_of_week + timedelta(days=7)).date()
+                appointment_date_only = appointment_date.date()
+                if start_date_naive <= appointment_date_only < end_week_naive:
+                    # Normalize for legacy compatibility
+                    normalized_appointment = {
+                        'id': appointment.get('appointment_id', appointment.get('id')),
+                        'date': date_field,
+                        'time': appointment.get('scheduled_time', appointment.get('time', '09:00')),
+                        'service': appointment.get('service_type', appointment.get('service', 'Service')),
+                        'client_name': appointment.get('client_name', 'Client'),
+                        'status': appointment.get('status', 'scheduled'),
+                        'estimated_amount': appointment.get('estimated_amount')
+                    }
+                    week_appointments.append(normalized_appointment)
+            except (KeyError, ValueError, TypeError) as e:
+                continue
+
+        # Get real pending requests from unified appointments (tentative status = pending)
+        try:
+            import json
+            import os
+            appointments_file = os.path.join('data', 'unified_appointments.json')
+            if os.path.exists(appointments_file):
+                with open(appointments_file, 'r') as f:
+                    all_appointments_data = json.load(f)
+                    pending_requests = [apt for apt in all_appointments_data if apt.get('status') == 'tentative']
+                    urgent_requests = [apt for apt in all_appointments_data if apt.get('priority') == 'high']
+            else:
+                pending_requests = []
+                urgent_requests = []
+        except Exception as e:
+            logging.warning(f"Error reading appointments data: {e}")
+            pending_requests = []
+            urgent_requests = []
         
-        # Count overdue payments
-        invoices = storage_service.load_data('invoices.json')
-        overdue_count = len([inv for inv in invoices if 
-                            inv.get('status') == 'unpaid' and 
-                            datetime.fromisoformat(inv.get('due_date', '2025-12-31')).date() < today])
+        # Get admin notifications for manual processing
+        try:
+            admin_notifications = handyman_storage.get_admin_notifications()
+        except Exception as e:
+            logging.warning(f"Error getting admin notifications: {e}")
+            admin_notifications = []
+
+        # Get completed requests from the same appointments data
+        try:
+            completed_requests = [apt for apt in all_appointments_data if apt.get('status') == 'completed']
+        except Exception as e:
+            logging.warning(f"Error filtering completed appointments: {e}")
+            completed_requests = []
+            
+        # Get unread messages from actual database files
+        try:
+            import json
+            import os
+            contacts_file = os.path.join('data', 'contacts.json')
+            if os.path.exists(contacts_file):
+                with open(contacts_file, 'r') as f:
+                    contacts_data = json.load(f)
+                    unread_messages = [contact for contact in contacts_data if contact.get('status') == 'unread']
+            else:
+                unread_messages = []
+        except Exception as e:
+            logging.warning(f"Error reading contacts data: {e}")
+            unread_messages = []
         
-        dashboard_data = {
-            'today_stats': {
-                'jobs': today_jobs,
-                'quotes': pending_quotes,
-                'revenue': int(week_revenue)
-            },
-            'new_contacts': new_contacts,
-            'low_stock_count': low_stock_count,
-            'overdue_count': overdue_count
+        # Get consultation requests for badge count
+        consultation_requests = [req for req in service_requests if 'consultation' in req.service.lower()]
+        
+        # Stats for header badges
+        stats = {
+            'total_requests': len(service_requests),
+            'pending': len([req for req in service_requests if req.status == 'pending']),
+            'messages': len([msg for msg in contact_messages if msg.status == 'unread']),
+            'appointments': len(appointments),
+            'consultation_requests': len(consultation_requests)
         }
-        
-        return render_template('admin_dashboard_new.html', **dashboard_data)
+
+        return render_template('admin_dashboard.html',
+                             bookings=service_requests,
+                             service_requests=service_requests, 
+                             contact_messages=contact_messages,
+                             week_dates=all_weeks[0]['dates'] if all_weeks else [],  # First week for compatibility
+                             all_weeks=all_weeks,  # Extended 4-week schedule
+                             all_appointments=all_appointments,  # All appointments for 4 weeks
+                             week_appointments=week_appointments,
+                             staff_members=staff_members,
+                             staff_logins=staff_logins,
+                             today=hawaii_now.strftime('%Y-%m-%d'),
+                             user_role=session.get('user_role', 'admin'),
+                             user_name=session.get('user_name', 'Admin'),
+                             # Only authentic data from database
+                             pending_requests=pending_requests,
+                             urgent_requests=urgent_requests,
+                             completed_requests=completed_requests,
+                             unread_messages=unread_messages,
+                             admin_notifications=admin_notifications,
+                             consultation_requests=consultation_requests,
+                             stats=stats)
     
     except Exception as e:
-        logging.error(f"Admin dashboard error: {e}")
-        # Fallback with zero stats
-        return render_template('admin_dashboard_new.html',
-                               today_stats={'jobs': 0, 'quotes': 0, 'revenue': 0},
-                               new_contacts=0, low_stock_count=0, overdue_count=0)
+        import traceback
+        logging.error(f"Error loading admin dashboard: {e}")
+        logging.error(f"Full traceback: {traceback.format_exc()}")
+        flash('Dashboard temporarily unavailable. Please try again.', 'error')
+        return render_template('admin_login.html')
 
 @app.route('/admin/notifications/<int:notification_id>/complete', methods=['POST'])
 def mark_notification_complete(notification_id):

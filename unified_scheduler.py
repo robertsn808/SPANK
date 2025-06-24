@@ -153,6 +153,11 @@ class UnifiedScheduler:
                 return appointment
         return None
     
+    def get_appointments_for_date(self, date_str: str) -> List[Dict]:
+        """Get all appointments for a specific date"""
+        appointments = self._load_appointments()
+        return [apt for apt in appointments if apt.get('scheduled_date') == date_str or apt.get('date') == date_str]
+    
     def get_appointments_by_date_range(self, start_date: str, end_date: str) -> List[Dict]:
         """Get appointments within date range"""
         appointments = self._load_appointments()
