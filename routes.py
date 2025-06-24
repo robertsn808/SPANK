@@ -582,7 +582,7 @@ def admin_login():
         flash('Invalid credentials. Please try again.', 'error')
         logging.warning(f"Failed login attempt for username: {username}")
 
-    return render_template('admin_login.html')
+    return render_template('login.html')
 
 @app.route('/admin/quote-invoice-form')
 def quote_invoice_form():
@@ -1292,11 +1292,6 @@ def project_tracking():
                 })
     
     return jsonify({'message': 'Project tracking feature coming soon'})
-                         active_projects=active_projects,
-                         pending_projects=pending_projects,
-                         completed_projects=completed_projects,
-                         total_active_value=total_active_value,
-                         upcoming_deadlines=upcoming_deadlines)
 
 # Dashboard API Routes
 @app.route('/api/calendar/weekly')
