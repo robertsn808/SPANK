@@ -1,0 +1,6 @@
+name,email,phone,address,contact_type,company_name,notes,service_interest,priority,source
+"John Smith","john.smith@email.com","(808) 555-0123","123 Ala Moana Blvd, Honolulu, HI 96814","client","","Looking for drywall repair in kitchen","Drywall Services","high","website_contact"
+"Pacific Properties LLC","contact@pacificprops.com","(808) 555-0456","456 King Street, Honolulu, HI 96813","business","Pacific Properties LLC","Commercial property management company","Flooring Installation","medium","referral"
+"Sarah Johnson","sarah.j@gmail.com","(808) 555-0789","789 Beretania St, Honolulu, HI 96817","client","","Fence repair needed urgently","Fence Building","high","phone_inquiry"
+"Ocean View Contractors","info@oceanview.com","(808) 555-0321","321 Ward Ave, Honolulu, HI 96814","vendor","Ocean View Contractors","Potential subcontractor for larger projects","General Handyman","low","networking"
+"Maria Rodriguez","maria.r@hawaii.rr.com","(808) 555-0654","654 Kapiolani Blvd, Honolulu, HI 96814","client","","Kitchen renovation consultation","Home Renovation","medium","spankks_skool"
