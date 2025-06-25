@@ -1318,45 +1318,62 @@
             const content = document.getElementById('dynamic-content');
             content.innerHTML = '<div class="text-center py-5"><div class="loading-spinner me-2"></div>Loading...</div>';
             
-            // Load section-specific content with proper error handling
-            const endpoint = `/admin/sections/${section}`;
-            
-            fetch(endpoint)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                    return response.text();
-                })
-                .then(html => {
-                    content.innerHTML = html;
-                    
-                    // Initialize section-specific features
-                    if (section === 'service_management') {
-                        // Auto-load services for service management
-                        setTimeout(() => {
-                            if (typeof loadServices === 'function') {
-                                loadServices();
-                            }
-                        }, 100);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading section:', error);
+            // Map sections to the correct endpoints or load functions
+            switch(section) {
+                case 'schedule':
+                    loadScheduleSection();
+                    break;
+                case 'contacts':
+                    loadContactsSection();
+                    break;
+                case 'staff-crm':
+                    loadStaffCrmSection();
+                    break;
+                case 'quotes':
+                    loadQuotesSection();
+                    break;
+                case 'staff':
+                    loadStaffSection();
+                    break;
+                case 'inventory':
+                    loadInventorySection();
+                    break;
+                case 'financial':
+                    loadFinancialSection();
+                    break;
+                case 'photos':
+                    loadPhotosSection();
+                    break;
+                case 'business-intelligence':
+                    loadBusinessIntelligenceSection();
+                    break;
+                case 'performance':
+                    loadPerformanceSection();
+                    break;
+                case 'portal':
+                    loadPortalSection();
+                    break;
+                case 'csv-management':
+                    loadCsvManagementSection();
+                    break;
+                case 'service_management':
+                    loadServiceManagementSection();
+                    break;
+                default:
                     content.innerHTML = `
                         <div class="content-card">
                             <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-exclamation-triangle me-2"></i>Section Unavailable</h3>
+                                <h3 class="card-title"><i class="fas fa-exclamation-triangle me-2"></i>Section Not Found</h3>
                             </div>
                             <div class="card-body">
-                                <p class="text-muted">This section is temporarily unavailable.</p>
-                                <button class="btn btn-outline-primary" onclick="location.reload()">
-                                    <i class="fas fa-sync me-1"></i>Refresh Page
+                                <p class="text-muted">The section "${section}" is not available.</p>
+                                <button class="btn btn-outline-primary" onclick="showSection('dashboard')">
+                                    <i class="fas fa-home me-1"></i>Back to Dashboard
                                 </button>
                             </div>
                         </div>
                     `;
-                });
+            }
         }
 
         function showNewAppointmentModal(date = null) {
@@ -1639,15 +1656,10 @@
         }
 
         function loadPortalSection() {
-            fetch('/templates/portal_management_section.html')
+            fetch('/admin/sections/portal')
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('dynamic-content').innerHTML = html;
-                    setTimeout(() => {
-                        if (typeof loadPortalManagement === 'function') {
-                            loadPortalManagement();
-                        }
-                    }, 100);
                 })
                 .catch(error => {
                     console.error('Error loading portal section:', error);
@@ -1657,7 +1669,7 @@
                                 <h3 class="card-title"><i class="fas fa-user-circle me-2"></i>Client Portal Management</h3>
                             </div>
                             <div class="card-body">
-                                <div class="alert alert-info">Portal management section is being loaded. Please try refreshing the page.</div>
+                                <div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error loading Portal section. Please check server connection.</div>
                             </div>
                         </div>
                     `;
@@ -1765,7 +1777,7 @@
             const content = document.getElementById('dynamic-content');
             content.innerHTML = '<div class="text-center py-5"><div class="loading-spinner me-2"></div>Loading Data Management...</div>';
             
-            fetch('/templates/csv_management_section.html')
+            fetch('/admin/sections/csv-management')
                 .then(response => response.text())
                 .then(html => {
                     content.innerHTML = html;
@@ -1789,7 +1801,7 @@
             const content = document.getElementById('dynamic-content');
             content.innerHTML = '<div class="text-center py-5"><div class="loading-spinner me-2"></div>Loading Service Management...</div>';
             
-            fetch('/templates/service_management_section.html')
+            fetch('/admin/sections/service_management')
                 .then(response => response.text())
                 .then(html => {
                     content.innerHTML = html;
