@@ -811,8 +811,102 @@ function loadEmailStatistics() {
         }
     })
     .catch(error => {
-        console.log('Email statistics not available');
+        console.log('Email statistics not available:', error);
+        // Set default values if API fails
+        document.getElementById('emailsSent').textContent = '0';
+        document.getElementById('openRate').textContent = '-';
+        document.getElementById('clickRate').textContent = '-';
+        document.getElementById('totalSubscribers').textContent = '0';
     });
+}
+
+// Initialize multi-select for recipients
+function initializeRecipientSelect() {
+    const selectElement = document.getElementById('emailTo');
+    if (selectElement) {
+        // Enable multiple selection
+        selectElement.setAttribute('multiple', 'multiple');
+        
+        // Add event listener for selection changes
+        selectElement.addEventListener('change', function() {
+            const selectedOptions = Array.from(this.selectedOptions);
+            const selectedValues = selectedOptions.map(option => option.value);
+            console.log('Selected recipients:', selectedValues);
+        });
+    }
+}
+
+// Form validation
+function validateEmailForm() {
+    const recipients = document.getElementById('emailTo').value;
+    const subject = document.getElementById('emailSubject').value;
+    const content = document.getElementById('emailContent').value;
+    
+    const errors = [];
+    
+    if (!recipients || recipients.length === 0) {
+        errors.push('Please select at least one recipient group');
+    }
+    
+    if (!subject.trim()) {
+        errors.push('Please enter an email subject');
+    }
+    
+    if (!content.trim()) {
+        errors.push('Please enter email content');
+    }
+    
+    if (subject.length > 100) {
+        errors.push('Subject line should be under 100 characters');
+    }
+    
+    return errors;
+}
+
+// Auto-save draft functionality
+function startAutoSave() {
+    setInterval(() => {
+        const form = document.getElementById('emailForm');
+        if (form) {
+            const subject = document.getElementById('emailSubject').value;
+            const content = document.getElementById('emailContent').value;
+            
+            if (subject.trim() || content.trim()) {
+                const draftData = {
+                    subject: subject,
+                    content: content,
+                    recipients: document.getElementById('emailTo').value,
+                    template: document.getElementById('emailTemplate').value,
+                    timestamp: new Date().toISOString()
+                };
+                
+                localStorage.setItem('email_auto_draft', JSON.stringify(draftData));
+                console.log('Auto-saved draft');
+            }
+        }
+    }, 30000); // Auto-save every 30 seconds
+}
+
+// Load auto-saved draft
+function loadAutoSavedDraft() {
+    const draft = localStorage.getItem('email_auto_draft');
+    if (draft) {
+        try {
+            const draftData = JSON.parse(draft);
+            const confirmLoad = confirm('Found an auto-saved draft. Would you like to restore it?');
+            
+            if (confirmLoad) {
+                document.getElementById('emailSubject').value = draftData.subject || '';
+                document.getElementById('emailContent').value = draftData.content || '';
+                if (draftData.template) {
+                    document.getElementById('emailTemplate').value = draftData.template;
+                }
+                showNotification('Auto-saved draft restored', 'success');
+            }
+        } catch (error) {
+            console.error('Error loading auto-saved draft:', error);
+        }
+    }
 }
 
 function sendEmail() {
