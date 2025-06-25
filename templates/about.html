@@ -177,18 +177,24 @@
 <section class="about-hero">
     <div class="container">
         <div class="row justify-content-center text-center">
-            <div class="col-lg-8">
-                <h1 class="display-4 fw-bold mb-4">About SPANKKS Construction</h1>
-                <p class="lead mb-4">A husband and wife team providing professional construction services in Honolulu, Hawaii. We're your neighbors, committed to quality work and honest service.</p>
-                <div class="d-flex justify-content-center">
-                    <div class="me-4">
-                        <i class="fas fa-certificate fa-lg me-2"></i>Licensed
+            <div class="col-lg-10">
+                <h1 class="display-4 fw-bold mb-4">Meet the SPANKKS Team</h1>
+                <p class="lead mb-4">We're a husband and wife construction team serving Honolulu families with honest work, fair prices, and island-style service that treats your home like our own.</p>
+                <div class="row mt-5">
+                    <div class="col-md-4">
+                        <i class="fas fa-home fa-3x text-primary mb-3"></i>
+                        <h5>Honolulu Local</h5>
+                        <p>Born and raised in Hawaii, we understand island living</p>
                     </div>
-                    <div class="me-4">
-                        <i class="fas fa-shield-alt fa-lg me-2"></i>Insured
+                    <div class="col-md-4">
+                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                        <h5>Family Business</h5>
+                        <p>Husband and wife team with personal service</p>
                     </div>
-                    <div>
-                        <i class="fas fa-heart fa-lg me-2"></i>Local
+                    <div class="col-md-4">
+                        <i class="fas fa-tools fa-3x text-primary mb-3"></i>
+                        <h5>Quality Work</h5>
+                        <p>Licensed, insured, and committed to excellence</p>
                     </div>
                 </div>
             </div>
@@ -199,45 +205,46 @@
 <!-- Our Story -->
 <section class="story-section">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <div class="story-content">
-                    <h2 class="section-title text-center">Our Story</h2>
-                    <p class="lead text-center mb-4">Born in Hawaii, built for Hawaii homes.</p>
-                    
-                    <p>SPANKKS Construction is a family-owned business run by a husband and wife team in Honolulu, Hawaii. We started with a simple mission: provide honest, reliable construction services to Hawaii families. We understand the unique challenges of island living – from salt air corrosion to limited material availability – and we've built our expertise around these realities.</p>
-                    
-                    <p>As a small business, we take pride in personal service and attention to detail. What sets us apart isn't just our technical skills, but our commitment to education. Through SPANKKS SKOOL, we empower homeowners with the knowledge to handle basic repairs safely, while knowing when to call the professionals.</p>
-                    
-                    <p>Every project we take on is approached with the same care we'd give our own homes. We're not just building repairs – we're building relationships that last in our island community.</p>
-                    
-                    <div class="row mt-5">
-                        <div class="col-md-4 text-center">
-                            <h3 class="text-primary">Family</h3>
-                            <p class="mb-0">Owned & Operated</p>
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="section-title">Our Hawaii Story</h2>
+                <p class="lead">Small business, big hearts, quality work.</p>
+                
+                <p>SPANKKS Construction started in our garage with a simple idea: Honolulu families deserve honest construction work at fair prices. As a husband and wife team, we bring different strengths to every project – attention to detail, customer service, and the kind of craftsmanship that makes island homes last.</p>
+                
+                <p>Living in Hawaii means dealing with unique challenges – salt air, limited shipping, and the high cost of materials. We've learned how to work smart, source locally when possible, and always find solutions that fit your budget and timeline.</p>
+                
+                <p>What started as weekend projects for friends and family has grown into a small business we're proud of. We still answer our own phone, show up when we say we will, and treat every home like it's our own.</p>
+                
+                <div class="mt-4">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong class="text-primary">{{ stats.total_projects }}</strong><br>
+                            <small>Happy Customers</small>
                         </div>
-                        <div class="col-md-4 text-center">
-                            <h3 class="text-primary">{{ stats.total_projects }}</h3>
-                            <p class="mb-0">Projects Completed</p>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <h3 class="text-primary">Local</h3>
-                            <p class="mb-0">Honolulu Business</p>
+                        <div class="col-6">
+                            <strong class="text-primary">Local</strong><br>
+                            <small>Honolulu Owned</small>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="story-image">
+                    <img src="{{ url_for('static', filename='images/spankks-fence-hero.png') }}" alt="SPANKKS Construction team at work" class="img-fluid rounded shadow">
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Our Values -->
+<!-- What We Do -->
 <section class="values-section">
     <div class="container">
         <div class="row">
             <div class="col-12 text-center mb-5">
-                <h2 class="section-title">Our Values</h2>
-                <p class="lead">The principles that guide everything we do</p>
+                <h2 class="section-title">How We Work</h2>
+                <p class="lead">Island-style service with mainland quality</p>
             </div>
         </div>
         
@@ -245,9 +252,9 @@
             <div class="col-lg-4 col-md-6">
                 <div class="value-card">
                     <div class="value-icon">
-                        <i class="fas fa-handshake"></i>
+                        <i class="fas fa-phone"></i>
                     </div>
-                    <h4>Integrity</h4>
+                    <h4>We Answer</h4>
                     <p>Honest pricing, transparent communication, and standing behind our work with guarantees you can trust.</p>
                 </div>
             </div>
