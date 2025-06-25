@@ -999,6 +999,93 @@ def api_service_types():
         logging.error(f"API service types error: {e}")
         return jsonify([])
 
+# Data Management API Endpoints
+@app.route('/api/csv/stats')
+def api_csv_stats():
+    """Get CSV export statistics"""
+    try:
+        with db.engine.connect() as conn:
+            # Get counts for different data types
+            contacts_count = conn.execute(db.text("SELECT COUNT(*) FROM contacts")).scalar() or 0
+            quotes_count = conn.execute(db.text("SELECT COUNT(*) FROM quotes")).scalar() or 0
+            invoices_count = conn.execute(db.text("SELECT COUNT(*) FROM invoices")).scalar() or 0
+            clients_count = conn.execute(db.text("SELECT COUNT(*) FROM clients")).scalar() or 0
+            
+            return jsonify({
+                'contacts': contacts_count,
+                'quotes': quotes_count,
+                'invoices': invoices_count,
+                'clients': clients_count,
+                'total': contacts_count + quotes_count + invoices_count + clients_count
+            })
+    except Exception as e:
+        logging.error(f"CSV stats error: {e}")
+        return jsonify({'contacts': 0, 'quotes': 0, 'invoices': 0, 'clients': 0, 'total': 0})
+
+@app.route('/api/contacts')
+def api_contacts():
+    """Get contacts data"""
+    try:
+        with db.engine.connect() as conn:
+            result = conn.execute(db.text("""
+                SELECT contact_id, name, email, phone, message, created_at
+                FROM contacts
+                ORDER BY created_at DESC
+            """))
+            contacts = [dict(row._mapping) for row in result]
+            return jsonify(contacts)
+    except Exception as e:
+        logging.error(f"API contacts error: {e}")
+        return jsonify([])
+
+@app.route('/api/quotes')
+def api_quotes():
+    """Get quotes data"""
+    try:
+        with db.engine.connect() as conn:
+            result = conn.execute(db.text("""
+                SELECT quote_id, client_id, service_type, total_amount, status, created_at
+                FROM quotes
+                ORDER BY created_at DESC
+            """))
+            quotes = [dict(row._mapping) for row in result]
+            return jsonify(quotes)
+    except Exception as e:
+        logging.error(f"API quotes error: {e}")
+        return jsonify([])
+
+@app.route('/api/invoices')
+def api_invoices():
+    """Get invoices data"""
+    try:
+        with db.engine.connect() as conn:
+            result = conn.execute(db.text("""
+                SELECT invoice_id, client_id, amount_due, status, created_at, due_date
+                FROM invoices
+                ORDER BY created_at DESC
+            """))
+            invoices = [dict(row._mapping) for row in result]
+            return jsonify(invoices)
+    except Exception as e:
+        logging.error(f"API invoices error: {e}")
+        return jsonify([])
+
+@app.route('/api/staff/enhanced')
+def api_staff_enhanced():
+    """Get enhanced staff data"""
+    try:
+        with db.engine.connect() as conn:
+            result = conn.execute(db.text("""
+                SELECT staff_id, name, email, role, phone
+                FROM staff
+                ORDER BY name
+            """))
+            staff = [dict(row._mapping) for row in result]
+            return jsonify(staff)
+    except Exception as e:
+        logging.error(f"API staff enhanced error: {e}")
+        return jsonify([])
+
 @app.route('/api/dashboard/stats')
 def api_dashboard_stats():
     """API endpoint for dashboard statistics"""
