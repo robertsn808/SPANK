@@ -146,27 +146,28 @@
                     <div class="metric-item">
                         <div class="metric-label">Quote Conversion Rate</div>
                         <div class="metric-value">
-                            <span class="percentage">65%</span>
+                            <span class="percentage">{{ stats.kpis.conversion_rate|default(0) }}%</span>
                             <div class="progress">
-                                <div class="progress-bar bg-success" style="width: 65%"></div>
+                                <div class="progress-bar bg-success" style="width: {{ stats.kpis.conversion_rate|default(0) }}%"></div>
                             </div>
                         </div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-label">Customer Satisfaction</div>
+                        <div class="metric-label">Average Job Value</div>
                         <div class="metric-value">
-                            <span class="percentage">92%</span>
+                            <span class="percentage">${{ "%.0f"|format(stats.kpis.avg_job_value|default(0)) }}</span>
                             <div class="progress">
-                                <div class="progress-bar bg-primary" style="width: 92%"></div>
+                                <div class="progress-bar bg-primary" style="width: {{ ((stats.kpis.avg_job_value|default(0)) / 50)|round }}%"></div>
                             </div>
                         </div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-label">Staff Utilization</div>
+                        <div class="metric-label">Business Health</div>
                         <div class="metric-value">
-                            <span class="percentage">78%</span>
+                            {% set health_score = ((stats.overview.active_jobs * 10) + (stats.kpis.conversion_rate|default(0))) %}
+                            <span class="percentage">{{ health_score|round }}%</span>
                             <div class="progress">
-                                <div class="progress-bar bg-warning" style="width: 78%"></div>
+                                <div class="progress-bar bg-{{ 'success' if health_score > 80 else 'warning' if health_score > 50 else 'danger' }}" style="width: {{ health_score|round }}%"></div>
                             </div>
                         </div>
                     </div>

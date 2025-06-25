@@ -110,8 +110,8 @@ def admin_home_redirect():
 def get_dashboard_stats():
     """Get comprehensive dashboard statistics using existing services"""
     try:
-        # Use JSON data source since database models don't match expected structure
-        use_database = False
+        # Use PostgreSQL database for authentic business data
+        use_database = True
         
         # Initialize base stats structure
         stats = {
@@ -141,8 +141,98 @@ def get_dashboard_stats():
             ]
         }
         
-        # Load data from JSON files (authentic business data)
-        if storage_service:
+        # Load authentic business data from PostgreSQL database
+        if use_database:
+            try:
+                from config.app import db
+                
+                # Query authentic PostgreSQL data directly using SQL
+                with db.engine.connect() as conn:
+                    # Get invoice data for revenue calculations
+                    invoice_result = conn.execute(db.text("""
+                        SELECT status, total AS total_amount, payment_date 
+                        FROM invoices 
+                        ORDER BY created_at DESC
+                    """))
+                    invoices_db = [dict(row._mapping) for row in invoice_result]
+                    
+                    # Get quotes data
+                    quotes_result = conn.execute(db.text("""
+                        SELECT quote_id, status, total AS total_amount, created_at, client_id
+                        FROM quotes 
+                        ORDER BY created_at DESC
+                    """))
+                    quotes_db = [dict(row._mapping) for row in quotes_result]
+                    
+                    # Get jobs data
+                    jobs_result = conn.execute(db.text("""
+                        SELECT job_id, status, service_type, scheduled_date, client_id
+                        FROM jobs 
+                        ORDER BY timestamp_created DESC
+                    """))
+                    jobs_db = [dict(row._mapping) for row in jobs_result]
+                    
+                    # Get client names for recent activity
+                    clients_result = conn.execute(db.text("""
+                        SELECT client_id, name 
+                        FROM clients
+                    """))
+                    clients_lookup = {row.client_id: row.name for row in clients_result}
+                
+                # Calculate metrics from database data
+                paid_invoices = [i for i in invoices_db if i.get('status') == 'paid']
+                stats['overview']['total_revenue'] = sum(float(i.get('total_amount', 0)) for i in paid_invoices)
+                stats['overview']['active_jobs'] = len([j for j in jobs_db if j.get('status') in ['scheduled', 'in_progress']])
+                stats['overview']['pending_quotes'] = len([q for q in quotes_db if q.get('status') == 'pending'])
+                stats['overview']['overdue_invoices'] = len([i for i in invoices_db if i.get('status') == 'overdue'])
+                
+                # Recent activity from database
+                recent_activity = []
+                
+                # Add recent quotes with client names
+                for quote in quotes_db[:3]:
+                    client_name = clients_lookup.get(quote.get('client_id'), 'Unknown Client')
+                    recent_activity.append({
+                        'action': f"Quote {quote.get('quote_id', 'Unknown')} generated for {client_name}",
+                        'time': quote.get('created_at', '').split('T')[0] if quote.get('created_at') else 'Recently',
+                        'type': 'quote'
+                    })
+                
+                # Add recent payments
+                for payment in paid_invoices[:2]:
+                    recent_activity.append({
+                        'action': f"Payment received ${payment.get('total_amount', 0)}",
+                        'time': payment.get('payment_date', '').split('T')[0] if payment.get('payment_date') else 'Recently',
+                        'type': 'payment'
+                    })
+                
+                stats['recent_activity'] = recent_activity[:5]
+                
+                # Calculate authentic KPIs from database
+                if quotes_db:
+                    accepted_quotes = len([q for q in quotes_db if q.get('status') == 'accepted'])
+                    conversion_rate = (accepted_quotes / len(quotes_db)) * 100
+                    stats['kpis']['conversion_rate'] = round(conversion_rate, 1)
+                
+                if paid_invoices:
+                    avg_value = sum(float(i.get('total_amount', 0)) for i in paid_invoices) / len(paid_invoices)
+                    stats['kpis']['avg_job_value'] = round(avg_value, 2)
+                
+                # Get upcoming jobs
+                upcoming_jobs = [j for j in jobs_db if j.get('status') == 'scheduled'][:3]
+                stats['upcoming_jobs'] = [{
+                    'client': clients_lookup.get(job.get('client_id'), 'Unknown'),
+                    'service': job.get('service_type', 'Service'),
+                    'date': job.get('scheduled_date', '').split('T')[0] if job.get('scheduled_date') else 'TBD',
+                    'status': job.get('status', 'scheduled')
+                } for job in upcoming_jobs]
+                
+            except Exception as db_error:
+                logging.error(f"Database query error: {db_error}")
+                use_database = False
+        
+        # Fallback to JSON only if database fails
+        if not use_database and storage_service:
             try:
                 invoices = storage_service.load_data('invoices.json') or []
                 quotes = storage_service.load_data('quotes.json') or []
