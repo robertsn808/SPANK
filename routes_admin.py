@@ -901,7 +901,7 @@ def admin_invoices():
                              payments=payments)
     except Exception as e:
         logging.error(f"Invoice page error: {e}")
-        flash('Error loading invoices', 'error')
+        flash('Error loading invoices and payments', 'error')
         return redirect('/admin-home')
 
 
