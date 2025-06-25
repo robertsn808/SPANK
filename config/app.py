@@ -53,11 +53,5 @@ with app.app_context():
     import models.models_db  # noqa: F401
     db.create_all()
 
-# Import routes after app creation to avoid circular imports
-try:
-    from routes import *
-    # Only log to file, not to console on public pages
-    logging.info("App initialized successfully")
-except ImportError as e:
-    logging.error(f"Route import error: {e}")
-    logging.error("App initialization failed - check dependencies")
+# Routes will be imported in main.py to avoid circular imports
+logging.info("App initialized successfully")

@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 import uuid
 import pytz
+from utils import phone_formatter
 
 # Import fallback services and models
 try:
@@ -29,7 +30,7 @@ except ImportError:
     storage_service = None
     logging.warning("Storage service not available")
 
-# Set non-existent modules to None (documented in replit.md)
+# Initialize services with proper fallback handling
 reminder_service = None
 real_time_scheduler = None
 job_tracking_service = None
@@ -38,17 +39,22 @@ mailerlite_service = None
 inventory_service = None
 medium_priority_service = None
 checklist_service = None
-handyman_storage = HandymanStorage() if 'HandymanStorage' in globals() else None
 notification_service = None
-file_storage = storage_service
 unified_scheduler = None
+
+# Initialize handyman storage
+try:
+    handyman_storage = HandymanStorage()
+except:
+    handyman_storage = None
+    logging.warning("HandymanStorage not available")
+
+# Set file storage
+file_storage = storage_service
 
 logging.info("All services initialized successfully")
 
-# Get app instance after imports to avoid circular import
-def get_app():
-    from config.app import app
-    return app
+# App is imported directly from config.app at module level
 
 # Additional storage for appointments and staff
 appointments = []
