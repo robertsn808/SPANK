@@ -896,7 +896,12 @@
                     e.preventDefault();
                     const section = this.dataset.section;
                     if (section) {
-                        showSection(section);
+                        // Update active nav link
+                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        // Load the section content
+                        loadSection(section);
                     }
                 });
             });
