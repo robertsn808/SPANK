@@ -1,0 +1,415 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Dashboard Overview - SPANKKS Construction Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --spankks-primary: #1a5f3f;
+        --spankks-secondary: #ffd700;
+        --spankks-dark: #343a40;
+        --spankks-light: #f8f9fa;
+    }
+    
+    .dashboard-container {
+        background: var(--spankks-light);
+        min-height: 100vh;
+    }
+    
+    .dashboard-header {
+        background: var(--spankks-primary);
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .overview-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border-left: 5px solid var(--spankks-primary);
+    }
+    
+    .metric-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .metric-icon {
+        font-size: 2rem;
+        color: var(--spankks-primary);
+        margin-bottom: 1rem;
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--spankks-dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .metric-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .quick-actions {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .action-btn {
+        background: var(--spankks-primary);
+        color: white;
+        border: none;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        margin: 0.5rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+    
+    .action-btn:hover {
+        background: #145a34;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .recent-activity {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-top: 2rem;
+    }
+    
+    .activity-item {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+    }
+    
+    .activity-icon {
+        background: var(--spankks-secondary);
+        color: var(--spankks-dark);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-0">
+                        <i class="fas fa-tachometer-alt me-3"></i>
+                        SPANKKS Construction Admin Dashboard
+                    </h1>
+                    <p class="mb-0 mt-2">Comprehensive business management portal</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="d-flex justify-content-end">
+                        <a href="{{ url_for('public_home') }}" class="btn btn-outline-light me-2">
+                            <i class="fas fa-home me-2"></i>Public Site
+                        </a>
+                        <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Overview Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="metric-value" id="appointments-today">-</div>
+                    <div class="metric-label">Appointments Today</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <div class="metric-value" id="pending-quotes">-</div>
+                    <div class="metric-label">Pending Quotes</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="metric-value" id="monthly-revenue">-</div>
+                    <div class="metric-label">Monthly Revenue</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="metric-value" id="active-clients">-</div>
+                    <div class="metric-label">Active Clients</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Sections -->
+        <div class="row">
+            <!-- Core Business Tools -->
+            <div class="col-lg-4 mb-4">
+                <div class="overview-card">
+                    <h4 class="mb-4">
+                        <i class="fas fa-tools me-2 text-primary"></i>
+                        Core Business
+                    </h4>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('admin_dashboard') }}" class="action-btn">
+                            <i class="fas fa-calendar-week me-2"></i>
+                            Weekly Schedule
+                        </a>
+                        
+                        <a href="#" onclick="loadQuoteBuilder()" class="action-btn">
+                            <i class="fas fa-calculator me-2"></i>
+                            Quote Builder
+                        </a>
+                        
+                        <a href="#" onclick="loadInvoiceGenerator()" class="action-btn">
+                            <i class="fas fa-file-invoice me-2"></i>
+                            Invoice Generator
+                        </a>
+                        
+                        <a href="#" onclick="loadCRM()" class="action-btn">
+                            <i class="fas fa-address-book me-2"></i>
+                            Customer Management
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operations -->
+            <div class="col-lg-4 mb-4">
+                <div class="overview-card">
+                    <h4 class="mb-4">
+                        <i class="fas fa-cogs me-2 text-success"></i>
+                        Operations
+                    </h4>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="#" onclick="loadStaffManagement()" class="action-btn">
+                            <i class="fas fa-users-cog me-2"></i>
+                            Staff Management
+                        </a>
+                        
+                        <a href="#" onclick="loadInventoryDashboard()" class="action-btn">
+                            <i class="fas fa-boxes me-2"></i>
+                            Inventory Dashboard
+                        </a>
+                        
+                        <a href="#" onclick="loadChecklistManagement()" class="action-btn">
+                            <i class="fas fa-tasks me-2"></i>
+                            Job Checklists
+                        </a>
+                        
+                        <a href="#" onclick="loadPhotoManagement()" class="action-btn">
+                            <i class="fas fa-camera me-2"></i>
+                            Photo Management
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics & Reports -->
+            <div class="col-lg-4 mb-4">
+                <div class="overview-card">
+                    <h4 class="mb-4">
+                        <i class="fas fa-chart-line me-2 text-info"></i>
+                        Analytics & Reports
+                    </h4>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="#" onclick="loadBusinessIntelligence()" class="action-btn">
+                            <i class="fas fa-brain me-2"></i>
+                            Business Intelligence
+                        </a>
+                        
+                        <a href="#" onclick="loadFinancialReports()" class="action-btn">
+                            <i class="fas fa-chart-pie me-2"></i>
+                            Financial Reports
+                        </a>
+                        
+                        <a href="#" onclick="loadPerformanceMonitor()" class="action-btn">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Performance Monitor
+                        </a>
+                        
+                        <a href="#" onclick="loadDataExport()" class="action-btn">
+                            <i class="fas fa-download me-2"></i>
+                            Data Export
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="recent-activity">
+            <h4 class="mb-4">
+                <i class="fas fa-clock me-2"></i>
+                Recent Activity
+            </h4>
+            
+            <div id="recent-activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div>
+                        <strong>New Customer Inquiry</strong>
+                        <p class="mb-0 text-muted">Loading recent activity...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load dashboard metrics
+    loadDashboardMetrics();
+    loadRecentActivity();
+    
+    // Refresh metrics every 5 minutes
+    setInterval(loadDashboardMetrics, 300000);
+});
+
+async function loadDashboardMetrics() {
+    try {
+        const response = await fetch('/api/dashboard/metrics');
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('appointments-today').textContent = data.metrics.appointments_today || '0';
+            document.getElementById('pending-quotes').textContent = data.metrics.pending_quotes || '0';
+            document.getElementById('monthly-revenue').textContent = '$' + (data.metrics.monthly_revenue || '0');
+            document.getElementById('active-clients').textContent = data.metrics.active_clients || '0';
+        }
+    } catch (error) {
+        console.error('Error loading dashboard metrics:', error);
+    }
+}
+
+async function loadRecentActivity() {
+    try {
+        const response = await fetch('/api/dashboard/activity');
+        const data = await response.json();
+        
+        if (data.success && data.activities) {
+            const activityList = document.getElementById('recent-activity-list');
+            activityList.innerHTML = '';
+            
+            data.activities.forEach(activity => {
+                const activityItem = document.createElement('div');
+                activityItem.className = 'activity-item';
+                activityItem.innerHTML = `
+                    <div class="activity-icon">
+                        <i class="${activity.icon}"></i>
+                    </div>
+                    <div>
+                        <strong>${activity.title}</strong>
+                        <p class="mb-0 text-muted">${activity.description}</p>
+                        <small class="text-muted">${activity.timestamp}</small>
+                    </div>
+                `;
+                activityList.appendChild(activityItem);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading recent activity:', error);
+    }
+}
+
+// Navigation functions
+function loadQuoteBuilder() {
+    window.location.href = '/admin/quote-builder';
+}
+
+function loadInvoiceGenerator() {
+    window.location.href = '/admin/invoice-generator';
+}
+
+function loadCRM() {
+    window.location.href = '/admin/crm';
+}
+
+function loadStaffManagement() {
+    window.location.href = '/admin/staff-management';
+}
+
+function loadInventoryDashboard() {
+    window.location.href = '/admin/inventory';
+}
+
+function loadChecklistManagement() {
+    window.location.href = '/admin/checklists';
+}
+
+function loadPhotoManagement() {
+    window.location.href = '/admin/photos';
+}
+
+function loadBusinessIntelligence() {
+    window.location.href = '/admin/business-intelligence';
+}
+
+function loadFinancialReports() {
+    window.location.href = '/admin/financial-reports';
+}
+
+function loadPerformanceMonitor() {
+    window.location.href = '/admin/performance-monitor';
+}
+
+function loadDataExport() {
+    window.location.href = '/admin/data-export';
+}
+</script>
+{% endblock %}

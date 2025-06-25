@@ -206,7 +206,7 @@ def get_hawaii_time():
 from config.app import app
 
 @app.route('/admin-home')
-def admin_index():
+def admin_home_redirect():
     """Admin homepage - redirects to dashboard"""
     return redirect(url_for('admin_dashboard'))
 
@@ -651,7 +651,7 @@ def ai_leads():
                          urgent_requests=urgent_requests)
 
 @app.route('/admin/')
-def admin_index():
+def admin_dashboard_main():
     """Admin portal homepage - redirect to dashboard"""
     return redirect(url_for('admin_dashboard'))
 
@@ -8267,7 +8267,7 @@ def auto_convert_contact_to_client(contact_email, contact_phone, contact_name, s
         logging.error(f"Error in auto-conversion: {e}")
         return None
 
-@app.route('/templates/crm_section.html')
+@app.route('/templates/admin/sections/crm_section.html')
 def serve_crm_section():
     """Serve CRM section template with contact data"""
     if not session.get('admin_logged_in'):
@@ -8365,31 +8365,31 @@ def serve_crm_section():
                     pass
         
         logging.info(f"CRM: Loading {len(contacts)} contacts from 2 data sources with complete profiles")
-        return render_template('crm_section.html', contacts=contacts)
+        return render_template('admin/sections/crm_section.html', contacts=contacts)
     except Exception as e:
         logging.error(f"Error serving CRM section: {e}")
         return jsonify({'error': 'Template error'}), 500
 
-@app.route('/templates/business_contacts_section.html')
+@app.route('/templates/admin/sections/business_contacts_section.html')
 def serve_business_contacts_section():
     """Serve business contacts section for operations"""
     if not session.get('admin_logged_in'):
         return jsonify({'error': 'Admin authentication required'}), 401
     
     try:
-        return render_template('business_contacts_section.html')
+        return render_template('admin/sections/business_contacts_section.html')
     except Exception as e:
         logging.error(f"Error serving business contacts section: {e}")
         return "Template error", 404
 
-@app.route('/templates/service_management_section.html')
+@app.route('/templates/admin/sections/service_management_section.html')
 def serve_service_management_section():
     """Serve service management section"""
     if not session.get('admin_logged_in'):
         return jsonify({'error': 'Admin authentication required'}), 401
     
     try:
-        return render_template('service_management_section.html')
+        return render_template('admin/sections/service_management_section.html')
     except Exception as e:
         logging.error(f"Error serving service management section: {e}")
         return "Template error", 404
@@ -8401,7 +8401,7 @@ def serve_csv_management_section():
         return jsonify({'error': 'Admin authentication required'}), 401
     
     try:
-        return render_template('csv_management_section.html')
+        return render_template('admin/sections/csv_management_section.html')
     except Exception as e:
         logging.error(f"Error serving CSV management section: {e}")
         return "Template error", 404
@@ -8413,7 +8413,7 @@ def serve_portal_section():
         return jsonify({'error': 'Admin authentication required'}), 401
     
     try:
-        return render_template('portal_section.html')
+        return render_template('admin/sections/portal_section.html')
     except Exception as e:
         logging.error(f"Error serving portal section: {e}")
         return "Template error", 404
