@@ -246,8 +246,8 @@ def test_email_interface():
     """Email testing interface for SPANK Buck rewards"""
     return render_template('test_email.html')
 
-@app.route('/consultation', methods=['GET', 'POST'])
-def consultation():
+@app.route('/admin-consultation', methods=['GET', 'POST'])
+def admin_consultation():
     """Consultation booking page"""
     if request.method == 'POST':
         # Get form data
@@ -1202,8 +1202,8 @@ def complete_course():
         logging.error(f"Error processing course completion: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/form-confirmation')
-def form_confirmation():
+@app.route('/admin-form-confirmation')
+def admin_form_confirmation():
     """Form confirmation page"""
     form_type = request.args.get('form_type', 'contact')
     customer_name = request.args.get('customer_name', '')
