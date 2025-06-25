@@ -916,7 +916,21 @@
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Dashboard initializing...');
+            console.log('=== SPANKKS Dashboard Starting ===');
+            
+            // Check required elements exist
+            const dashboardSection = document.getElementById('dashboard-section');
+            const dynamicContent = document.getElementById('dynamic-content');
+            const sidebar = document.querySelector('.sidebar');
+            
+            console.log('Dashboard section found:', !!dashboardSection);
+            console.log('Dynamic content found:', !!dynamicContent);
+            console.log('Sidebar found:', !!sidebar);
+            
+            if (!dashboardSection || !dynamicContent || !sidebar) {
+                console.error('Critical elements missing - navigation will not work');
+                return;
+            }
             
             // Initialize navigation FIRST
             initializeNavigation();
@@ -933,7 +947,7 @@
             // Show dashboard by default
             showSection('dashboard');
             
-            console.log('Dashboard initialization complete');
+            console.log('=== Dashboard initialization complete ===');
         });
         
         function setupNavigationSystem() {
@@ -942,36 +956,50 @@
         }
         
         function initializeNavigation() {
-            console.log('Initializing navigation system...');
+            console.log('=== Initializing Navigation System ===');
             
-            // Get all navigation links with data-section attributes
-            const navLinks = document.querySelectorAll('.nav-link[data-section]');
-            console.log('Found', navLinks.length, 'navigation links');
-            
-            navLinks.forEach(link => {
-                const section = link.getAttribute('data-section');
-                console.log('Setting up navigation for section:', section);
+            // Wait for DOM to be fully ready
+            setTimeout(() => {
+                // Get all navigation links with data-section attributes
+                const navLinks = document.querySelectorAll('.nav-link[data-section]');
+                console.log('Found navigation links:', navLinks.length);
                 
-                // Remove any existing event listeners by cloning
-                const newLink = link.cloneNode(true);
-                link.parentNode.replaceChild(newLink, link);
+                if (navLinks.length === 0) {
+                    console.error('No navigation links found with data-section attributes');
+                    return;
+                }
                 
-                // Add click event listener
-                newLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Navigation clicked for section:', section);
-                    showSection(section);
+                navLinks.forEach((link, index) => {
+                    const section = link.getAttribute('data-section');
+                    console.log(`Link ${index + 1}: Section "${section}"`);
                     
-                    // Close mobile sidebar on selection
-                    const sidebar = document.querySelector('.sidebar');
-                    if (sidebar && window.innerWidth <= 768) {
-                        sidebar.classList.remove('show');
+                    // Remove existing event listeners by cloning
+                    const newLink = link.cloneNode(true);
+                    if (link.parentNode) {
+                        link.parentNode.replaceChild(newLink, link);
+                        
+                        // Add fresh click event listener
+                        newLink.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log(`=== NAVIGATION CLICK: ${section} ===`);
+                            showSection(section);
+                            
+                            // Close mobile sidebar
+                            const sidebar = document.querySelector('.sidebar');
+                            if (sidebar && window.innerWidth <= 768) {
+                                sidebar.classList.remove('show');
+                            }
+                        });
+                        
+                        console.log(`✓ Event listener added for: ${section}`);
+                    } else {
+                        console.error(`No parent node for link: ${section}`);
                     }
                 });
-            });
-            
-            console.log('Navigation system initialized successfully');
+                
+                console.log('=== Navigation initialization complete ===');
+            }, 100);
         }
         
         function initializeMobileToggle() {
