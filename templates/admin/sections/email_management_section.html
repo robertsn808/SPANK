@@ -617,24 +617,28 @@ body {
                 <div class="card-body p-4">
                     <form id="emailForm">
                         <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="emailTo" class="form-label">
-                                    <i class="fas fa-users me-2 text-primary"></i>Recipients
+                            <div class="col-md-4">
+                                <label for="clientEmail" class="form-label">
+                                    <i class="fas fa-user me-2 text-primary"></i>Client Email
                                 </label>
-                                <select class="form-select" id="emailTo" multiple>
-                                    <option value="all_clients">📧 All Clients</option>
-                                    <option value="all_staff">👷 All Staff</option>
-                                    <option value="newsletter_subscribers">📰 Newsletter Subscribers</option>
-                                    <option value="recent_customers">🆕 Recent Customers</option>
-                                </select>
-                                <small class="form-text text-muted">Hold Ctrl to select multiple groups</small>
+                                <input type="email" class="form-control" id="clientEmail" placeholder="client@example.com">
+                                <small class="form-text text-muted">Individual client email address</small>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="emailSubject" class="form-label">
                                     <i class="fas fa-envelope me-2 text-primary"></i>Subject Line
                                 </label>
-                                <input type="text" class="form-control" id="emailSubject" placeholder="Enter compelling email subject...">
-                                <small class="form-text text-muted">Keep it under 50 characters for best results</small>
+                                <input type="text" class="form-control" id="emailSubject" placeholder="Enter email subject...">
+                                <small class="form-text text-muted">Keep it clear and professional</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="automationGroup" class="form-label">
+                                    <i class="fas fa-cogs me-2 text-primary"></i>Add to Group
+                                </label>
+                                <select class="form-select" id="automationGroup">
+                                    <option value="">No automation group</option>
+                                </select>
+                                <small class="form-text text-muted">Trigger MailerLite automation</small>
                             </div>
                         </div>
                         

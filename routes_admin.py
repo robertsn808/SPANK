@@ -1121,7 +1121,7 @@ def api_email_history():
 
 @app.route('/api/admin/send-email-campaign', methods=['POST'])
 def api_send_email_campaign():
-    """Send email campaign"""
+    """Send email campaign via MailerLite"""
     try:
         from services.email_service import EmailService
         email_service = EmailService()
@@ -1142,7 +1142,7 @@ def api_send_email_campaign():
         if isinstance(recipients, str):
             recipients = [recipients]
         
-        # Get subscriber segments
+        # Get subscriber segments from MailerLite
         segments = email_service.get_subscriber_segments()
         
         # Calculate total recipients
@@ -1150,32 +1150,48 @@ def api_send_email_campaign():
         for recipient_group in recipients:
             total_recipients += segments.get(recipient_group, 0)
         
-        # Send via MailerLite
-        # Get actual subscriber segments from MailerLite
+        # Send individual emails via MailerLite
+        sent_count = 0
+        failed_count = 0
         
-        # Log the email campaign
-        campaign_result = email_service.create_campaign({
-            'name': f"Campaign - {data['subject']}",
-            'template_id': data.get('template_id'),
-            'target_segment': ','.join(recipients),
-            'scheduled_for': None,
-            'total_recipients': total_recipients
-        })
-        
-        if campaign_result['success']:
-            # In production, you would:
-            # 1. Get actual email addresses from CRM for each segment
-            # 2. Send via MailerLite campaigns API
-            # 3. Track individual delivery status
+        for recipient_group in recipients:
+            # In production, get actual email addresses for the segment
+            # For now, simulate by sending to a test email per segment
             
-            # For demonstration, log the campaign
-            logging.info(f"Email campaign created: {campaign_result['campaign_id']} for {total_recipients} recipients")
+            email_result = email_service.send_email({
+                'recipient_email': f"test-{recipient_group}@spankks.com",
+                'subject': data['subject'],
+                'body': data['content'],
+                'type': 'campaign',
+                'template_id': data.get('template_id'),
+                'group_id': data.get('group_id'),
+                'metadata': {
+                    'campaign_name': f"Campaign - {data['subject']}",
+                    'recipient_group': recipient_group
+                }
+            })
+            
+            if email_result.get('success'):
+                sent_count += 1
+                # Log to database
+                email_service.log_email_to_database({
+                    'recipient_email': f"test-{recipient_group}@spankks.com",
+                    'subject': data['subject'],
+                    'body': data['content'],
+                    'status': 'sent',
+                    'template_id': data.get('template_id'),
+                    'group_id': data.get('group_id'),
+                    'mailerlite_id': email_result.get('mailerlite_id')
+                })
+            else:
+                failed_count += 1
         
         return jsonify({
             'success': True,
-            'message': f'Email campaign sent to {total_recipients} recipients',
-            'campaign_id': campaign_result.get('campaign_id'),
-            'recipients_count': total_recipients
+            'message': f'Email campaign processed: {sent_count} sent, {failed_count} failed',
+            'sent_count': sent_count,
+            'failed_count': failed_count,
+            'total_recipients': total_recipients
         })
         
     except Exception as e:
@@ -1183,6 +1199,49 @@ def api_send_email_campaign():
         return jsonify({
             'success': False,
             'message': 'Failed to send email campaign'
+        }), 500
+
+@app.route('/api/admin/mailerlite-groups')
+def api_mailerlite_groups():
+    """Get MailerLite groups for automation triggers"""
+    try:
+        from services.email_service import EmailService
+        email_service = EmailService()
+        
+        groups = email_service.get_mailerlite_groups()
+        
+        return jsonify({
+            'success': True,
+            'groups': groups
+        })
+        
+    except Exception as e:
+        logging.error(f"Error fetching MailerLite groups: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Unable to fetch MailerLite groups'
+        }), 500
+
+@app.route('/api/admin/email-logs')
+def api_email_logs():
+    """Get email logs"""
+    try:
+        from services.email_service import EmailService
+        email_service = EmailService()
+        
+        limit = int(request.args.get('limit', 50))
+        logs = email_service.get_email_logs(limit=limit)
+        
+        return jsonify({
+            'success': True,
+            'logs': logs
+        })
+        
+    except Exception as e:
+        logging.error(f"Error fetching email logs: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Unable to fetch email logs'
         }), 500
 
 @app.route('/admin/quote-builder')

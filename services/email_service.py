@@ -51,7 +51,7 @@ class EmailService:
                     cursor.execute("""
                         SELECT name, total_recipients, delivered_count, opened_count, clicked_count,
                                CASE 
-                                   WHEN delivered_count > 0 THEN ROUND((opened_count::float / delivered_count) * 100, 1)
+                                   WHEN delivered_count > 0 THEN CAST(ROUND((opened_count::float / delivered_count) * 100, 1) AS DECIMAL(5,1))
                                    ELSE 0 
                                END as open_rate
                         FROM email_campaigns 
@@ -262,11 +262,42 @@ class EmailService:
                 'Accept': 'application/json'
             }
             
-            # MailerLite transactional email endpoint
-            payload = {
-                'to': data['recipient_email'],
+            # MailerLite subscriber management (for automation triggers)
+            # First, add/update subscriber
+            subscriber_payload = {
+                'email': data['recipient_email'],
+                'fields': {
+                    'name': data.get('customer_name', ''),
+                    'company': 'SPANKKS Construction Client'
+                }
+            }
+            
+            # Add to subscriber list
+            subscriber_response = requests.post(
+                f'{self.mailerlite_base_url}/subscribers',
+                headers=headers,
+                json=subscriber_payload,
+                timeout=30
+            )
+            
+            # If we have a group_id, add to automation group
+            if data.get('group_id'):
+                group_payload = {
+                    'email': data['recipient_email']
+                }
+                
+                requests.post(
+                    f"{self.mailerlite_base_url}/groups/{data['group_id']}/subscribers",
+                    headers=headers,
+                    json=group_payload,
+                    timeout=30
+                )
+            
+            # For direct email sending (requires Advanced plan)
+            email_payload = {
+                'email': data['recipient_email'],
                 'subject': data['subject'],
-                'html': data['body'].replace('\n', '<br>'),
+                'body': data['body'].replace('\n', '<br>'),
                 'from': {
                     'email': 'spank808@gmail.com',
                     'name': 'SPANKKS Construction'
@@ -274,14 +305,19 @@ class EmailService:
             }
             
             response = requests.post(
-                f'{self.mailerlite_base_url}/emails',
+                f'{self.mailerlite_base_url}/campaigns',
                 headers=headers,
-                json=payload,
+                json=email_payload,
                 timeout=30
             )
             
-            if response.status_code == 200:
-                return {'success': True, 'message': 'Email sent via MailerLite'}
+            if response.status_code in [200, 201]:
+                response_data = response.json()
+                return {
+                    'success': True, 
+                    'message': 'Email processed via MailerLite',
+                    'mailerlite_id': response_data.get('data', {}).get('id')
+                }
             else:
                 logging.error(f"MailerLite API error: {response.status_code} - {response.text}")
                 return {'success': False, 'message': f'MailerLite API error: {response.status_code}'}
@@ -317,15 +353,105 @@ class EmailService:
                 subscriber_data = subscribers_response.json()
                 subscriber_count = subscriber_data.get('meta', {}).get('total', 0)
             
+            # Get groups/segments
+            groups_response = requests.get(
+                f'{self.mailerlite_base_url}/groups',
+                headers=headers,
+                timeout=30
+            )
+            
+            groups = []
+            if groups_response.status_code == 200:
+                groups_data = groups_response.json()
+                groups = groups_data.get('data', [])
+            
             return {
                 'success': True,
                 'subscriber_count': subscriber_count,
+                'groups': groups,
                 'api_connected': True
             }
             
         except Exception as e:
             logging.error(f"Error fetching MailerLite stats: {e}")
             return {'success': False, 'message': str(e)}
+    
+    def get_mailerlite_groups(self) -> List[Dict]:
+        """Get MailerLite groups for automation triggers"""
+        if not self.mailerlite_api_key:
+            return []
+        
+        try:
+            headers = {
+                'Authorization': f'Bearer {self.mailerlite_api_key}',
+                'Accept': 'application/json'
+            }
+            
+            response = requests.get(
+                f'{self.mailerlite_base_url}/groups',
+                headers=headers,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                return data.get('data', [])
+            
+            return []
+            
+        except Exception as e:
+            logging.error(f"Error fetching MailerLite groups: {e}")
+            return []
+    
+    def log_email_to_database(self, data: Dict) -> bool:
+        """Log email to database for tracking"""
+        try:
+            with self.get_db_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("""
+                        INSERT INTO email_logs 
+                        (client_id, email, subject, body, status, mailerlite_id, group_id, template_id, metadata)
+                        VALUES (%(client_id)s, %(email)s, %(subject)s, %(body)s, %(status)s, 
+                                %(mailerlite_id)s, %(group_id)s, %(template_id)s, %(metadata)s)
+                        RETURNING id
+                    """, {
+                        'client_id': data.get('client_id'),
+                        'email': data['recipient_email'],
+                        'subject': data['subject'],
+                        'body': data['body'],
+                        'status': data.get('status', 'sent'),
+                        'mailerlite_id': data.get('mailerlite_id'),
+                        'group_id': data.get('group_id'),
+                        'template_id': data.get('template_id'),
+                        'metadata': json.dumps(data.get('metadata', {}))
+                    })
+                    
+                    log_id = cursor.fetchone()['id']
+                    conn.commit()
+                    return True
+                    
+        except Exception as e:
+            logging.error(f"Error logging email to database: {e}")
+            return False
+    
+    def get_email_logs(self, limit: int = 50) -> List[Dict]:
+        """Get email logs from database"""
+        try:
+            with self.get_db_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("""
+                        SELECT el.*, et.name as template_name
+                        FROM email_logs el
+                        LEFT JOIN email_templates et ON el.template_id = et.template_id
+                        ORDER BY el.sent_at DESC
+                        LIMIT %s
+                    """, (limit,))
+                    
+                    return [dict(log) for log in cursor.fetchall()]
+                    
+        except Exception as e:
+            logging.error(f"Error getting email logs: {e}")
+            return []
     
     def get_subscriber_segments(self) -> Dict[str, int]:
         """Get subscriber counts by segment from MailerLite"""
