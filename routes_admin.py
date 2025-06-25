@@ -856,6 +856,11 @@ def admin_data_management():
 @app.route('/admin/settings')
 def admin_settings():
     """Admin settings and configuration page"""
+    # Check admin authentication
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access the admin portal.', 'warning')
+        return redirect('/admin/login')
+    
     try:
         return render_template('admin/sections/settings_section.html')
     except Exception as e:
