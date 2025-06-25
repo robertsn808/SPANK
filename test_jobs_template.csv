@@ -1,4 +1,0 @@
-client_name,client_email,job_title,service_type,description,location,priority,status,estimated_hours,hourly_rate,materials_cost,scheduled_date,scheduled_time,completion_date,notes
-"John Smith","john.smith@email.com","Kitchen Drywall Repair","Drywall Services","Small patch repair in kitchen wall","123 Main St, Honolulu, HI 96814","medium","scheduled","3","95.00","75.50","2025-06-25","09:00","","Customer prefers eco-friendly materials"
-"Pacific Properties LLC","contact@pacificprops.com","Office Flooring Installation","Flooring Installation","Vinyl plank flooring in conference room","456 Business Ave, Pearl City, HI 96782","high","quoted","8","95.00","450.00","2025-06-26","08:00","","200 sq ft installation required"
-"Maria Rodriguez","maria.r@gmail.com","Fence Gate Repair","Fence Building","Replace broken gate latch mechanism","789 Ocean View Dr, Kaneohe, HI 96744","low","pending","2","95.00","35.00","","","","Waiting for parts delivery"

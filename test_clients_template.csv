@@ -1,4 +1,0 @@
-name,phone,email,address,city,state,zip_code,client_type,notes,preferred_contact_method
-"John Smith","(808) 555-0123","john.smith@email.com","123 Main St","Honolulu","HI","96814","residential","Regular customer, prefers morning appointments","phone"
-"Pacific Properties LLC","(808) 555-0456","contact@pacificprops.com","456 Business Ave","Pearl City","HI","96782","commercial","Property management company","email"
-"Maria Rodriguez","(808) 555-0789","maria.r@gmail.com","789 Ocean View Dr","Kaneohe","HI","96744","residential","Vacation rental owner","email"
