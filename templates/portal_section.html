@@ -1,0 +1,74 @@
+<div class="content-card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-user-circle me-2"></i>Client Portal Management</h3>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <p class="text-muted">Manage client portal access and settings for SPANKKS Construction customers.</p>
+                <div class="d-flex gap-2 mb-3">
+                    <button class="btn btn-spankks" onclick="window.open('/portal', '_blank')">
+                        <i class="fas fa-external-link-alt me-1"></i>View Client Portal
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="refreshPortalStatus()">
+                        <i class="fas fa-sync me-1"></i>Refresh Status
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Portal Access Statistics</h5>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="activeClients">-</div>
+                        <div class="stat-label">Active Clients</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="portalLogins">-</div>
+                        <div class="stat-label">Recent Logins</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h5>Portal Features</h5>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Quote Access
+                        <span class="badge bg-success">Active</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Invoice Viewing
+                        <span class="badge bg-success">Active</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Photo Gallery
+                        <span class="badge bg-success">Active</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Project Updates
+                        <span class="badge bg-success">Active</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function refreshPortalStatus() {
+    fetch('/api/portal-stats')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('activeClients').textContent = data.active_clients || '0';
+            document.getElementById('portalLogins').textContent = data.recent_logins || '0';
+        })
+        .catch(error => {
+            console.error('Error loading portal stats:', error);
+        });
+}
+
+// Auto-load stats when section loads
+refreshPortalStatus();
+</script>

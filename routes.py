@@ -8420,6 +8420,53 @@ def serve_service_management_section():
         logging.error(f"Error serving service management section: {e}")
         return "Template error", 404
 
+@app.route('/admin/sections/csv-management')
+def serve_csv_management_section():
+    """Serve CSV management section"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        return render_template('csv_management_section.html')
+    except Exception as e:
+        logging.error(f"Error serving CSV management section: {e}")
+        return "Template error", 404
+
+@app.route('/admin/sections/portal')
+def serve_portal_section():
+    """Serve portal management section"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        return render_template('portal_section.html')
+    except Exception as e:
+        logging.error(f"Error serving portal section: {e}")
+        return "Template error", 404
+
+@app.route('/api/portal-stats')
+def get_portal_stats():
+    """Get portal statistics"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        contacts_file = os.path.join('data', 'contacts.json')
+        active_clients = 0
+        
+        if os.path.exists(contacts_file):
+            with open(contacts_file, 'r') as f:
+                contacts = json.load(f)
+                active_clients = len([c for c in contacts if c.get('client_id')])
+        
+        return jsonify({
+            'active_clients': active_clients,
+            'recent_logins': 0
+        })
+    except Exception as e:
+        logging.error(f"Error getting portal stats: {e}")
+        return jsonify({'error': 'Failed to load stats'}), 500
+
 # Service Type Management API Routes
 @app.route('/api/service-types', methods=['GET'])
 def api_get_service_types():
