@@ -7,7 +7,7 @@ import os
 import logging
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from flask import render_template
+from flask import render_template, request
 from config.app import app
 
 @app.route('/spankks-skool')
@@ -65,8 +65,55 @@ def spankks_skool():
 
 logger = logging.getLogger(__name__)
 
+@app.route('/consultation')
+def public_consultation():
+    """Consultation booking page with services from database"""
+    try:
+        # Get services for consultation form
+        with psycopg2.connect(os.environ.get('DATABASE_URL')) as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT 
+                        sc.name as category_name,
+                        st.service_code,
+                        st.name,
+                        st.min_price,
+                        st.max_price,
+                        st.unit
+                    FROM service_types st
+                    JOIN service_categories sc ON st.category_id = sc.id
+                    WHERE st.is_active = true AND st.user_type = 'client'
+                    ORDER BY sc.name, st.name
+                """)
+                services = cur.fetchall()
+        
+        # Organize services by category
+        services_by_category = {}
+        for service in services:
+            category = service['category_name']
+            if category not in services_by_category:
+                services_by_category[category] = []
+            services_by_category[category].append(service)
+        
+        return render_template('public/consultation.html', 
+                             services_by_category=services_by_category)
+                             
+    except Exception as e:
+        logger.error(f"Error loading consultation page: {str(e)}")
+        return render_template('public/consultation.html', services_by_category={})
+
+# Import successful completion message
+@app.route('/form-confirmation')
+def form_confirmation():
+    """Form confirmation page"""
+    form_type = request.args.get('type', 'inquiry')
+    reference_number = request.args.get('ref', None)
+    return render_template('public/form_confirmation.html', 
+                         form_type=form_type,
+                         reference_number=reference_number)
+
 @app.route('/')
-def home():
+def public_home():
     """Home page with featured services from database"""
     try:
         # Get featured services (highest value services from each category)

@@ -199,7 +199,7 @@ def get_hawaii_time():
     return utc_now.astimezone(hawaii_tz)
 
 # Import app here to register routes
-from app import app
+from config.app import app
 
 @app.route('/')
 def index():
