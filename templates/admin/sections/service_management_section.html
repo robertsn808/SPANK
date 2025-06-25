@@ -651,6 +651,7 @@ function loadServices() {
     .then(data => {
         serviceTypes = data;
         renderServicesTable();
+        updateServiceStats();
     })
     .catch(error => {
         console.error('Error loading services:', error);
