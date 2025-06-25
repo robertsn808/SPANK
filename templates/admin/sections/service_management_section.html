@@ -651,7 +651,7 @@ function loadServices() {
     .then(data => {
         serviceTypes = data;
         renderServicesTable();
-        updateServiceStats();
+        updateMetrics();
     })
     .catch(error => {
         console.error('Error loading services:', error);
@@ -717,14 +717,41 @@ function renderServicesTable() {
 
 function updateMetrics() {
     const totalServices = serviceTypes.length;
-    const portalServices = serviceTypes.filter(s => s.requiresPortal).length;
-    const clientServices = serviceTypes.filter(s => s.userType === 'client').length;
-    const avgPrice = serviceTypes.reduce((sum, s) => sum + ((s.priceMin + s.priceMax) / 2), 0) / totalServices || 0;
+    const totalCategories = serviceCategories.length;
     
-    document.getElementById('totalServices').textContent = totalServices;
-    document.getElementById('portalServices').textContent = portalServices;
-    document.getElementById('clientServices').textContent = clientServices;
-    document.getElementById('avgPrice').textContent = '$' + Math.round(avgPrice);
+    // Calculate average price from service data
+    let totalPrices = 0;
+    let priceCount = 0;
+    
+    serviceTypes.forEach(service => {
+        const minPrice = parseFloat(service.price_min) || 0;
+        const maxPrice = parseFloat(service.price_max) || 0;
+        if (minPrice > 0 || maxPrice > 0) {
+            totalPrices += (minPrice + maxPrice) / 2;
+            priceCount++;
+        }
+    });
+    
+    const avgPrice = priceCount > 0 ? totalPrices / priceCount : 0;
+    const activeServices = serviceTypes.filter(s => s.status !== 'inactive').length;
+    
+    // Update UI elements if they exist
+    const totalEl = document.getElementById('totalServices');
+    const categoriesEl = document.getElementById('totalCategories');
+    const avgPriceEl = document.getElementById('avgPrice');
+    const activeEl = document.getElementById('activeServices');
+    
+    if (totalEl) totalEl.textContent = totalServices;
+    if (categoriesEl) categoriesEl.textContent = totalCategories;
+    if (avgPriceEl) avgPriceEl.textContent = avgPrice > 0 ? `$${Math.round(avgPrice)}` : '$0';
+    if (activeEl) activeEl.textContent = activeServices;
+    
+    console.log('Service metrics updated:', {
+        totalServices,
+        totalCategories,
+        avgPrice: Math.round(avgPrice),
+        activeServices
+    });
 }
 
 // Load categories for dropdown
@@ -732,11 +759,15 @@ function loadCategories() {
     fetch('/api/service-categories')
     .then(response => response.json())
     .then(data => {
+        serviceCategories = data;
         const categorySelect = document.getElementById('category');
-        categorySelect.innerHTML = '<option value="">Select Category</option>';
-        data.forEach(category => {
-            categorySelect.innerHTML += `<option value="${category.id}">${category.name}</option>`;
-        });
+        if (categorySelect) {
+            categorySelect.innerHTML = '<option value="">Select Category</option>';
+            data.forEach(category => {
+                categorySelect.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+            });
+        }
+        updateMetrics();
     })
     .catch(error => {
         console.error('Error loading categories:', error);
@@ -744,8 +775,10 @@ function loadCategories() {
 }
 
 // Initialize
-loadCategories();
-loadServices();
-updateMetrics();
-console.log('Service management: Initialized');
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Service management section loaded');
+    loadCategories();
+    loadServices();
+    console.log('Service management: Initialized');
+});
 </script>
