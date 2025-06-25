@@ -1,0 +1,976 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Quote Management - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="quotes-dashboard">
+    <!-- Quotes Header -->
+    <div class="quotes-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1">Quote Management System</h1>
+                <p class="text-muted mb-0">Create, manage, and track quotes from draft to job conversion</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-success me-2" onclick="createNewQuote()">
+                    <i class="fas fa-plus me-2"></i>Create Quote
+                </button>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-tools me-2"></i>Actions
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="bulkSend()">
+                            <i class="fas fa-envelope me-2"></i>Bulk Send
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportQuotes()">
+                            <i class="fas fa-download me-2"></i>Export Quotes
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="quoteTemplates()">
+                            <i class="fas fa-file-alt me-2"></i>Quote Templates
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quote Statistics -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card total-quotes">
+                <div class="stat-icon">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalQuotes">{{ quotes|length }}</h3>
+                    <p>Total Quotes</p>
+                    <span class="stat-trend">This month</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card sent-quotes">
+                <div class="stat-icon">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="sentQuotes">{{ quotes|selectattr('status', 'equalto', 'sent')|list|length }}</h3>
+                    <p>Sent Quotes</p>
+                    <span class="stat-trend">Awaiting response</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card accepted-quotes">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="acceptedQuotes">{{ quotes|selectattr('status', 'equalto', 'accepted')|list|length }}</h3>
+                    <p>Accepted</p>
+                    <span class="stat-trend">Ready for jobs</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card conversion-rate">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="conversionRate">{{ "%.1f"|format(((quotes|selectattr('status', 'equalto', 'accepted')|list|length) / (quotes|length) * 100) if quotes|length > 0 else 0) }}%</h3>
+                    <p>Conversion Rate</p>
+                    <span class="stat-trend">Quote to acceptance</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Filters and Search -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Search quotes..." id="quoteSearch">
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="filter-chips">
+                                <button class="filter-chip active" data-filter="all">All Quotes</button>
+                                <button class="filter-chip" data-filter="draft">Draft</button>
+                                <button class="filter-chip" data-filter="sent">Sent</button>
+                                <button class="filter-chip" data-filter="accepted">Accepted</button>
+                                <button class="filter-chip" data-filter="rejected">Rejected</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <select class="form-control" id="statusFilter">
+                                <option value="">All Status</option>
+                                <option value="draft">Draft</option>
+                                <option value="sent">Sent</option>
+                                <option value="accepted">Accepted</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="clientFilter">
+                                <option value="">All Clients</option>
+                                <!-- Dynamic client options -->
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="month" class="form-control" id="monthFilter">
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-outline-primary" onclick="followUpQuotes()">
+                                <i class="fas fa-phone me-2"></i>Follow Up
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quotes Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quote Management</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="quotesTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Quote #</th>
+                                    <th>Client</th>
+                                    <th>Service Type</th>
+                                    <th>Created Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Response</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Sample quotes for demo -->
+                                <tr class="quote-row" data-status="accepted" data-client="Jessica Houtz">
+                                    <td>
+                                        <div class="quote-number">
+                                            <strong>Q2025-001</strong>
+                                            <br><small class="text-muted">Staff: SPK001</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="client-info">
+                                            <strong>Jessica Houtz</strong>
+                                            <br><small class="text-muted">jessica.houtz@email.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">Flooring Installation</span>
+                                    </td>
+                                    <td>
+                                        <div class="date-info">
+                                            <strong>06/20/2025</strong>
+                                            <br><small class="text-muted">5 days ago</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="amount-info">
+                                            <strong>$750.00</strong>
+                                            <br><small class="text-muted">+$35.34 tax</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Accepted</span>
+                                    </td>
+                                    <td>
+                                        <div class="response-info">
+                                            <i class="fas fa-check text-success me-1"></i>
+                                            <small>Accepted 06/21</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewQuote('Q2025-001')" data-bs-toggle="tooltip" title="View Quote">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary" onclick="downloadPDF('Q2025-001')" data-bs-toggle="tooltip" title="Download PDF">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="convertToJob('Q2025-001')" data-bs-toggle="tooltip" title="Convert to Job">
+                                                <i class="fas fa-hammer"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="convertToInvoice('Q2025-001')" data-bs-toggle="tooltip" title="Convert to Invoice">
+                                                <i class="fas fa-file-invoice"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="quote-row" data-status="sent" data-client="Michael Chen">
+                                    <td>
+                                        <div class="quote-number">
+                                            <strong>Q2025-002</strong>
+                                            <br><small class="text-muted">Staff: SPK002</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="client-info">
+                                            <strong>Michael Chen</strong>
+                                            <br><small class="text-muted">mchen@gmail.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Drywall Repair</span>
+                                    </td>
+                                    <td>
+                                        <div class="date-info">
+                                            <strong>06/22/2025</strong>
+                                            <br><small class="text-muted">3 days ago</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="amount-info">
+                                            <strong>$155.00</strong>
+                                            <br><small class="text-muted">+$7.30 tax</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">Sent</span>
+                                    </td>
+                                    <td>
+                                        <div class="response-info">
+                                            <i class="fas fa-clock text-warning me-1"></i>
+                                            <small>Awaiting response</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewQuote('Q2025-002')" data-bs-toggle="tooltip" title="View Quote">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary" onclick="downloadPDF('Q2025-002')" data-bs-toggle="tooltip" title="Download PDF">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info" onclick="sendReminder('Q2025-002')" data-bs-toggle="tooltip" title="Send Reminder">
+                                                <i class="fas fa-bell"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="followUpCall('Q2025-002')" data-bs-toggle="tooltip" title="Follow Up Call">
+                                                <i class="fas fa-phone"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Quote Modal -->
+<div class="modal fade" id="createQuoteModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Quote</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createQuoteForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Client *</label>
+                                <select class="form-control" name="client_id" required>
+                                    <option value="">Select Client</option>
+                                    <!-- Options loaded dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Job ID (Optional)</label>
+                                <select class="form-control" name="job_id">
+                                    <option value="">Select Job</option>
+                                    <!-- Options loaded dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Service Type</label>
+                        <select class="form-control" name="service_type" onchange="loadServiceTemplate()">
+                            <option value="">Select Service</option>
+                            <option value="Drywall Services">Drywall Services</option>
+                            <option value="Flooring Installation">Flooring Installation</option>
+                            <option value="Fence Installation">Fence Installation</option>
+                            <option value="General Handyman">General Handyman</option>
+                            <option value="Plumbing Repair">Plumbing Repair</option>
+                            <option value="Electrical Work">Electrical Work</option>
+                            <option value="Painting">Painting</option>
+                            <option value="Home Renovation">Home Renovation</option>
+                        </select>
+                    </div>
+
+                    <!-- Quote Line Items -->
+                    <div class="mb-3">
+                        <label class="form-label">Quote Items</label>
+                        <div id="quoteItems">
+                            <div class="quote-item mb-3">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control" name="description[]" placeholder="Service description" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="number" class="form-control" name="quantity[]" placeholder="Qty" value="1" min="1" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="number" class="form-control" name="unit_price[]" placeholder="Unit Price" step="0.01" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-outline-danger" onclick="removeQuoteItem(this)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary" onclick="addQuoteItem()">
+                            <i class="fas fa-plus me-2"></i>Add Line Item
+                        </button>
+                    </div>
+
+                    <!-- Quote Message -->
+                    <div class="mb-3">
+                        <label class="form-label">Quote Message</label>
+                        <textarea class="form-control" name="message" rows="4" placeholder="Thank you for your interest in SPANKKS Construction services. This quote is valid for 30 days..."></textarea>
+                    </div>
+
+                    <!-- Quote Totals -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="quote-preview-box">
+                                <h6>Quote Preview</h6>
+                                <p class="text-muted">Quote will be generated as PDF for client viewing and acceptance.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="quote-totals">
+                                <div class="d-flex justify-content-between">
+                                    <span>Subtotal:</span>
+                                    <span id="quoteSubtotal">$0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Tax (4.712%):</span>
+                                    <span id="quoteTax">$0.00</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <strong>Total:</strong>
+                                    <strong id="quoteTotal">$0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="saveAsDraft()">Save as Draft</button>
+                    <button type="submit" class="btn btn-success">Create & Send Quote</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Quote Details Modal -->
+<div class="modal fade" id="quoteDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Quote Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="quoteDetailsContent">
+                <!-- Content loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-primary" onclick="editQuote()">Edit Quote</button>
+                <button type="button" class="btn btn-success" onclick="sendQuoteToClient()">Send to Client</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.quotes-dashboard {
+    padding: 20px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-left: 4px solid transparent;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-card.total-quotes { border-left-color: #007bff; }
+.stat-card.sent-quotes { border-left-color: #ffc107; }
+.stat-card.accepted-quotes { border-left-color: #28a745; }
+.stat-card.conversion-rate { border-left-color: #6f42c1; }
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 20px;
+    color: white;
+}
+
+.stat-card.total-quotes .stat-icon { background: #007bff; }
+.stat-card.sent-quotes .stat-icon { background: #ffc107; }
+.stat-card.accepted-quotes .stat-icon { background: #28a745; }
+.stat-card.conversion-rate .stat-icon { background: #6f42c1; }
+
+.stat-card h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #2c3e50;
+}
+
+.filter-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-chip {
+    padding: 6px 16px;
+    border: 1px solid #dee2e6;
+    background: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.filter-chip:hover,
+.filter-chip.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.quote-item {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    background: #f8f9fa;
+}
+
+.quote-totals {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.quote-preview-box {
+    background: #e7f3ff;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #b3d9ff;
+}
+
+.action-buttons .btn {
+    margin-right: 4px;
+}
+
+.quote-row:hover {
+    background-color: rgba(0,123,255,0.05);
+}
+
+.response-info {
+    font-size: 0.9rem;
+}
+</style>
+
+<script>
+// Quote management functionality
+let quoteItemCount = 1;
+
+// Search functionality
+document.getElementById('quoteSearch').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll('.quote-row');
+    
+    rows.forEach(row => {
+        const quoteNumber = row.querySelector('.quote-number strong').textContent.toLowerCase();
+        const clientName = row.querySelector('.client-info strong').textContent.toLowerCase();
+        const serviceType = row.querySelector('.badge').textContent.toLowerCase();
+        
+        if (quoteNumber.includes(searchTerm) || clientName.includes(searchTerm) || serviceType.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+// Filter functionality
+document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        
+        const filter = this.dataset.filter;
+        filterQuotes(filter);
+    });
+});
+
+function filterQuotes(filter) {
+    const rows = document.querySelectorAll('.quote-row');
+    
+    rows.forEach(row => {
+        let show = true;
+        
+        switch(filter) {
+            case 'all':
+                show = true;
+                break;
+            case 'draft':
+                show = row.dataset.status === 'draft';
+                break;
+            case 'sent':
+                show = row.dataset.status === 'sent';
+                break;
+            case 'accepted':
+                show = row.dataset.status === 'accepted';
+                break;
+            case 'rejected':
+                show = row.dataset.status === 'rejected';
+                break;
+        }
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+// Quote creation functions
+function createNewQuote() {
+    document.getElementById('createQuoteForm').reset();
+    document.getElementById('quoteItems').innerHTML = getQuoteItemHTML();
+    loadClientOptions();
+    loadJobOptions();
+    updateQuoteTotals();
+    new bootstrap.Modal(document.getElementById('createQuoteModal')).show();
+}
+
+function addQuoteItem() {
+    const container = document.getElementById('quoteItems');
+    const newItem = document.createElement('div');
+    newItem.className = 'quote-item mb-3';
+    newItem.innerHTML = getQuoteItemHTML();
+    container.appendChild(newItem);
+    
+    // Add event listeners for calculation
+    addCalculationListeners(newItem);
+}
+
+function removeQuoteItem(button) {
+    button.closest('.quote-item').remove();
+    updateQuoteTotals();
+}
+
+function getQuoteItemHTML() {
+    return `
+        <div class="row">
+            <div class="col-md-5">
+                <input type="text" class="form-control" name="description[]" placeholder="Service description" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control" name="quantity[]" placeholder="Qty" value="1" min="1" required>
+            </div>
+            <div class="col-md-3">
+                <input type="number" class="form-control" name="unit_price[]" placeholder="Unit Price" step="0.01" required>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-danger" onclick="removeQuoteItem(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function addCalculationListeners(container) {
+    const inputs = container.querySelectorAll('input[name="quantity[]"], input[name="unit_price[]"]');
+    inputs.forEach(input => {
+        input.addEventListener('input', updateQuoteTotals);
+    });
+}
+
+function updateQuoteTotals() {
+    const quantities = document.querySelectorAll('[name="quantity[]"]');
+    const unitPrices = document.querySelectorAll('[name="unit_price[]"]');
+    
+    let subtotal = 0;
+    
+    for (let i = 0; i < quantities.length; i++) {
+        const qty = parseFloat(quantities[i].value) || 0;
+        const price = parseFloat(unitPrices[i].value) || 0;
+        subtotal += qty * price;
+    }
+    
+    const taxRate = 0.04712; // Hawaii GET tax
+    const tax = subtotal * taxRate;
+    const total = subtotal + tax;
+    
+    document.getElementById('quoteSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('quoteTax').textContent = `$${tax.toFixed(2)}`;
+    document.getElementById('quoteTotal').textContent = `$${total.toFixed(2)}`;
+}
+
+function loadServiceTemplate() {
+    const serviceType = document.querySelector('[name="service_type"]').value;
+    
+    // Load predefined templates based on service type
+    const templates = {
+        'Drywall Services': [
+            { description: 'Drywall patch repair (small)', quantity: 1, unit_price: 155.00 },
+            { description: 'Joint compound and sanding', quantity: 1, unit_price: 75.00 }
+        ],
+        'Flooring Installation': [
+            { description: 'Vinyl plank flooring installation', quantity: 100, unit_price: 4.50 },
+            { description: 'Floor preparation', quantity: 1, unit_price: 200.00 }
+        ],
+        'Fence Installation': [
+            { description: 'Wood fence installation', quantity: 50, unit_price: 45.00 },
+            { description: 'Posts and hardware', quantity: 8, unit_price: 35.00 }
+        ]
+    };
+    
+    if (templates[serviceType]) {
+        loadTemplate(templates[serviceType]);
+    }
+}
+
+function loadTemplate(items) {
+    const container = document.getElementById('quoteItems');
+    container.innerHTML = '';
+    
+    items.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'quote-item mb-3';
+        itemDiv.innerHTML = `
+            <div class="row">
+                <div class="col-md-5">
+                    <input type="text" class="form-control" name="description[]" value="${item.description}" required>
+                </div>
+                <div class="col-md-2">
+                    <input type="number" class="form-control" name="quantity[]" value="${item.quantity}" min="1" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" class="form-control" name="unit_price[]" value="${item.unit_price}" step="0.01" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-outline-danger" onclick="removeQuoteItem(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(itemDiv);
+        addCalculationListeners(itemDiv);
+    });
+    
+    updateQuoteTotals();
+}
+
+// Quote actions
+function viewQuote(quoteNumber) {
+    fetch(`/api/admin/quotes/${quoteNumber}`)
+        .then(response => response.json())
+        .then(quote => {
+            const content = generateQuoteDetailsHTML(quote);
+            document.getElementById('quoteDetailsContent').innerHTML = content;
+            new bootstrap.Modal(document.getElementById('quoteDetailsModal')).show();
+        })
+        .catch(error => {
+            console.error('Error loading quote:', error);
+            alert('Error loading quote details');
+        });
+}
+
+function downloadPDF(quoteNumber) {
+    window.open(`/api/admin/quotes/${quoteNumber}/pdf`, '_blank');
+}
+
+function convertToJob(quoteNumber) {
+    if (confirm('Convert this quote to a job? This will create a new job record.')) {
+        fetch(`/api/admin/quotes/${quoteNumber}/convert-to-job`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert(`Job created successfully: ${result.job_id}`);
+                location.reload();
+            } else {
+                alert('Error creating job: ' + result.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error converting to job:', error);
+            alert('Error converting to job');
+        });
+    }
+}
+
+function convertToInvoice(quoteNumber) {
+    if (confirm('Convert this quote to an invoice? This will create a new invoice record.')) {
+        fetch(`/api/admin/quotes/${quoteNumber}/convert-to-invoice`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert(`Invoice created successfully: ${result.invoice_id}`);
+                location.reload();
+            } else {
+                alert('Error creating invoice: ' + result.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error converting to invoice:', error);
+            alert('Error converting to invoice');
+        });
+    }
+}
+
+function sendReminder(quoteNumber) {
+    if (confirm('Send reminder email to client?')) {
+        fetch(`/api/admin/quotes/${quoteNumber}/reminder`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert('Reminder sent successfully');
+            } else {
+                alert('Error sending reminder: ' + result.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error sending reminder:', error);
+            alert('Error sending reminder');
+        });
+    }
+}
+
+function followUpCall(quoteNumber) {
+    alert('Follow-up call feature - would log call activity and update quote status');
+}
+
+// Bulk operations
+function bulkSend() {
+    alert('Bulk send feature - would allow selecting multiple quotes and sending them at once');
+}
+
+function exportQuotes() {
+    window.open('/api/admin/quotes/export?format=csv', '_blank');
+}
+
+function quoteTemplates() {
+    alert('Quote templates feature - would allow creating and managing reusable quote templates');
+}
+
+function followUpQuotes() {
+    alert('Follow up feature - would show quotes needing follow-up and contact information');
+}
+
+// Form submissions
+function saveAsDraft() {
+    submitQuoteForm('draft');
+}
+
+document.getElementById('createQuoteForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    submitQuoteForm('sent');
+});
+
+function submitQuoteForm(status) {
+    const formData = new FormData(document.getElementById('createQuoteForm'));
+    const quoteData = {
+        client_id: formData.get('client_id'),
+        job_id: formData.get('job_id'),
+        message: formData.get('message'),
+        status: status,
+        items: []
+    };
+    
+    // Collect line items
+    const descriptions = formData.getAll('description[]');
+    const quantities = formData.getAll('quantity[]');
+    const unitPrices = formData.getAll('unit_price[]');
+    
+    for (let i = 0; i < descriptions.length; i++) {
+        if (descriptions[i]) {
+            quoteData.items.push({
+                description: descriptions[i],
+                quantity: parseInt(quantities[i]),
+                unit_price: parseFloat(unitPrices[i])
+            });
+        }
+    }
+    
+    fetch('/api/admin/quotes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(quoteData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('createQuoteModal')).hide();
+            alert(`Quote ${status === 'draft' ? 'saved as draft' : 'created and sent'} successfully: ${result.quote_number}`);
+            location.reload();
+        } else {
+            alert('Error creating quote: ' + result.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error creating quote:', error);
+        alert('Error creating quote');
+    });
+}
+
+function loadClientOptions() {
+    fetch('/api/admin/clients/list')
+        .then(response => response.json())
+        .then(clients => {
+            const select = document.querySelector('[name="client_id"]');
+            select.innerHTML = '<option value="">Select Client</option>';
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.client_id;
+                option.textContent = client.name;
+                select.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error loading clients:', error));
+}
+
+function loadJobOptions() {
+    fetch('/api/admin/jobs/list')
+        .then(response => response.json())
+        .then(jobs => {
+            const select = document.querySelector('[name="job_id"]');
+            select.innerHTML = '<option value="">Select Job</option>';
+            jobs.forEach(job => {
+                const option = document.createElement('option');
+                option.value = job.job_id;
+                option.textContent = `${job.job_id} - ${job.service_type}`;
+                select.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error loading jobs:', error));
+}
+
+function generateQuoteDetailsHTML(quote) {
+    return `
+        <div class="quote-details-view">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4>${quote.quote_number}</h4>
+                    <p><strong>Client:</strong> ${quote.client_name}</p>
+                    <p><strong>Service:</strong> ${quote.service_type}</p>
+                    <p><strong>Status:</strong> <span class="badge bg-${getStatusColor(quote.status)}">${quote.status}</span></p>
+                    <p><strong>Message:</strong> ${quote.message || 'No message'}</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="quote-summary">
+                        <p><strong>Created:</strong> ${quote.created_at}</p>
+                        <p><strong>Total Amount:</strong> $${quote.total_amount}</p>
+                        <p><strong>Status:</strong> ${quote.status}</p>
+                        ${quote.accepted_at ? `<p><strong>Accepted:</strong> ${quote.accepted_at}</p>` : ''}
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <h6>Quote Items</h6>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${(quote.items || []).map(item => `
+                            <tr>
+                                <td>${item.description}</td>
+                                <td>${item.quantity}</td>
+                                <td>$${item.unit_price}</td>
+                                <td>$${item.line_total}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function getStatusColor(status) {
+    const colors = {
+        'accepted': 'success',
+        'sent': 'warning',
+        'rejected': 'danger',
+        'draft': 'secondary'
+    };
+    return colors[status] || 'secondary';
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Add calculation listeners to existing quote items
+    document.querySelectorAll('.quote-item').forEach(addCalculationListeners);
+    
+    // Initialize tooltips
+    if (typeof bootstrap !== 'undefined') {
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+            new bootstrap.Tooltip(el);
+        });
+    }
+});
+</script>
+{% endblock %}

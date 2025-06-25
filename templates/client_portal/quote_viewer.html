@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote {{ quote.quote_number }} - SPANKKS Construction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        
+        .quote-viewer {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 40px auto;
+            max-width: 800px;
+            overflow: hidden;
+        }
+        
+        .quote-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .quote-content {
+            padding: 40px;
+        }
+        
+        .company-logo {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+        
+        .quote-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .quote-status {
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-accepted { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+        
+        .client-info, .quote-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .quote-table {
+            margin: 30px 0;
+        }
+        
+        .quote-table table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .quote-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            padding: 15px;
+        }
+        
+        .quote-table td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .quote-totals {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .total-row.final {
+            border-top: 2px solid #667eea;
+            padding-top: 15px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #667eea;
+        }
+        
+        .action-buttons {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .btn-accept {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            color: white;
+            margin: 0 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-accept:hover {
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .btn-request-changes {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            color: white;
+            margin: 0 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-request-changes:hover {
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .contact-info {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .signature-pad {
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            background: #f8f9fa;
+        }
+        
+        .accepted-badge {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .quote-viewer {
+                margin: 20px;
+            }
+            
+            .quote-content {
+                padding: 20px;
+            }
+            
+            .btn-accept, .btn-request-changes {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="quote-viewer">
+            <!-- Quote Header -->
+            <div class="quote-header">
+                <img src="/static/images/spank-logo.png" alt="SPANKKS Construction" class="company-logo">
+                <div class="quote-number">{{ quote.quote_number }}</div>
+                <p class="mb-0">Professional Construction Services Quote</p>
+                {% if quote.status == 'accepted' %}
+                <div class="accepted-badge mt-3">
+                    <i class="fas fa-check-circle"></i>
+                    Quote Accepted on {{ quote.accepted_at }}
+                </div>
+                {% else %}
+                <div class="quote-status status-pending">
+                    Awaiting Your Response
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Quote Content -->
+            <div class="quote-content">
+                <!-- Client Information -->
+                <div class="client-info">
+                    <h5><i class="fas fa-user me-2"></i>Client Information</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Name:</strong> {{ quote.client_name }}<br>
+                            <strong>Email:</strong> {{ quote.client_email }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Quote Date:</strong> {{ quote.created_at }}<br>
+                            <strong>Valid Until:</strong> {{ quote.valid_until or 'Contact us' }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quote Details -->
+                <div class="quote-details">
+                    <h5><i class="fas fa-clipboard-list me-2"></i>Project Details</h5>
+                    {% if quote.message %}
+                    <p>{{ quote.message }}</p>
+                    {% endif %}
+                    <p><strong>Service Type:</strong> {{ quote.service_type or 'Custom Service' }}</p>
+                </div>
+
+                <!-- Quote Items Table -->
+                <div class="quote-table">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-end">Unit Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in quote.items %}
+                            <tr>
+                                <td>{{ item.description }}</td>
+                                <td class="text-center">{{ item.quantity }}</td>
+                                <td class="text-end">${{ "%.2f"|format(item.unit_price) }}</td>
+                                <td class="text-end">${{ "%.2f"|format(item.line_total) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Quote Totals -->
+                <div class="quote-totals">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span>${{ "%.2f"|format(quote.total_amount - quote.tax_amount) }}</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Hawaii GET Tax (4.712%):</span>
+                        <span>${{ "%.2f"|format(quote.tax_amount) }}</span>
+                    </div>
+                    <div class="total-row final">
+                        <span>Total Amount:</span>
+                        <span>${{ "%.2f"|format(quote.total_amount) }}</span>
+                    </div>
+                </div>
+
+                {% if quote.status != 'accepted' and quote.status != 'rejected' %}
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <h5 class="mb-4">Ready to Move Forward?</h5>
+                    <button class="btn btn-accept" onclick="acceptQuote()">
+                        <i class="fas fa-check me-2"></i>Accept Quote
+                    </button>
+                    <button class="btn btn-request-changes" onclick="requestChanges()">
+                        <i class="fas fa-edit me-2"></i>Request Changes
+                    </button>
+                </div>
+
+                <!-- Digital Signature Area -->
+                <div class="signature-pad" id="signaturePad" style="display: none;">
+                    <h6>Digital Acceptance</h6>
+                    <p>By clicking "Confirm Acceptance" below, you agree to the terms and pricing outlined in this quote.</p>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="clientSignature" placeholder="Type your full name as digital signature" required>
+                    </div>
+                    <button class="btn btn-success" onclick="confirmAcceptance()">
+                        <i class="fas fa-signature me-2"></i>Confirm Acceptance
+                    </button>
+                    <button class="btn btn-secondary ms-2" onclick="cancelSignature()">Cancel</button>
+                </div>
+                {% endif %}
+
+                <!-- Contact Information -->
+                <div class="contact-info">
+                    <h6><i class="fas fa-phone me-2"></i>Questions? Let's Talk!</h6>
+                    <p class="mb-2">Contact SPANKKS Construction for any questions or clarifications:</p>
+                    <p class="mb-0">
+                        <strong>Phone:</strong> (808) 778-9132 | 
+                        <strong>Email:</strong> spank808@gmail.com
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request Changes Modal -->
+    <div class="modal fade" id="changesModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Request Changes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changesForm">
+                        <div class="mb-3">
+                            <label class="form-label">What changes would you like to request?</label>
+                            <textarea class="form-control" name="changes_requested" rows="4" placeholder="Please describe the changes you'd like to see in this quote..." required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Your Contact Information</label>
+                            <input type="text" class="form-control" name="contact_info" placeholder="Best phone number or email to reach you" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitChanges()">Send Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const quoteNumber = "{{ quote.quote_number }}";
+        const clientId = "{{ quote.client_id }}";
+
+        function acceptQuote() {
+            document.getElementById('signaturePad').style.display = 'block';
+            document.querySelector('.action-buttons h5').style.display = 'none';
+            document.querySelector('.btn-accept').style.display = 'none';
+            document.querySelector('.btn-request-changes').style.display = 'none';
+        }
+
+        function cancelSignature() {
+            document.getElementById('signaturePad').style.display = 'none';
+            document.querySelector('.action-buttons h5').style.display = 'block';
+            document.querySelector('.btn-accept').style.display = 'inline-block';
+            document.querySelector('.btn-request-changes').style.display = 'inline-block';
+        }
+
+        function confirmAcceptance() {
+            const signature = document.getElementById('clientSignature').value.trim();
+            
+            if (!signature) {
+                alert('Please enter your full name as a digital signature.');
+                return;
+            }
+
+            const acceptanceData = {
+                quote_number: quoteNumber,
+                client_signature: signature,
+                accepted_at: new Date().toISOString()
+            };
+
+            fetch(`/api/quotes/${quoteNumber}/accept`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(acceptanceData)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Quote accepted successfully! SPANKKS Construction will contact you soon to schedule the work.');
+                    location.reload();
+                } else {
+                    alert('Error accepting quote: ' + result.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error accepting quote. Please try again or contact us directly.');
+            });
+        }
+
+        function requestChanges() {
+            new bootstrap.Modal(document.getElementById('changesModal')).show();
+        }
+
+        function submitChanges() {
+            const form = document.getElementById('changesForm');
+            const formData = new FormData(form);
+            
+            const changesData = {
+                quote_number: quoteNumber,
+                changes_requested: formData.get('changes_requested'),
+                contact_info: formData.get('contact_info')
+            };
+
+            fetch(`/api/quotes/${quoteNumber}/request-changes`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(changesData)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Change request sent successfully! SPANKKS Construction will review your request and get back to you soon.');
+                    bootstrap.Modal.getInstance(document.getElementById('changesModal')).hide();
+                } else {
+                    alert('Error sending request: ' + result.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error sending request. Please try again or contact us directly.');
+            });
+        }
+
+        // Auto-refresh quote status every 30 seconds
+        setInterval(function() {
+            fetch(`/api/quotes/${quoteNumber}/status`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'accepted' && window.location.href.indexOf('accepted') === -1) {
+                        location.reload();
+                    }
+                })
+                .catch(error => console.log('Status check failed:', error));
+        }, 30000);
+    </script>
+</body>
+</html>

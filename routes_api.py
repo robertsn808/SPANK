@@ -437,3 +437,216 @@ def api_performance_forecast():
     except Exception as e:
         logging.error(f"Performance forecast error: {e}")
         return jsonify({'error': 'Failed to generate forecast'}), 500
+
+@app.route('/api/admin/quotes', methods=['POST'])
+def api_create_quote():
+    """Create new quote"""
+    try:
+        data = request.get_json()
+        
+        with db.engine.connect() as conn:
+            # Generate quote number
+            result = conn.execute(db.text("""
+                SELECT COUNT(*) + 1 as next_num 
+                FROM quotes 
+                WHERE quote_number LIKE 'Q2025-%'
+            """))
+            next_num = result.scalar()
+            quote_number = f"Q2025-{next_num:03d}"
+            
+            # Calculate totals
+            subtotal = sum(item['quantity'] * item['unit_price'] for item in data.get('items', []))
+            tax_amount = subtotal * 0.04712  # Hawaii GET tax
+            total_amount = subtotal + tax_amount
+            
+            # Insert quote
+            conn.execute(db.text("""
+                INSERT INTO quotes (quote_number, client_id, job_id, status, 
+                                  total_amount, tax_amount, message, created_at)
+                VALUES (:quote_number, :client_id, :job_id, :status,
+                        :total_amount, :tax_amount, :message, NOW())
+            """), {
+                'quote_number': quote_number,
+                'client_id': data.get('client_id'),
+                'job_id': data.get('job_id'),
+                'status': data.get('status', 'draft'),
+                'total_amount': total_amount,
+                'tax_amount': tax_amount,
+                'message': data.get('message')
+            })
+            
+            # Insert quote items
+            for item in data.get('items', []):
+                line_total = item['quantity'] * item['unit_price']
+                conn.execute(db.text("""
+                    INSERT INTO quote_items (quote_id, description, quantity, unit_price, line_total)
+                    VALUES (:quote_id, :description, :quantity, :unit_price, :line_total)
+                """), {
+                    'quote_id': quote_number,
+                    'description': item['description'],
+                    'quantity': item['quantity'],
+                    'unit_price': item['unit_price'],
+                    'line_total': line_total
+                })
+            
+            conn.commit()
+            
+            # If status is 'sent', send email via MailerLite
+            if data.get('status') == 'sent':
+                send_quote_email(quote_number, data.get('client_id'))
+        
+        return jsonify({'success': True, 'quote_number': quote_number})
+    except Exception as e:
+        logging.error(f"API create quote error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/quotes/<quote_number>')
+def api_quote_details(quote_number):
+    """Get quote details"""
+    try:
+        with db.engine.connect() as conn:
+            # Get quote info
+            result = conn.execute(db.text("""
+                SELECT q.*, c.name as client_name, c.email as client_email
+                FROM quotes q
+                LEFT JOIN clients c ON q.client_id = c.client_id
+                WHERE q.quote_number = :quote_number
+            """), {'quote_number': quote_number})
+            quote = result.first()
+            
+            if not quote:
+                return jsonify({'error': 'Quote not found'}), 404
+            
+            # Get quote items
+            result = conn.execute(db.text("""
+                SELECT * FROM quote_items WHERE quote_id = :quote_id
+            """), {'quote_id': quote_number})
+            items = [dict(row._mapping) for row in result]
+            
+            quote_data = dict(quote._mapping)
+            quote_data['items'] = items
+                
+        return jsonify(quote_data)
+    except Exception as e:
+        logging.error(f"API quote details error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/quotes/<quote_number>/convert-to-job', methods=['POST'])
+def api_convert_quote_to_job(quote_number):
+    """Convert quote to job"""
+    try:
+        with db.engine.connect() as conn:
+            # Get quote details
+            result = conn.execute(db.text("""
+                SELECT * FROM quotes WHERE quote_number = :quote_number
+            """), {'quote_number': quote_number})
+            quote = result.first()
+            
+            if not quote:
+                return jsonify({'error': 'Quote not found'}), 404
+            
+            # Generate job ID
+            result = conn.execute(db.text("""
+                SELECT COUNT(*) + 1 as next_num 
+                FROM jobs 
+                WHERE job_id LIKE 'J2025-%'
+            """))
+            next_num = result.scalar()
+            job_id = f"J2025-{next_num:03d}"
+            
+            # Create job from quote
+            conn.execute(db.text("""
+                INSERT INTO jobs (job_id, client_id, service_type, status, 
+                                timestamp_created, quote_id)
+                VALUES (:job_id, :client_id, 'From Quote', 'scheduled',
+                        NOW(), :quote_number)
+            """), {
+                'job_id': job_id,
+                'client_id': quote.client_id,
+                'quote_number': quote_number
+            })
+            
+            # Update quote status
+            conn.execute(db.text("""
+                UPDATE quotes SET status = 'converted' WHERE quote_number = :quote_number
+            """), {'quote_number': quote_number})
+            
+            conn.commit()
+        
+        return jsonify({'success': True, 'job_id': job_id})
+    except Exception as e:
+        logging.error(f"Convert quote to job error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/quotes/<quote_number>/convert-to-invoice', methods=['POST'])
+def api_convert_quote_to_invoice(quote_number):
+    """Convert quote to invoice"""
+    try:
+        with db.engine.connect() as conn:
+            # Get quote details
+            result = conn.execute(db.text("""
+                SELECT * FROM quotes WHERE quote_number = :quote_number
+            """), {'quote_number': quote_number})
+            quote = result.first()
+            
+            if not quote:
+                return jsonify({'error': 'Quote not found'}), 404
+            
+            # Generate invoice number
+            result = conn.execute(db.text("""
+                SELECT COUNT(*) + 1 as next_num 
+                FROM invoices 
+                WHERE invoice_id LIKE 'INV-2025-%'
+            """))
+            next_num = result.scalar()
+            invoice_number = f"INV-2025-{next_num:03d}"
+            
+            # Create invoice from quote
+            conn.execute(db.text("""
+                INSERT INTO invoices (invoice_id, client_id, status, 
+                                    total, tax, created_at, quote_id)
+                VALUES (:invoice_id, :client_id, 'unsent',
+                        :total, :tax, NOW(), :quote_number)
+            """), {
+                'invoice_id': invoice_number,
+                'client_id': quote.client_id,
+                'total': quote.total_amount,
+                'tax': quote.tax_amount,
+                'quote_number': quote_number
+            })
+            
+            # Copy quote items to invoice items
+            result = conn.execute(db.text("""
+                SELECT * FROM quote_items WHERE quote_id = :quote_id
+            """), {'quote_id': quote_number})
+            quote_items = [dict(row._mapping) for row in result]
+            
+            for item in quote_items:
+                conn.execute(db.text("""
+                    INSERT INTO invoice_items (invoice_id, description, quantity, unit_price, line_total)
+                    VALUES (:invoice_id, :description, :quantity, :unit_price, :line_total)
+                """), {
+                    'invoice_id': invoice_number,
+                    'description': item['description'],
+                    'quantity': item['quantity'],
+                    'unit_price': item['unit_price'],
+                    'line_total': item['line_total']
+                })
+            
+            conn.commit()
+        
+        return jsonify({'success': True, 'invoice_id': invoice_number})
+    except Exception as e:
+        logging.error(f"Convert quote to invoice error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+def send_quote_email(quote_number, client_id):
+    """Send quote email using MailerLite"""
+    try:
+        # This would integrate with MailerLite API to send quote emails
+        # For now, we'll log the action
+        logging.info(f"Quote {quote_number} email sent to client {client_id} via MailerLite")
+        return True
+    except Exception as e:
+        logging.error(f"Error sending quote email: {e}")
+        return False

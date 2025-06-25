@@ -553,6 +553,35 @@ def admin_financial_reports():
         flash('Error loading financial reports', 'error')
         return redirect('/admin-home')
 
+@app.route('/admin/quotes')
+def admin_quotes():
+    """Quote management page with comprehensive quote workflow"""
+    try:
+        with db.engine.connect() as conn:
+            # Get all quotes with client information
+            result = conn.execute(db.text("""
+                SELECT q.quote_number, q.client_id, q.status, q.total_amount, 
+                       q.tax_amount, q.created_at, q.accepted_at, q.message,
+                       c.name as client_name, c.email as client_email
+                FROM quotes q
+                LEFT JOIN clients c ON q.client_id = c.client_id
+                ORDER BY q.created_at DESC
+            """))
+            quotes_data = [dict(row._mapping) for row in result]
+            
+            # Format dates for display
+            for quote in quotes_data:
+                if quote['created_at']:
+                    quote['created_at'] = quote['created_at'].strftime('%m/%d/%Y')
+                if quote['accepted_at']:
+                    quote['accepted_at'] = quote['accepted_at'].strftime('%m/%d/%Y')
+        
+        return render_template('admin/sections/quotes_section.html', quotes=quotes_data)
+    except Exception as e:
+        logging.error(f"Quotes page error: {e}")
+        flash('Error loading quotes data', 'error')
+        return redirect('/admin-home')
+
 @app.route('/admin/analytics')
 def admin_analytics():
     """Business analytics page with PostgreSQL data"""

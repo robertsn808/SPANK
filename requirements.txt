@@ -17,3 +17,5 @@ requests
 pillow
 reportlab
 pillow
+sendgrid
+sqlalchemy

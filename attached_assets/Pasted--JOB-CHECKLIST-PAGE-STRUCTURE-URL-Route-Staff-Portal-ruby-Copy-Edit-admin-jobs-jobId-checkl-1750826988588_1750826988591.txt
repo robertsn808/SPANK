@@ -1,0 +1,101 @@
+✅ JOB CHECKLIST PAGE STRUCTURE
+🗂️ URL Route (Staff Portal)
+ruby
+Copy
+Edit
+/admin/jobs/:jobId/checklist
+🧱 PAGE COMPONENTS
+Section	Functionality
+🔹 Job Info Header	Job ID, client name, address, date, assigned staff
+✅ Checklist Table	List of required tasks with checkboxes, status, timestamps
+📝 Notes	Staff notes/comments (editable + log history)
+📸 Photos	Before/After uploads with preview
+📦 Materials Used	Input or select materials tied to job
+📌 Completion Lock	"Mark Job Complete" button (only if all tasks checked)
+
+💾 DATABASE DESIGN
+job_checklist_items
+sql
+Copy
+Edit
+CREATE TABLE job_checklist_items (
+  id SERIAL PRIMARY KEY,
+  job_id INT REFERENCES jobs(job_id),
+  task_description TEXT,
+  is_completed BOOLEAN DEFAULT FALSE,
+  completed_by INT REFERENCES staff(staff_id),
+  completed_at TIMESTAMP
+);
+job_notes
+sql
+Copy
+Edit
+CREATE TABLE job_notes (
+  note_id SERIAL PRIMARY KEY,
+  job_id INT REFERENCES jobs(job_id),
+  author_id INT REFERENCES staff(staff_id),
+  content TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+job_materials
+sql
+Copy
+Edit
+CREATE TABLE job_materials (
+  id SERIAL PRIMARY KEY,
+  job_id INT REFERENCES jobs(job_id),
+  material_name TEXT,
+  quantity_used INT,
+  supplier TEXT,
+  cost DECIMAL(10,2)
+);
+job_photos
+sql
+Copy
+Edit
+CREATE TABLE job_photos (
+  id SERIAL PRIMARY KEY,
+  job_id INT REFERENCES jobs(job_id),
+  file_url TEXT,
+  photo_type VARCHAR(20) CHECK (photo_type IN ('before', 'after')),
+  uploaded_by INT REFERENCES staff(staff_id),
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+🖥️ FRONTEND LOGIC
+✅ Checklist UI (React-style example)
+jsx
+Copy
+Edit
+<ChecklistItem
+  key={item.id}
+  checked={item.is_completed}
+  label={item.task_description}
+  onToggle={() => updateItem(item.id)}
+/>
+🔒 Mark Complete Logic
+js
+Copy
+Edit
+if (allChecklistItemsComplete) {
+  enableMarkCompleteButton();
+} else {
+  disableMarkCompleteButton();
+}
+📲 INTERACTIONS
+Each checkbox updates the DB via PATCH /job/:jobId/checklist/:itemId
+
+Notes auto-save with debounce (like Notion)
+
+Photos validate file size/type and save to /uploads/:jobId
+
+"Mark Complete" disables once submitted
+
+🧠 Optional Features
+Assign tasks to individual crew members
+
+Reorder tasks via drag-and-drop
+
+Add due dates/reminders to tasks
+
+Checklist templates by service type
+
