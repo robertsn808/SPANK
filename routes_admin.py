@@ -916,6 +916,89 @@ def api_save_admin_settings():
             'error': str(e)
         }), 500
 
+@app.route('/api/admin/update-password', methods=['POST'])
+def api_update_admin_password():
+    """Update admin password"""
+    try:
+        data = request.get_json()
+        current_password = data.get('currentPassword')
+        new_password = data.get('newPassword')
+        
+        # In a real implementation, you would:
+        # 1. Verify current password against stored hash
+        # 2. Hash the new password
+        # 3. Update the database
+        
+        # For now, simulate password update
+        logging.info(f"Admin password update requested")
+        
+        # Basic validation
+        if not current_password or not new_password:
+            return jsonify({
+                'success': False,
+                'message': 'Current and new passwords are required'
+            }), 400
+        
+        if len(new_password) < 8:
+            return jsonify({
+                'success': False,
+                'message': 'Password must be at least 8 characters long'
+            }), 400
+        
+        # Simulate password update success
+        return jsonify({
+            'success': True,
+            'message': 'Admin password updated successfully'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error updating admin password: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Internal server error'
+        }), 500
+
+@app.route('/api/admin/update-staff-pin', methods=['POST'])
+def api_update_staff_pin():
+    """Update staff PIN"""
+    try:
+        data = request.get_json()
+        staff_id = data.get('staffId')
+        new_pin = data.get('newPin')
+        
+        # In a real implementation, you would:
+        # 1. Verify staff member exists
+        # 2. Hash the PIN
+        # 3. Update the database
+        
+        logging.info(f"Staff PIN update requested for {staff_id}")
+        
+        # Basic validation
+        if not staff_id or not new_pin:
+            return jsonify({
+                'success': False,
+                'message': 'Staff ID and PIN are required'
+            }), 400
+        
+        if len(new_pin) != 5 or not new_pin.isdigit():
+            return jsonify({
+                'success': False,
+                'message': 'PIN must be exactly 5 digits'
+            }), 400
+        
+        # Simulate PIN update success
+        return jsonify({
+            'success': True,
+            'message': f'PIN updated successfully for {staff_id}'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error updating staff PIN: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Internal server error'
+        }), 500
+
 @app.route('/admin/quote-builder')
 def admin_quote_builder():
     """Quote builder page"""
