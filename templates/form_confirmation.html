@@ -1,0 +1,317 @@
+{% extends "public/base.html" %}
+
+{% block title %}Thank You - SPANKKS Construction{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirmation-hero {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, #e6a300 100%);
+        color: var(--text-dark);
+        padding: 120px 0 80px;
+        margin-top: 80px;
+        text-align: center;
+    }
+    
+    .confirmation-content {
+        background: white;
+        border-radius: 15px;
+        padding: 50px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-top: -50px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .success-icon {
+        font-size: 4rem;
+        color: var(--secondary-color);
+        margin-bottom: 30px;
+    }
+    
+    .next-steps {
+        background: var(--bg-light);
+        border-radius: 15px;
+        padding: 40px;
+        margin-top: 40px;
+    }
+    
+    .step-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 25px;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .step-number {
+        background: var(--primary-color);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-right: 20px;
+        flex-shrink: 0;
+    }
+    
+    .step-content h5 {
+        color: var(--primary-color);
+        margin-bottom: 5px;
+    }
+    
+    .contact-card {
+        background: var(--primary-color);
+        color: white;
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        margin-top: 40px;
+    }
+    
+    .contact-item {
+        margin-bottom: 20px;
+    }
+    
+    .contact-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .contact-icon {
+        background: var(--secondary-color);
+        color: var(--text-dark);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+    }
+    
+    .emergency-notice {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 30px;
+        text-align: center;
+    }
+    
+    .emergency-notice .text-warning {
+        color: #856404 !important;
+    }
+    
+    @media (max-width: 768px) {
+        .confirmation-hero {
+            padding: 100px 0 60px;
+        }
+        
+        .confirmation-content {
+            padding: 30px;
+            margin-top: -30px;
+        }
+        
+        .step-item {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .step-number {
+            margin-right: 0;
+            margin-bottom: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="confirmation-hero">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">Thank You!</h1>
+                <p class="lead">Your message has been received and we'll be in touch soon.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Confirmation Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="confirmation-content text-center">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    
+                    <h2 class="mb-4">Message Sent Successfully</h2>
+                    <p class="lead mb-4">We've received your {{ form_type or 'inquiry' }} and our team will review it promptly. You should expect to hear from us within 24 hours.</p>
+                    
+                    {% if reference_number %}
+                    <div class="alert alert-info">
+                        <strong>Reference Number:</strong> {{ reference_number }}
+                        <br><small>Please keep this number for your records</small>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="next-steps">
+                        <h4 class="mb-4">What Happens Next?</h4>
+                        
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h5>Review & Assessment</h5>
+                                <p class="mb-0">Our team will review your request and assess the scope of work needed.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h5>Contact & Schedule</h5>
+                                <p class="mb-0">We'll contact you within 24 hours to discuss details and schedule your consultation.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h5>Professional Service</h5>
+                                <p class="mb-0">Our licensed professionals will provide expert consultation and transparent pricing.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <h4 class="mb-4">Need Immediate Assistance?</h4>
+                        
+                        <div class="contact-item">
+                            <span class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </span>
+                            <strong>(808) 778-9132</strong>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <span class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            <strong>spank808@gmail.com</strong>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <span class="contact-icon">
+                                <i class="fas fa-clock"></i>
+                            </span>
+                            <strong>Mon-Fri: 7AM-5PM</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="emergency-notice">
+                        <h6 class="text-warning mb-2">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Emergency Repairs?
+                        </h6>
+                        <p class="mb-0">For urgent issues like water leaks, electrical problems, or structural damage, please call us immediately at <strong>(808) 778-9132</strong></p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{{ url_for('public_home') }}" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-home me-2"></i>Return Home
+                        </a>
+                        <a href="{{ url_for('spankks_skool') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-graduation-cap me-2"></i>Explore SPANKKS SKOOL
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Additional Resources -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h3 class="mb-4">While You Wait</h3>
+                <p class="lead mb-4">Explore our free DIY education platform and learn essential home repair skills</p>
+                
+                <div class="row justify-content-center">
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-graduation-cap fa-2x text-primary mb-3"></i>
+                                <h5>SPANKKS SKOOL</h5>
+                                <p>Free DIY courses with professional tips and safety guidance.</p>
+                                <a href="{{ url_for('spankks_skool') }}" class="btn btn-outline-primary">Start Learning</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-calculator fa-2x text-primary mb-3"></i>
+                                <h5>Pricing Guide</h5>
+                                <p>Transparent pricing for all our professional services in Hawaii.</p>
+                                <a href="{{ url_for('public_pricing') }}" class="btn btn-outline-primary">View Pricing</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-info-circle fa-2x text-primary mb-3"></i>
+                                <h5>About Us</h5>
+                                <p>Learn more about our team, values, and commitment to quality.</p>
+                                <a href="{{ url_for('public_about') }}" class="btn btn-outline-primary">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate success icon
+    const successIcon = document.querySelector('.success-icon i');
+    if (successIcon) {
+        setTimeout(() => {
+            successIcon.style.transform = 'scale(1.1)';
+            successIcon.style.transition = 'transform 0.3s ease';
+        }, 500);
+        
+        setTimeout(() => {
+            successIcon.style.transform = 'scale(1)';
+        }, 800);
+    }
+    
+    // Animate step items
+    const stepItems = document.querySelectorAll('.step-item');
+    stepItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        item.style.transition = 'all 0.6s ease';
+        
+        setTimeout(() => {
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+        }, 1000 + (index * 200));
+    });
+});
+</script>
+{% endblock %}

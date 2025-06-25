@@ -1,0 +1,464 @@
+{% extends "public/base.html" %}
+
+{% block title %}Professional Pricing - SPANKKS Construction Hawaii{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pricing-hero {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1a3e32 100%);
+        color: white;
+        padding: 120px 0 80px;
+        margin-top: 80px;
+    }
+    
+    .pricing-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .pricing-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .category-header {
+        background: var(--primary-color);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .service-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .service-item:last-child {
+        border-bottom: none;
+    }
+    
+    .service-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        flex: 1;
+    }
+    
+    .service-description {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-top: 5px;
+    }
+    
+    .service-price {
+        font-weight: 700;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        margin-left: 20px;
+    }
+    
+    .service-unit {
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    
+    .portal-badge {
+        background: var(--secondary-color);
+        color: var(--text-dark);
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+    
+    .membership-section {
+        background: var(--bg-light);
+        padding: 60px 0;
+        margin-top: 60px;
+    }
+    
+    .membership-card {
+        background: white;
+        border-radius: 15px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .membership-card.featured {
+        border: 3px solid var(--secondary-color);
+        transform: scale(1.05);
+    }
+    
+    .membership-card.featured::before {
+        content: 'MOST POPULAR';
+        position: absolute;
+        top: 20px;
+        right: -30px;
+        background: var(--secondary-color);
+        color: var(--text-dark);
+        padding: 5px 40px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        transform: rotate(45deg);
+    }
+    
+    .membership-price {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 20px 0;
+    }
+    
+    .membership-price .currency {
+        font-size: 1.5rem;
+        vertical-align: top;
+    }
+    
+    .membership-price .period {
+        font-size: 1rem;
+        color: var(--text-light);
+    }
+    
+    .package-section {
+        padding: 60px 0;
+    }
+    
+    .package-card {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1a3e32 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .package-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.1);
+        transform: rotate(45deg);
+    }
+    
+    .package-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .discount-badge {
+        background: var(--secondary-color);
+        color: var(--text-dark);
+        padding: 8px 15px;
+        border-radius: 25px;
+        font-weight: 700;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+    
+    .consultation-cta {
+        background: var(--secondary-color);
+        padding: 40px 0;
+        text-align: center;
+        margin-top: 60px;
+    }
+    
+    .consultation-cta h3 {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+    
+    .get-quote-btn {
+        background: var(--primary-color);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .get-quote-btn:hover {
+        background: #1a3e32;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .pricing-hero {
+            padding: 100px 0 60px;
+        }
+        
+        .pricing-card {
+            padding: 20px;
+        }
+        
+        .service-item {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 20px 0;
+        }
+        
+        .service-price {
+            margin-left: 0;
+            margin-top: 10px;
+        }
+        
+        .membership-card.featured {
+            transform: none;
+            margin-top: 20px;
+        }
+        
+        .membership-price {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="pricing-hero">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">Professional Pricing</h1>
+                <p class="lead mb-4">Transparent, competitive rates for all your home improvement needs. Quality work at honest prices throughout Oahu.</p>
+                <p class="mb-0"><i class="fas fa-shield-alt me-2"></i> Licensed • Insured • Guaranteed</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Pricing -->
+<section class="py-5">
+    <div class="container">
+        {% for category_name, services in services_by_category.items() %}
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="category-header">
+                    <h2 class="mb-0">{{ category_name }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            {% for service in services %}
+            <div class="col-lg-6 col-md-12 mb-4">
+                <div class="pricing-card">
+                    <div class="service-item">
+                        <div class="service-info">
+                            <div class="service-name">
+                                {{ service.name }}
+                                {% if service.portal_access %}
+                                <span class="portal-badge">Portal Access</span>
+                                {% endif %}
+                            </div>
+                            <div class="service-description">{{ service.description }}</div>
+                        </div>
+                        <div class="service-pricing">
+                            <div class="service-price">
+                                {% if service.min_price == service.max_price %}
+                                    {% if service.min_price == 0 %}
+                                        FREE
+                                    {% else %}
+                                        ${{ "%.2f"|format(service.min_price) }}
+                                    {% endif %}
+                                {% else %}
+                                    ${{ "%.2f"|format(service.min_price) }} - ${{ "%.2f"|format(service.max_price) }}
+                                {% endif %}
+                            </div>
+                            <div class="service-unit">{{ service.unit }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>
+                            {% if service.estimated_hours < 1 %}
+                                {{ (service.estimated_hours * 60)|int }} min
+                            {% elif service.estimated_hours == 1 %}
+                                1 hour
+                            {% else %}
+                                {{ service.estimated_hours }} hours
+                            {% endif %}
+                        </small>
+                        
+                        <a href="{{ url_for('consultation') }}?service={{ service.service_code }}" class="get-quote-btn">
+                            Get Quote
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Service Packages -->
+<section class="package-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title">Service Packages</h2>
+                <p class="lead">Save money with our bundled service packages</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            {% for package in service_packages %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="package-card">
+                    <div class="package-content">
+                        {% if package.discount_percentage %}
+                        <div class="discount-badge">Save {{ package.discount_percentage }}%</div>
+                        {% endif %}
+                        
+                        <h4 class="mb-3">{{ package.name }}</h4>
+                        <p class="mb-4">{{ package.description }}</p>
+                        
+                        <div class="package-price mb-3">
+                            <span class="h3">${{ "%.0f"|format(package.base_price) }}</span>
+                            <small class="ms-2">starting at</small>
+                        </div>
+                        
+                        <div class="package-details mb-4">
+                            <small>
+                                <i class="fas fa-clock me-2"></i>{{ package.estimated_hours }} hours estimated
+                            </small>
+                        </div>
+                        
+                        <a href="{{ url_for('consultation') }}?package={{ package.name|urlencode }}" class="btn btn-light btn-sm">
+                            <i class="fas fa-calculator me-2"></i>Get Custom Quote
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Membership Plans -->
+<section class="membership-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title">Membership Plans</h2>
+                <p class="lead">Join the SPANKKS family and save on all services</p>
+            </div>
+        </div>
+        
+        <div class="row justify-content-center">
+            {% for membership in membership_types %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="membership-card {% if membership.name == 'SPANKKS Plus' %}featured{% endif %}">
+                    <h4 class="mb-3">{{ membership.name }}</h4>
+                    <div class="membership-price">
+                        <span class="currency">$</span>{{ membership.monthly_fee|int }}<span class="period">/mo</span>
+                    </div>
+                    <p class="text-muted mb-4">{{ membership.description }}</p>
+                    
+                    <div class="benefits-list text-start">
+                        {% for benefit in membership.benefits %}
+                        <div class="benefit-item mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>{{ benefit }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="discount-highlight mt-4 p-3 bg-light rounded">
+                        <strong>{{ membership.discount_percentage }}% Off All Services</strong>
+                    </div>
+                    
+                    <a href="{{ url_for('consultation') }}?membership={{ membership.name|urlencode }}" class="btn btn-primary mt-4">
+                        Choose Plan
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Hawaii Tax Notice -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p class="mb-0 text-muted">
+                    <i class="fas fa-info-circle me-2"></i>
+                    All prices subject to Hawaii General Excise Tax (4.712% on O'ahu). 
+                    Licensed contractor #SPANKKS-2025 • Fully insured
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="consultation-cta">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h3>Ready to Get Started?</h3>
+                <p class="lead mb-4">Get a free consultation and personalized quote for your project</p>
+                <a href="{{ url_for('consultation') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-calendar-check me-2"></i>Schedule Free Consultation
+                </a>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-phone me-2"></i>(808) 778-9132 • 
+                        <i class="fas fa-envelope me-2"></i>spank808@gmail.com
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+    
+    // Add loading state to quote buttons
+    document.querySelectorAll('.get-quote-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+        });
+    });
+});
+</script>
+{% endblock %}

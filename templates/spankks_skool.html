@@ -1,0 +1,540 @@
+{% extends "public/base.html" %}
+
+{% block title %}SPANKKS SKOOL - Free DIY Education Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    .skool-hero {
+        background: linear-gradient(rgba(44, 95, 78, 0.9), rgba(26, 62, 50, 0.9)), url('/static/images/spank-school-hero.jpg') center/cover;
+        color: white;
+        padding: 120px 0 80px;
+        margin-top: 80px;
+    }
+    
+    .course-category {
+        margin-bottom: 60px;
+    }
+    
+    .category-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1a3e32 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .category-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: var(--secondary-color);
+    }
+    
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+    }
+    
+    .course-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: none;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .course-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+    
+    .course-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0;
+        flex: 1;
+    }
+    
+    .skill-badge {
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 15px;
+        white-space: nowrap;
+    }
+    
+    .skill-beginner {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .skill-intermediate {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .skill-advanced {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .course-description {
+        color: var(--text-light);
+        margin-bottom: 20px;
+        line-height: 1.6;
+        flex: 1;
+    }
+    
+    .course-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: var(--bg-light);
+        border-radius: 10px;
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+    
+    .course-reward {
+        background: var(--secondary-color);
+        color: var(--text-dark);
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+    
+    .course-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: auto;
+    }
+    
+    .btn-start {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        flex: 1;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-start:hover {
+        background: #1a3e32;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .btn-preview {
+        background: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-preview:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .stats-section {
+        background: var(--bg-light);
+        padding: 60px 0;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .stat-icon {
+        font-size: 3rem;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        display: block;
+        margin-bottom: 10px;
+    }
+    
+    .benefits-section {
+        background: var(--primary-color);
+        color: white;
+        padding: 80px 0;
+    }
+    
+    .benefit-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    
+    .benefit-icon {
+        background: var(--secondary-color);
+        color: var(--text-dark);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 20px;
+        flex-shrink: 0;
+    }
+    
+    .cta-section {
+        background: var(--secondary-color);
+        color: var(--text-dark);
+        padding: 60px 0;
+        text-align: center;
+    }
+    
+    @media (max-width: 768px) {
+        .skool-hero {
+            padding: 100px 0 60px;
+        }
+        
+        .course-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .course-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .skill-badge {
+            margin-left: 0;
+            margin-top: 10px;
+            align-self: flex-start;
+        }
+        
+        .course-stats {
+            flex-direction: column;
+            text-align: center;
+            gap: 10px;
+        }
+        
+        .course-actions {
+            flex-direction: column;
+        }
+        
+        .benefit-item {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .benefit-icon {
+            margin-right: 0;
+            margin-bottom: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="skool-hero">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">SPANKKS SKOOL</h1>
+                <p class="lead mb-4">Free DIY education platform powered by professional expertise. Learn essential home repair skills safely, earn SPANK Bucks, and know when to call the pros.</p>
+                <div class="d-flex justify-content-center flex-wrap">
+                    <div class="me-4 mb-2">
+                        <i class="fas fa-graduation-cap fa-lg me-2"></i>{{ courses|length }} Courses
+                    </div>
+                    <div class="me-4 mb-2">
+                        <i class="fas fa-play-circle fa-lg me-2"></i>{{ total_lessons }} Lessons
+                    </div>
+                    <div class="mb-2">
+                        <i class="fas fa-coins fa-lg me-2"></i>${{ total_rewards }} SPANK Bucks Available
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Course Categories -->
+<section class="py-5">
+    <div class="container">
+        {% for category, courses_list in courses_by_category.items() %}
+        <div class="course-category">
+            <div class="category-header">
+                <div class="category-icon">
+                    {% if category == 'Basics Everyone Should Know' %}
+                        <i class="fas fa-tools"></i>
+                    {% elif category == 'Surface & Structure' %}
+                        <i class="fas fa-hammer"></i>
+                    {% elif category == 'Before You Renovate' %}
+                        <i class="fas fa-home"></i>
+                    {% elif category == 'Fence & Exterior' %}
+                        <i class="fas fa-border-all"></i>
+                    {% else %}
+                        <i class="fas fa-wrench"></i>
+                    {% endif %}
+                </div>
+                <h2 class="mb-0">{{ category }}</h2>
+            </div>
+            
+            <div class="course-grid">
+                {% for course in courses_list %}
+                <div class="course-card">
+                    <div class="course-header">
+                        <h4 class="course-title">{{ course.title }}</h4>
+                        <span class="skill-badge skill-{{ course.skill_level.lower() }}">
+                            {{ course.skill_level }}
+                        </span>
+                    </div>
+                    
+                    <p class="course-description">{{ course.description }}</p>
+                    
+                    <div class="course-stats">
+                        <div>
+                            <i class="fas fa-play-circle me-1"></i>
+                            {{ course.lesson_count or 0 }} lessons
+                        </div>
+                        <div>
+                            <i class="fas fa-clock me-1"></i>
+                            {{ course.estimated_duration or 10 }} min
+                        </div>
+                        <div>
+                            <i class="fas fa-gamepad me-1"></i>
+                            {{ course.interactive_lessons or 0 }} interactive
+                        </div>
+                    </div>
+                    
+                    <div class="course-reward">
+                        <i class="fas fa-coins me-2"></i>${{ course.spank_bucks_reward }} SPANK Bucks
+                    </div>
+                    
+                    <div class="course-actions">
+                        <a href="#" class="btn-start" onclick="startCourse('{{ course.title|replace("'", "\\'") }}')">
+                            <i class="fas fa-play me-2"></i>Start Course
+                        </a>
+                        <a href="#" class="btn-preview" onclick="previewCourse('{{ course.title|replace("'", "\\'") }}')">
+                            <i class="fas fa-eye me-2"></i>Preview
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Platform Stats -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title">SPANKKS SKOOL by the Numbers</h2>
+                <p class="lead">Real education, real results</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <span class="stat-number">{{ courses|length }}</span>
+                    <div class="stat-label">DIY Courses</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <span class="stat-number">1000+</span>
+                    <div class="stat-label">Students Taught</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <span class="stat-number">${{ total_rewards }}</span>
+                    <div class="stat-label">SPANK Bucks Earned</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <span class="stat-number">100%</span>
+                    <div class="stat-label">Safety Focused</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Benefits -->
+<section class="benefits-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <h2 class="mb-4">Why Choose SPANKKS SKOOL?</h2>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-hard-hat"></i>
+                    </div>
+                    <div>
+                        <h5>Professional Expertise</h5>
+                        <p class="mb-0">Courses created by licensed contractors with real-world experience in Hawaii.</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-shield-check"></i>
+                    </div>
+                    <div>
+                        <h5>Safety First</h5>
+                        <p class="mb-0">Every course emphasizes proper safety protocols and when to call professionals.</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div>
+                        <h5>Earn SPANK Bucks</h5>
+                        <p class="mb-0">Get rewarded for learning with SPANK Bucks you can use on professional services.</p>
+                    </div>
+                </div>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div>
+                        <h5>Learn Anywhere</h5>
+                        <p class="mb-0">Mobile-friendly platform lets you learn at your own pace, anytime.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <img src="/static/images/spank-school-learning.jpg" alt="SPANKKS SKOOL Learning" class="img-fluid rounded-3 shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2>Ready to Start Learning?</h2>
+                <p class="lead mb-4">Join thousands of Hawaii homeowners mastering essential repair skills</p>
+                <div class="d-flex justify-content-center flex-wrap">
+                    <a href="#" class="btn btn-primary btn-lg me-3 mb-2" onclick="startFirstCourse()">
+                        <i class="fas fa-play me-2"></i>Start Your First Course
+                    </a>
+                    <a href="{{ url_for('public_contact') }}" class="btn btn-outline-primary btn-lg mb-2">
+                        <i class="fas fa-question-circle me-2"></i>Need Professional Help?
+                    </a>
+                </div>
+                
+                <div class="mt-4">
+                    <small>
+                        <i class="fas fa-graduation-cap me-2"></i>100% Free Education
+                        <span class="mx-3">|</span>
+                        <i class="fas fa-coins me-2"></i>Earn Rewards
+                        <span class="mx-3">|</span>
+                        <i class="fas fa-shield-alt me-2"></i>Professional Quality
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function startCourse(courseTitle) {
+    alert(`Starting course: ${courseTitle}\n\nFeature coming soon! This will launch the interactive course player with lessons, quizzes, and SPANK Bucks rewards.`);
+}
+
+function previewCourse(courseTitle) {
+    alert(`Preview for: ${courseTitle}\n\nThis will show course outline, sample lessons, and learning objectives.`);
+}
+
+function startFirstCourse() {
+    alert("Welcome to SPANKKS SKOOL!\n\nWe recommend starting with 'Fix a Leaky Faucet' - a essential skill every homeowner should know.\n\nFull interactive courses coming soon!");
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate stats on scroll
+    const stats = document.querySelectorAll('.stat-number');
+    
+    const animateStats = () => {
+        stats.forEach(stat => {
+            const rect = stat.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                stat.style.opacity = '1';
+                stat.style.transform = 'translateY(0)';
+            }
+        });
+    };
+    
+    // Initial setup
+    stats.forEach(stat => {
+        stat.style.opacity = '0';
+        stat.style.transform = 'translateY(20px)';
+        stat.style.transition = 'all 0.6s ease';
+    });
+    
+    window.addEventListener('scroll', animateStats);
+    animateStats();
+});
+</script>
+{% endblock %}

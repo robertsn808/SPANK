@@ -1,0 +1,657 @@
+{% extends "public/base.html" %}
+
+{% block title %}Free Consultation - SPANKKS Construction Hawaii{% endblock %}
+
+{% block extra_css %}
+<style>
+    .consultation-hero {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1a3e32 100%);
+        color: white;
+        padding: 120px 0 80px;
+        margin-top: 80px;
+    }
+    
+    .consultation-form {
+        background: white;
+        border-radius: 15px;
+        padding: 50px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-top: -50px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .form-step {
+        display: none;
+    }
+    
+    .form-step.active {
+        display: block;
+    }
+    
+    .step-indicator {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 40px;
+    }
+    
+    .step {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e9ecef;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        margin: 0 10px;
+        position: relative;
+    }
+    
+    .step.active {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .step.completed {
+        background: var(--secondary-color);
+        color: var(--text-dark);
+    }
+    
+    .step::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50px;
+        width: 20px;
+        height: 2px;
+        background: #e9ecef;
+        transform: translateY(-50%);
+    }
+    
+    .step:last-child::after {
+        display: none;
+    }
+    
+    .step.completed::after {
+        background: var(--secondary-color);
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 12px 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(44, 95, 78, 0.25);
+        outline: none;
+    }
+    
+    .service-option {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .service-option:hover {
+        border-color: var(--primary-color);
+        background: var(--bg-light);
+    }
+    
+    .service-option.selected {
+        border-color: var(--primary-color);
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .service-option input[type="radio"] {
+        display: none;
+    }
+    
+    .service-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    
+    .service-price {
+        color: var(--text-light);
+        font-size: 0.9rem;
+    }
+    
+    .service-option.selected .service-price {
+        color: rgba(255,255,255,0.8);
+    }
+    
+    .btn-nav {
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #1a3e32;
+        transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+    
+    .consultation-benefits {
+        background: var(--bg-light);
+        padding: 60px 0;
+    }
+    
+    .benefit-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        height: 100%;
+    }
+    
+    .benefit-icon {
+        font-size: 2.5rem;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+    }
+    
+    .summary-section {
+        background: var(--bg-light);
+        border-radius: 10px;
+        padding: 30px;
+        margin-top: 30px;
+    }
+    
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .summary-item:last-child {
+        border-bottom: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .consultation-hero {
+            padding: 100px 0 60px;
+        }
+        
+        .consultation-form {
+            padding: 30px;
+            margin-top: -30px;
+        }
+        
+        .step-indicator {
+            flex-wrap: wrap;
+        }
+        
+        .step {
+            margin: 5px;
+        }
+        
+        .step::after {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="consultation-hero">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">Free Consultation</h1>
+                <p class="lead mb-4">Get a personalized assessment of your project with transparent pricing and professional recommendations. No obligation, no pressure – just honest advice.</p>
+                <div class="d-flex justify-content-center">
+                    <div class="me-4">
+                        <i class="fas fa-dollar-sign fa-lg me-2"></i>100% Free
+                    </div>
+                    <div class="me-4">
+                        <i class="fas fa-clock fa-lg me-2"></i>30-45 Minutes
+                    </div>
+                    <div>
+                        <i class="fas fa-handshake fa-lg me-2"></i>No Obligation
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Consultation Form -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="consultation-form">
+                    <form id="consultationForm" action="{{ url_for('consultation_submit') }}" method="POST">
+                        <!-- Step Indicator -->
+                        <div class="step-indicator">
+                            <div class="step active" data-step="1">1</div>
+                            <div class="step" data-step="2">2</div>
+                            <div class="step" data-step="3">3</div>
+                            <div class="step" data-step="4">4</div>
+                        </div>
+                        
+                        <!-- Step 1: Contact Information -->
+                        <div class="form-step active" data-step="1">
+                            <h3 class="text-center mb-4">Contact Information</h3>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="name" class="form-label">Full Name *</label>
+                                        <input type="text" class="form-control" id="name" name="name" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="phone" class="form-label">Phone Number *</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="address" class="form-label">Property Address *</label>
+                                <input type="text" class="form-control" id="address" name="address" placeholder="Street address, City, HI ZIP" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 2: Service Selection -->
+                        <div class="form-step" data-step="2">
+                            <h3 class="text-center mb-4">What Service Do You Need?</h3>
+                            
+                            <div id="serviceOptions">
+                                {% for category_name, services in services_by_category.items() %}
+                                    {% if services %}
+                                        <h5 class="mt-4 mb-3">{{ category_name }}</h5>
+                                        {% for service in services %}
+                                        <div class="service-option" onclick="selectService(this)">
+                                            <input type="radio" name="service_code" value="{{ service.service_code }}" id="service_{{ service.service_code }}">
+                                            <div class="service-title">{{ service.name }}</div>
+                                            <div class="service-price">
+                                                {% if service.min_price == service.max_price %}
+                                                    {% if service.min_price == 0 %}
+                                                        FREE consultation
+                                                    {% else %}
+                                                        Starting at ${{ "%.0f"|format(service.min_price) }}
+                                                    {% endif %}
+                                                {% else %}
+                                                    ${{ "%.0f"|format(service.min_price) }} - ${{ "%.0f"|format(service.max_price) }}
+                                                {% endif %}
+                                                {{ service.unit }}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                <div class="service-option" onclick="selectService(this)">
+                                    <input type="radio" name="service_code" value="custom" id="service_custom">
+                                    <div class="service-title">Custom Project</div>
+                                    <div class="service-price">Tell us about your specific needs</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 3: Project Details -->
+                        <div class="form-step" data-step="3">
+                            <h3 class="text-center mb-4">Project Details</h3>
+                            
+                            <div class="form-group">
+                                <label for="project_description" class="form-label">Describe Your Project *</label>
+                                <textarea class="form-control" id="project_description" name="project_description" rows="4" placeholder="Please provide as much detail as possible about your project, including size, materials, timeline, and any specific requirements..." required></textarea>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="timeline" class="form-label">Desired Timeline</label>
+                                        <select class="form-select" id="timeline" name="timeline">
+                                            <option value="">Select timeline...</option>
+                                            <option value="asap">As soon as possible</option>
+                                            <option value="1_week">Within 1 week</option>
+                                            <option value="2_weeks">Within 2 weeks</option>
+                                            <option value="1_month">Within 1 month</option>
+                                            <option value="flexible">Flexible</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="budget" class="form-label">Estimated Budget</label>
+                                        <select class="form-select" id="budget" name="budget">
+                                            <option value="">Select budget range...</option>
+                                            <option value="under_500">Under $500</option>
+                                            <option value="500_1000">$500 - $1,000</option>
+                                            <option value="1000_2500">$1,000 - $2,500</option>
+                                            <option value="2500_5000">$2,500 - $5,000</option>
+                                            <option value="5000_10000">$5,000 - $10,000</option>
+                                            <option value="over_10000">Over $10,000</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="consultation_preference" class="form-label">Consultation Preference</label>
+                                <select class="form-select" id="consultation_preference" name="consultation_preference">
+                                    <option value="in_person">In-person visit (recommended)</option>
+                                    <option value="video_call">Video call consultation</option>
+                                    <option value="phone_call">Phone consultation</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 4: Summary & Schedule -->
+                        <div class="form-step" data-step="4">
+                            <h3 class="text-center mb-4">Review & Schedule</h3>
+                            
+                            <div class="summary-section">
+                                <h5 class="mb-3">Consultation Summary</h5>
+                                <div class="summary-item">
+                                    <span>Contact:</span>
+                                    <span id="summary_contact"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Service:</span>
+                                    <span id="summary_service"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Timeline:</span>
+                                    <span id="summary_timeline"></span>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Consultation Fee:</span>
+                                    <span class="text-success">FREE</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mt-4">
+                                <label for="preferred_contact_time" class="form-label">Preferred Contact Time</label>
+                                <select class="form-select" id="preferred_contact_time" name="preferred_contact_time">
+                                    <option value="morning">Morning (8AM - 12PM)</option>
+                                    <option value="afternoon">Afternoon (12PM - 5PM)</option>
+                                    <option value="evening">Evening (5PM - 7PM)</option>
+                                    <option value="anytime">Anytime</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter" value="yes">
+                                    <label class="form-check-label" for="newsletter">
+                                        Send me SPANKKS SKOOL tips and special offers
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-secondary btn-nav" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                                <i class="fas fa-arrow-left me-2"></i>Previous
+                            </button>
+                            <div></div>
+                            <button type="button" class="btn btn-primary btn-nav" id="nextBtn" onclick="changeStep(1)">
+                                Next<i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-nav" id="submitBtn" style="display: none;">
+                                <i class="fas fa-calendar-check me-2"></i>Schedule Consultation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Consultation Benefits -->
+<section class="consultation-benefits">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title">What to Expect</h2>
+                <p class="lead">Your consultation includes everything you need to make informed decisions</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h5>Professional Assessment</h5>
+                    <p>Thorough evaluation of your project scope, requirements, and potential challenges.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h5>Detailed Estimate</h5>
+                    <p>Itemized quote with material costs, labor, timeline, and transparent pricing.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h5>Expert Recommendations</h5>
+                    <p>Professional advice on materials, methods, and alternatives to maximize value.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-shield-check"></i>
+                    </div>
+                    <h5>No Obligation</h5>
+                    <p>Take time to consider our proposal without any pressure or commitment.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentStep = 1;
+const totalSteps = 4;
+
+function changeStep(direction) {
+    const current = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+    const currentIndicator = document.querySelector(`.step[data-step="${currentStep}"]`);
+    
+    // Validate current step before proceeding
+    if (direction > 0 && !validateStep(currentStep)) {
+        return;
+    }
+    
+    // Hide current step
+    current.classList.remove('active');
+    
+    // Update step number
+    currentStep += direction;
+    
+    // Show new step
+    const next = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+    const nextIndicator = document.querySelector(`.step[data-step="${currentStep}"]`);
+    
+    next.classList.add('active');
+    nextIndicator.classList.add('active');
+    
+    // Mark previous steps as completed
+    if (direction > 0) {
+        currentIndicator.classList.add('completed');
+        currentIndicator.classList.remove('active');
+    } else {
+        currentIndicator.classList.remove('completed', 'active');
+    }
+    
+    // Update navigation buttons
+    document.getElementById('prevBtn').style.display = currentStep > 1 ? 'block' : 'none';
+    document.getElementById('nextBtn').style.display = currentStep < totalSteps ? 'block' : 'none';
+    document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'block' : 'none';
+    
+    // Update summary on last step
+    if (currentStep === totalSteps) {
+        updateSummary();
+    }
+}
+
+function validateStep(step) {
+    switch(step) {
+        case 1:
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const address = document.getElementById('address').value;
+            
+            if (!name || !phone || !email || !address) {
+                alert('Please fill in all required fields.');
+                return false;
+            }
+            break;
+            
+        case 2:
+            const selectedService = document.querySelector('input[name="service_code"]:checked');
+            if (!selectedService) {
+                alert('Please select a service.');
+                return false;
+            }
+            break;
+            
+        case 3:
+            const description = document.getElementById('project_description').value;
+            if (!description) {
+                alert('Please describe your project.');
+                return false;
+            }
+            break;
+    }
+    return true;
+}
+
+function selectService(element) {
+    // Remove selected class from all options
+    document.querySelectorAll('.service-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Add selected class to clicked option
+    element.classList.add('selected');
+    
+    // Check the radio button
+    const radio = element.querySelector('input[type="radio"]');
+    radio.checked = true;
+}
+
+function updateSummary() {
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
+    const selectedService = document.querySelector('input[name="service_code"]:checked');
+    const timeline = document.getElementById('timeline').value || 'Not specified';
+    
+    document.getElementById('summary_contact').textContent = `${name} - ${phone}`;
+    
+    if (selectedService) {
+        const serviceText = selectedService.value === 'custom' ? 'Custom Project' : 
+                           selectedService.closest('.service-option').querySelector('.service-title').textContent;
+        document.getElementById('summary_service').textContent = serviceText;
+    }
+    
+    document.getElementById('summary_timeline').textContent = timeline.replace('_', ' ');
+}
+
+// Phone number formatting
+document.getElementById('phone').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 6) {
+        value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+    } else if (value.length >= 3) {
+        value = value.replace(/(\d{3})(\d{1,3})/, '($1) $2');
+    }
+    e.target.value = value;
+});
+
+// Form submission
+document.getElementById('consultationForm').addEventListener('submit', function(e) {
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Scheduling...';
+    submitBtn.disabled = true;
+});
+
+// Auto-populate service if URL parameter exists
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const serviceCode = urlParams.get('service');
+    const membershipPlan = urlParams.get('membership');
+    const packageName = urlParams.get('package');
+    
+    if (serviceCode) {
+        const serviceOption = document.querySelector(`input[value="${serviceCode}"]`);
+        if (serviceOption) {
+            selectService(serviceOption.closest('.service-option'));
+        }
+    }
+});
+</script>
+{% endblock %}

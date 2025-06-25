@@ -2,85 +2,481 @@
 
 {% block title %}SPANKKS Construction - Professional Handyman Services in Hawaii{% endblock %}
 
-{% block content %}
-<div class="hero-section">
-    <div class="container">
-        <div class="row align-items-center min-vh-100">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold text-white mb-4">
-                    Professional Handyman Services in Hawaii
-                </h1>
-                <p class="lead text-white mb-4">
-                    SPANKKS Construction delivers reliable, professional handyman services across O'ahu. 
-                    From drywall repair to complete renovations, we handle it all with authentic craftsmanship.
-                </p>
-                <div class="d-flex gap-3">
-                    <a href="/consultation" class="btn btn-primary btn-lg">
-                        <i class="fas fa-calendar-alt me-2"></i>Schedule Consultation
-                    </a>
-                    <a href="/services" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-tools me-2"></i>View Services
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container my-5">
-    <div class="row">
-        <div class="col-12 text-center mb-5">
-            <h2 class="display-5 fw-bold text-spankks">Why Choose SPANKKS Construction?</h2>
-            <p class="lead">Professional service, authentic results, and complete customer satisfaction.</p>
-        </div>
-    </div>
-    
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card border-0 shadow h-100">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-hammer fa-3x text-spankks mb-3"></i>
-                    <h4 class="text-spankks">Professional Quality</h4>
-                    <p>5+ years of professional construction experience in Hawaii with authentic craftsmanship on every project.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow h-100">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-clock fa-3x text-spankks mb-3"></i>
-                    <h4 class="text-spankks">Reliable Service</h4>
-                    <p>On-time arrival, honest estimates, and transparent communication throughout your project.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card border-0 shadow h-100">
-                <div class="card-body text-center p-4">
-                    <i class="fas fa-island-tropical fa-3x text-spankks mb-3"></i>
-                    <h4 class="text-spankks">Local Expertise</h4>
-                    <p>Understanding Hawaii's unique construction challenges and building codes for lasting results.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+{% block extra_css %}
 <style>
-.hero-section {
-    background: linear-gradient(rgba(44, 95, 78, 0.8), rgba(26, 62, 50, 0.8)), url('/static/images/spankks-hero.jpg') center/cover;
-    min-height: 100vh;
-}
-.text-spankks {
-    color: #2c5f4e;
-}
-.btn-primary {
-    background-color: #2c5f4e;
-    border-color: #2c5f4e;
-}
-.btn-primary:hover {
-    background-color: #1a3e32;
-    border-color: #1a3e32;
-}
+    .hero-section {
+        background: linear-gradient(rgba(44, 95, 78, 0.8), rgba(26, 62, 50, 0.8)), url('/static/images/spankks-hero.jpg') center/cover;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        color: white;
+        position: relative;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+    }
+    
+    .stats-section {
+        background: var(--primary-color);
+        color: white;
+        padding: 60px 0;
+        margin-top: -50px;
+        position: relative;
+        z-index: 3;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+        display: block;
+    }
+    
+    .stat-label {
+        font-size: 1.1rem;
+        margin-top: 10px;
+    }
+    
+    .services-preview {
+        padding: 80px 0;
+        background: var(--bg-light);
+    }
+    
+    .service-card {
+        background: white;
+        border-radius: 15px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        height: 100%;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .service-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+    }
+    
+    .service-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 15px;
+    }
+    
+    .service-description {
+        color: var(--text-light);
+        margin-bottom: 20px;
+    }
+    
+    .service-price {
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    
+    .why-choose-us {
+        padding: 80px 0;
+        background: white;
+    }
+    
+    .feature-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    
+    .feature-icon {
+        background: var(--secondary-color);
+        color: var(--text-dark);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 20px;
+        flex-shrink: 0;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1a3e32 100%);
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+    }
+    
+    .cta-section h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+    
+    .testimonial-section {
+        padding: 80px 0;
+        background: var(--bg-light);
+    }
+    
+    .testimonial-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        height: 100%;
+    }
+    
+    .testimonial-text {
+        font-style: italic;
+        margin-bottom: 20px;
+        color: var(--text-dark);
+    }
+    
+    .testimonial-author {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    .stars {
+        color: var(--secondary-color);
+        margin-bottom: 15px;
+    }
+    
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+        }
+        
+        .service-card {
+            margin-bottom: 30px;
+        }
+        
+        .feature-item {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .feature-icon {
+            margin-right: 0;
+            margin-bottom: 15px;
+        }
+    }
 </style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="hero-content">
+                    <h1 class="hero-title">Professional Handyman Services in Hawaii</h1>
+                    <p class="hero-subtitle">From small repairs to major renovations, SPANKKS Construction delivers quality workmanship with authentic island expertise. Licensed, insured, and committed to excellence.</p>
+                    <div class="hero-buttons">
+                        <a href="{{ url_for('public_consultation') }}" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-calendar-check me-2"></i>Free Consultation
+                        </a>
+                        <a href="{{ url_for('public_services') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-tools me-2"></i>View Services
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <span class="stat-number">{{ stats.total_projects or '50+' }}</span>
+                    <div class="stat-label">Projects Completed</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <span class="stat-number">{{ stats.years_experience or '5+' }}</span>
+                    <div class="stat-label">Years Experience</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <span class="stat-number">{{ stats.satisfied_customers or '100+' }}</span>
+                    <div class="stat-label">Satisfied Customers</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <div class="stat-label">Emergency Service</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Preview -->
+<section class="services-preview">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title">Our Core Services</h2>
+                <p class="lead">Professional solutions for all your home improvement needs</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            {% for service in featured_services %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="service-card">
+                    <div class="service-icon">
+                        {% if 'Drywall' in service.name %}
+                            <i class="fas fa-hammer"></i>
+                        {% elif 'Flooring' in service.name %}
+                            <i class="fas fa-layer-group"></i>
+                        {% elif 'Fence' in service.name %}
+                            <i class="fas fa-border-all"></i>
+                        {% elif 'Electrical' in service.name %}
+                            <i class="fas fa-bolt"></i>
+                        {% elif 'Plumbing' in service.name %}
+                            <i class="fas fa-wrench"></i>
+                        {% elif 'Kitchen' in service.name %}
+                            <i class="fas fa-utensils"></i>
+                        {% else %}
+                            <i class="fas fa-tools"></i>
+                        {% endif %}
+                    </div>
+                    <h4 class="service-title">{{ service.name }}</h4>
+                    <p class="service-description">{{ service.description }}</p>
+                    <div class="service-price">
+                        {% if service.min_price == service.max_price %}
+                            Starting at ${{ "%.0f"|format(service.min_price) }}
+                        {% else %}
+                            ${{ "%.0f"|format(service.min_price) }} - ${{ "%.0f"|format(service.max_price) }}
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('public_consultation') }}?service={{ service.service_code }}" class="btn btn-outline-primary mt-3">
+                        Get Quote
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="row">
+            <div class="col-12 text-center mt-4">
+                <a href="{{ url_for('public_services') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-eye me-2"></i>View All Services
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="why-choose-us">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <h2 class="section-title text-start">Why Choose SPANKKS Construction?</h2>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <div>
+                        <h5>Licensed & Insured</h5>
+                        <p class="mb-0">Fully licensed contractor with comprehensive insurance coverage for your peace of mind.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h5>Reliable Service</h5>
+                        <p class="mb-0">On-time arrivals, clear communication, and respect for your schedule and property.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div>
+                        <h5>Transparent Pricing</h5>
+                        <p class="mb-0">Honest, upfront pricing with detailed estimates and no hidden fees.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h5>SPANKKS SKOOL</h5>
+                        <p class="mb-0">Free DIY education platform with professional tips and safety guidance.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <img src="/static/images/spankks-team.jpg" alt="SPANKKS Construction Team" class="img-fluid rounded-3 shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonial-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title">What Our Customers Say</h2>
+                <p class="lead">Real feedback from satisfied Hawaii homeowners</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"SPANKKS Construction transformed our kitchen beautifully. Professional work, fair pricing, and they actually showed up when they said they would!"</p>
+                    <div class="testimonial-author">- Sarah M., Honolulu</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Quick response for our emergency repair. Quality workmanship and they educated us on prevention. SPANKKS SKOOL is amazing too!"</p>
+                    <div class="testimonial-author">- Mike T., Pearl City</div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="testimonial-card">
+                    <div class="stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">"Honest pricing, quality materials, and they treat your home like their own. Finally found a reliable handyman service in Hawaii!"</p>
+                    <div class="testimonial-author">- Lisa K., Aiea</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2>Ready to Start Your Project?</h2>
+                <p class="lead mb-4">Get your free consultation and discover why Hawaii homeowners trust SPANKKS Construction</p>
+                <a href="{{ url_for('public_consultation') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-calendar-check me-2"></i>Schedule Consultation
+                </a>
+                <a href="tel:+18087789132" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-phone me-2"></i>Call (808) 778-9132
+                </a>
+                
+                <div class="mt-4">
+                    <p class="mb-0">
+                        <i class="fas fa-clock me-2"></i>Mon-Fri: 7AM-5PM • Sat: 8AM-3PM
+                        <span class="mx-3">|</span>
+                        <i class="fas fa-map-marker-alt me-2"></i>Serving All of Oahu
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate stats on scroll
+    const stats = document.querySelectorAll('.stat-number');
+    
+    const animateStats = () => {
+        stats.forEach(stat => {
+            const rect = stat.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                // Simple animation - can be enhanced
+                stat.style.opacity = '1';
+                stat.style.transform = 'translateY(0)';
+            }
+        });
+    };
+    
+    // Initial setup
+    stats.forEach(stat => {
+        stat.style.opacity = '0';
+        stat.style.transform = 'translateY(20px)';
+        stat.style.transition = 'all 0.6s ease';
+    });
+    
+    window.addEventListener('scroll', animateStats);
+    animateStats(); // Run once on load
+});
+</script>
 {% endblock %}

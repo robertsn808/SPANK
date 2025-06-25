@@ -49,7 +49,7 @@ def spankks_skool():
             total_rewards += course['spank_bucks_reward'] or 0
             total_lessons += course['lesson_count'] or 0
         
-        return render_template('public/spankks_skool.html', 
+        return render_template('spankks_skool.html', 
                              courses_by_category=courses_by_category,
                              courses=courses,
                              total_rewards=total_rewards,
@@ -57,7 +57,7 @@ def spankks_skool():
                              
     except Exception as e:
         logger.error(f"Error loading SPANKKS SKOOL data: {str(e)}")
-        return render_template('public/spankks_skool.html', 
+        return render_template('spankks_skool.html', 
                              courses_by_category={},
                              courses=[],
                              total_rewards=0,
@@ -66,7 +66,7 @@ def spankks_skool():
 logger = logging.getLogger(__name__)
 
 @app.route('/consultation')
-def public_consultation():
+def consultation():
     """Consultation booking page with services from database"""
     try:
         # Get services for consultation form
@@ -95,12 +95,12 @@ def public_consultation():
                 services_by_category[category] = []
             services_by_category[category].append(service)
         
-        return render_template('public/consultation.html', 
+        return render_template('consultation.html', 
                              services_by_category=services_by_category)
                              
     except Exception as e:
         logger.error(f"Error loading consultation page: {str(e)}")
-        return render_template('public/consultation.html', services_by_category={})
+        return render_template('consultation.html', services_by_category={})
 
 # Import successful completion message
 @app.route('/form-confirmation')
@@ -108,7 +108,7 @@ def form_confirmation():
     """Form confirmation page"""
     form_type = request.args.get('type', 'inquiry')
     reference_number = request.args.get('ref', None)
-    return render_template('public/form_confirmation.html', 
+    return render_template('form_confirmation.html', 
                          form_type=form_type,
                          reference_number=reference_number)
 
@@ -202,12 +202,12 @@ def public_services():
                 services_by_category[category] = []
             services_by_category[category].append(service)
         
-        return render_template('public/services.html', 
+        return render_template('services.html', 
                              services_by_category=services_by_category)
                              
     except Exception as e:
         logger.error(f"Error loading services data: {str(e)}")
-        return render_template('public/services.html', services_by_category={})
+        return render_template('services.html', services_by_category={})
 
 @app.route('/pricing')
 def public_pricing():
@@ -270,7 +270,7 @@ def public_pricing():
                 services_by_category[category] = []
             services_by_category[category].append(service)
         
-        return render_template('public/pricing.html', 
+        return render_template('pricing.html', 
                              services_by_category=services_by_category,
                              service_packages=service_packages,
                              membership_types=membership_types)
@@ -278,7 +278,7 @@ def public_pricing():
     except Exception as e:
         logger.error(f"Error loading pricing data: {str(e)}")
         # Fallback to basic template
-        return render_template('public/pricing.html', 
+        return render_template('pricing.html', 
                              services_by_category={},
                              service_packages=[],
                              membership_types=[])
@@ -303,11 +303,11 @@ def public_about():
             'years_experience': int(stats_data['years_experience']) if stats_data and stats_data['years_experience'] else 5
         }
         
-        return render_template('public/about.html', stats=stats)
+        return render_template('about.html', stats=stats)
         
     except Exception as e:
         logger.error(f"Error loading about page: {str(e)}")
-        return render_template('public/about.html', stats={})
+        return render_template('about.html', stats={})
 
 @app.route('/contact')
 def public_contact():
@@ -336,9 +336,9 @@ def public_contact():
                 services_by_category[category] = []
             services_by_category[category].append(service)
         
-        return render_template('public/contact.html', 
+        return render_template('contact.html', 
                              services_by_category=services_by_category)
                              
     except Exception as e:
         logger.error(f"Error loading contact page: {str(e)}")
-        return render_template('public/contact.html', services_by_category={})
+        return render_template('contact.html', services_by_category={})
