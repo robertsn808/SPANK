@@ -51,7 +51,7 @@ class EmailService:
                     cursor.execute("""
                         SELECT name, total_recipients, delivered_count, opened_count, clicked_count,
                                CASE 
-                                   WHEN delivered_count > 0 THEN CAST(ROUND((opened_count::float / delivered_count) * 100, 1) AS DECIMAL(5,1))
+                                   WHEN delivered_count > 0 THEN ((opened_count::float / delivered_count) * 100)::numeric(5,1)
                                    ELSE 0 
                                END as open_rate
                         FROM email_campaigns 

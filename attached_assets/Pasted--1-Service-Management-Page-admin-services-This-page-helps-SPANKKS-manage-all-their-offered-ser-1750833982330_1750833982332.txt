@@ -1,0 +1,103 @@
+🔧 1. Service Management Page (/admin/services)
+This page helps SPANKKS manage all their offered services such as flooring, drywall, fencing, etc.
+
+🧱 Core Features
+Component	Functionality
+📋 Service List Table	View all available services with category, price, description
+➕ Add/Edit Service Modal	Add new services or update existing ones
+🧮 Category Selector	(Flooring, Drywall, Fence, Repair, Custom, etc.)
+💲 Default Pricing	Option to set fixed or variable (per sq ft, hourly)
+📂 Bulk Import (CSV)	Upload a CSV file with new or updated services
+⬇️ CSV Export	Download all services in spreadsheet format
+
+🧩 Example DB Table: services
+sql
+Copy
+Edit
+CREATE TABLE services (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  category TEXT,
+  description TEXT,
+  base_price DECIMAL(10, 2),
+  unit TEXT, -- 'sqft', 'hour', 'flat'
+  active BOOLEAN DEFAULT TRUE
+);
+📄 CSV Format Example
+csv
+Copy
+Edit
+name,category,description,base_price,unit
+Drywall Repair,Drywall,Patch and repair drywall,150,flat
+Fence Installation,Fence,Install 6ft wood fence,35,sqft
+Laminate Flooring,Flooring,Install laminate flooring,3.5,sqft
+🗂️ 2. Data Management Page (/admin/data)
+This is your back-office hub to control all major datasets like clients, jobs, services, quotes, etc.
+
+🧱 Core Features
+Component	Functionality
+📂 Upload Center	Upload CSV for bulk services, clients, quotes, materials
+📥 Download Templates	Download preformatted CSVs for each dataset
+✅ Validation Engine	Ensure uploads follow correct schema, notify errors
+🔄 Import Preview	Preview mapped data before saving to DB
+💾 Bulk Save with Rollback	Save valid entries or cancel the import
+📊 Data Stats	Record counts per table (e.g. 542 clients, 131 jobs)
+
+📁 CSV Template Downloads
+Dataset	Example Columns
+Services	name, category, description, price, unit
+Clients	name, email, phone, address, referred_by
+Jobs	job_id, client_id, service_type, status, scheduled_date
+Quotes	quote_id, client_id, services, total, date
+Materials	name, supplier, cost_per_unit, stock_qty
+
+You can serve these as downloadable files via /api/csv-template/:type.
+
+🔄 CSV Upload Logic (Node.js Example with multer + csv-parser)
+js
+Copy
+Edit
+const csv = require('csv-parser');
+const fs = require('fs');
+
+function parseCSVUpload(filePath, onFinish) {
+  const results = [];
+  fs.createReadStream(filePath)
+    .pipe(csv())
+    .on('data', (data) => results.push(data))
+    .on('end', () => onFinish(results));
+}
+🧠 Suggested Schema Validation on Upload
+js
+Copy
+Edit
+const requiredFields = ['name', 'category', 'base_price', 'unit'];
+if (!requiredFields.every(field => Object.keys(data[0]).includes(field))) {
+  throw new Error('Missing required CSV headers');
+}
+🖥️ Dashboard Page Design Sketch
+/admin/services
+pgsql
+Copy
+Edit
+--------------------------------------------------------
+| Services List |  🔍 [search bar] [+ Add New] [⬇ CSV] |
+--------------------------------------------------------
+| Name            | Category | Price | Unit  | Actions |
+|-----------------|----------|--------|-------|--------|
+| Fence Install   | Fence    | $35    | sqft  | ✏️ 🗑️   |
+| Drywall Repair  | Drywall  | $150   | flat  | ✏️ 🗑️   |
+--------------------------------------------------------
+[⬆ Bulk Upload CSV] [Download Template]
+/admin/data
+pgsql
+Copy
+Edit
+---------------------------------------------------------
+| Data Management Panel                                  |
+---------------------------------------------------------
+| ⬇ Download Templates: [ Services ] [ Clients ] [ Jobs ] |
+| ⬆ Upload CSV File:  [Choose File] [Upload]             |
+| ✅ Preview Valid Entries     ❌ Show Errors             |
+| 💾 [Import to Database]     🧹 [Cancel Upload]         |
+---------------------------------------------------------

@@ -1244,6 +1244,206 @@ def api_email_logs():
             'message': 'Unable to fetch email logs'
         }), 500
 
+# Service Management API Endpoints
+@app.route('/api/admin/services')
+def api_services():
+    """Get all services"""
+    try:
+        from services.service_management_service import ServiceManagementService
+        service_mgmt = ServiceManagementService()
+        
+        active_only = request.args.get('active_only', 'false').lower() == 'true'
+        services = service_mgmt.get_all_services(active_only=active_only)
+        
+        return jsonify({
+            'success': True,
+            'services': services
+        })
+        
+    except Exception as e:
+        logging.error(f"Error fetching services: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Unable to fetch services'
+        }), 500
+
+@app.route('/api/admin/services', methods=['POST'])
+def api_create_service():
+    """Create new service"""
+    try:
+        from services.service_management_service import ServiceManagementService
+        service_mgmt = ServiceManagementService()
+        
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['name', 'category', 'base_price', 'unit']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({
+                    'success': False,
+                    'message': f'Missing required field: {field}'
+                }), 400
+        
+        result = service_mgmt.create_service(data)
+        
+        if result['success']:
+            return jsonify(result)
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        logging.error(f"Error creating service: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Failed to create service'
+        }), 500
+
+@app.route('/api/admin/services/<int:service_id>', methods=['PUT'])
+def api_update_service(service_id):
+    """Update existing service"""
+    try:
+        from services.service_management_service import ServiceManagementService
+        service_mgmt = ServiceManagementService()
+        
+        data = request.get_json()
+        result = service_mgmt.update_service(service_id, data)
+        
+        if result['success']:
+            return jsonify(result)
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        logging.error(f"Error updating service: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Failed to update service'
+        }), 500
+
+@app.route('/api/admin/services/<int:service_id>', methods=['DELETE'])
+def api_delete_service(service_id):
+    """Delete service"""
+    try:
+        from services.service_management_service import ServiceManagementService
+        service_mgmt = ServiceManagementService()
+        
+        result = service_mgmt.delete_service(service_id)
+        
+        if result['success']:
+            return jsonify(result)
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        logging.error(f"Error deleting service: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Failed to delete service'
+        }), 500
+
+@app.route('/api/admin/services/categories')
+def api_service_categories():
+    """Get service categories"""
+    try:
+        from services.service_management_service import ServiceManagementService
+        service_mgmt = ServiceManagementService()
+        
+        categories = service_mgmt.get_service_categories()
+        
+        return jsonify({
+            'success': True,
+            'categories': categories
+        })
+        
+    except Exception as e:
+        logging.error(f"Error fetching service categories: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Unable to fetch service categories'
+        }), 500
+
+@app.route('/api/admin/services/statistics')
+def api_service_statistics():
+    """Get service statistics"""
+    try:
+        from services.service_management_service import ServiceManagementService
+        service_mgmt = ServiceManagementService()
+        
+        stats = service_mgmt.get_service_statistics()
+        
+        return jsonify({
+            'success': True,
+            'statistics': stats
+        })
+        
+    except Exception as e:
+        logging.error(f"Error fetching service statistics: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Unable to fetch service statistics'
+        }), 500
+
+@app.route('/api/admin/services/import', methods=['POST'])
+def api_import_services():
+    """Import services from CSV"""
+    try:
+        from services.service_management_service import ServiceManagementService
+        service_mgmt = ServiceManagementService()
+        
+        if 'csv_file' not in request.files:
+            return jsonify({
+                'success': False,
+                'message': 'No CSV file provided'
+            }), 400
+        
+        csv_file = request.files['csv_file']
+        if csv_file.filename == '':
+            return jsonify({
+                'success': False,
+                'message': 'No file selected'
+            }), 400
+        
+        csv_data = csv_file.read().decode('utf-8')
+        result = service_mgmt.bulk_import_services(csv_data)
+        
+        if result['success']:
+            return jsonify(result)
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        logging.error(f"Error importing services: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Failed to import services'
+        }), 500
+
+@app.route('/api/admin/services/export')
+def api_export_services():
+    """Export services to CSV"""
+    try:
+        from services.service_management_service import ServiceManagementService
+        service_mgmt = ServiceManagementService()
+        
+        csv_data = service_mgmt.export_services_csv()
+        
+        from flask import Response
+        return Response(
+            csv_data,
+            mimetype='text/csv',
+            headers={
+                'Content-Disposition': 'attachment; filename=spankks_services.csv'
+            }
+        )
+        
+    except Exception as e:
+        logging.error(f"Error exporting services: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Failed to export services'
+        }), 500
+
 @app.route('/admin/quote-builder')
 def admin_quote_builder():
     """Quote builder page"""
@@ -1360,9 +1560,9 @@ def admin_calendar():
 # API Endpoints
 
 # Service Management API Endpoints
-@app.route('/api/service-categories')
-def api_service_categories():
-    """Get service categories"""
+@app.route('/api/legacy-service-categories')
+def api_legacy_service_categories():
+    """Get legacy service categories (deprecated)"""
     try:
         with db.engine.connect() as conn:
             result = conn.execute(db.text("""

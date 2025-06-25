@@ -1,0 +1,104 @@
+🧱 Key Objectives
+Goal	Description
+Control notification types	Enable/disable categories like quotes, invoices, job updates
+Manage delivery methods	Choose between email, SMS, in-app
+Customize messages	Edit default messages (with template variables)
+Set timing rules	Define when notifications are sent (e.g., 2 hours before job)
+Track notification logs	See a history of what was sent and to whom
+
+🎛️ Core Features
+1. Notification Settings Panel
+Toggle by type and channel:
+
+[✔️] Send job start reminders (SMS + Email)
+
+[✖️] Send invoice overdue alert (Email only)
+
+[✔️] Send quote accepted notification (In-App only)
+
+sql
+Copy
+Edit
+CREATE TABLE notification_settings (
+  id SERIAL PRIMARY KEY,
+  type TEXT,          -- 'job_reminder', 'quote_accepted', etc.
+  channel TEXT,       -- 'email', 'sms', 'inapp'
+  enabled BOOLEAN,
+  timing_minutes INT, -- e.g., 120 = 2h before job
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+2. Message Template Editor
+Preview and customize messages per type.
+
+Use variables like:
+
+{{client_name}}, {{job_time}}, {{invoice_link}}
+
+sql
+Copy
+Edit
+CREATE TABLE notification_templates (
+  id SERIAL PRIMARY KEY,
+  type TEXT,
+  channel TEXT,
+  subject TEXT,
+  body TEXT
+);
+📝 Example body:
+
+csharp
+Copy
+Edit
+Hi {{client_name}}, your SPANKKS service is scheduled for {{job_time}}. Need to reschedule? Let us know!
+3. Send Test Notification
+Choose recipient
+
+Select notification type
+
+Click “Send Test”
+
+✅ Confirms deliverability and message content.
+
+4. Notification Log Table
+View what was sent, when, and to whom.
+
+sql
+Copy
+Edit
+CREATE TABLE notification_logs (
+  id SERIAL PRIMARY KEY,
+  recipient TEXT,
+  channel TEXT,
+  type TEXT,
+  status TEXT, -- sent, failed
+  sent_at TIMESTAMP
+);
+🧑‍💻 UI Layout Example
+/admin/notifications
+less
+Copy
+Edit
+------------------------------------------------------------
+| Notification Settings [⚙️]                                |
+------------------------------------------------------------
+| 🔔 Job Start Reminder          [✔️] Email [✔️] SMS         |
+| 🧾 Invoice Due Alert            [✔️] Email [✖️] SMS         |
+| 🧠 Quote Accepted               [✔️] In-App [✖️] Email       |
+| 💬 Follow-Up Reminder          [✖️] Email [✔️] SMS         |
+| 📆 Reminder Timing: 2 Hours Before Job                    |
+------------------------------------------------------------
+
+📨 Message Templates: [ Job Reminder | Invoice | Quote ]
+------------------------------------------------------------
+| Subject: {{job_title}} starts soon!                      |
+| Body: Hi {{client_name}}, your job is at {{job_time}}.   |
+------------------------------------------------------------
+[ Edit ] [ Reset to Default ] [ Send Test to: ___ ] [▶️]
+
+📜 Notification Log
+------------------------------------------------------------
+| 📧 john@doe.com | Invoice Sent | Email | 07/03 10:12 AM  |
+| 📱 (808)555-0033 | Job Reminder | SMS | 07/03 8:00 AM     |
+------------------------------------------------------------
+✅ Integration Suggestions
+Email: Use MailerLite 
