@@ -1,0 +1,106 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Admin Dashboard - SPANKKS Construction{% endblock %}
+
+{% block admin_title %}SPANKKS Construction Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="admin-card">
+            <div class="card-body p-4">
+                <h2 class="text-spankks mb-4">
+                    <i class="fas fa-tachometer-alt me-3"></i>
+                    SPANKKS Construction Admin Dashboard
+                </h2>
+                
+                <div class="row mb-4">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card border-spankks">
+                            <div class="card-body text-center">
+                                <i class="fas fa-calendar-check fa-2x text-spankks mb-2"></i>
+                                <h4 class="text-spankks">{{ appointments_today or 0 }}</h4>
+                                <p class="mb-0">Appointments Today</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card border-spankks">
+                            <div class="card-body text-center">
+                                <i class="fas fa-users fa-2x text-spankks mb-2"></i>
+                                <h4 class="text-spankks">{{ total_contacts or 0 }}</h4>
+                                <p class="mb-0">Total Contacts</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card border-spankks">
+                            <div class="card-body text-center">
+                                <i class="fas fa-dollar-sign fa-2x text-spankks mb-2"></i>
+                                <h4 class="text-spankks">${{ revenue_today or 0 }}</h4>
+                                <p class="mb-0">Revenue Today</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card border-spankks">
+                            <div class="card-body text-center">
+                                <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                                <h4 class="text-warning">{{ urgent_items or 0 }}</h4>
+                                <p class="mb-0">Urgent Items</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <h4 class="text-spankks mb-3">Quick Actions</h4>
+                        <div class="row">
+                            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                <a href="#" class="btn btn-spankks w-100 p-3">
+                                    <i class="fas fa-calendar-week d-block mb-2"></i>
+                                    Weekly Schedule
+                                </a>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                <a href="#" class="btn btn-spankks w-100 p-3">
+                                    <i class="fas fa-calculator d-block mb-2"></i>
+                                    Quote Builder
+                                </a>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                <a href="#" class="btn btn-spankks w-100 p-3">
+                                    <i class="fas fa-file-invoice d-block mb-2"></i>
+                                    Invoices
+                                </a>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                <a href="#" class="btn btn-spankks w-100 p-3">
+                                    <i class="fas fa-users d-block mb-2"></i>
+                                    Customers
+                                </a>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                <a href="#" class="btn btn-spankks w-100 p-3">
+                                    <i class="fas fa-chart-bar d-block mb-2"></i>
+                                    Analytics
+                                </a>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                                <a href="#" class="btn btn-spankks w-100 p-3">
+                                    <i class="fas fa-cogs d-block mb-2"></i>
+                                    Settings
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

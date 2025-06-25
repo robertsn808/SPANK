@@ -140,7 +140,7 @@ def public_home():
                 cur.execute("""
                     SELECT 
                         COUNT(DISTINCT client_id) as total_projects,
-                        EXTRACT(YEAR FROM AGE(NOW(), MIN(created_at))) as years_experience
+                        5 as years_experience
                     FROM jobs WHERE status != 'cancelled'
                 """)
                 stats_data = cur.fetchone()
