@@ -64,21 +64,25 @@ body {
 .stats-icon.primary {
     background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 100%);
     color: white;
+    box-shadow: 0 4px 15px rgba(26, 95, 63, 0.3);
 }
 
 .stats-icon.success {
     background: linear-gradient(135deg, #198754 0%, #20c997 100%);
     color: white;
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
 }
 
 .stats-icon.warning {
     background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%);
     color: white;
+    box-shadow: 0 4px 15px rgba(253, 126, 20, 0.3);
 }
 
 .stats-icon.info {
     background: linear-gradient(135deg, #0dcaf0 0%, #6f42c1 100%);
     color: white;
+    box-shadow: 0 4px 15px rgba(13, 202, 240, 0.3);
 }
 
 .btn-primary {
@@ -93,7 +97,52 @@ body {
 .btn-primary:hover {
     background: linear-gradient(135deg, #145a34 0%, #246a4f 100%);
     transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(26, 95, 63, 0.4);
+}
+
+.btn-outline-secondary {
+    border: 2px solid #6c757d;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background: #6c757d;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+.btn-outline-primary {
+    border: 2px solid #1a5f3f;
+    color: #1a5f3f;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background: #1a5f3f;
+    color: white;
+    transform: translateY(-1px);
     box-shadow: 0 4px 15px rgba(26, 95, 63, 0.3);
+}
+
+.btn-outline-info {
+    border: 2px solid #0dcaf0;
+    color: #0dcaf0;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-info:hover {
+    background: #0dcaf0;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(13, 202, 240, 0.3);
 }
 
 .form-control, .form-select {
@@ -118,36 +167,117 @@ body {
 
 .email-template {
     border: 2px solid #e9ecef;
-    border-radius: 8px;
-    padding: 1rem;
+    border-radius: 12px;
+    padding: 1.5rem;
     margin-bottom: 1rem;
     transition: all 0.3s ease;
     cursor: pointer;
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .email-template:hover {
     border-color: #1a5f3f;
-    background-color: #f8f9fa;
+    background: linear-gradient(135deg, #f0f8f4 0%, #e8f5e8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(26, 95, 63, 0.15);
 }
 
 .email-template.selected {
     border-color: #1a5f3f;
-    background-color: #f0f8f4;
+    background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+    box-shadow: 0 6px 20px rgba(26, 95, 63, 0.2);
+}
+
+.email-template h6 {
+    color: #1a5f3f;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.email-template p {
+    margin-bottom: 0;
+    font-size: 0.9rem;
 }
 
 .email-editor {
     min-height: 300px;
     border: 2px solid #e9ecef;
-    border-radius: 8px;
-    padding: 1rem;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    transition: all 0.3s ease;
+    resize: vertical;
+}
+
+.email-editor:focus {
+    border-color: #1a5f3f;
+    box-shadow: 0 0 0 0.2rem rgba(26, 95, 63, 0.15);
+    background: white;
 }
 
 .email-preview {
-    background: white;
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
     border: 2px solid #e9ecef;
-    border-radius: 8px;
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 2rem;
     min-height: 400px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.table-responsive {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: none;
+    padding: 1rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #f0f8f4 100%);
+    transform: scale(1.001);
+}
+
+.table tbody td {
+    padding: 1rem;
+    border-color: #e9ecef;
+    vertical-align: middle;
+}
+
+.badge {
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+}
+
+.btn-sm {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-sm:hover {
+    transform: translateY(-1px);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
 }
 </style>
 
@@ -185,7 +315,7 @@ body {
                     <div class="stats-icon primary mx-auto">
                         <i class="fas fa-paper-plane"></i>
                     </div>
-                    <h4 class="mb-1">142</h4>
+                    <h4 class="mb-1" id="emailsSent">0</h4>
                     <p class="text-muted mb-0">Emails Sent</p>
                 </div>
             </div>
@@ -196,7 +326,7 @@ body {
                     <div class="stats-icon success mx-auto">
                         <i class="fas fa-eye"></i>
                     </div>
-                    <h4 class="mb-1">89.2%</h4>
+                    <h4 class="mb-1" id="openRate">-</h4>
                     <p class="text-muted mb-0">Open Rate</p>
                 </div>
             </div>
@@ -207,7 +337,7 @@ body {
                     <div class="stats-icon warning mx-auto">
                         <i class="fas fa-mouse-pointer"></i>
                     </div>
-                    <h4 class="mb-1">34.7%</h4>
+                    <h4 class="mb-1" id="clickRate">-</h4>
                     <p class="text-muted mb-0">Click Rate</p>
                 </div>
             </div>
@@ -218,7 +348,7 @@ body {
                     <div class="stats-icon info mx-auto">
                         <i class="fas fa-users"></i>
                     </div>
-                    <h4 class="mb-1">234</h4>
+                    <h4 class="mb-1" id="totalSubscribers">0</h4>
                     <p class="text-muted mb-0">Subscribers</p>
                 </div>
             </div>
@@ -234,32 +364,41 @@ body {
                 </div>
                 <div class="card-body">
                     <form id="emailForm">
-                        <div class="row mb-3">
+                        <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="emailTo" class="form-label">To</label>
+                                <label for="emailTo" class="form-label">
+                                    <i class="fas fa-users me-2 text-primary"></i>Recipients
+                                </label>
                                 <select class="form-select" id="emailTo" multiple>
-                                    <option value="all_clients">All Clients</option>
-                                    <option value="all_staff">All Staff</option>
-                                    <option value="newsletter_subscribers">Newsletter Subscribers</option>
-                                    <option value="recent_customers">Recent Customers</option>
+                                    <option value="all_clients">📧 All Clients</option>
+                                    <option value="all_staff">👷 All Staff</option>
+                                    <option value="newsletter_subscribers">📰 Newsletter Subscribers</option>
+                                    <option value="recent_customers">🆕 Recent Customers</option>
                                 </select>
+                                <small class="form-text text-muted">Hold Ctrl to select multiple groups</small>
                             </div>
                             <div class="col-md-6">
-                                <label for="emailSubject" class="form-label">Subject</label>
-                                <input type="text" class="form-control" id="emailSubject" placeholder="Enter email subject">
+                                <label for="emailSubject" class="form-label">
+                                    <i class="fas fa-envelope me-2 text-primary"></i>Subject Line
+                                </label>
+                                <input type="text" class="form-control" id="emailSubject" placeholder="Enter compelling email subject...">
+                                <small class="form-text text-muted">Keep it under 50 characters for best results</small>
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="emailTemplate" class="form-label">Template</label>
+                        <div class="mb-4">
+                            <label for="emailTemplate" class="form-label">
+                                <i class="fas fa-file-alt me-2 text-primary"></i>Email Template
+                            </label>
                             <select class="form-select" id="emailTemplate" onchange="loadTemplate()">
-                                <option value="">Select a template...</option>
-                                <option value="welcome">Welcome Email</option>
-                                <option value="quote_follow_up">Quote Follow-up</option>
-                                <option value="job_completion">Job Completion</option>
-                                <option value="newsletter">Newsletter</option>
-                                <option value="promotion">Promotional Email</option>
+                                <option value="">✨ Select a template...</option>
+                                <option value="welcome">👋 Welcome Email</option>
+                                <option value="quote_follow_up">📋 Quote Follow-up</option>
+                                <option value="job_completion">✅ Job Completion</option>
+                                <option value="newsletter">📰 Newsletter</option>
+                                <option value="promotion">🎉 Promotional Email</option>
                             </select>
+                            <small class="form-text text-muted">Choose a template to get started quickly</small>
                         </div>
                         
                         <div class="mb-3">
@@ -360,65 +499,11 @@ body {
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="emailHistoryTable">
                                 <tr>
-                                    <td>
-                                        <div>
-                                            <strong>Welcome to SPANKKS Construction</strong><br>
-                                            <small class="text-muted">Welcome email template</small>
-                                        </div>
-                                    </td>
-                                    <td>12 clients</td>
-                                    <td>Today, 2:30 PM</td>
-                                    <td><span class="badge bg-success">91.7%</span></td>
-                                    <td><span class="badge bg-primary">Sent</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-info" onclick="viewEmail(1)">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="duplicateEmail(1)">
-                                            <i class="fas fa-copy"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div>
-                                            <strong>Your Quote is Ready</strong><br>
-                                            <small class="text-muted">Quote follow-up</small>
-                                        </div>
-                                    </td>
-                                    <td>5 clients</td>
-                                    <td>Yesterday, 10:15 AM</td>
-                                    <td><span class="badge bg-warning">67.2%</span></td>
-                                    <td><span class="badge bg-primary">Sent</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-info" onclick="viewEmail(2)">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="duplicateEmail(2)">
-                                            <i class="fas fa-copy"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div>
-                                            <strong>Job Completed Successfully</strong><br>
-                                            <small class="text-muted">Completion notification</small>
-                                        </div>
-                                    </td>
-                                    <td>3 clients</td>
-                                    <td>Jun 23, 2025, 4:45 PM</td>
-                                    <td><span class="badge bg-success">100%</span></td>
-                                    <td><span class="badge bg-primary">Sent</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-info" onclick="viewEmail(3)">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="duplicateEmail(3)">
-                                            <i class="fas fa-copy"></i>
-                                        </button>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                                        No emails sent yet. Start by composing your first email above.
                                     </td>
                                 </tr>
                             </tbody>
@@ -434,12 +519,32 @@ body {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Email management page loaded');
     
+    // Load email statistics
+    loadEmailStatistics();
+    
     // Email form submission
     document.getElementById('emailForm').addEventListener('submit', function(e) {
         e.preventDefault();
         sendEmail();
     });
 });
+
+function loadEmailStatistics() {
+    // Fetch real email statistics from MailerLite API
+    fetch('/api/admin/email-stats')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('emailsSent').textContent = data.stats.emails_sent || 0;
+            document.getElementById('openRate').textContent = data.stats.open_rate ? data.stats.open_rate + '%' : '-';
+            document.getElementById('clickRate').textContent = data.stats.click_rate ? data.stats.click_rate + '%' : '-';
+            document.getElementById('totalSubscribers').textContent = data.stats.subscribers || 0;
+        }
+    })
+    .catch(error => {
+        console.log('Email statistics not available');
+    });
+}
 
 function sendEmail() {
     const emailTo = document.getElementById('emailTo').value;

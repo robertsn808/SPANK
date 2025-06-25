@@ -1044,6 +1044,33 @@ def api_send_email():
             'message': 'Internal server error'
         }), 500
 
+@app.route('/api/admin/email-stats')
+def api_email_stats():
+    """Get email statistics from MailerLite"""
+    try:
+        # In a real implementation, you would:
+        # 1. Connect to MailerLite API
+        # 2. Fetch actual statistics
+        # 3. Return real data
+        
+        # For now, return empty stats to maintain data integrity
+        return jsonify({
+            'success': True,
+            'stats': {
+                'emails_sent': 0,
+                'open_rate': None,
+                'click_rate': None,
+                'subscribers': 0
+            }
+        })
+        
+    except Exception as e:
+        logging.error(f"Error fetching email stats: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Unable to fetch email statistics'
+        }), 500
+
 @app.route('/admin/quote-builder')
 def admin_quote_builder():
     """Quote builder page"""
