@@ -55,6 +55,7 @@
             display: grid;
             grid-template-columns: 280px 1fr;
             min-height: calc(100vh - 76px);
+            position: relative;
         }
 
         .sidebar {
@@ -62,6 +63,8 @@
             border-right: 1px solid var(--border-gray);
             box-shadow: 2px 0 4px rgba(0,0,0,0.05);
             overflow-y: auto;
+            z-index: 1020;
+            position: relative;
         }
 
         .sidebar-header {
@@ -464,6 +467,21 @@
             
             .sidebar.show {
                 left: 0;
+            }
+            
+            .mobile-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 1010;
+                display: none;
+            }
+            
+            .mobile-overlay.show {
+                display: block;
             }
             
             .stats-grid {
@@ -923,25 +941,57 @@
         }
         
         function initializeNavigation() {
-            // Remove any existing event listeners and add fresh ones
+            console.log('Initializing navigation system...');
+            
+            // Remove any existing event listeners
             document.querySelectorAll('.nav-link').forEach(link => {
-                // Clone the element to remove all event listeners
                 const newLink = link.cloneNode(true);
                 link.parentNode.replaceChild(newLink, link);
+            });
+            
+            // Add fresh event listeners
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const section = link.getAttribute('data-section');
+                if (section) {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Navigation clicked:', section);
+                        showSection(section);
+                        
+                        // Close mobile sidebar
+                        if (window.innerWidth <= 768) {
+                            document.querySelector('.sidebar').classList.remove('show');
+                        }
+                    });
+                    console.log('Added listener for section:', section);
+                }
+            });
+            
+            console.log('Navigation initialized for', document.querySelectorAll('.nav-link[data-section]').length, 'sections');
+        }
+        
+        function initializeMobileToggle() {
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            
+            if (toggleBtn && sidebar) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                    console.log('Mobile sidebar toggled');
+                });
                 
-                // Add fresh click handler
-                newLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    const section = this.getAttribute('data-section');
-                    console.log('Navigation clicked - Section:', section);
-                    
-                    if (section) {
-                        handleNavigation(section);
+                // Close sidebar when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 768 && 
+                        !sidebar.contains(e.target) && 
+                        !toggleBtn.contains(e.target)) {
+                        sidebar.classList.remove('show');
                     }
                 });
-            });
+                
+                console.log('Mobile toggle initialized');
+            }
         }
         
         function handleNavigation(section) {
@@ -1527,9 +1577,6 @@
                     </div>
                 </div>
             `;
-                    }, 100);
-                })
-                .catch(error => {
                     console.error('Error loading quotes section:', error);
                     document.getElementById('dynamic-content').innerHTML = `
                         <div class="content-card">
