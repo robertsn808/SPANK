@@ -150,10 +150,7 @@
                         <a class="nav-link" href="{{ url_for('public_home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('public_services') }}">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('public_pricing') }}">Pricing</a>
+                        <a class="nav-link" href="{{ url_for('public_services') }}">Services & Pricing</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('spankks_skool') }}">SPANKKS SKOOL</a>
@@ -163,6 +160,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('public_contact') }}">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('client_portal_access') }}">Client Portal</a>
                     </li>
                     <li class="nav-item">
                         <a class="btn btn-primary ms-2" href="{{ url_for('consultation') }}">Free Consultation</a>
@@ -205,21 +205,41 @@
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h6>Quick Links</h6>
                     <ul class="list-unstyled">
-                        <li><a href="{{ url_for('public_pricing') }}">Pricing</a></li>
+                        <li><a href="{{ url_for('public_home') }}">Home</a></li>
+                        <li><a href="{{ url_for('public_services') }}">Services & Pricing</a></li>
+                        <li><a href="{{ url_for('public_about') }}">About</a></li>
                         <li><a href="{{ url_for('spankks_skool') }}">SPANKKS SKOOL</a></li>
+                        <li><a href="{{ url_for('client_portal_access') }}">Client Portal</a></li>
                         <li><a href="{{ url_for('consultation') }}">Free Consultation</a></li>
-                        <li><a href="{{ url_for('public_about') }}">About Us</a></li>
-                        <li><a href="{{ url_for('public_contact') }}">Contact</a></li>
                     </ul>
                 </div>
                 
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h6>Contact Info</h6>
+                    <p class="mb-2">
+                        <i class="fas fa-phone text-warning me-2"></i>
+                        <a href="tel:+18087789132">(808) 778-9132</a>
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-envelope text-warning me-2"></i>
+                        <a href="mailto:spank808@gmail.com">spank808@gmail.com</a>
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-map-marker-alt text-warning me-2"></i>
+                        Serving All of Oahu, Hawaii
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-clock text-warning me-2"></i>
+                        Mon-Fri: 7AM-5PM<br>
+                        <span class="ms-4">Sat: 8AM-3PM</span>
+                    </p>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6>Staff Access</h6>
                     <ul class="list-unstyled">
-                        <li><i class="fas fa-phone me-2"></i> (808) 778-9132</li>
-                        <li><i class="fas fa-envelope me-2"></i> spank808@gmail.com</li>
-                        <li><i class="fas fa-map-marker-alt me-2"></i> Serving All of Oahu</li>
-                        <li><i class="fas fa-clock me-2"></i> Mon-Fri: 7AM-5PM</li>
+                        <li><a href="{{ url_for('admin_login') }}">Admin Login</a></li>
+                        <li><a href="{{ url_for('staff_portal_redirect') }}">Staff Portal</a></li>
                     </ul>
                 </div>
             </div>
