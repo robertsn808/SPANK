@@ -1,0 +1,53 @@
+💳 Invoice & Payments Page – Feature Blueprint (No Payment Gateway)
+🧾 Invoices Management
+Feature	Description
+Invoice Table	List of all invoices with filters (status, client, job, due date, etc.)
+Invoice Status	Unsent, Sent, Awaiting Payment, Overdue, Paid
+PDF View/Download	View/download clean PDF invoices (auto-generated)
+Send via Email	One-click email with attached invoice PDF and message
+Generate from Quote	Auto-convert accepted quotes into invoices
+Manual Invoice Creation	Start from scratch (e.g., add line items, notes, tax)
+Due Date Management	Default NET 7/14/30; manually override
+Notes Section	Payment instructions (e.g., “Pay via Zelle to…”), thank you note
+Auto Tax Calculation	Hawaii GET 4.712% added (with option to toggle per line or invoice)
+Invoice Number Format	e.g., INV-2025-0045 (year-based sequential numbering)
+Client Link Copy Button	Copies client-friendly URL to send manually if needed
+Quick Filters	Show: Paid / Unpaid / Overdue / This Month / This Client
+Invoice Audit Trail	Timestamped log of sent/updated/downloaded status
+Bulk Export	Download all invoices or by filter in CSV/PDF
+
+💵 Payments (Tracking Only)
+Feature	Description
+Manual Payment Entry	Enter payments received outside the platform (date, method, reference #)
+Payment Methods Dropdown	Cash / Check / Zelle / Venmo / Bank Transfer / Other
+Payment History Log	View all payments by invoice, client, or method
+Partially Paid Support	Track partial payments and outstanding balance
+Overdue Alerts	Highlight unpaid invoices past due date
+Linked to Jobs/Clients	See all invoices/payment history per job and per client
+Lifetime Value Tracker	Total revenue by client (manual entries still count)
+Payment Notes	Record where/how payment was received and by whom
+Receipts Generator	Create printable PDF receipts for completed payments
+
+📊 Analytics Widgets (Optional)
+Widget	Description
+Total Invoiced This Month	Sum of all invoices sent this month
+Outstanding Payments	Total unpaid or overdue
+Average Invoice Value	Useful for financial planning
+Top Paying Clients	Lifetime value sorted descending
+Payment Method Breakdown	Pie chart: how customers pay (manual entry)
+
+✅ UI Components on Page
+ Invoice Data Table
+
+ Invoice Generator Modal / Drawer
+
+ Preview & Send Modal
+
+ Manual Payment Entry Form
+
+ Invoice Detail Drawer (with job/client info, history, receipts)
+
+ Export / Filter Bar
+
+ Summary Tiles (Unpaid, Paid, Overdue)
+

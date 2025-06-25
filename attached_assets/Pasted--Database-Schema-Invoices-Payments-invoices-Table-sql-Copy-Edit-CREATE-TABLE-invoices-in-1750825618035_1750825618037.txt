@@ -1,0 +1,73 @@
+📦 Database Schema: Invoices & Payments
+🧾 invoices Table
+sql
+Copy
+Edit
+CREATE TABLE invoices (
+  invoice_id SERIAL PRIMARY KEY,
+  invoice_number VARCHAR(20) UNIQUE NOT NULL,         -- e.g. INV-2025-0045
+  job_id INTEGER REFERENCES jobs(job_id),             -- link to job
+  client_id INTEGER REFERENCES clients(client_id),    -- link to client
+  issue_date DATE NOT NULL,
+  due_date DATE NOT NULL,
+  status VARCHAR(20) DEFAULT 'Unsent',                -- Unsent, Sent, Paid, Overdue, Partial
+  subtotal DECIMAL(10,2) NOT NULL,
+  tax_amount DECIMAL(10,2),                           -- auto-calculate 4.712% Hawaii GET
+  total_amount DECIMAL(10,2) NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+🧾 invoice_items Table
+sql
+Copy
+Edit
+CREATE TABLE invoice_items (
+  item_id SERIAL PRIMARY KEY,
+  invoice_id INTEGER REFERENCES invoices(invoice_id) ON DELETE CASCADE,
+  description TEXT NOT NULL,                          -- e.g. "Drywall Repair (12ft)"
+  quantity INTEGER DEFAULT 1,
+  unit_price DECIMAL(10,2) NOT NULL,
+  line_total DECIMAL(10,2)                            -- quantity × unit_price
+);
+💰 payments Table (Manual Payment Tracking)
+sql
+Copy
+Edit
+CREATE TABLE payments (
+  payment_id SERIAL PRIMARY KEY,
+  invoice_id INTEGER REFERENCES invoices(invoice_id),
+  client_id INTEGER REFERENCES clients(client_id),
+  amount_paid DECIMAL(10,2) NOT NULL,
+  payment_method VARCHAR(30),                         -- Cash, Check, Zelle, etc.
+  payment_date DATE NOT NULL,
+  reference_note TEXT,                                -- Check #, Zelle ID, etc.
+  recorded_by TEXT,                                   -- Staff name or ID
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+🔗 quotes Table (Optional, if not already defined)
+sql
+Copy
+Edit
+CREATE TABLE quotes (
+  quote_id SERIAL PRIMARY KEY,
+  quote_number VARCHAR(20) UNIQUE,
+  client_id INTEGER REFERENCES clients(client_id),
+  job_id INTEGER REFERENCES jobs(job_id),
+  date_created DATE,
+  total_amount DECIMAL(10,2),
+  is_accepted BOOLEAN DEFAULT FALSE,
+  converted_to_invoice BOOLEAN DEFAULT FALSE
+);
+🔍 Suggested Indexes for Performance
+sql
+Copy
+Edit
+CREATE INDEX idx_invoice_client ON invoices(client_id);
+CREATE INDEX idx_payment_invoice ON payments(invoice_id);
+CREATE INDEX idx_quote_client ON quotes(client_id);
+🧠 Optional Additions
+Table	Purpose
+receipt_logs	Track receipt generation for payment confirmations
+invoice_attachments	If supporting uploads (PDFs, photos, etc.)
+invoice_audit_log	History of invoice edits, status changes, who did what

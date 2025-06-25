@@ -204,14 +204,7 @@
                                         {% if job.scheduled_date %}
                                         <div class="scheduled-date">
                                             <strong>{{ job.scheduled_date }}</strong>
-                                            <br><small class="text-muted">
-                                                {% set days_until = ((job.scheduled_date|string|as_datetime) - (moment().startOf('day')|as_datetime)).days %}
-                                                {% if days_until == 0 %}Today
-                                                {% elif days_until == 1 %}Tomorrow
-                                                {% elif days_until > 1 %}{{ days_until }} days
-                                                {% elif days_until < 0 %}{{ abs(days_until) }} days ago
-                                                {% endif %}
-                                            </small>
+                                            <br><small class="text-muted">Scheduled</small>
                                         </div>
                                         {% else %}
                                         <span class="text-muted">Not scheduled</span>
