@@ -1,33 +1,59 @@
-<div class="content-card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h3 class="card-title">
-            <i class="fas fa-database me-2"></i>Data Management
-        </h3>
-        <div class="btn-group">
-            <button class="btn btn-spankks btn-sm" onclick="downloadAllTemplates()">
-                <i class="fas fa-download me-1"></i>Download All Templates
-            </button>
-            <button class="btn btn-outline-success btn-sm" onclick="refreshCsvStats()">
-                <i class="fas fa-sync-alt me-1"></i>Refresh Stats
-            </button>
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <a href="/admin-home" class="btn btn-outline-secondary me-3">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                    <div>
+                        <h2 class="mb-0"><i class="fas fa-database me-2 text-primary"></i>Data Management</h2>
+                        <p class="text-muted mb-0">Export data, manage templates, and backup operations</p>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="downloadAllTemplates()">
+                        <i class="fas fa-download me-1"></i>Download All Templates
+                    </button>
+                    <button class="btn btn-outline-success" onclick="refreshCsvStats()">
+                        <i class="fas fa-sync-alt me-1"></i>Refresh Stats
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="backupData()">
+                        <i class="fas fa-shield-alt me-1"></i>Backup Data
+                    </button>
+                </div>
+            </div>
         </div>
+    </div>
+
+<div class="content-card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 py-3">
+        <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Data Overview</h5>
     </div>
     <div class="card-body">
         <!-- CSV Statistics -->
         <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-value" id="totalTemplates">7</div>
-                    <div class="stat-label">Available Templates</div>
-                    <div class="stat-change">
-                        <i class="fas fa-file-alt me-1"></i>Ready
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="text-primary mb-2">
+                            <i class="fas fa-file-alt fa-2x"></i>
+                        </div>
+                        <h4 class="mb-1" id="totalTemplates">7</h4>
+                        <p class="text-muted mb-0">Available Templates</p>
+                        <small class="text-success"><i class="fas fa-check me-1"></i>Ready</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-value" id="uploadsToday">0</div>
-                    <div class="stat-label">Uploads Today</div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="text-success mb-2">
+                            <i class="fas fa-upload fa-2x"></i>
+                        </div>
+                        <h4 class="mb-1" id="uploadsToday">0</h4>
+                        <p class="text-muted mb-0">Uploads Today</p>
                     <div class="stat-change positive">
                         <i class="fas fa-upload me-1"></i>Files
                     </div>
