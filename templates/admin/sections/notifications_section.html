@@ -1,314 +1,783 @@
+<!-- Notifications Management Section -->
 <style>
 body {
-    background-color: #f8f9fa !important;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-.container-fluid {
-    background-color: #f8f9fa;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
-    padding: 20px;
+}
+
+.container-fluid {
+    background: transparent;
+    min-height: 100vh;
+    padding: 30px;
+}
+
+/* Modern Notifications Design */
+.notification-card {
+    background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+    border: 1px solid rgba(26, 95, 63, 0.1);
+    border-radius: 20px;
+    box-shadow: 
+        0 10px 40px rgba(0,0,0,0.08),
+        0 4px 20px rgba(26, 95, 63, 0.05),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.notification-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #1a5f3f, #2d7a5a, #1a5f3f);
+    border-radius: 20px 20px 0 0;
+}
+
+.notification-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 
+        0 20px 60px rgba(0,0,0,0.15),
+        0 8px 30px rgba(26, 95, 63, 0.1),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+.setting-toggle {
+    background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+    border: 1px solid rgba(26, 95, 63, 0.1);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.setting-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.channel-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.channel-badge.email {
+    background: linear-gradient(135deg, #0dcaf0, #0d6efd);
+    color: white;
+}
+
+.channel-badge.sms {
+    background: linear-gradient(135deg, #20c997, #198754);
+    color: white;
+}
+
+.channel-badge.inapp {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: white;
+}
+
+.template-editor {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.variable-tag {
+    background: linear-gradient(135deg, #1a5f3f, #2d7a5a);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin: 0.25rem;
+    display: inline-block;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.variable-tag:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(26, 95, 63, 0.3);
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background: linear-gradient(135deg, #1a5f3f, #2d7a5a);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.stats-card {
+    background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+    border: 1px solid rgba(26, 95, 63, 0.1);
+    border-radius: 15px;
+    box-shadow: 
+        0 8px 32px rgba(0,0,0,0.06),
+        0 4px 16px rgba(26, 95, 63, 0.04),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn {
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 100%);
+    border-color: #1a5f3f;
+    color: white;
+    box-shadow: 0 4px 15px rgba(26, 95, 63, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #164a35 0%, #256650 100%);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(26, 95, 63, 0.4);
+}
+
+.table {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    background: white;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.75rem;
+    color: #495057;
+    padding: 1.25rem 1rem;
+}
+
+.form-control, .form-select, .form-check-input {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus, .form-check-input:focus {
+    border-color: #1a5f3f;
+    box-shadow: 0 0 0 0.2rem rgba(26, 95, 63, 0.15);
 }
 </style>
 
-<div class="container-fluid">
-    <!-- Header Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <a href="/admin-home" class="btn btn-outline-secondary me-3">
-                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                    </a>
-                    <div>
-                        <h2 class="mb-0"><i class="fas fa-bell me-2 text-primary"></i>Notifications</h2>
-                        <p class="text-muted mb-0">Manage system notifications and alerts</p>
+    <div class="container-fluid">
+        <!-- Header Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card notification-card border-0 shadow">
+                    <div class="card-header" style="background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 50%, #1a5f3f 100%); color: white;">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-bell me-2"></i>Notification Management
+                                </h4>
+                                <p class="mb-0 opacity-75">Control notification types, delivery methods, and message templates</p>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-light btn-sm" onclick="window.history.back()">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="markAllRead()">
-                        <i class="fas fa-check me-1"></i>Mark All Read
-                    </button>
-                    <button class="btn btn-outline-success" onclick="refreshNotifications()">
-                        <i class="fas fa-sync-alt me-1"></i>Refresh
-                    </button>
-                    <button class="btn btn-outline-danger" onclick="clearAll()">
-                        <i class="fas fa-trash me-1"></i>Clear All
-                    </button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Notification Statistics -->
-    <div class="row mb-4">
-        <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="text-primary mb-2">
-                        <i class="fas fa-envelope fa-2x"></i>
+        <!-- Statistics Cards -->
+        <div class="row mb-4" id="notificationStats">
+            <div class="col-md-3">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <div class="text-primary mb-2">
+                            <i class="fas fa-paper-plane fa-2x"></i>
+                        </div>
+                        <h4 class="mb-1" id="totalSent">-</h4>
+                        <small class="text-muted">Total Sent (30 days)</small>
                     </div>
-                    <h4 class="mb-1" id="totalNotifications">0</h4>
-                    <p class="text-muted mb-0">Total Notifications</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <div class="text-success mb-2">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                        <h4 class="mb-1" id="successRate">-</h4>
+                        <small class="text-muted">Success Rate</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <div class="text-info mb-2">
+                            <i class="fas fa-envelope fa-2x"></i>
+                        </div>
+                        <h4 class="mb-1" id="emailCount">-</h4>
+                        <small class="text-muted">Email Notifications</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <div class="text-warning mb-2">
+                            <i class="fas fa-sms fa-2x"></i>
+                        </div>
+                        <h4 class="mb-1" id="smsCount">-</h4>
+                        <small class="text-muted">SMS Notifications</small>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="text-warning mb-2">
-                        <i class="fas fa-exclamation-circle fa-2x"></i>
-                    </div>
-                    <h4 class="mb-1" id="unreadNotifications">0</h4>
-                    <p class="text-muted mb-0">Unread</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="text-success mb-2">
-                        <i class="fas fa-check-circle fa-2x"></i>
-                    </div>
-                    <h4 class="mb-1" id="readNotifications">0</h4>
-                    <p class="text-muted mb-0">Read</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="text-info mb-2">
-                        <i class="fas fa-clock fa-2x"></i>
-                    </div>
-                    <h4 class="mb-1" id="todayNotifications">0</h4>
-                    <p class="text-muted mb-0">Today</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Notifications List -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white border-0 py-3">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Recent Notifications</h5>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex justify-content-end">
-                        <select class="form-select form-select-sm me-2" id="filterType" onchange="filterNotifications()">
-                            <option value="">All Types</option>
-                            <option value="info">Info</option>
-                            <option value="warning">Warning</option>
-                            <option value="error">Error</option>
-                            <option value="success">Success</option>
-                        </select>
-                    </div>
-                </div>
+        <!-- Main Content Tabs -->
+        <div class="card notification-card border-0 shadow">
+            <div class="card-header bg-white border-0">
+                <ul class="nav nav-tabs" id="notificationTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">
+                            <i class="fas fa-cog me-2"></i>Settings
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="templates-tab" data-bs-toggle="tab" data-bs-target="#templates" type="button" role="tab">
+                            <i class="fas fa-file-alt me-2"></i>Templates
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="test-tab" data-bs-toggle="tab" data-bs-target="#test" type="button" role="tab">
+                            <i class="fas fa-flask me-2"></i>Send Test
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button" role="tab">
+                            <i class="fas fa-history me-2"></i>Logs
+                        </button>
+                    </li>
+                </ul>
             </div>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width: 50px;">
-                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
-                            </th>
-                            <th>Type</th>
-                            <th>Message</th>
-                            <th>Time</th>
-                            <th>Status</th>
-                            <th style="width: 120px;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="notificationsTableBody">
-                        <!-- Notifications will be populated here -->
-                        <tr>
-                            <td colspan="6" class="text-center py-4">
-                                <div class="text-muted">
-                                    <i class="fas fa-bell-slash fa-2x mb-2"></i>
-                                    <p class="mb-0">No notifications available</p>
-                                    <small>Notifications will appear here when system events occur</small>
+            <div class="card-body">
+                <div class="tab-content" id="notificationTabContent">
+                    <!-- Settings Tab -->
+                    <div class="tab-pane fade show active" id="settings" role="tabpanel">
+                        <h5 class="mb-4">
+                            <i class="fas fa-toggle-on me-2 text-primary"></i>Notification Settings
+                        </h5>
+                        <div id="notificationSettings">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p class="mt-2 text-muted">Loading notification settings...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Templates Tab -->
+                    <div class="tab-pane fade" id="templates" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0">
+                                <i class="fas fa-edit me-2 text-primary"></i>Message Templates
+                            </h5>
+                            <div class="mb-3">
+                                <label class="form-label">Template Type:</label>
+                                <select class="form-select" id="templateTypeFilter" onchange="filterTemplates()">
+                                    <option value="">All Templates</option>
+                                    <option value="job_start_reminder">Job Start Reminder</option>
+                                    <option value="invoice_due_alert">Invoice Due Alert</option>
+                                    <option value="quote_accepted">Quote Accepted</option>
+                                    <option value="followup_reminder">Follow-up Reminder</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="notificationTemplates">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p class="mt-2 text-muted">Loading templates...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Test Tab -->
+                    <div class="tab-pane fade" id="test" role="tabpanel">
+                        <h5 class="mb-4">
+                            <i class="fas fa-paper-plane me-2 text-primary"></i>Send Test Notification
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <form id="testNotificationForm">
+                                    <div class="mb-3">
+                                        <label for="testRecipient" class="form-label">Recipient</label>
+                                        <input type="text" class="form-control" id="testRecipient" placeholder="email@example.com or (808) 555-0123" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="testType" class="form-label">Notification Type</label>
+                                        <select class="form-select" id="testType" required>
+                                            <option value="">Select Type</option>
+                                            <option value="job_start_reminder">Job Start Reminder</option>
+                                            <option value="invoice_due_alert">Invoice Due Alert</option>
+                                            <option value="quote_accepted">Quote Accepted</option>
+                                            <option value="followup_reminder">Follow-up Reminder</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="testChannel" class="form-label">Channel</label>
+                                        <select class="form-select" id="testChannel" required>
+                                            <option value="">Select Channel</option>
+                                            <option value="email">Email</option>
+                                            <option value="sms">SMS</option>
+                                            <option value="inapp">In-App</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="testMessage" class="form-label">Message</label>
+                                        <textarea class="form-control" id="testMessage" rows="4" placeholder="Test message content..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-2"></i>Send Test
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="template-editor">
+                                    <h6 class="text-muted mb-3">Available Variables:</h6>
+                                    <div id="availableVariables">
+                                        <span class="variable-tag">{{client_name}}</span>
+                                        <span class="variable-tag">{{job_time}}</span>
+                                        <span class="variable-tag">{{job_title}}</span>
+                                        <span class="variable-tag">{{invoice_number}}</span>
+                                        <span class="variable-tag">{{amount}}</span>
+                                        <span class="variable-tag">{{quote_number}}</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-2">Click on any variable to insert it into your message.</small>
                                 </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logs Tab -->
+                    <div class="tab-pane fade" id="logs" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0">
+                                <i class="fas fa-list me-2 text-primary"></i>Notification Logs
+                            </h5>
+                            <button class="btn btn-outline-primary btn-sm" onclick="refreshLogs()">
+                                <i class="fas fa-sync-alt me-2"></i>Refresh
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Recipient</th>
+                                        <th>Type</th>
+                                        <th>Channel</th>
+                                        <th>Status</th>
+                                        <th>Sent At</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="notificationLogs">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                            <div class="spinner-border text-primary" role="status"></div>
+                                            <p class="mt-2 text-muted">Loading notification logs...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-// Notifications Management JavaScript
-let notifications = [];
+    <script>
+    let notificationSettings = [];
+    let notificationTemplates = [];
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Notifications: Page loaded');
-    loadNotifications();
-    
-    // Auto-refresh every 30 seconds
-    setInterval(loadNotifications, 30000);
-});
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Notification management loaded');
+        loadNotificationStatistics();
+        loadNotificationSettings();
+        loadNotificationTemplates();
+        loadNotificationLogs();
+        
+        // Setup test form
+        document.getElementById('testNotificationForm').addEventListener('submit', handleTestNotification);
+        
+        // Setup variable insertion
+        document.getElementById('availableVariables').addEventListener('click', function(e) {
+            if (e.target.classList.contains('variable-tag')) {
+                const variable = e.target.textContent;
+                const messageField = document.getElementById('testMessage');
+                messageField.value += variable + ' ';
+                messageField.focus();
+            }
+        });
+    });
 
-function loadNotifications() {
-    // For now, create sample notifications since the table might not exist
-    notifications = [
-        {
-            id: 1,
-            type: 'info',
-            message: 'New quote request received from client',
-            created_at: new Date().toISOString(),
-            is_read: false
-        },
-        {
-            id: 2,
-            type: 'success',
-            message: 'Invoice payment received successfully',
-            created_at: new Date(Date.now() - 3600000).toISOString(),
-            is_read: true
-        },
-        {
-            id: 3,
-            type: 'warning',
-            message: 'Job completion pending review',
-            created_at: new Date(Date.now() - 7200000).toISOString(),
-            is_read: false
+    function loadNotificationStatistics() {
+        fetch('/api/admin/notifications/statistics')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const stats = data.statistics;
+                document.getElementById('totalSent').textContent = stats.total_sent;
+                document.getElementById('successRate').textContent = stats.success_rate + '%';
+                document.getElementById('emailCount').textContent = stats.by_channel.email;
+                document.getElementById('smsCount').textContent = stats.by_channel.sms;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading statistics:', error);
+        });
+    }
+
+    function loadNotificationSettings() {
+        fetch('/api/admin/notifications/settings')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                notificationSettings = data.settings;
+                displayNotificationSettings();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading settings:', error);
+        });
+    }
+
+    function displayNotificationSettings() {
+        const container = document.getElementById('notificationSettings');
+        
+        if (notificationSettings.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-cog fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No notification settings configured yet.</p>
+                </div>
+            `;
+            return;
         }
-    ];
-    
-    renderNotificationsTable();
-    updateNotificationStats();
-}
 
-function renderNotificationsTable() {
-    const tbody = document.getElementById('notificationsTableBody');
-    
-    if (notifications.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center py-4">
-                    <div class="text-muted">
-                        <i class="fas fa-bell-slash fa-2x mb-2"></i>
-                        <p class="mb-0">No notifications available</p>
-                        <small>Notifications will appear here when system events occur</small>
+        // Group settings by type
+        const groupedSettings = {};
+        notificationSettings.forEach(setting => {
+            if (!groupedSettings[setting.type]) {
+                groupedSettings[setting.type] = [];
+            }
+            groupedSettings[setting.type].push(setting);
+        });
+
+        container.innerHTML = Object.entries(groupedSettings).map(([type, settings]) => {
+            const typeName = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            
+            return `
+                <div class="setting-toggle">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-1">${getTypeIcon(type)} ${typeName}</h6>
+                            <small class="text-muted">${getTypeDescription(type)}</small>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">Timing: ${settings[0].timing_minutes} minutes before</small>
+                        </div>
                     </div>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    tbody.innerHTML = '';
-    
-    notifications.forEach(notification => {
-        const typeIcon = {
-            'info': '<i class="fas fa-info-circle text-primary"></i>',
-            'success': '<i class="fas fa-check-circle text-success"></i>',
-            'warning': '<i class="fas fa-exclamation-triangle text-warning"></i>',
-            'error': '<i class="fas fa-times-circle text-danger"></i>'
-        }[notification.type] || '<i class="fas fa-bell text-secondary"></i>';
-        
-        const statusBadge = notification.is_read 
-            ? '<span class="badge bg-success">Read</span>'
-            : '<span class="badge bg-warning">Unread</span>';
-        
-        const time = new Date(notification.created_at).toLocaleString();
-        
-        const row = `
-            <tr ${!notification.is_read ? 'class="table-warning"' : ''}>
-                <td><input type="checkbox" value="${notification.id}"></td>
-                <td>${typeIcon}</td>
-                <td>
-                    <strong>${notification.message}</strong>
-                    ${!notification.is_read ? '<span class="badge bg-primary ms-2">New</span>' : ''}
-                </td>
-                <td><small class="text-muted">${time}</small></td>
-                <td>${statusBadge}</td>
-                <td>
-                    <div class="btn-group btn-group-sm">
-                        ${!notification.is_read ? `<button class="btn btn-outline-primary btn-sm" onclick="markAsRead(${notification.id})" title="Mark as read"><i class="fas fa-check"></i></button>` : ''}
-                        <button class="btn btn-outline-danger btn-sm" onclick="deleteNotification(${notification.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                    <div class="d-flex gap-3">
+                        ${settings.map(setting => `
+                            <div class="d-flex align-items-center">
+                                <label class="switch me-2">
+                                    <input type="checkbox" ${setting.enabled ? 'checked' : ''} onchange="updateNotificationSetting(${setting.id}, this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="channel-badge ${setting.channel}">${setting.channel.toUpperCase()}</span>
+                            </div>
+                        `).join('')}
                     </div>
-                </td>
-            </tr>
-        `;
+                </div>
+            `;
+        }).join('');
+    }
+
+    function loadNotificationTemplates() {
+        fetch('/api/admin/notifications/templates')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                notificationTemplates = data.templates;
+                displayNotificationTemplates();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading templates:', error);
+        });
+    }
+
+    function displayNotificationTemplates() {
+        const container = document.getElementById('notificationTemplates');
         
-        tbody.insertAdjacentHTML('beforeend', row);
-    });
-}
-
-function updateNotificationStats() {
-    const total = notifications.length;
-    const unread = notifications.filter(n => !n.is_read).length;
-    const read = notifications.filter(n => n.is_read).length;
-    const today = notifications.filter(n => {
-        const notificationDate = new Date(n.created_at);
-        const today = new Date();
-        return notificationDate.toDateString() === today.toDateString();
-    }).length;
-    
-    document.getElementById('totalNotifications').textContent = total;
-    document.getElementById('unreadNotifications').textContent = unread;
-    document.getElementById('readNotifications').textContent = read;
-    document.getElementById('todayNotifications').textContent = today;
-}
-
-function markAsRead(id) {
-    const notification = notifications.find(n => n.id === id);
-    if (notification) {
-        notification.is_read = true;
-        renderNotificationsTable();
-        updateNotificationStats();
-    }
-}
-
-function markAllRead() {
-    notifications.forEach(n => n.is_read = true);
-    renderNotificationsTable();
-    updateNotificationStats();
-}
-
-function deleteNotification(id) {
-    if (confirm('Are you sure you want to delete this notification?')) {
-        notifications = notifications.filter(n => n.id !== id);
-        renderNotificationsTable();
-        updateNotificationStats();
-    }
-}
-
-function clearAll() {
-    if (confirm('Are you sure you want to clear all notifications?')) {
-        notifications = [];
-        renderNotificationsTable();
-        updateNotificationStats();
-    }
-}
-
-function refreshNotifications() {
-    console.log('Refreshing notifications...');
-    loadNotifications();
-}
-
-function filterNotifications() {
-    const filterType = document.getElementById('filterType').value;
-    const rows = document.querySelectorAll('#notificationsTableBody tr');
-    
-    rows.forEach(row => {
-        if (row.cells.length > 1) {
-            const typeCell = row.cells[1];
-            const hasType = !filterType || typeCell.textContent.toLowerCase().includes(filterType);
-            row.style.display = hasType ? '' : 'none';
+        if (notificationTemplates.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No templates configured yet.</p>
+                </div>
+            `;
+            return;
         }
-    });
-}
 
-function toggleSelectAll() {
-    const selectAll = document.getElementById('selectAll');
-    const checkboxes = document.querySelectorAll('#notificationsTableBody input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = selectAll.checked;
-    });
-}
-</script>
+        container.innerHTML = notificationTemplates.map(template => `
+            <div class="template-editor mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="mb-1">${template.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h6>
+                        <span class="channel-badge ${template.channel}">${template.channel.toUpperCase()}</span>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm" onclick="editTemplate(${template.id})">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </button>
+                </div>
+                ${template.subject ? `
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Subject:</label>
+                        <div class="form-control-plaintext">${template.subject}</div>
+                    </div>
+                ` : ''}
+                <div class="mb-2">
+                    <label class="form-label fw-bold">Message:</label>
+                    <div class="form-control-plaintext">${template.body}</div>
+                </div>
+                <div>
+                    <small class="text-muted">Variables: </small>
+                    ${template.variables.map(variable => `<span class="variable-tag">{{${variable}}}</span>`).join('')}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function loadNotificationLogs() {
+        fetch('/api/admin/notifications/logs')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayNotificationLogs(data.logs);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading logs:', error);
+        });
+    }
+
+    function displayNotificationLogs(logs) {
+        const tableBody = document.getElementById('notificationLogs');
+        
+        if (logs.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center py-4">
+                        <i class="fas fa-history fa-2x text-muted mb-2 d-block"></i>
+                        No notification logs found.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tableBody.innerHTML = logs.map(log => {
+            const statusBadge = getStatusBadge(log.status);
+            const channelBadge = `<span class="channel-badge ${log.channel}">${log.channel.toUpperCase()}</span>`;
+            const sentDate = new Date(log.sent_at).toLocaleString();
+            
+            return `
+                <tr>
+                    <td>${log.recipient}</td>
+                    <td>${log.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</td>
+                    <td>${channelBadge}</td>
+                    <td>${statusBadge}</td>
+                    <td>${sentDate}</td>
+                    <td>
+                        <button class="btn btn-outline-info btn-sm" onclick="viewLogDetails(${log.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function handleTestNotification(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const testData = {
+            recipient: document.getElementById('testRecipient').value,
+            type: document.getElementById('testType').value,
+            channel: document.getElementById('testChannel').value,
+            body: document.getElementById('testMessage').value
+        };
+
+        fetch('/api/admin/notifications/test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(testData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Test notification sent successfully!', 'success');
+                e.target.reset();
+                loadNotificationLogs();
+                loadNotificationStatistics();
+            } else {
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error sending test notification:', error);
+            showNotification('Failed to send test notification', 'error');
+        });
+    }
+
+    function updateNotificationSetting(settingId, enabled) {
+        fetch(`/api/admin/notifications/settings/${settingId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ enabled: enabled })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Setting updated successfully', 'success');
+            } else {
+                showNotification(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating setting:', error);
+            showNotification('Failed to update setting', 'error');
+        });
+    }
+
+    function getTypeIcon(type) {
+        const icons = {
+            'job_start_reminder': '🔔',
+            'invoice_due_alert': '🧾',
+            'quote_accepted': '🧠',
+            'followup_reminder': '💬'
+        };
+        return icons[type] || '📧';
+    }
+
+    function getTypeDescription(type) {
+        const descriptions = {
+            'job_start_reminder': 'Notify clients before job start time',
+            'invoice_due_alert': 'Alert clients about due invoices',
+            'quote_accepted': 'Confirm quote acceptance to team',
+            'followup_reminder': 'Follow up after job completion'
+        };
+        return descriptions[type] || 'Custom notification type';
+    }
+
+    function getStatusBadge(status) {
+        const badges = {
+            'sent': '<span class="badge bg-success">Sent</span>',
+            'failed': '<span class="badge bg-danger">Failed</span>',
+            'pending': '<span class="badge bg-warning">Pending</span>'
+        };
+        return badges[status] || '<span class="badge bg-secondary">Unknown</span>';
+    }
+
+    function filterTemplates() {
+        // Implementation for template filtering
+        displayNotificationTemplates();
+    }
+
+    function editTemplate(templateId) {
+        showNotification('Template editing feature coming soon!', 'info');
+    }
+
+    function viewLogDetails(logId) {
+        showNotification('Log details feature coming soon!', 'info');
+    }
+
+    function refreshLogs() {
+        loadNotificationLogs();
+        loadNotificationStatistics();
+        showNotification('Logs refreshed', 'success');
+    }
+
+    function showNotification(message, type = 'info') {
+        // Simple notification system
+        alert(message);
+    }
+    </script>
