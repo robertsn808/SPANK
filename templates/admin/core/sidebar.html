@@ -132,16 +132,7 @@
         </div>
     </div>
 
-    <!-- Sidebar Footer -->
-    <div class="sidebar-footer">
-        <div class="business-info">
-            <div class="hawaii-time">
-                <i class="fas fa-clock me-2"></i>
-                <span id="sidebar-time">Loading...</span>
-            </div>
-            <small class="text-muted">Hawaii Time</small>
-        </div>
-    </div>
+
 </nav>
 
 <!-- Mobile Sidebar Overlay -->
@@ -157,25 +148,7 @@ function toggleSidebar() {
     overlay.classList.toggle('show');
 }
 
-// Update Hawaii time in sidebar
-function updateSidebarTime() {
-    const now = new Date();
-    const hawaiiTime = now.toLocaleString('en-US', {
-        timeZone: 'Pacific/Honolulu',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-    });
-    
-    const timeElement = document.getElementById('sidebar-time');
-    if (timeElement) {
-        timeElement.textContent = hawaiiTime;
-    }
-}
 
-// Initialize sidebar time and update every minute
-updateSidebarTime();
-setInterval(updateSidebarTime, 60000);
 
 // Set active navigation item based on current page
 document.addEventListener('DOMContentLoaded', function() {
