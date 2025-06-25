@@ -8391,7 +8391,10 @@ def serve_crm_section():
                     pass
         
         logging.info(f"CRM: Loading {len(contacts)} contacts from 2 data sources with complete profiles")
-        return render_template('crm_section.html', contacts=contacts)
+        content = render_template('crm_section.html', contacts=contacts)
+        response = make_response(content)
+        response.headers['Content-Type'] = 'text/html; charset=utf-8'
+        return response
     except Exception as e:
         logging.error(f"Error serving CRM section: {e}")
         return jsonify({'error': 'Template error'}), 500
@@ -8403,10 +8406,13 @@ def serve_business_contacts_section():
         return jsonify({'error': 'Admin authentication required'}), 401
     
     try:
-        return render_template('business_contacts_section.html')
+        content = render_template('business_contacts_section.html')
+        response = make_response(content)
+        response.headers['Content-Type'] = 'text/html; charset=utf-8'
+        return response
     except Exception as e:
         logging.error(f"Error serving business contacts section: {e}")
-        return jsonify({'error': 'Template error'}), 500
+        return "Template error", 404
 
 @app.route('/templates/service_management_section.html')
 def serve_service_management_section():
@@ -8415,10 +8421,13 @@ def serve_service_management_section():
         return jsonify({'error': 'Admin authentication required'}), 401
     
     try:
-        return render_template('service_management_section.html')
+        content = render_template('service_management_section.html')
+        response = make_response(content)
+        response.headers['Content-Type'] = 'text/html; charset=utf-8'
+        return response
     except Exception as e:
         logging.error(f"Error serving service management section: {e}")
-        return jsonify({'error': 'Template error'}), 500
+        return "Template error", 404
 
 # Service Type Management API Routes
 @app.route('/api/service-types', methods=['GET'])
@@ -8843,10 +8852,13 @@ def get_membership_types():
 def serve_template(filename):
     """Serve template files for dynamic loading"""
     try:
-        return render_template(filename)
+        content = render_template(filename)
+        response = make_response(content)
+        response.headers['Content-Type'] = 'text/html; charset=utf-8'
+        return response
     except Exception as e:
         logging.error(f"Error serving template {filename}: {e}")
-        return jsonify({'error': 'Template not found'}), 404
+        return "Template not found", 404
 
 # Missing API endpoints for CRM functionality
 @app.route('/api/contacts')
