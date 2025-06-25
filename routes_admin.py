@@ -828,9 +828,9 @@ def admin_quote_builder():
             
             # Get service types
             result = conn.execute(db.text("""
-                SELECT DISTINCT service_name as service_type FROM service_types
-                WHERE active = TRUE
-                ORDER BY service_name
+                SELECT DISTINCT name as service_type FROM service_types
+                WHERE is_active = TRUE
+                ORDER BY name
             """))
             services = [dict(row._mapping) for row in result]
             
