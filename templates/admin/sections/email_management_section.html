@@ -1,0 +1,616 @@
+<style>
+body {
+    background-color: #f8f9fa !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.container-fluid {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Enhanced Email Management Design */
+.email-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.email-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 100%) !important;
+    color: white !important;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 1.25rem !important;
+}
+
+.card-header h5 {
+    color: white !important;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.stats-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.stats-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.stats-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.stats-icon.primary {
+    background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 100%);
+    color: white;
+}
+
+.stats-icon.success {
+    background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+    color: white;
+}
+
+.stats-icon.warning {
+    background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%);
+    color: white;
+}
+
+.stats-icon.info {
+    background: linear-gradient(135deg, #0dcaf0 0%, #6f42c1 100%);
+    color: white;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #145a34 0%, #246a4f 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(26, 95, 63, 0.3);
+}
+
+.form-control, .form-select {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #1a5f3f;
+    box-shadow: 0 0 0 0.2rem rgba(26, 95, 63, 0.15);
+}
+
+.section-divider {
+    height: 2px;
+    background: linear-gradient(90deg, #1a5f3f 0%, #2d7a5a 50%, #1a5f3f 100%);
+    border: none;
+    margin: 2rem 0;
+    border-radius: 1px;
+}
+
+.email-template {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.email-template:hover {
+    border-color: #1a5f3f;
+    background-color: #f8f9fa;
+}
+
+.email-template.selected {
+    border-color: #1a5f3f;
+    background-color: #f0f8f4;
+}
+
+.email-editor {
+    min-height: 300px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.email-preview {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    min-height: 400px;
+}
+</style>
+
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <a href="/admin-home" class="btn btn-outline-secondary me-3">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                    <div>
+                        <h2 class="mb-0"><i class="fas fa-envelope me-2 text-primary"></i>Email Management</h2>
+                        <p class="text-muted mb-0">Manage email campaigns, templates, and notifications</p>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="sendEmail()">
+                        <i class="fas fa-paper-plane me-1"></i>Send Email
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="createTemplate()">
+                        <i class="fas fa-plus me-1"></i>New Template
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Statistics -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card">
+                <div class="card-body text-center">
+                    <div class="stats-icon primary mx-auto">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <h4 class="mb-1">142</h4>
+                    <p class="text-muted mb-0">Emails Sent</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card">
+                <div class="card-body text-center">
+                    <div class="stats-icon success mx-auto">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h4 class="mb-1">89.2%</h4>
+                    <p class="text-muted mb-0">Open Rate</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card">
+                <div class="card-body text-center">
+                    <div class="stats-icon warning mx-auto">
+                        <i class="fas fa-mouse-pointer"></i>
+                    </div>
+                    <h4 class="mb-1">34.7%</h4>
+                    <p class="text-muted mb-0">Click Rate</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card">
+                <div class="card-body text-center">
+                    <div class="stats-icon info mx-auto">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4 class="mb-1">234</h4>
+                    <p class="text-muted mb-0">Subscribers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Composer -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card email-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Email Composer</h5>
+                </div>
+                <div class="card-body">
+                    <form id="emailForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="emailTo" class="form-label">To</label>
+                                <select class="form-select" id="emailTo" multiple>
+                                    <option value="all_clients">All Clients</option>
+                                    <option value="all_staff">All Staff</option>
+                                    <option value="newsletter_subscribers">Newsletter Subscribers</option>
+                                    <option value="recent_customers">Recent Customers</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="emailSubject" class="form-label">Subject</label>
+                                <input type="text" class="form-control" id="emailSubject" placeholder="Enter email subject">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="emailTemplate" class="form-label">Template</label>
+                            <select class="form-select" id="emailTemplate" onchange="loadTemplate()">
+                                <option value="">Select a template...</option>
+                                <option value="welcome">Welcome Email</option>
+                                <option value="quote_follow_up">Quote Follow-up</option>
+                                <option value="job_completion">Job Completion</option>
+                                <option value="newsletter">Newsletter</option>
+                                <option value="promotion">Promotional Email</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="emailContent" class="form-label">Email Content</label>
+                            <textarea class="form-control email-editor" id="emailContent" placeholder="Enter your email content here..."></textarea>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-secondary" onclick="saveAsDraft()">
+                                    <i class="fas fa-save me-1"></i>Save Draft
+                                </button>
+                                <button type="button" class="btn btn-outline-info" onclick="previewEmail()">
+                                    <i class="fas fa-eye me-1"></i>Preview
+                                </button>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-1"></i>Send Email
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card email-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-eye me-2"></i>Preview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="email-preview" id="emailPreview">
+                        <p class="text-muted text-center">Preview will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Email Templates -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card email-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Email Templates</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="email-template" onclick="selectTemplate('welcome')">
+                                <h6><i class="fas fa-hand-sparkles me-2"></i>Welcome Email</h6>
+                                <p class="text-muted mb-0">Welcome new clients to SPANKKS Construction</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="email-template" onclick="selectTemplate('quote_follow_up')">
+                                <h6><i class="fas fa-file-invoice me-2"></i>Quote Follow-up</h6>
+                                <p class="text-muted mb-0">Follow up on pending quotes</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="email-template" onclick="selectTemplate('job_completion')">
+                                <h6><i class="fas fa-check-circle me-2"></i>Job Completion</h6>
+                                <p class="text-muted mb-0">Notify clients of completed work</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="email-template" onclick="selectTemplate('newsletter')">
+                                <h6><i class="fas fa-newspaper me-2"></i>Newsletter</h6>
+                                <p class="text-muted mb-0">Monthly company newsletter</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Emails -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card email-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Emails</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Recipients</th>
+                                    <th>Sent Date</th>
+                                    <th>Open Rate</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <strong>Welcome to SPANKKS Construction</strong><br>
+                                            <small class="text-muted">Welcome email template</small>
+                                        </div>
+                                    </td>
+                                    <td>12 clients</td>
+                                    <td>Today, 2:30 PM</td>
+                                    <td><span class="badge bg-success">91.7%</span></td>
+                                    <td><span class="badge bg-primary">Sent</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-info" onclick="viewEmail(1)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="duplicateEmail(1)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <strong>Your Quote is Ready</strong><br>
+                                            <small class="text-muted">Quote follow-up</small>
+                                        </div>
+                                    </td>
+                                    <td>5 clients</td>
+                                    <td>Yesterday, 10:15 AM</td>
+                                    <td><span class="badge bg-warning">67.2%</span></td>
+                                    <td><span class="badge bg-primary">Sent</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-info" onclick="viewEmail(2)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="duplicateEmail(2)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <strong>Job Completed Successfully</strong><br>
+                                            <small class="text-muted">Completion notification</small>
+                                        </div>
+                                    </td>
+                                    <td>3 clients</td>
+                                    <td>Jun 23, 2025, 4:45 PM</td>
+                                    <td><span class="badge bg-success">100%</span></td>
+                                    <td><span class="badge bg-primary">Sent</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-info" onclick="viewEmail(3)">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="duplicateEmail(3)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Email management page loaded');
+    
+    // Email form submission
+    document.getElementById('emailForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        sendEmail();
+    });
+});
+
+function sendEmail() {
+    const emailTo = document.getElementById('emailTo').value;
+    const subject = document.getElementById('emailSubject').value;
+    const content = document.getElementById('emailContent').value;
+    
+    if (!emailTo || !subject || !content) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    // Send email via API
+    fetch('/api/admin/send-email', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            to: emailTo,
+            subject: subject,
+            content: content
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Email sent successfully!', 'success');
+            document.getElementById('emailForm').reset();
+            document.getElementById('emailPreview').innerHTML = '<p class="text-muted text-center">Preview will appear here</p>';
+        } else {
+            showNotification(data.message || 'Failed to send email', 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Error sending email', 'error');
+        console.error('Error:', error);
+    });
+}
+
+function loadTemplate() {
+    const templateSelect = document.getElementById('emailTemplate');
+    const template = templateSelect.value;
+    const contentArea = document.getElementById('emailContent');
+    const subjectField = document.getElementById('emailSubject');
+    
+    const templates = {
+        welcome: {
+            subject: 'Welcome to SPANKKS Construction!',
+            content: `Dear [Client Name],
+
+Welcome to SPANKKS Construction! We're excited to work with you on your upcoming project.
+
+Our team is committed to providing exceptional service and quality workmanship. We'll keep you updated throughout the entire process.
+
+If you have any questions, please don't hesitate to contact us at (808) 778-9132 or spank808@gmail.com.
+
+Best regards,
+The SPANKKS Construction Team`
+        },
+        quote_follow_up: {
+            subject: 'Your Quote is Ready - SPANKKS Construction',
+            content: `Dear [Client Name],
+
+Thank you for your interest in SPANKKS Construction. Your quote is now ready for review.
+
+Quote Number: [Quote Number]
+Total Amount: $[Amount]
+
+Please review the details and let us know if you have any questions. We're here to help!
+
+Best regards,
+SPANKKS Construction Team`
+        },
+        job_completion: {
+            subject: 'Job Completed Successfully - SPANKKS Construction',
+            content: `Dear [Client Name],
+
+Great news! Your project has been completed successfully.
+
+We hope you're satisfied with the quality of our work. Please take a moment to inspect everything and let us know if you have any concerns.
+
+Thank you for choosing SPANKKS Construction!
+
+Best regards,
+The SPANKKS Team`
+        },
+        newsletter: {
+            subject: 'SPANKKS Construction Newsletter - [Month] [Year]',
+            content: `SPANKKS Construction Monthly Newsletter
+
+This month's highlights:
+- Recent project completions
+- New services available
+- Special offers for returning clients
+- Tips for home maintenance
+
+Contact us for your next project!`
+        },
+        promotion: {
+            subject: 'Special Offer from SPANKKS Construction',
+            content: `Limited Time Offer!
+
+Get 15% off your next project with SPANKKS Construction.
+
+This offer is valid for new bookings through the end of the month.
+
+Contact us today to schedule your consultation!`
+        }
+    };
+    
+    if (templates[template]) {
+        subjectField.value = templates[template].subject;
+        contentArea.value = templates[template].content;
+        previewEmail();
+    }
+}
+
+function previewEmail() {
+    const subject = document.getElementById('emailSubject').value;
+    const content = document.getElementById('emailContent').value;
+    const preview = document.getElementById('emailPreview');
+    
+    preview.innerHTML = `
+        <div style="font-family: Arial, sans-serif;">
+            <h6 style="margin-bottom: 15px; color: #1a5f3f;"><strong>Subject: ${subject}</strong></h6>
+            <div style="white-space: pre-wrap; line-height: 1.6;">${content}</div>
+        </div>
+    `;
+}
+
+function selectTemplate(templateName) {
+    document.getElementById('emailTemplate').value = templateName;
+    loadTemplate();
+    
+    // Visual feedback
+    document.querySelectorAll('.email-template').forEach(t => t.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+}
+
+function saveAsDraft() {
+    showNotification('Email saved as draft', 'success');
+}
+
+function createTemplate() {
+    showNotification('Template creator would open here', 'info');
+}
+
+function viewEmail(emailId) {
+    showNotification(`Viewing email ${emailId}`, 'info');
+}
+
+function duplicateEmail(emailId) {
+    showNotification(`Email ${emailId} duplicated`, 'success');
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 4000);
+}
+</script>

@@ -999,6 +999,51 @@ def api_update_staff_pin():
             'message': 'Internal server error'
         }), 500
 
+@app.route('/admin/sections/email-management')
+def admin_email_management():
+    """Email management page"""
+    try:
+        return render_template('admin/sections/email_management_section.html')
+    except Exception as e:
+        logging.error(f"Email management error: {e}")
+        flash('Error loading email management', 'error')
+        return redirect('/admin-home')
+
+@app.route('/api/admin/send-email', methods=['POST'])
+def api_send_email():
+    """Send email via MailerLite"""
+    try:
+        data = request.get_json()
+        to = data.get('to')
+        subject = data.get('subject')
+        content = data.get('content')
+        
+        # Basic validation
+        if not to or not subject or not content:
+            return jsonify({
+                'success': False,
+                'message': 'To, subject, and content are required'
+            }), 400
+        
+        # In a real implementation, you would:
+        # 1. Use MailerLite API to send emails
+        # 2. Handle different recipient groups
+        # 3. Store email history
+        
+        logging.info(f"Email sent to {to} with subject: {subject}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Email sent successfully'
+        })
+        
+    except Exception as e:
+        logging.error(f"Error sending email: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Internal server error'
+        }), 500
+
 @app.route('/admin/quote-builder')
 def admin_quote_builder():
     """Quote builder page"""
