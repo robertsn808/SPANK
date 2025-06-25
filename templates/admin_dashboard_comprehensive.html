@@ -1098,8 +1098,14 @@
                 case 'portal':
                     loadPortalSection();
                     break;
+                case 'csv-management':
+                    loadCsvManagementSection();
+                    break;
+                case 'service_management':
+                    loadServiceManagementSection();
+                    break;
                 case 'management':
-                    loadManagementSection();
+                    loadCsvManagementSection(); // Legacy redirect
                     break;
                 default:
                     content.innerHTML = '<div class="alert alert-info">Section under development</div>';
@@ -1508,20 +1514,58 @@
             loadContactsSection();
         }
 
-        function loadManagementSection() {
+        function loadCsvManagementSection() {
+            const content = document.getElementById('dynamic-content');
+            content.innerHTML = '<div class="text-center py-5"><div class="loading-spinner me-2"></div>Loading Data Management...</div>';
+            
             fetch('/templates/csv_management_section.html')
                 .then(response => response.text())
                 .then(html => {
-                    document.getElementById('dynamic-content').innerHTML = html;
-                    setTimeout(() => {
-                        if (typeof loadCsvStats === 'function') {
-                            loadCsvStats();
-                        }
-                    }, 100);
+                    content.innerHTML = html;
                 })
                 .catch(error => {
                     console.error('Error loading CSV management section:', error);
-                    document.getElementById('dynamic-content').innerHTML = `
+                    content.innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-database me-2"></i>Data Management</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error loading Data Management section. Please check server connection.</div>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+
+        function loadServiceManagementSection() {
+            const content = document.getElementById('dynamic-content');
+            content.innerHTML = '<div class="text-center py-5"><div class="loading-spinner me-2"></div>Loading Service Management...</div>';
+            
+            fetch('/templates/service_management_section.html')
+                .then(response => response.text())
+                .then(html => {
+                    content.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading service management section:', error);
+                    content.innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-cogs me-2"></i>Service Management</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error loading Service Management section. Please check server connection.</div>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+
+        function loadManagementSection() {
+            // Legacy function - redirect to CSV management
+            loadCsvManagementSection();
+        }
                         <div class="content-card">
                             <div class="card-header">
                                 <h3 class="card-title"><i class="fas fa-file-csv me-2"></i>CSV Data Management</h3>
