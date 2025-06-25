@@ -1,0 +1,749 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Job Checklist - {{ job.job_id }} - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="job-checklist-dashboard">
+    <!-- Job Header -->
+    <div class="job-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1">Job Checklist: {{ job.job_id }}</h1>
+                <p class="text-muted mb-0">{{ job.client_name }} - {{ job.service_type or 'Custom Service' }}</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="completion-badge">
+                    <div class="completion-circle">
+                        <span class="completion-percentage">{{ "%.0f"|format(job.completion_percentage) }}%</span>
+                    </div>
+                    <div class="completion-text">
+                        {{ job.completed_tasks }}/{{ job.total_tasks }} Tasks Complete
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Info Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card job-info-card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>Client Information</h6>
+                            <p class="mb-1"><strong>{{ job.client_name }}</strong></p>
+                            <p class="mb-1"><small>{{ job.client_phone or 'No phone' }}</small></p>
+                            <p class="mb-0"><small>{{ job.client_email or 'No email' }}</small></p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Job Details</h6>
+                            <p class="mb-1"><strong>Status:</strong> {{ job.status|title }}</p>
+                            <p class="mb-1"><strong>Service:</strong> {{ job.service_type or 'Custom' }}</p>
+                            <p class="mb-0"><strong>Date:</strong> {{ job.scheduled_date or 'Not scheduled' }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Location</h6>
+                            <p class="mb-0">{{ job.location or 'No location specified' }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Assigned Staff</h6>
+                            <p class="mb-0">{{ job.assigned_staff_ids or 'Unassigned' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="checklistTabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#checklist">
+                                <i class="fas fa-check-square me-2"></i>Checklist
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#notes">
+                                <i class="fas fa-sticky-note me-2"></i>Notes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#materials">
+                                <i class="fas fa-box me-2"></i>Materials
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#photos">
+                                <i class="fas fa-camera me-2"></i>Photos
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="checklistTabContent">
+                        <!-- Checklist Tab -->
+                        <div class="tab-pane fade show active" id="checklist">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Task Checklist</h5>
+                                <button class="btn btn-outline-primary btn-sm" onclick="addNewTask()">
+                                    <i class="fas fa-plus me-2"></i>Add Task
+                                </button>
+                            </div>
+                            
+                            <div class="checklist-container">
+                                {% if job.checklist_items %}
+                                    {% for item in job.checklist_items %}
+                                    <div class="checklist-item {{ 'completed' if item.is_completed else 'pending' }}" data-item-id="{{ item.id }}">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   id="task{{ item.id }}" 
+                                                   {{ 'checked' if item.is_completed else '' }}
+                                                   onchange="toggleTask({{ item.id }}, this.checked)">
+                                            <label class="form-check-label" for="task{{ item.id }}">
+                                                {{ item.task_description }}
+                                            </label>
+                                        </div>
+                                        <div class="task-meta">
+                                            {% if item.is_completed %}
+                                            <small class="text-success">
+                                                <i class="fas fa-check me-1"></i>
+                                                Completed {{ item.completed_at.strftime('%m/%d/%Y %I:%M %p') if item.completed_at else 'Unknown' }}
+                                            </small>
+                                            {% else %}
+                                            <small class="text-muted">Pending completion</small>
+                                            {% endif %}
+                                        </div>
+                                        <div class="task-actions">
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteTask({{ item.id }})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                <div class="empty-state">
+                                    <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                                    <h6>No tasks added yet</h6>
+                                    <p class="text-muted">Add tasks to track job progress and completion requirements.</p>
+                                    <button class="btn btn-primary" onclick="addNewTask()">
+                                        <i class="fas fa-plus me-2"></i>Add First Task
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Notes Tab -->
+                        <div class="tab-pane fade" id="notes">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Job Notes</h5>
+                                <button class="btn btn-outline-primary btn-sm" onclick="addNewNote()">
+                                    <i class="fas fa-plus me-2"></i>Add Note
+                                </button>
+                            </div>
+                            
+                            <div class="notes-container">
+                                {% if job.job_notes %}
+                                    {% for note in job.job_notes %}
+                                    <div class="note-item">
+                                        <div class="note-header">
+                                            <strong>{{ note.author_name or 'Unknown' }}</strong>
+                                            <small class="text-muted">{{ note.created_at.strftime('%m/%d/%Y %I:%M %p') if note.created_at else 'Unknown time' }}</small>
+                                        </div>
+                                        <div class="note-content">
+                                            {{ note.content }}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                <div class="empty-state">
+                                    <i class="fas fa-sticky-note fa-3x text-muted mb-3"></i>
+                                    <h6>No notes yet</h6>
+                                    <p class="text-muted">Add notes to document important information, issues, or updates.</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Materials Tab -->
+                        <div class="tab-pane fade" id="materials">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Materials Used</h5>
+                                <button class="btn btn-outline-primary btn-sm" onclick="addMaterial()">
+                                    <i class="fas fa-plus me-2"></i>Add Material
+                                </button>
+                            </div>
+                            
+                            <div class="materials-container">
+                                {% if job.materials_used %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Material</th>
+                                                <th>Quantity</th>
+                                                <th>Supplier</th>
+                                                <th>Cost</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for material in job.materials_used %}
+                                            <tr>
+                                                <td>{{ material.material_name }}</td>
+                                                <td>{{ material.quantity_used }}</td>
+                                                <td>{{ material.supplier or 'N/A' }}</td>
+                                                <td>${{ "%.2f"|format(material.cost or 0) }}</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteMaterial({{ material.id }})">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <div class="empty-state">
+                                    <i class="fas fa-box fa-3x text-muted mb-3"></i>
+                                    <h6>No materials logged</h6>
+                                    <p class="text-muted">Track materials used for accurate job costing and inventory management.</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Photos Tab -->
+                        <div class="tab-pane fade" id="photos">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Job Photos</h5>
+                                <button class="btn btn-outline-primary btn-sm" onclick="uploadPhoto()">
+                                    <i class="fas fa-camera me-2"></i>Upload Photo
+                                </button>
+                            </div>
+                            
+                            <div class="photos-container">
+                                {% if job.job_photos %}
+                                <div class="row">
+                                    {% for photo in job.job_photos %}
+                                    <div class="col-md-3 mb-3">
+                                        <div class="photo-card">
+                                            <img src="{{ photo.file_url }}" class="img-fluid" alt="Job photo">
+                                            <div class="photo-overlay">
+                                                <span class="badge bg-{{ 'primary' if photo.photo_type == 'before' else 'success' }}">
+                                                    {{ photo.photo_type|title }}
+                                                </span>
+                                                <button class="btn btn-sm btn-outline-danger" onclick="deletePhoto({{ photo.id }})">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                            <div class="photo-info">
+                                                <small>{{ photo.uploaded_by_name or 'Unknown' }} - {{ photo.uploaded_at.strftime('%m/%d/%Y') if photo.uploaded_at else 'Unknown date' }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <div class="empty-state">
+                                    <i class="fas fa-camera fa-3x text-muted mb-3"></i>
+                                    <h6>No photos uploaded</h6>
+                                    <p class="text-muted">Upload before and after photos to document job progress and quality.</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Completion Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card job-completion-card">
+                <div class="card-body text-center">
+                    {% if job.can_mark_complete and job.status != 'completed' %}
+                    <h5 class="text-success">Ready for Completion!</h5>
+                    <p class="text-muted">All required tasks have been completed. You can now mark this job as finished.</p>
+                    <button class="btn btn-success btn-lg" onclick="markJobComplete()">
+                        <i class="fas fa-check-circle me-2"></i>Mark Job Complete
+                    </button>
+                    {% elif job.status == 'completed' %}
+                    <h5 class="text-success">
+                        <i class="fas fa-check-circle me-2"></i>Job Completed
+                    </h5>
+                    <p class="text-muted">This job has been marked as complete.</p>
+                    {% else %}
+                    <h6 class="text-warning">Complete all tasks to finish this job</h6>
+                    <p class="text-muted">{{ job.total_tasks - job.completed_tasks }} tasks remaining</p>
+                    <div class="progress mb-3" style="height: 10px;">
+                        <div class="progress-bar" style="width: {{ job.completion_percentage }}%"></div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Task Modal -->
+<div class="modal fade" id="addTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addTaskForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Task Description *</label>
+                        <textarea class="form-control" name="task_description" rows="3" placeholder="Describe the task that needs to be completed..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Note Modal -->
+<div class="modal fade" id="addNoteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Job Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addNoteForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Note Content *</label>
+                        <textarea class="form-control" name="note_content" rows="4" placeholder="Enter your note here..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Material Modal -->
+<div class="modal fade" id="addMaterialModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Material Used</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addMaterialForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Material Name *</label>
+                                <input type="text" class="form-control" name="material_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Quantity Used *</label>
+                                <input type="number" class="form-control" name="quantity_used" min="1" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Supplier</label>
+                                <input type="text" class="form-control" name="supplier">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Cost</label>
+                                <input type="number" class="form-control" name="cost" step="0.01" min="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Material</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.job-checklist-dashboard {
+    padding: 20px;
+}
+
+.job-info-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.completion-badge {
+    text-align: center;
+}
+
+.completion-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: conic-gradient(#28a745 {{ job.completion_percentage }}%, #e9ecef 0%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    position: relative;
+}
+
+.completion-circle::before {
+    content: '';
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+}
+
+.completion-percentage {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #333;
+    position: relative;
+    z-index: 1;
+}
+
+.completion-text {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.checklist-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+}
+
+.checklist-item.completed {
+    background: #f8f9fa;
+    border-color: #28a745;
+}
+
+.checklist-item.completed .form-check-label {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+.task-meta {
+    margin-left: auto;
+    margin-right: 15px;
+}
+
+.task-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.note-item {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #f8d7da;
+}
+
+.note-content {
+    color: #495057;
+    line-height: 1.5;
+}
+
+.photo-card {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.photo-overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+.photo-info {
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 8px;
+    font-size: 0.8rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.job-completion-card {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border: 1px solid #c3e6cb;
+}
+
+.job-completion-card.warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 1px solid #ffeaa7;
+}
+</style>
+
+<script>
+const jobId = "{{ job.job_id }}";
+
+// Task management functions
+function addNewTask() {
+    new bootstrap.Modal(document.getElementById('addTaskModal')).show();
+}
+
+function toggleTask(taskId, isCompleted) {
+    fetch(`/api/admin/jobs/${jobId}/checklist/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_completed: isCompleted })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            location.reload();
+        } else {
+            alert('Error updating task: ' + result.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating task');
+    });
+}
+
+function deleteTask(taskId) {
+    if (confirm('Are you sure you want to delete this task?')) {
+        fetch(`/api/admin/jobs/${jobId}/checklist/${taskId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                location.reload();
+            } else {
+                alert('Error deleting task: ' + result.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting task');
+        });
+    }
+}
+
+// Note management functions
+function addNewNote() {
+    new bootstrap.Modal(document.getElementById('addNoteModal')).show();
+}
+
+// Material management functions
+function addMaterial() {
+    new bootstrap.Modal(document.getElementById('addMaterialModal')).show();
+}
+
+function deleteMaterial(materialId) {
+    if (confirm('Are you sure you want to delete this material entry?')) {
+        fetch(`/api/admin/jobs/${jobId}/materials/${materialId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                location.reload();
+            } else {
+                alert('Error deleting material: ' + result.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting material');
+        });
+    }
+}
+
+// Photo management functions
+function uploadPhoto() {
+    // Implementation would show file upload dialog
+    alert('Photo upload feature - would show file upload dialog');
+}
+
+function deletePhoto(photoId) {
+    if (confirm('Are you sure you want to delete this photo?')) {
+        fetch(`/api/admin/jobs/${jobId}/photos/${photoId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                location.reload();
+            } else {
+                alert('Error deleting photo: ' + result.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting photo');
+        });
+    }
+}
+
+// Job completion
+function markJobComplete() {
+    if (confirm('Mark this job as complete? This action cannot be undone.')) {
+        fetch(`/api/admin/jobs/${jobId}/complete`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert('Job marked as complete successfully!');
+                location.reload();
+            } else {
+                alert('Error completing job: ' + result.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error completing job');
+        });
+    }
+}
+
+// Form submissions
+document.getElementById('addTaskForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const taskData = {
+        task_description: formData.get('task_description')
+    };
+    
+    fetch(`/api/admin/jobs/${jobId}/checklist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(taskData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('addTaskModal')).hide();
+            location.reload();
+        } else {
+            alert('Error adding task: ' + result.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding task');
+    });
+});
+
+document.getElementById('addNoteForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const noteData = {
+        content: formData.get('note_content')
+    };
+    
+    fetch(`/api/admin/jobs/${jobId}/notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(noteData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('addNoteModal')).hide();
+            location.reload();
+        } else {
+            alert('Error adding note: ' + result.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding note');
+    });
+});
+
+document.getElementById('addMaterialForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const materialData = {
+        material_name: formData.get('material_name'),
+        quantity_used: parseInt(formData.get('quantity_used')),
+        supplier: formData.get('supplier'),
+        cost: parseFloat(formData.get('cost')) || 0
+    };
+    
+    fetch(`/api/admin/jobs/${jobId}/materials`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(materialData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('addMaterialModal')).hide();
+            location.reload();
+        } else {
+            alert('Error adding material: ' + result.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding material');
+    });
+});
+</script>
+{% endblock %}

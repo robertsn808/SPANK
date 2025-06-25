@@ -650,3 +650,154 @@ def send_quote_email(quote_number, client_id):
     except Exception as e:
         logging.error(f"Error sending quote email: {e}")
         return False
+
+# Job Checklist API endpoints
+@app.route('/api/admin/jobs/<job_id>/checklist', methods=['POST'])
+def api_add_checklist_item(job_id):
+    """Add new checklist item"""
+    try:
+        data = request.get_json()
+        
+        with db.engine.connect() as conn:
+            conn.execute(db.text("""
+                INSERT INTO job_checklist_items (job_id, task_description)
+                VALUES (:job_id, :task_description)
+            """), {
+                'job_id': job_id,
+                'task_description': data.get('task_description')
+            })
+            conn.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        logging.error(f"Add checklist item error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/jobs/<job_id>/checklist/<int:item_id>', methods=['PATCH'])
+def api_update_checklist_item(job_id, item_id):
+    """Update checklist item status"""
+    try:
+        data = request.get_json()
+        is_completed = data.get('is_completed', False)
+        
+        with db.engine.connect() as conn:
+            if is_completed:
+                conn.execute(db.text("""
+                    UPDATE job_checklist_items 
+                    SET is_completed = :is_completed, completed_at = NOW(), completed_by = 'SPK001'
+                    WHERE id = :item_id AND job_id = :job_id
+                """), {
+                    'is_completed': is_completed,
+                    'item_id': item_id,
+                    'job_id': job_id
+                })
+            else:
+                conn.execute(db.text("""
+                    UPDATE job_checklist_items 
+                    SET is_completed = :is_completed, completed_at = NULL, completed_by = NULL
+                    WHERE id = :item_id AND job_id = :job_id
+                """), {
+                    'is_completed': is_completed,
+                    'item_id': item_id,
+                    'job_id': job_id
+                })
+            conn.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        logging.error(f"Update checklist item error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/jobs/<job_id>/checklist/<int:item_id>', methods=['DELETE'])
+def api_delete_checklist_item(job_id, item_id):
+    """Delete checklist item"""
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(db.text("""
+                DELETE FROM job_checklist_items 
+                WHERE id = :item_id AND job_id = :job_id
+            """), {'item_id': item_id, 'job_id': job_id})
+            conn.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        logging.error(f"Delete checklist item error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/jobs/<job_id>/notes', methods=['POST'])
+def api_add_job_note(job_id):
+    """Add job note"""
+    try:
+        data = request.get_json()
+        
+        with db.engine.connect() as conn:
+            conn.execute(db.text("""
+                INSERT INTO job_notes (job_id, author_id, content)
+                VALUES (:job_id, 'SPK001', :content)
+            """), {
+                'job_id': job_id,
+                'content': data.get('content')
+            })
+            conn.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        logging.error(f"Add job note error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/jobs/<job_id>/materials', methods=['POST'])
+def api_add_job_material(job_id):
+    """Add job material"""
+    try:
+        data = request.get_json()
+        
+        with db.engine.connect() as conn:
+            conn.execute(db.text("""
+                INSERT INTO job_materials (job_id, material_name, quantity_used, supplier, cost)
+                VALUES (:job_id, :material_name, :quantity_used, :supplier, :cost)
+            """), {
+                'job_id': job_id,
+                'material_name': data.get('material_name'),
+                'quantity_used': data.get('quantity_used'),
+                'supplier': data.get('supplier'),
+                'cost': data.get('cost')
+            })
+            conn.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        logging.error(f"Add job material error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/jobs/<job_id>/materials/<int:material_id>', methods=['DELETE'])
+def api_delete_job_material(job_id, material_id):
+    """Delete job material"""
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(db.text("""
+                DELETE FROM job_materials 
+                WHERE id = :material_id AND job_id = :job_id
+            """), {'material_id': material_id, 'job_id': job_id})
+            conn.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        logging.error(f"Delete job material error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/jobs/<job_id>/complete', methods=['POST'])
+def api_complete_job(job_id):
+    """Mark job as complete"""
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(db.text("""
+                UPDATE jobs 
+                SET status = 'completed', completed_at = NOW()
+                WHERE job_id = :job_id
+            """), {'job_id': job_id})
+            conn.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        logging.error(f"Complete job error: {e}")
+        return jsonify({'error': str(e)}), 500

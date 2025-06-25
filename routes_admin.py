@@ -582,6 +582,86 @@ def admin_quotes():
         flash('Error loading quotes data', 'error')
         return redirect('/admin-home')
 
+@app.route('/admin/jobs/<job_id>/checklist')
+def admin_job_checklist(job_id):
+    """Job checklist management page"""
+    try:
+        with db.engine.connect() as conn:
+            # Get job information
+            result = conn.execute(db.text("""
+                SELECT j.*, c.name as client_name, c.phone as client_phone, c.email as client_email
+                FROM jobs j
+                LEFT JOIN clients c ON j.client_id = c.client_id
+                WHERE j.job_id = :job_id
+            """), {'job_id': job_id})
+            job = result.first()
+            
+            if not job:
+                flash('Job not found', 'error')
+                return redirect('/admin/jobs')
+            
+            # Get checklist items
+            result = conn.execute(db.text("""
+                SELECT * FROM job_checklist_items 
+                WHERE job_id = :job_id
+                ORDER BY id
+            """), {'job_id': job_id})
+            checklist_items = [dict(row._mapping) for row in result]
+            
+            # Get job notes
+            result = conn.execute(db.text("""
+                SELECT n.*, s.name as author_name
+                FROM job_notes n
+                LEFT JOIN staff s ON n.author_id = s.staff_id
+                WHERE n.job_id = :job_id
+                ORDER BY n.created_at DESC
+            """), {'job_id': job_id})
+            job_notes = [dict(row._mapping) for row in result]
+            
+            # Get materials used
+            result = conn.execute(db.text("""
+                SELECT * FROM job_materials 
+                WHERE job_id = :job_id
+                ORDER BY id
+            """), {'job_id': job_id})
+            materials_used = [dict(row._mapping) for row in result]
+            
+            # Get job photos
+            result = conn.execute(db.text("""
+                SELECT p.*, s.name as uploaded_by_name
+                FROM job_photos p
+                LEFT JOIN staff s ON p.uploaded_by = s.staff_id
+                WHERE p.job_id = :job_id
+                ORDER BY p.uploaded_at DESC
+            """), {'job_id': job_id})
+            job_photos = [dict(row._mapping) for row in result]
+            
+            # Calculate completion percentage
+            total_tasks = len(checklist_items)
+            completed_tasks = len([item for item in checklist_items if item['is_completed']])
+            completion_percentage = (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0
+            
+            # Check if job can be marked complete
+            can_mark_complete = total_tasks > 0 and completed_tasks == total_tasks
+            
+            job_data = dict(job._mapping)
+            job_data.update({
+                'checklist_items': checklist_items,
+                'job_notes': job_notes,
+                'materials_used': materials_used,
+                'job_photos': job_photos,
+                'completion_percentage': completion_percentage,
+                'can_mark_complete': can_mark_complete,
+                'total_tasks': total_tasks,
+                'completed_tasks': completed_tasks
+            })
+        
+        return render_template('admin/sections/job_checklist_section.html', job=job_data)
+    except Exception as e:
+        logging.error(f"Job checklist error: {e}")
+        flash('Error loading job checklist', 'error')
+        return redirect('/admin/jobs')
+
 @app.route('/admin/analytics')
 def admin_analytics():
     """Business analytics page with PostgreSQL data"""
