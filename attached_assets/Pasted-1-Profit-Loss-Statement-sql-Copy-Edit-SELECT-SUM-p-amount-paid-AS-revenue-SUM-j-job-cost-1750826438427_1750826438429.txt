@@ -1,0 +1,96 @@
+1. 📈 Profit & Loss Statement
+sql
+Copy
+Edit
+SELECT
+  SUM(p.amount_paid) AS revenue,
+  SUM(j.job_cost) AS cogs,
+  SUM(p.amount_paid) - SUM(j.job_cost) AS gross_profit
+FROM payments p
+JOIN invoices i ON p.invoice_id = i.invoice_id
+JOIN jobs j ON i.job_id = j.job_id
+WHERE p.payment_date BETWEEN '2025-01-01' AND '2025-12-31';
+2. 💰 Cash Flow Report
+Inflows by Week
+
+sql
+Copy
+Edit
+SELECT
+  DATE_TRUNC('week', payment_date) AS week,
+  SUM(amount_paid) AS total_inflow
+FROM payments
+GROUP BY week
+ORDER BY week;
+Outflows Example (if you have an expenses table)
+
+sql
+Copy
+Edit
+SELECT
+  DATE_TRUNC('week', expense_date) AS week,
+  SUM(amount) AS total_outflow
+FROM expenses
+GROUP BY week
+ORDER BY week;
+3. 📄 Invoice Report (Status Summary)
+sql
+Copy
+Edit
+SELECT
+  status,
+  COUNT(*) AS count,
+  SUM(total_amount) AS total_value
+FROM invoices
+GROUP BY status;
+4. 🧾 Tax Summary Report (Hawaii GET 4.712%)
+sql
+Copy
+Edit
+SELECT
+  SUM(amount_paid) AS taxable_revenue,
+  ROUND(SUM(amount_paid) * 0.04712, 2) AS estimated_GET_tax
+FROM payments
+WHERE payment_date BETWEEN '2025-01-01' AND '2025-03-31';  -- adjust for quarter
+5. 📦 Job Costing Report
+sql
+Copy
+Edit
+SELECT
+  j.job_id,
+  c.name AS client_name,
+  i.total_amount AS revenue,
+  j.job_cost,
+  (i.total_amount - j.job_cost) AS profit,
+  ROUND((i.total_amount - j.job_cost) * 100.0 / i.total_amount, 2) AS margin_percent
+FROM jobs j
+JOIN invoices i ON j.job_id = i.job_id
+JOIN clients c ON j.client_id = c.client_id
+WHERE j.completed_at IS NOT NULL;
+6. 📋 Manual Payment Log Report
+sql
+Copy
+Edit
+SELECT
+  p.payment_date,
+  c.name AS client_name,
+  i.invoice_number,
+  p.payment_method,
+  p.amount_paid,
+  p.recorded_by
+FROM payments p
+JOIN invoices i ON p.invoice_id = i.invoice_id
+JOIN clients c ON p.client_id = c.client_id
+ORDER BY p.payment_date DESC;
+7. 🏆 Top Clients by Revenue
+sql
+Copy
+Edit
+SELECT
+  c.name AS client_name,
+  SUM(p.amount_paid) AS total_paid
+FROM payments p
+JOIN clients c ON p.client_id = c.client_id
+GROUP BY c.name
+ORDER BY total_paid DESC
+LIMIT 5;

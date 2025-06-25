@@ -1,0 +1,95 @@
+📊 Key Financial Reports for SPANKKS
+1. 📈 Profit & Loss Statement (P&L)
+Frequency: Monthly / Quarterly / Yearly
+Purpose: Understand profitability
+
+Metric	Description
+Revenue	Sum of all paid invoices
+Cost of Goods Sold (COGS)	Materials + subcontractor labor
+Gross Profit	Revenue - COGS
+Operating Expenses	Tools, fuel, rent, admin, marketing, etc.
+Net Profit	Gross Profit - Expenses
+Tax Liability	GET 4.712% (calculated from revenue)
+
+🔹 SQL:
+
+sql
+Copy
+Edit
+SELECT 
+  SUM(amount_paid) AS revenue,
+  SUM(job_cost) AS cogs,
+  (SUM(amount_paid) - SUM(job_cost)) AS gross_profit
+FROM jobs
+WHERE completed_at BETWEEN '2025-01-01' AND '2025-06-30';
+2. 💰 Cash Flow Report
+Frequency: Weekly / Monthly
+Purpose: Monitor inflow/outflow timing
+
+Inflows	Outflows
+Customer Payments	Staff Payouts
+Deposits	Fuel/Tools
+Reimbursements	Material Orders
+
+🔹 Show by calendar week (with graph).
+
+3. 📄 Invoice Report
+Filters: By client, by status, by date
+Purpose: Track invoicing effectiveness
+
+Metric	Description
+# of Invoices Sent	Total
+Paid / Unpaid / Overdue	Counts & values
+Average Invoice Value	Revenue planning
+Most Invoiced Clients	Top earners
+
+🔹 Include export to CSV/PDF for accounting.
+
+4. 🧾 Tax Summary Report
+Purpose: Help with quarterly filings for Hawaii GET & federal taxes
+
+Tax Type	Calculation
+Hawaii GET	4.712% of revenue
+Federal Est.	Manual or fixed % (e.g., 15–25%)
+
+🔹 Option: Print “GET Ready Report” with invoice list & totals.
+
+5. 📦 Job Costing Report
+Purpose: Track profitability per job
+
+Job ID	Client	Revenue	COGS	Profit	Margin
+J2025-0013	Garcia	$2,100	$650	$1,450	69%
+
+🔹 View filter by team, date range, service type.
+
+6. 📋 Manual Payment Log Report
+Purpose: Reconcile off-platform income
+
+Date	Client	Invoice	Method	Amount	Staff Logged
+Jun 10	Watanabe	INV-2025-043	Venmo	$450	Robert
+
+🔹 Useful for audits, tax prep, disputes.
+
+7. 🏆 Top Client/Service Performance Report
+Purpose: Business growth insights
+
+Metric	Data
+Top 5 Clients by Revenue	...
+Most Booked Service	Drywall Patching
+Avg Job Size by Service	Flooring – $3,200
+
+⚙️ Export & Tools
+Export: CSV, Excel, PDF
+
+Filter by:
+
+Client
+
+Date range
+
+Staff
+
+Job type
+
+Searchable report logs
+
