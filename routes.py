@@ -106,7 +106,7 @@ def admin_home_redirect():
 @app.route('/admin')
 def admin_redirect():
     """Redirect to admin login"""
-    return redirect(url_for('admin_login'))
+    return redirect('/admin-home')
 
 @app.route('/staff-portal')
 def staff_portal_redirect():
