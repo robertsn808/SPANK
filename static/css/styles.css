@@ -1751,7 +1751,22 @@ footer a:hover {
         margin-top: 4rem;
     }
 
-    /* Admin Dashboard Desktop Optimizations */
+    /* Anti-flashing rules for admin navbar */
+.navbar-brand img {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: filter 0.2s ease !important;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Prevent any transitions on page load */
+.navbar-brand {
+    transition: none !important;
+}
+
+/* Admin Dashboard Desktop Optimizations */
     .stats-card {
         transition: all 0.3s ease;
         border-radius: 15px;

@@ -85,6 +85,24 @@ function initializeDashboardWidgets() {
             }
         });
     });
+
+    // Logo animation - disabled to prevent flashing
+    const logo = document.querySelector('.navbar-brand img');
+    if (logo) {
+        // Ensure logo is always visible and stable
+        logo.style.display = 'block';
+        logo.style.opacity = '1';
+        logo.style.visibility = 'visible';
+
+        // Optional: Add subtle hover effect without transform
+        logo.parentElement.addEventListener('mouseenter', () => {
+            logo.style.filter = 'brightness(1.1)';
+        });
+
+        logo.parentElement.addEventListener('mouseleave', () => {
+            logo.style.filter = '';
+        });
+    }
 }
 
 // Form Handlers
