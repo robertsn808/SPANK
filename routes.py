@@ -110,10 +110,8 @@ def admin_home_redirect():
 def get_dashboard_stats():
     """Get comprehensive dashboard statistics using existing services"""
     try:
-        # Import database models
-        from models.models_db import Client, Job, Quote, Invoice
-        from sqlalchemy import func
-        from config.app import db
+        # Use JSON data source since database models don't match expected structure
+        use_database = False
         
         # Initialize base stats structure
         stats = {
@@ -143,82 +141,57 @@ def get_dashboard_stats():
             ]
         }
         
-        # Get real data from PostgreSQL database
-        try:
-            # Calculate overview metrics from database
-            paid_invoices = db.session.query(Invoice).filter(Invoice.status == 'paid').all()
-            stats['overview']['total_revenue'] = sum(float(invoice.total_amount or 0) for invoice in paid_invoices)
-            
-            active_jobs = db.session.query(Job).filter(Job.status.in_(['scheduled', 'in_progress'])).count()
-            stats['overview']['active_jobs'] = active_jobs
-            
-            pending_quotes = db.session.query(Quote).filter(Quote.status == 'pending').count()
-            stats['overview']['pending_quotes'] = pending_quotes
-            
-            overdue_invoices = db.session.query(Invoice).filter(Invoice.status == 'overdue').count()
-            stats['overview']['overdue_invoices'] = overdue_invoices
-            
-            # Recent activity from database
-            recent_activity = []
-            
-            # Get recent quotes
-            recent_quotes = db.session.query(Quote).order_by(Quote.created_date.desc()).limit(3).all()
-            for quote in recent_quotes:
-                client_name = quote.client.name if quote.client else 'Unknown Client'
-                recent_activity.append({
-                    'action': f"Quote {quote.quote_id} generated for {client_name}",
-                    'time': quote.created_date.strftime('%m/%d') if quote.created_date else 'Recently',
-                    'type': 'quote'
-                })
-            
-            # Get recent payments
-            recent_payments = db.session.query(Invoice).filter(Invoice.status == 'paid').order_by(Invoice.payment_date.desc()).limit(2).all()
-            for payment in recent_payments:
-                recent_activity.append({
-                    'action': f"Payment received ${payment.total_amount} - {payment.invoice_id}",
-                    'time': payment.payment_date.strftime('%m/%d') if payment.payment_date else 'Recently',
-                    'type': 'payment'
-                })
-            
-            stats['recent_activity'] = recent_activity[:5]
-            
-            # Calculate KPIs from database
-            total_quotes = db.session.query(Quote).count()
-            paid_quotes = db.session.query(Invoice).filter(Invoice.status == 'paid').count()
-            
-            if total_quotes > 0:
-                conversion_rate = (paid_quotes / total_quotes) * 100
-                stats['kpis']['conversion_rate'] = round(conversion_rate, 1)
-            
-            if paid_invoices:
-                avg_value = sum(float(invoice.total_amount or 0) for invoice in paid_invoices) / len(paid_invoices)
-                stats['kpis']['avg_job_value'] = round(avg_value, 2)
-            
-            # Get upcoming jobs
-            upcoming_jobs = db.session.query(Job).filter(Job.status == 'scheduled').order_by(Job.scheduled_date).limit(3).all()
-            stats['upcoming_jobs'] = [{
-                'client': job.client.name if job.client else 'Unknown',
-                'service': job.service_type,
-                'date': job.scheduled_date.strftime('%m/%d') if job.scheduled_date else 'TBD',
-                'status': job.status
-            } for job in upcoming_jobs]
-            
-        except Exception as e:
-            logging.error(f"Database query error: {e}")
-            # Fallback to JSON data if database fails
-            if storage_service:
-                try:
-                    invoices = storage_service.load_data('invoices.json') or []
-                    quotes = storage_service.load_data('quotes.json') or []
-                    jobs = storage_service.load_data('jobs.json') or []
-                    
-                    paid_invoices = [i for i in invoices if i.get('status') == 'paid']
-                    stats['overview']['total_revenue'] = sum(float(i.get('total_amount', 0)) for i in paid_invoices)
-                    stats['overview']['active_jobs'] = len([j for j in jobs if j.get('status') in ['scheduled', 'in_progress']])
-                    stats['overview']['pending_quotes'] = len([q for q in quotes if q.get('status') == 'pending'])
-                    stats['overview']['overdue_invoices'] = len([i for i in invoices if i.get('status') == 'overdue'])
-                except Exception as fallback_error:
-                    logging.error(f"Fallback data loading error: {fallback_error}")
+        # Load data from JSON files (authentic business data)
+        if storage_service:
+            try:
+                invoices = storage_service.load_data('invoices.json') or []
+                quotes = storage_service.load_data('quotes.json') or []
+                jobs = storage_service.load_data('jobs.json') or []
+                contacts = storage_service.get_all_contacts() or []
+                
+                paid_invoices = [i for i in invoices if i.get('status') == 'paid']
+                stats['overview']['total_revenue'] = sum(float(i.get('total_amount', 0)) for i in paid_invoices)
+                stats['overview']['active_jobs'] = len([j for j in jobs if j.get('status') in ['scheduled', 'in_progress']])
+                stats['overview']['pending_quotes'] = len([q for q in quotes if q.get('status') == 'pending'])
+                stats['overview']['overdue_invoices'] = len([i for i in invoices if i.get('status') == 'overdue'])
+                
+                # Recent activity from JSON data
+                recent_activity = []
+                
+                # Add recent quotes
+                recent_quotes = sorted([q for q in quotes if q.get('created_date')], 
+                                     key=lambda x: x.get('created_date', ''), reverse=True)[:3]
+                for quote in recent_quotes:
+                    recent_activity.append({
+                        'action': f"Quote {quote.get('quote_id', 'Unknown')} generated for {quote.get('client_name', 'Client')}",
+                        'time': 'Recently',
+                        'type': 'quote'
+                    })
+                
+                # Add recent payments
+                recent_payments = sorted([i for i in paid_invoices if i.get('payment_date')], 
+                                       key=lambda x: x.get('payment_date', ''), reverse=True)[:2]
+                for payment in recent_payments:
+                    recent_activity.append({
+                        'action': f"Payment received ${payment.get('total_amount', 0)} - {payment.get('invoice_id', 'Unknown')}",
+                        'time': 'Recently',
+                        'type': 'payment'
+                    })
+                
+                stats['recent_activity'] = recent_activity[:5]
+                
+                # Calculate KPIs
+                if quotes and invoices:
+                    paid_quote_ids = [i.get('quote_id') for i in paid_invoices if i.get('quote_id')]
+                    conversion_rate = (len(paid_quote_ids) / len(quotes)) * 100 if quotes else 0
+                    stats['kpis']['conversion_rate'] = round(conversion_rate, 1)
+                
+                if paid_invoices:
+                    avg_value = sum(float(i.get('total_amount', 0)) for i in paid_invoices) / len(paid_invoices)
+                    stats['kpis']['avg_job_value'] = round(avg_value, 2)
+                
+            except Exception as fallback_error:
+                logging.error(f"Fallback data loading error: {fallback_error}")
         
         return stats
     except Exception as e:

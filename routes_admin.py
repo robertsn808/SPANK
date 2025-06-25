@@ -7,7 +7,13 @@ import logging
 from flask import render_template, request, jsonify, redirect, url_for, flash
 from datetime import datetime, timedelta
 from config.app import app, db
-from models.models_db import Client, Job, Quote, Invoice, Staff, ServiceType, JobChecklist, MaterialsUsed
+# Import what's available from database models
+try:
+    from models.models_db import ServiceType
+    from config.app import db
+    database_available = True
+except ImportError:
+    database_available = False
 from services.storage_service import StorageService
 from sqlalchemy import func, desc
 
