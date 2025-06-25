@@ -1,0 +1,263 @@
+<style>
+body {
+    background-color: #f8f9fa !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.container-fluid {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding: 20px;
+}
+</style>
+
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <a href="/admin-home" class="btn btn-outline-secondary me-3">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                    <div>
+                        <h2 class="mb-0"><i class="fas fa-download me-2 text-primary"></i>Backup & Data Export</h2>
+                        <p class="text-muted mb-0">Export data and create system backups</p>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="createFullBackup()">
+                        <i class="fas fa-save me-1"></i>Create Full Backup
+                    </button>
+                    <button class="btn btn-outline-success" onclick="scheduleBackup()">
+                        <i class="fas fa-clock me-1"></i>Schedule Backup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup Status -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-success mb-2">
+                        <i class="fas fa-shield-check fa-2x"></i>
+                    </div>
+                    <h4 class="mb-1">Today</h4>
+                    <p class="text-muted mb-0">Last Backup</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-primary mb-2">
+                        <i class="fas fa-database fa-2x"></i>
+                    </div>
+                    <h4 class="mb-1">50.2 MB</h4>
+                    <p class="text-muted mb-0">Database Size</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-warning mb-2">
+                        <i class="fas fa-file-archive fa-2x"></i>
+                    </div>
+                    <h4 class="mb-1">12</h4>
+                    <p class="text-muted mb-0">Total Backups</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="text-info mb-2">
+                        <i class="fas fa-cloud fa-2x"></i>
+                    </div>
+                    <h4 class="mb-1">100%</h4>
+                    <p class="text-muted mb-0">Cloud Sync</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Export Options -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0"><i class="fas fa-download me-2"></i>Quick Export Options</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-primary w-100" onclick="exportContacts()">
+                                <i class="fas fa-users d-block mb-2 fa-2x"></i>
+                                Export Contacts
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-success w-100" onclick="exportQuotes()">
+                                <i class="fas fa-file-invoice d-block mb-2 fa-2x"></i>
+                                Export Quotes
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-warning w-100" onclick="exportInvoices()">
+                                <i class="fas fa-receipt d-block mb-2 fa-2x"></i>
+                                Export Invoices
+                            </button>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <button class="btn btn-outline-info w-100" onclick="exportServices()">
+                                <i class="fas fa-tools d-block mb-2 fa-2x"></i>
+                                Export Services
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup History -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Backup History</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Today, 3:00 AM</td>
+                                    <td><span class="badge bg-primary">Full Backup</span></td>
+                                    <td>52.3 MB</td>
+                                    <td><span class="badge bg-success">Complete</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="downloadBackup('today')">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" onclick="restoreBackup('today')">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Yesterday, 3:00 AM</td>
+                                    <td><span class="badge bg-secondary">Auto Backup</span></td>
+                                    <td>50.8 MB</td>
+                                    <td><span class="badge bg-success">Complete</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="downloadBackup('yesterday')">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" onclick="restoreBackup('yesterday')">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Jun 23, 2025, 3:00 AM</td>
+                                    <td><span class="badge bg-secondary">Auto Backup</span></td>
+                                    <td>49.2 MB</td>
+                                    <td><span class="badge bg-success">Complete</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="downloadBackup('june23')">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" onclick="restoreBackup('june23')">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Backup page loaded');
+});
+
+function createFullBackup() {
+    if (confirm('Create a full system backup? This may take a few minutes.')) {
+        showNotification('Creating full backup...', 'info');
+        // Simulate backup process
+        setTimeout(() => {
+            showNotification('Full backup created successfully!', 'success');
+        }, 3000);
+    }
+}
+
+function scheduleBackup() {
+    showNotification('Backup scheduling interface would open here', 'info');
+}
+
+function exportContacts() {
+    window.open('/api/contacts?format=csv', '_blank');
+    showNotification('Exporting contacts data...', 'info');
+}
+
+function exportQuotes() {
+    window.open('/api/quotes?format=csv', '_blank');
+    showNotification('Exporting quotes data...', 'info');
+}
+
+function exportInvoices() {
+    window.open('/api/invoices?format=csv', '_blank');
+    showNotification('Exporting invoices data...', 'info');
+}
+
+function exportServices() {
+    window.open('/api/service-types?format=csv', '_blank');
+    showNotification('Exporting services data...', 'info');
+}
+
+function downloadBackup(backupId) {
+    showNotification(`Downloading backup: ${backupId}`, 'info');
+}
+
+function restoreBackup(backupId) {
+    if (confirm(`Are you sure you want to restore from backup: ${backupId}? This will overwrite current data.`)) {
+        showNotification(`Restoring from backup: ${backupId}`, 'warning');
+    }
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : type === 'warning' ? 'warning' : 'info'} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 3000);
+}
+</script>

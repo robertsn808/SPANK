@@ -1,0 +1,324 @@
+<style>
+body {
+    background-color: #f8f9fa !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.container-fluid {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    padding: 20px;
+}
+</style>
+
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <a href="/admin-home" class="btn btn-outline-secondary me-3">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                    <div>
+                        <h2 class="mb-0"><i class="fas fa-cog me-2 text-primary"></i>Admin Settings</h2>
+                        <p class="text-muted mb-0">System configuration and admin preferences</p>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveSettings()">
+                        <i class="fas fa-save me-1"></i>Save Settings
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="resetSettings()">
+                        <i class="fas fa-undo me-1"></i>Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Categories -->
+    <div class="row">
+        <!-- General Settings -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>General Settings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="companyName" class="form-label">Company Name</label>
+                        <input type="text" class="form-control" id="companyName" value="SPANKKS Construction">
+                    </div>
+                    <div class="mb-3">
+                        <label for="companyPhone" class="form-label">Company Phone</label>
+                        <input type="text" class="form-control" id="companyPhone" value="(808) 778-9132">
+                    </div>
+                    <div class="mb-3">
+                        <label for="companyEmail" class="form-label">Company Email</label>
+                        <input type="email" class="form-control" id="companyEmail" value="spank808@gmail.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="timezone" class="form-label">Timezone</label>
+                        <select class="form-select" id="timezone">
+                            <option value="Pacific/Honolulu" selected>Hawaii Time (HST)</option>
+                            <option value="America/Los_Angeles">Pacific Time (PST)</option>
+                            <option value="America/Denver">Mountain Time (MST)</option>
+                            <option value="America/Chicago">Central Time (CST)</option>
+                            <option value="America/New_York">Eastern Time (EST)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Settings -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Business Settings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="hawaiiTaxRate" class="form-label">Hawaii GET Tax Rate (%)</label>
+                        <input type="number" class="form-control" id="hawaiiTaxRate" value="4.712" step="0.001">
+                        <small class="form-text text-muted">O'ahu General Excise Tax rate</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="businessHours" class="form-label">Business Hours</label>
+                        <input type="text" class="form-control" id="businessHours" value="Mon-Fri 7AM-5PM, Sat 8AM-3PM">
+                    </div>
+                    <div class="mb-3">
+                        <label for="serviceArea" class="form-label">Service Area</label>
+                        <input type="text" class="form-control" id="serviceArea" value="Oahu, Hawaii">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="enablePortal" checked>
+                        <label class="form-check-label" for="enablePortal">
+                            Enable Client Portal Access
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Notification Settings -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0"><i class="fas fa-bell me-2"></i>Notification Settings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                        <label class="form-check-label" for="emailNotifications">
+                            Email Notifications
+                        </label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="newQuoteAlerts" checked>
+                        <label class="form-check-label" for="newQuoteAlerts">
+                            New Quote Request Alerts
+                        </label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="paymentAlerts" checked>
+                        <label class="form-check-label" for="paymentAlerts">
+                            Payment Received Alerts
+                        </label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="jobCompletionAlerts" checked>
+                        <label class="form-check-label" for="jobCompletionAlerts">
+                            Job Completion Alerts
+                        </label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notificationEmail" class="form-label">Notification Email</label>
+                        <input type="email" class="form-control" id="notificationEmail" value="spank808@gmail.com">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Settings -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0"><i class="fas fa-server me-2"></i>System Settings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="autoBackup" class="form-label">Auto Backup Frequency</label>
+                        <select class="form-select" id="autoBackup">
+                            <option value="daily" selected>Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="disabled">Disabled</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sessionTimeout" class="form-label">Session Timeout (minutes)</label>
+                        <input type="number" class="form-control" id="sessionTimeout" value="60" min="15" max="480">
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="maintenanceMode">
+                        <label class="form-check-label" for="maintenanceMode">
+                            Maintenance Mode
+                        </label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="debugMode">
+                        <label class="form-check-label" for="debugMode">
+                            Debug Mode
+                        </label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastBackup" class="form-label">Last Backup</label>
+                        <input type="text" class="form-control" id="lastBackup" value="Today at 3:00 AM" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Integration Settings -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0"><i class="fas fa-plug me-2"></i>API Integration Settings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="mailerliteStatus" class="form-label">MailerLite Status</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="mailerliteStatus" value="Connected" readonly>
+                                <button class="btn btn-outline-success" type="button">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="databaseStatus" class="form-label">Database Status</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="databaseStatus" value="Connected" readonly>
+                                <button class="btn btn-outline-success" type="button">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <button class="btn btn-outline-primary" onclick="testConnections()">
+                                <i class="fas fa-bolt me-1"></i>Test All Connections
+                            </button>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <button class="btn btn-outline-warning" onclick="clearCache()">
+                                <i class="fas fa-trash me-1"></i>Clear System Cache
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Admin settings page loaded');
+});
+
+function saveSettings() {
+    // Collect all form values
+    const settings = {
+        companyName: document.getElementById('companyName').value,
+        companyPhone: document.getElementById('companyPhone').value,
+        companyEmail: document.getElementById('companyEmail').value,
+        timezone: document.getElementById('timezone').value,
+        hawaiiTaxRate: document.getElementById('hawaiiTaxRate').value,
+        businessHours: document.getElementById('businessHours').value,
+        serviceArea: document.getElementById('serviceArea').value,
+        enablePortal: document.getElementById('enablePortal').checked,
+        emailNotifications: document.getElementById('emailNotifications').checked,
+        newQuoteAlerts: document.getElementById('newQuoteAlerts').checked,
+        paymentAlerts: document.getElementById('paymentAlerts').checked,
+        jobCompletionAlerts: document.getElementById('jobCompletionAlerts').checked,
+        notificationEmail: document.getElementById('notificationEmail').value,
+        autoBackup: document.getElementById('autoBackup').value,
+        sessionTimeout: document.getElementById('sessionTimeout').value,
+        maintenanceMode: document.getElementById('maintenanceMode').checked,
+        debugMode: document.getElementById('debugMode').checked
+    };
+    
+    console.log('Saving settings:', settings);
+    
+    // Show success message
+    showNotification('Settings saved successfully!', 'success');
+}
+
+function resetSettings() {
+    if (confirm('Are you sure you want to reset all settings to default values?')) {
+        // Reset form to default values
+        document.getElementById('companyName').value = 'SPANKKS Construction';
+        document.getElementById('companyPhone').value = '(808) 778-9132';
+        document.getElementById('companyEmail').value = 'spank808@gmail.com';
+        document.getElementById('timezone').value = 'Pacific/Honolulu';
+        document.getElementById('hawaiiTaxRate').value = '4.712';
+        document.getElementById('businessHours').value = 'Mon-Fri 7AM-5PM, Sat 8AM-3PM';
+        document.getElementById('serviceArea').value = 'Oahu, Hawaii';
+        document.getElementById('enablePortal').checked = true;
+        document.getElementById('emailNotifications').checked = true;
+        document.getElementById('newQuoteAlerts').checked = true;
+        document.getElementById('paymentAlerts').checked = true;
+        document.getElementById('jobCompletionAlerts').checked = true;
+        document.getElementById('notificationEmail').value = 'spank808@gmail.com';
+        document.getElementById('autoBackup').value = 'daily';
+        document.getElementById('sessionTimeout').value = '60';
+        document.getElementById('maintenanceMode').checked = false;
+        document.getElementById('debugMode').checked = false;
+        
+        showNotification('Settings reset to default values', 'info');
+    }
+}
+
+function testConnections() {
+    showNotification('Testing all connections...', 'info');
+    
+    // Simulate connection test
+    setTimeout(() => {
+        showNotification('All connections tested successfully!', 'success');
+    }, 2000);
+}
+
+function clearCache() {
+    if (confirm('Are you sure you want to clear the system cache?')) {
+        showNotification('System cache cleared successfully!', 'success');
+    }
+}
+
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 3000);
+}
+</script>

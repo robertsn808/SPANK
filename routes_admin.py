@@ -870,6 +870,26 @@ def admin_notifications():
         flash('Error loading notifications', 'error')
         return redirect('/admin-home')
 
+@app.route('/admin/settings')
+def admin_settings():
+    """Admin settings and configuration page"""
+    try:
+        return render_template('admin/sections/settings_section.html')
+    except Exception as e:
+        logging.error(f"Settings error: {e}")
+        flash('Error loading settings', 'error')
+        return redirect('/admin-home')
+
+@app.route('/admin/backup')
+def admin_backup():
+    """Admin backup and data export page"""
+    try:
+        return render_template('admin/sections/backup_section.html')
+    except Exception as e:
+        logging.error(f"Backup error: {e}")
+        flash('Error loading backup page', 'error')
+        return redirect('/admin-home')
+
 @app.route('/admin/quote-builder')
 def admin_quote_builder():
     """Quote builder page"""
