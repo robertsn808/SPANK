@@ -1,0 +1,77 @@
+📬 SPANKKS Admin Dashboard – Email Management Page
+🧭 Location
+bash
+Copy
+Edit
+/admin/emails
+🧱 Page Overview
+Section	Description
+📧 Inbox View (Optional)	View incoming replies from clients (if using connected inbox)
+✍️ Compose Email	Manual message to a client or staff member with templates
+📜 Template Manager	Create & edit email templates (quotes, invoices, follow-ups)
+🔁 Automated Campaigns	Set automated emails based on job stage or events
+📊 Analytics Panel	Open, click, bounce rates (if using MailerLite or SendGrid)
+🧾 Quote/Invoice Mail Tracker	Show email status for each quote/invoice sent
+📥 Email Logs	Log of all emails sent with timestamps and statuses
+👥 Contact Segments	Group clients by service, location, last job date, etc.
+
+🔐 Key Functions
+Feature	Purpose
+Send Manual Email	Target individual clients or job-specific communication
+Trigger Automatic Emails	E.g., quote accepted → send invoice or thank-you
+Attach PDFs	Automatically attach quote/invoice PDFs
+Personalization Tokens	Use {client_name}, {job_address}, etc. in templates
+Unsubscribe Management	Option for marketing opt-out (optional for transactional)
+Schedule Emails	Send emails at a later time (follow-ups, reminders)
+
+📊 Suggested Tables (SQL)
+emails
+sql
+Copy
+Edit
+CREATE TABLE emails (
+  email_id SERIAL PRIMARY KEY,
+  recipient_email TEXT,
+  subject TEXT,
+  body TEXT,
+  sender_email TEXT,
+  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  status TEXT CHECK (status IN ('sent', 'failed', 'pending')),
+  type TEXT, -- 'manual', 'automated', 'quote', 'invoice'
+  job_id INT,
+  client_id INT
+);
+email_templates
+sql
+Copy
+Edit
+CREATE TABLE email_templates (
+  template_id SERIAL PRIMARY KEY,
+  name TEXT,
+  subject TEXT,
+  body TEXT,
+  type TEXT, -- 'quote', 'invoice', 'followup', etc.
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+🧠 Integration Recommendations
+Tool	Purpose
+MailerLite	Marketing automations, follow-ups
+SendGrid	Transactional emails (quotes, invoices, notifications)
+Nodemailer (Node.js)	Internal use for simple email sending
+Mailgun (Optional)	More control over email deliverability
+
+📋 Admin UI Wireframe (Layout Suggestion)
+markdown
+Copy
+Edit
+-----------------------------------------------------
+| 🔍 Search   | [Client Email] [Quote ID] [Job ID]   |
+-----------------------------------------------------
+| 📥 Outbox: Sent / Failed / Scheduled               |
+| 📨 Compose  | 📂 Templates | 📈 Analytics | ⚙️ Settings  |
+-----------------------------------------------------
+| [ ] Select | 📅 Date | 📤 Sent to | 📌 Job | 🗒️ Subject |
+-----------------------------------------------------
+| 📨 Invoice #2041 sent to john@doe.com at 2:00PM ✅ |
+| 📨 Quote Approved Email to sue@site.com 🕓Pending |
+--------------------------------------------------

@@ -1,0 +1,124 @@
+📬 SPANKKS Email Management Page (MailerLite Only)
+🧭 Location
+bash
+Copy
+Edit
+/admin/emails
+🧱 Core Features (MailerLite-Powered)
+Feature	Description
+📧 Send Manual Email	Send a custom email using MailerLite API
+📄 Template Manager	Create/edit templates stored in your DB
+🧠 Trigger Automations	Add subscribers to groups to trigger automations
+🏷 Manage Tags/Groups	Add/remove tags and group assignments
+📥 Email Logs	Track history of emails sent via MailerLite
+📊 Engagement Analytics	Pull open/click/unsubscribe rates (optional)
+
+🛠 Setup & Integration
+1. MailerLite API Setup
+Go to MailerLite Developer API
+
+Generate Bearer Token
+
+Store in your .env:
+
+env
+Copy
+Edit
+MAILERLITE_API_KEY=your_token_here
+2. Database Tables
+email_templates
+sql
+Copy
+Edit
+CREATE TABLE email_templates (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  subject TEXT,
+  body TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+email_logs
+sql
+Copy
+Edit
+CREATE TABLE email_logs (
+  id SERIAL PRIMARY KEY,
+  client_id INT,
+  email TEXT,
+  subject TEXT,
+  sent_at TIMESTAMP DEFAULT NOW(),
+  status TEXT -- sent, failed
+);
+✉️ Sending Emails with MailerLite
+Manual Email Function (Node.js / Axios)
+js
+Copy
+Edit
+const axios = require('axios');
+
+async function sendMailerLiteEmail(to, subject, htmlBody) {
+  const response = await axios.post('https://connect.mailerlite.com/api/email/send', {
+    email: to,
+    subject: subject,
+    body: htmlBody
+  }, {
+    headers: {
+      Authorization: `Bearer ${process.env.MAILERLITE_API_KEY}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  return response.data;
+}
+⚠️ Note: MailerLite limits transactional email functions unless you're on the Advanced or Growing Business plan.
+
+3. Adding a Client to a Group (Automation Trigger)
+js
+Copy
+Edit
+const axios = require('axios');
+
+async function addToGroup(email, groupId) {
+  const response = await axios.post('https://connect.mailerlite.com/api/subscribers', {
+    email: email,
+    groups: [groupId]
+  }, {
+    headers: {
+      Authorization: `Bearer ${process.env.MAILERLITE_API_KEY}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  return response.data;
+}
+Example group IDs: “Post Job Completion”, “Quote Follow-Up”, etc.
+
+These trigger automation campaigns you've created in MailerLite.
+
+🧑‍💻 Admin UI Layout
+pgsql
+Copy
+Edit
+/admin/emails
+-------------------------------------------------------------
+| 📤 Compose | 🧾 Templates | 🏷 Tags & Groups | 📊 Logs |
+-------------------------------------------------------------
+| 🧑 Client Email: [______]                                 |
+| 📜 Use Template: [Dropdown]                              |
+| ✍️ Subject: [___________]                                |
+| 📝 Body: [ Rich Text Editor ]                            |
+| ➕ Add to Group: [Post-Job Clients] [✓]                   |
+| [ Send Email ] [ Save Template ]                         |
+-------------------------------------------------------------
+| Sent Logs                                                |
+| john@doe.com | “Quote from SPANKKS” | Sent | 07/01 ✅     |
+-------------------------------------------------------------
+🔐 Optional Features
+Auto-save sent email to email_logs
+
+Auto-fill client email and quote info using clientId
+
+Button to preview before sending
+
+Send test email to admin account
+
