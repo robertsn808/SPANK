@@ -5,7 +5,8 @@ from config.app import app
 try:
     import routes
     import routes_public
-    print("Routes imported successfully")
+    import routes_admin  # Add admin routes
+    print("All routes imported successfully")
 except ImportError as e:
     print(f"Route import error: {e}")
 
