@@ -918,13 +918,20 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Dashboard initializing...');
             
+            // Initialize navigation FIRST
+            initializeNavigation();
+            initializeMobileToggle();
+            
+            // Load dashboard data
+            loadDashboardData();
+            
             initializeCalendar();
             loadRecentActivity();
             updateHawaiiTime();
             setInterval(updateHawaiiTime, 1000);
             
-            // Initialize navigation with proper error handling
-            setupNavigationSystem();
+            // Show dashboard by default
+            showSection('dashboard');
             
             console.log('Dashboard initialization complete');
         });
@@ -937,32 +944,34 @@
         function initializeNavigation() {
             console.log('Initializing navigation system...');
             
-            // Remove any existing event listeners
-            document.querySelectorAll('.nav-link').forEach(link => {
+            // Get all navigation links with data-section attributes
+            const navLinks = document.querySelectorAll('.nav-link[data-section]');
+            console.log('Found', navLinks.length, 'navigation links');
+            
+            navLinks.forEach(link => {
+                const section = link.getAttribute('data-section');
+                console.log('Setting up navigation for section:', section);
+                
+                // Remove any existing event listeners by cloning
                 const newLink = link.cloneNode(true);
                 link.parentNode.replaceChild(newLink, link);
+                
+                // Add click event listener
+                newLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Navigation clicked for section:', section);
+                    showSection(section);
+                    
+                    // Close mobile sidebar on selection
+                    const sidebar = document.querySelector('.sidebar');
+                    if (sidebar && window.innerWidth <= 768) {
+                        sidebar.classList.remove('show');
+                    }
+                });
             });
             
-            // Add fresh event listeners
-            document.querySelectorAll('.nav-link').forEach(link => {
-                const section = link.getAttribute('data-section');
-                if (section) {
-                    link.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Navigation clicked:', section);
-                        showSection(section);
-                        
-                        // Close mobile sidebar
-                        if (window.innerWidth <= 768) {
-                            document.querySelector('.sidebar').classList.remove('show');
-                        }
-                    });
-                    console.log('Added listener for section:', section);
-                }
-            });
-            
-            console.log('Navigation initialized for', document.querySelectorAll('.nav-link[data-section]').length, 'sections');
+            console.log('Navigation system initialized successfully');
         }
         
         function initializeMobileToggle() {
@@ -1558,19 +1567,6 @@
                     </div>
                 </div>
             `;
-        }
-                        <div class="content-card">
-                            <div class="card-header">
-                                <h3 class="card-title"><i class="fas fa-file-invoice-dollar me-2"></i>Quote Builder</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="alert alert-info">
-                                    Quote builder section is being loaded. Please try refreshing the page.
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
         }
 
         function loadStaffSection() {
