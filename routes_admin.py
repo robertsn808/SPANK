@@ -642,6 +642,38 @@ def admin_quotes():
         flash('Error loading quotes data', 'error')
         return redirect('/admin-home')
 
+@app.route('/admin/analytics')
+def admin_analytics():
+    """Business analytics dashboard with authentic data"""
+    try:
+        # Import analytics components
+        from analytics.analytics_manager import AnalyticsManager
+        
+        # Initialize analytics manager
+        analytics_manager = AnalyticsManager()
+        
+        # Get comprehensive analytics with proper error handling
+        try:
+            analytics_data = analytics_manager.get_comprehensive_analytics(None)
+        except Exception as analytics_error:
+            logging.error(f"Analytics error: {analytics_error}")
+            # Provide minimal fallback data structure
+            analytics_data = {
+                'revenue_metrics': {'total_revenue': 0, 'monthly_revenue': 0},
+                'customer_insights': {'total_customers': 0, 'retention_rate': 0},
+                'performance_alerts': [],
+                'business_health_score': 0,
+                'ml_insights': {'confidence_level': 'developing'},
+                'system_status': 'limited'
+            }
+        
+        return render_template('admin/sections/analytics_section.html', 
+                             analytics=analytics_data)
+    except Exception as e:
+        logging.error(f"Analytics page error: {e}")
+        flash('Analytics system temporarily unavailable', 'warning')
+        return redirect('/admin-home')
+
 @app.route('/admin/jobs/<job_id>/checklist')
 def admin_job_checklist(job_id):
     """Job checklist management page"""
@@ -782,6 +814,80 @@ def admin_portal_management():
     except Exception as e:
         logging.error(f"Portal management page error: {e}")
         flash('Error loading portal management data', 'error')
+        return redirect('/admin-home')
+
+@app.route('/admin/quote-builder')
+def admin_quote_builder():
+    """Quote builder page"""
+    try:
+        with db.engine.connect() as conn:
+            # Get clients for quote builder
+            result = conn.execute(db.text("""
+                SELECT client_id, name, email, phone
+                FROM clients
+                ORDER BY name
+            """))
+            clients = [dict(row._mapping) for row in result]
+            
+            # Get service types
+            result = conn.execute(db.text("""
+                SELECT DISTINCT service_type FROM service_types
+                WHERE active = TRUE
+                ORDER BY service_type
+            """))
+            services = [dict(row._mapping) for row in result]
+            
+            # Add fallback services if none exist
+            if not services:
+                services = [
+                    {'service_type': 'Drywall Services'},
+                    {'service_type': 'Flooring Installation'},
+                    {'service_type': 'General Handyman'},
+                    {'service_type': 'Plumbing Repair'},
+                    {'service_type': 'Electrical Work'},
+                    {'service_type': 'Painting'},
+                    {'service_type': 'Custom Service'}
+                ]
+        
+        return render_template('admin/sections/quote_builder_section.html',
+                             clients=clients,
+                             services=services)
+    except Exception as e:
+        logging.error(f"Quote builder page error: {e}")
+        flash('Error loading quote builder', 'error')
+        return redirect('/admin-home')
+
+@app.route('/admin/invoices')
+def admin_invoices():
+    """Invoice management page"""
+    try:
+        with db.engine.connect() as conn:
+            # Get invoice data
+            result = conn.execute(db.text("""
+                SELECT i.invoice_number, i.client_id, i.status, i.total_amount,
+                       i.tax_amount, i.created_at, i.due_date,
+                       c.name as client_name, c.email as client_email
+                FROM invoices i
+                LEFT JOIN clients c ON i.client_id = c.client_id
+                ORDER BY i.created_at DESC
+            """))
+            invoices = [dict(row._mapping) for row in result]
+            
+            # Get payment data
+            result = conn.execute(db.text("""
+                SELECT p.*, i.invoice_number
+                FROM payments p
+                LEFT JOIN invoices i ON p.invoice_id = i.invoice_id
+                ORDER BY p.payment_date DESC
+            """))
+            payments = [dict(row._mapping) for row in result]
+        
+        return render_template('admin/sections/invoice_payment_section.html',
+                             invoices=invoices,
+                             payments=payments)
+    except Exception as e:
+        logging.error(f"Invoice page error: {e}")
+        flash('Error loading invoices', 'error')
         return redirect('/admin-home')
 
 @app.route('/admin/analytics')

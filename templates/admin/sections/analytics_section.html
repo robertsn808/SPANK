@@ -1,0 +1,446 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Business Analytics - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="analytics-dashboard">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Business Analytics</h1>
+            <p class="text-muted mb-0">Data-driven insights for business optimization</p>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-outline-primary btn-sm" onclick="refreshAnalytics()">
+                <i class="fas fa-sync me-2"></i>Refresh Data
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="exportReport()">
+                <i class="fas fa-download me-2"></i>Export Report
+            </button>
+        </div>
+    </div>
+
+    <!-- System Status -->
+    <div class="alert alert-info mb-4">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-info-circle me-2"></i>
+            <div>
+                <strong>Analytics Status:</strong> 
+                {{ analytics.system_status|title if analytics.system_status else 'Operational' }}
+                {% if analytics.ml_insights and analytics.ml_insights.confidence_level %}
+                | ML Confidence: {{ analytics.ml_insights.confidence_level|title }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card metric-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Total Revenue</h6>
+                            <h3 class="card-title">
+                                ${{ "{:,.2f}".format(analytics.revenue_metrics.total_revenue if analytics.revenue_metrics else 0) }}
+                            </h3>
+                        </div>
+                        <div class="metric-icon bg-primary">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                    <small class="text-muted">All-time revenue</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card metric-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Monthly Revenue</h6>
+                            <h3 class="card-title">
+                                ${{ "{:,.2f}".format(analytics.revenue_metrics.monthly_revenue if analytics.revenue_metrics else 0) }}
+                            </h3>
+                        </div>
+                        <div class="metric-icon bg-success">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <small class="text-muted">Current month</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card metric-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Total Customers</h6>
+                            <h3 class="card-title">
+                                {{ analytics.customer_insights.total_customers if analytics.customer_insights else 0 }}
+                            </h3>
+                        </div>
+                        <div class="metric-icon bg-warning">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <small class="text-muted">Active clients</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card metric-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Business Health</h6>
+                            <h3 class="card-title">
+                                {{ "{:.0f}".format(analytics.business_health_score if analytics.business_health_score else 0) }}%
+                            </h3>
+                        </div>
+                        <div class="metric-icon bg-info">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                    </div>
+                    <small class="text-muted">Overall score</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Tabs -->
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="analyticsTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#performance-alerts">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Performance Alerts
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#revenue-analysis">
+                        <i class="fas fa-chart-bar me-2"></i>Revenue Analysis
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#customer-insights">
+                        <i class="fas fa-user-friends me-2"></i>Customer Insights
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#predictive-insights">
+                        <i class="fas fa-brain me-2"></i>ML Insights
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="analyticsTabContent">
+                <!-- Performance Alerts Tab -->
+                <div class="tab-pane fade show active" id="performance-alerts">
+                    <h5>Current Performance Alerts</h5>
+                    {% if analytics.performance_alerts and analytics.performance_alerts|length > 0 %}
+                    <div class="alerts-container">
+                        {% for alert in analytics.performance_alerts %}
+                        <div class="alert alert-{{ 'danger' if alert.priority == 'high' else 'warning' if alert.priority == 'medium' else 'info' }} alert-dismissible">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-{{ 'exclamation-triangle' if alert.priority == 'high' else 'info-circle' }} me-2 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <strong>{{ alert.title or 'Performance Alert' }}</strong>
+                                    <p class="mb-1">{{ alert.message or alert.description or 'Alert details not available' }}</p>
+                                    {% if alert.recommendation %}
+                                    <small class="text-muted">
+                                        <strong>Recommendation:</strong> {{ alert.recommendation }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                                <span class="badge bg-{{ 'danger' if alert.priority == 'high' else 'warning' if alert.priority == 'medium' else 'info' }}">
+                                    {{ alert.priority|title if alert.priority else 'Normal' }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <h6>No Performance Issues</h6>
+                        <p class="text-muted">Your business metrics are performing well. Keep up the great work!</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Revenue Analysis Tab -->
+                <div class="tab-pane fade" id="revenue-analysis">
+                    <h5>Revenue Performance</h5>
+                    {% if analytics.revenue_metrics %}
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="chart-container">
+                                <canvas id="revenueChart" height="300"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="revenue-stats">
+                                <div class="stat-item">
+                                    <label>Average Job Value</label>
+                                    <div class="stat-value">
+                                        ${{ "{:,.2f}".format(analytics.revenue_metrics.average_job_value if analytics.revenue_metrics.average_job_value else 0) }}
+                                    </div>
+                                </div>
+                                <div class="stat-item">
+                                    <label>Growth Rate</label>
+                                    <div class="stat-value">
+                                        {{ "{:.1f}".format(analytics.revenue_metrics.growth_rate if analytics.revenue_metrics.growth_rate else 0) }}%
+                                    </div>
+                                </div>
+                                <div class="stat-item">
+                                    <label>Outstanding Amount</label>
+                                    <div class="stat-value">
+                                        ${{ "{:,.2f}".format(analytics.revenue_metrics.outstanding_amount if analytics.revenue_metrics.outstanding_amount else 0) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                        <h6>Revenue Data Loading</h6>
+                        <p class="text-muted">Revenue analytics will appear as business data becomes available.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Customer Insights Tab -->
+                <div class="tab-pane fade" id="customer-insights">
+                    <h5>Customer Analytics</h5>
+                    {% if analytics.customer_insights %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Customer Metrics</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="metric-row">
+                                        <span>Retention Rate:</span>
+                                        <strong>{{ "{:.1f}".format(analytics.customer_insights.retention_rate if analytics.customer_insights.retention_rate else 0) }}%</strong>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span>Average Lifetime Value:</span>
+                                        <strong>${{ "{:,.2f}".format(analytics.customer_insights.average_lifetime_value if analytics.customer_insights.average_lifetime_value else 0) }}</strong>
+                                    </div>
+                                    <div class="metric-row">
+                                        <span>New Customers (Month):</span>
+                                        <strong>{{ analytics.customer_insights.new_customers_month if analytics.customer_insights.new_customers_month else 0 }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Customer Behavior</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="behavior-chart">
+                                        <canvas id="customerChart" height="200"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <h6>Customer Data Loading</h6>
+                        <p class="text-muted">Customer insights will appear as client interactions are recorded.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- ML Insights Tab -->
+                <div class="tab-pane fade" id="predictive-insights">
+                    <h5>Machine Learning Insights</h5>
+                    {% if analytics.ml_insights %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="alert alert-info">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-brain me-2"></i>
+                                    <div>
+                                        <strong>ML Confidence Level:</strong> {{ analytics.ml_insights.confidence_level|title }}
+                                        <br><small>Predictions improve as more business data is collected</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if analytics.ml_insights.predictions %}
+                    <div class="predictions-container">
+                        {% for prediction in analytics.ml_insights.predictions %}
+                        <div class="prediction-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ prediction.title }}</h6>
+                                    <p class="card-text">{{ prediction.description }}</p>
+                                    {% if prediction.confidence %}
+                                    <div class="confidence-meter">
+                                        <div class="progress">
+                                            <div class="progress-bar" style="width: {{ prediction.confidence }}%">
+                                                {{ prediction.confidence }}% Confidence
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-robot fa-3x text-muted mb-3"></i>
+                        <h6>ML Analysis Developing</h6>
+                        <p class="text-muted">Machine learning insights will appear as sufficient business data is collected for analysis.</p>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-cog fa-3x text-muted mb-3"></i>
+                        <h6>ML System Initializing</h6>
+                        <p class="text-muted">Machine learning components are being initialized. Please check back shortly.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.analytics-dashboard {
+    padding: 20px;
+}
+
+.metric-card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+}
+
+.metric-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.chart-container {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.revenue-stats .stat-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.revenue-stats .stat-item:last-child {
+    border-bottom: none;
+}
+
+.revenue-stats label {
+    display: block;
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.revenue-stats .stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.metric-row:last-child {
+    border-bottom: none;
+}
+
+.prediction-card {
+    margin-bottom: 20px;
+}
+
+.confidence-meter {
+    margin-top: 10px;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+}
+
+.nav-tabs .nav-link.active {
+    color: #667eea;
+    border-bottom: 2px solid #667eea;
+    background: none;
+}
+
+.alerts-container .alert {
+    border-left: 4px solid;
+}
+</style>
+
+<script>
+function refreshAnalytics() {
+    window.location.reload();
+}
+
+function exportReport() {
+    window.open('/api/admin/analytics/export', '_blank');
+}
+
+// Initialize charts (placeholder)
+document.addEventListener('DOMContentLoaded', function() {
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart');
+    if (revenueCtx) {
+        revenueCtx.getContext('2d');
+        revenueCtx.style.display = 'none';
+        revenueCtx.parentElement.innerHTML += '<p class="text-center text-muted">Revenue trends chart will appear here as data accumulates</p>';
+    }
+    
+    // Customer Chart
+    const customerCtx = document.getElementById('customerChart');
+    if (customerCtx) {
+        customerCtx.getContext('2d');
+        customerCtx.style.display = 'none';
+        customerCtx.parentElement.innerHTML += '<p class="text-center text-muted">Customer behavior analysis will appear here</p>';
+    }
+});
+</script>
+{% endblock %}

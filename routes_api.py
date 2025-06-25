@@ -1149,3 +1149,78 @@ def api_revoke_portal_access(access_id):
     except Exception as e:
         logging.error(f"Revoke portal access error: {e}")
         return jsonify({'error': str(e)}), 500
+
+# Additional API endpoints for invoices and payments
+@app.route('/api/admin/payments', methods=['POST'])
+def api_record_payment():
+    """Record a payment for an invoice"""
+    try:
+        data = request.get_json()
+        
+        with db.engine.connect() as conn:
+            # Generate payment ID
+            result = conn.execute(db.text("SELECT COUNT(*) FROM payments"))
+            payment_count = result.scalar() or 0
+            payment_id = f"PAY{str(payment_count + 1).zfill(4)}"
+            
+            conn.execute(db.text("""
+                INSERT INTO payments (payment_id, invoice_number, amount_paid, payment_method, 
+                                    reference_number, payment_date, payment_notes)
+                VALUES (:payment_id, :invoice_number, :amount_paid, :payment_method,
+                        :reference_number, :payment_date, :payment_notes)
+            """), {
+                'payment_id': payment_id,
+                'invoice_number': data.get('invoice_number'),
+                'amount_paid': data.get('amount_paid'),
+                'payment_method': data.get('payment_method'),
+                'reference_number': data.get('reference_number'),
+                'payment_date': data.get('payment_date'),
+                'payment_notes': data.get('payment_notes')
+            })
+            
+            # Update invoice status if fully paid
+            conn.execute(db.text("""
+                UPDATE invoices SET status = 'paid' 
+                WHERE invoice_number = :invoice_number 
+                AND total_amount <= (
+                    SELECT COALESCE(SUM(amount_paid), 0) 
+                    FROM payments 
+                    WHERE invoice_number = :invoice_number
+                )
+            """), {'invoice_number': data.get('invoice_number')})
+            
+            conn.commit()
+        
+        return jsonify({'success': True, 'payment_id': payment_id})
+    except Exception as e:
+        logging.error(f"Record payment error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/clients', methods=['POST'])
+def api_create_client():
+    """Create new client"""
+    try:
+        data = request.get_json()
+        
+        with db.engine.connect() as conn:
+            # Generate client ID
+            result = conn.execute(db.text("SELECT COUNT(*) FROM clients"))
+            client_count = result.scalar() or 0
+            client_id = f"CLI{str(client_count + 1).zfill(3)}"
+            
+            conn.execute(db.text("""
+                INSERT INTO clients (client_id, name, email, phone, address)
+                VALUES (:client_id, :name, :email, :phone, :address)
+            """), {
+                'client_id': client_id,
+                'name': data.get('name'),
+                'email': data.get('email'),
+                'phone': data.get('phone'),
+                'address': data.get('address')
+            })
+            conn.commit()
+        
+        return jsonify({'success': True, 'client_id': client_id})
+    except Exception as e:
+        logging.error(f"Create client error: {e}")
+        return jsonify({'error': str(e)}), 500
