@@ -892,26 +892,250 @@
             updateHawaiiTime();
             setInterval(updateHawaiiTime, 1000);
             
-            // Initialize navigation with debugging
-            const navLinks = document.querySelectorAll('.nav-link');
-            console.log('Found', navLinks.length, 'navigation links');
-            
-            navLinks.forEach((link, index) => {
-                console.log('Setting up link', index, 'with section:', link.dataset.section);
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    console.log('Navigation clicked:', this.dataset.section);
-                    const section = this.dataset.section;
-                    if (section) {
-                        showSection(section);
-                    } else {
-                        console.warn('No section data attribute found');
-                    }
-                });
-            });
+            // Simple navigation system
+            initializeNavigation();
             
             console.log('Dashboard initialization complete');
         });
+        
+        function initializeNavigation() {
+            // Remove any existing event listeners and add fresh ones
+            document.querySelectorAll('.nav-link').forEach(link => {
+                // Clone the element to remove all event listeners
+                const newLink = link.cloneNode(true);
+                link.parentNode.replaceChild(newLink, link);
+                
+                // Add fresh click handler
+                newLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const section = this.getAttribute('data-section');
+                    console.log('Navigation clicked - Section:', section);
+                    
+                    if (section) {
+                        handleNavigation(section);
+                    }
+                });
+            });
+        }
+        
+        function handleNavigation(section) {
+            console.log('Handling navigation to:', section);
+            
+            // Update active states
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            const activeLink = document.querySelector(`[data-section="${section}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Handle section display
+            if (section === 'dashboard') {
+                showDashboard();
+            } else {
+                showDynamicSection(section);
+            }
+        }
+        
+        function showDashboard() {
+            document.getElementById('dashboard-section').style.display = 'block';
+            document.getElementById('dynamic-content').style.display = 'none';
+        }
+        
+        function showDynamicSection(section) {
+            document.getElementById('dashboard-section').style.display = 'none';
+            document.getElementById('dynamic-content').style.display = 'block';
+            
+            // Load section content directly
+            const content = document.getElementById('dynamic-content');
+            
+            switch(section) {
+                case 'csv-management':
+                    content.innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-database me-2"></i>Data Management</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <p class="text-muted">Manage CSV templates and bulk data operations for SPANKKS Construction business data.</p>
+                                        <div class="d-flex gap-2 mb-3">
+                                            <button class="btn btn-spankks" onclick="window.open('/admin/csv-templates', '_blank')">
+                                                <i class="fas fa-download me-1"></i>Download Templates
+                                            </button>
+                                            <button class="btn btn-outline-primary" onclick="showUploadModal()">
+                                                <i class="fas fa-upload me-1"></i>Upload Data
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5>Available Templates</h5>
+                                        <ul class="list-group">
+                                            <li class="list-group-item">Clients Template</li>
+                                            <li class="list-group-item">Jobs Template</li>
+                                            <li class="list-group-item">Quotes Template</li>
+                                            <li class="list-group-item">Invoices Template</li>
+                                            <li class="list-group-item">Staff Template</li>
+                                            <li class="list-group-item">Service Types Template</li>
+                                            <li class="list-group-item">Schedule Template</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5>Upload Status</h5>
+                                        <p class="text-muted">Select template files to upload business data.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'service_management':
+                    content.innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-cogs me-2"></i>Service Management</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <p class="text-muted">Manage service types, pricing, and categories for SPANKKS Construction services.</p>
+                                        <div class="d-flex gap-2 mb-3">
+                                            <button class="btn btn-spankks" onclick="addNewService()">
+                                                <i class="fas fa-plus me-1"></i>Add Service
+                                            </button>
+                                            <button class="btn btn-outline-warning" onclick="seedServiceDatabase()">
+                                                <i class="fas fa-database me-1"></i>Seed Database
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h5>Current Services</h5>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Service Name</th>
+                                                        <th>Category</th>
+                                                        <th>Price Range</th>
+                                                        <th>Portal Access</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="servicesTableBody">
+                                                    <tr>
+                                                        <td colspan="5" class="text-center">
+                                                            <button class="btn btn-outline-primary" onclick="loadServices()">
+                                                                <i class="fas fa-sync me-1"></i>Load Services
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    loadServices();
+                    break;
+                    
+                case 'portal':
+                    content.innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-user-circle me-2"></i>Client Portal Management</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">Manage client portal access and settings.</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-spankks" onclick="window.open('/portal', '_blank')">
+                                            <i class="fas fa-external-link-alt me-1"></i>View Client Portal
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    content.innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-cog me-2"></i>${section}</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">This section is being loaded...</p>
+                                <button class="btn btn-outline-primary" onclick="location.reload()">Refresh Page</button>
+                            </div>
+                        </div>
+                    `;
+            }
+        }
+        
+        // Service management functions
+        function loadServices() {
+            fetch('/api/service-types')
+                .then(response => response.json())
+                .then(services => {
+                    const tbody = document.getElementById('servicesTableBody');
+                    if (services && services.length > 0) {
+                        tbody.innerHTML = services.map(service => `
+                            <tr>
+                                <td><strong>${service.name}</strong></td>
+                                <td><span class="badge bg-secondary">${service.category}</span></td>
+                                <td>$${service.min_price} - $${service.max_price}</td>
+                                <td>${service.portal_access ? '<span class="badge bg-success">Yes</span>' : '<span class="badge bg-secondary">No</span>'}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editService(${service.id})">Edit</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No services found</td></tr>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading services:', error);
+                    document.getElementById('servicesTableBody').innerHTML = 
+                        '<tr><td colspan="5" class="text-center text-danger">Error loading services</td></tr>';
+                });
+        }
+        
+        function addNewService() {
+            alert('Add new service functionality - would open modal form');
+        }
+        
+        function seedServiceDatabase() {
+            if (confirm('Seed the database with default SPANKKS Construction services?')) {
+                fetch('/api/seed-all-data', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(result => {
+                        alert('Database seeded successfully');
+                        loadServices();
+                    })
+                    .catch(error => {
+                        console.error('Error seeding database:', error);
+                        alert('Error seeding database');
+                    });
+            }
+        }
+        
+        function editService(serviceId) {
+            alert(`Edit service ${serviceId} - would open edit modal`);
+        }
 
         function updateHawaiiTime() {
             const now = new Date();
@@ -1052,86 +1276,12 @@
 
         function showSection(section) {
             console.log('showSection called with:', section);
-            
-            // Update navigation
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            const targetLink = document.querySelector(`[data-section="${section}"]`);
-            if (targetLink) {
-                targetLink.classList.add('active');
-                console.log('Activated navigation for:', section);
-            } else {
-                console.warn('Could not find navigation link for section:', section);
-            }
-            
-            currentSection = section;
-            
-            // Show/hide content
-            if (section === 'dashboard') {
-                document.getElementById('dashboard-section').style.display = 'block';
-                document.getElementById('dynamic-content').classList.add('d-none');
-                console.log('Showing dashboard section');
-            } else {
-                document.getElementById('dashboard-section').style.display = 'none';
-                document.getElementById('dynamic-content').classList.remove('d-none');
-                console.log('Loading dynamic content for:', section);
-                loadSectionContent(section);
-            }
+            handleNavigation(section);
         }
 
         function loadSectionContent(section) {
-            const content = document.getElementById('dynamic-content');
-            content.innerHTML = '<div class="text-center py-5"><div class="loading-spinner me-2"></div>Loading...</div>';
-            
-            // Load section-specific content
-            switch (section) {
-                case 'schedule':
-                    loadScheduleSection();
-                    break;
-                case 'contacts':
-                    loadContactsSection();
-                    break;
-                case 'staff-crm':
-                    loadStaffCrmSection();
-                    break;
-                case 'quotes':
-                    loadQuotesSection();
-                    break;
-                case 'staff':
-                    loadStaffSection();
-                    break;
-                case 'inventory':
-                    loadInventorySection();
-                    break;
-                case 'financial':
-                    loadFinancialSection();
-                    break;
-                case 'photos':
-                    loadPhotosSection();
-                    break;
-                case 'business-intelligence':
-                    loadBusinessIntelligenceSection();
-                    break;
-                case 'performance':
-                    loadPerformanceSection();
-                    break;
-                case 'portal':
-                    loadPortalSection();
-                    break;
-                case 'csv-management':
-                    loadCsvManagementSection();
-                    break;
-                case 'service_management':
-                    loadServiceManagementSection();
-                    break;
-                case 'management':
-                    loadCsvManagementSection(); // Legacy redirect
-                    break;
-                default:
-                    content.innerHTML = '<div class="alert alert-info">Section under development</div>';
-            }
+            // Redirect to new navigation system
+            showDynamicSection(section);
         }
 
         function showNewAppointmentModal(date = null) {
