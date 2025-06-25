@@ -885,22 +885,32 @@
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard initializing...');
+            
             initializeCalendar();
             loadRecentActivity();
             updateHawaiiTime();
             setInterval(updateHawaiiTime, 1000);
             
-            // Initialize navigation
-            document.querySelectorAll('.nav-link').forEach(link => {
+            // Initialize navigation with debugging
+            const navLinks = document.querySelectorAll('.nav-link');
+            console.log('Found', navLinks.length, 'navigation links');
+            
+            navLinks.forEach((link, index) => {
+                console.log('Setting up link', index, 'with section:', link.dataset.section);
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
+                    console.log('Navigation clicked:', this.dataset.section);
                     const section = this.dataset.section;
                     if (section) {
-                        // Load the section content
                         showSection(section);
+                    } else {
+                        console.warn('No section data attribute found');
                     }
                 });
             });
+            
+            console.log('Dashboard initialization complete');
         });
 
         function updateHawaiiTime() {
@@ -1041,11 +1051,20 @@
         }
 
         function showSection(section) {
+            console.log('showSection called with:', section);
+            
             // Update navigation
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
             });
-            document.querySelector(`[data-section="${section}"]`).classList.add('active');
+            
+            const targetLink = document.querySelector(`[data-section="${section}"]`);
+            if (targetLink) {
+                targetLink.classList.add('active');
+                console.log('Activated navigation for:', section);
+            } else {
+                console.warn('Could not find navigation link for section:', section);
+            }
             
             currentSection = section;
             
@@ -1053,9 +1072,11 @@
             if (section === 'dashboard') {
                 document.getElementById('dashboard-section').style.display = 'block';
                 document.getElementById('dynamic-content').classList.add('d-none');
+                console.log('Showing dashboard section');
             } else {
                 document.getElementById('dashboard-section').style.display = 'none';
                 document.getElementById('dynamic-content').classList.remove('d-none');
+                console.log('Loading dynamic content for:', section);
                 loadSectionContent(section);
             }
         }
