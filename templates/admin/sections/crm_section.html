@@ -492,8 +492,12 @@ function generateClientDetailsHTML(data) {
 }
 
 // Initialize tooltips
-document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
-    new bootstrap.Tooltip(el);
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof bootstrap !== 'undefined') {
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+            new bootstrap.Tooltip(el);
+        });
+    }
 });
 </script>
 {% endblock %}

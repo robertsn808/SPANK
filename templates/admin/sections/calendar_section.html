@@ -1,0 +1,920 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Advanced Scheduling - SPANKKS Construction{% endblock %}
+
+{% block extra_css %}
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
+<style>
+.calendar-dashboard {
+    padding: 20px;
+}
+
+.schedule-header {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.fc-event {
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 0.85rem;
+    padding: 2px 6px;
+}
+
+.fc-event.status-scheduled {
+    background-color: #28a745 !important;
+    color: white;
+}
+
+.fc-event.status-tentative {
+    background-color: #ffc107 !important;
+    color: #212529;
+}
+
+.fc-event.status-completed {
+    background-color: #6c757d !important;
+    color: white;
+}
+
+.fc-event.status-conflict {
+    background-color: #dc3545 !important;
+    color: white;
+    border: 2px solid #721c24 !important;
+}
+
+.schedule-controls {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.view-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.view-toggle .btn {
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 0.9rem;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.calendar-container {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.job-form-modal .modal-dialog {
+    max-width: 800px;
+}
+
+.job-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.time-picker {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.conflict-warning {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+.staff-capacity {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.capacity-bar {
+    background: #e9ecef;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.capacity-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.capacity-fill.low { background: #28a745; }
+.capacity-fill.medium { background: #ffc107; }
+.capacity-fill.high { background: #dc3545; }
+
+.legend {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="calendar-dashboard">
+    <!-- Schedule Header -->
+    <div class="schedule-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1">Advanced Scheduling System</h1>
+                <p class="mb-0">Manage jobs, assignments, and crew scheduling with conflict detection</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="d-flex gap-2 justify-content-end">
+                    <span class="badge bg-light text-dark">Hawaii Time</span>
+                    <span class="badge bg-light text-dark" id="currentTime"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Controls -->
+    <div class="schedule-controls">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="view-toggle">
+                    <button class="btn btn-outline-primary active" data-view="timeGridWeek">Week</button>
+                    <button class="btn btn-outline-primary" data-view="timeGridDay">Day</button>
+                    <button class="btn btn-outline-primary" data-view="dayGridMonth">Month</button>
+                    <button class="btn btn-outline-primary" data-view="listWeek">Agenda</button>
+                </div>
+                
+                <!-- Legend -->
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #28a745;"></div>
+                        <span>Scheduled</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffc107;"></div>
+                        <span>Tentative</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #6c757d;"></div>
+                        <span>Completed</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #dc3545;"></div>
+                        <span>Conflict</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="quick-actions">
+                    <button class="btn btn-success" onclick="addNewJob()">
+                        <i class="fas fa-plus me-2"></i>Schedule Job
+                    </button>
+                    <button class="btn btn-info" onclick="viewStaffCapacity()">
+                        <i class="fas fa-users me-2"></i>Staff Capacity
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="exportCalendar()">
+                        <i class="fas fa-download me-2"></i>Export
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="syncCalendar()">
+                        <i class="fas fa-sync me-2"></i>Sync
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Container -->
+    <div class="calendar-container">
+        <div id="calendar"></div>
+    </div>
+
+    <!-- Staff Capacity Panel -->
+    <div class="staff-capacity" id="staffCapacityPanel" style="display: none;">
+        <h5>Weekly Staff Capacity</h5>
+        <div id="staffCapacityContent">
+            <!-- Dynamic content loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- Job Form Modal -->
+<div class="modal fade" id="jobFormModal" tabindex="-1">
+    <div class="modal-dialog job-form-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="jobFormTitle">Schedule New Job</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="jobForm">
+                <div class="modal-body">
+                    <div class="job-details">
+                        <div class="mb-3">
+                            <label class="form-label">Client *</label>
+                            <select class="form-control" name="client_id" required>
+                                <option value="">Select Client</option>
+                                <!-- Options loaded dynamically -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Service Type *</label>
+                            <select class="form-control" name="service_type" required>
+                                <option value="">Select Service</option>
+                                <option value="Drywall Services">Drywall Services</option>
+                                <option value="Flooring Installation">Flooring Installation</option>
+                                <option value="Fence Installation">Fence Installation</option>
+                                <option value="General Handyman">General Handyman</option>
+                                <option value="Plumbing Repair">Plumbing Repair</option>
+                                <option value="Electrical Work">Electrical Work</option>
+                                <option value="Painting">Painting</option>
+                                <option value="Home Renovation">Home Renovation</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Job Location</label>
+                        <input type="text" class="form-control" name="location" placeholder="Job site address">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Date *</label>
+                                <input type="date" class="form-control" name="scheduled_date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Time *</label>
+                                <div class="time-picker">
+                                    <input type="time" class="form-control" name="start_time" required>
+                                    <span>to</span>
+                                    <input type="time" class="form-control" name="end_time" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Assigned Staff</label>
+                                <select class="form-control" name="assigned_staff" multiple>
+                                    <!-- Options loaded dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Estimated Hours</label>
+                                <input type="number" class="form-control" name="estimated_hours" step="0.5" min="0.5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Job Notes</label>
+                        <textarea class="form-control" name="job_notes" rows="3"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="email_reminder" checked>
+                                <label class="form-check-label">Email reminder (24h before)</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="sms_reminder" checked>
+                                <label class="form-check-label">SMS reminder (2h before)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="recurring">
+                        <label class="form-check-label">Recurring job</label>
+                    </div>
+
+                    <div id="recurringOptions" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Frequency</label>
+                                    <select class="form-control" name="recurring_frequency">
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control" name="recurring_end">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conflict Warning -->
+                    <div id="conflictWarning" class="conflict-warning" style="display: none;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Scheduling Conflict Detected:</strong>
+                        <div id="conflictDetails"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Schedule Job</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Job Details Modal -->
+<div class="modal fade" id="jobDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Job Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="jobDetailsContent">
+                <!-- Content loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" onclick="editJob()">Edit Job</button>
+                <button type="button" class="btn btn-success" onclick="markCompleted()">Mark Completed</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+<script>
+let calendar;
+let currentEvents = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCalendar();
+    loadCalendarEvents();
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 60000); // Update every minute
+    
+    // Setup event listeners
+    setupEventListeners();
+});
+
+function initializeCalendar() {
+    const calendarEl = document.getElementById('calendar');
+    
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        headerToolbar: false, // Using custom controls
+        height: 'auto',
+        slotMinTime: '07:00:00',
+        slotMaxTime: '17:00:00',
+        businessHours: {
+            daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
+            startTime: '07:00',
+            endTime: '17:00',
+        },
+        weekends: false,
+        editable: true,
+        droppable: true,
+        eventResizableFromStart: true,
+        
+        eventDrop: function(info) {
+            handleEventMove(info);
+        },
+        
+        eventResize: function(info) {
+            handleEventResize(info);
+        },
+        
+        eventClick: function(info) {
+            showJobDetails(info.event);
+        },
+        
+        dateClick: function(info) {
+            if (info.view.type === 'timeGridWeek' || info.view.type === 'timeGridDay') {
+                addNewJobAtTime(info.date);
+            }
+        },
+        
+        eventDidMount: function(info) {
+            // Add status classes
+            const status = info.event.extendedProps.status;
+            info.el.classList.add(`status-${status}`);
+            
+            // Add tooltip
+            info.el.setAttribute('title', 
+                `${info.event.title}\n${info.event.extendedProps.client}\n${info.event.extendedProps.location || ''}`
+            );
+        }
+    });
+    
+    calendar.render();
+}
+
+function loadCalendarEvents() {
+    // Load events from server
+    fetch('/api/admin/calendar/events')
+        .then(response => response.json())
+        .then(events => {
+            currentEvents = events;
+            calendar.removeAllEvents();
+            calendar.addEventSource(events);
+        })
+        .catch(error => {
+            console.error('Error loading calendar events:', error);
+            // Load sample events for demo
+            loadSampleEvents();
+        });
+}
+
+function loadSampleEvents() {
+    const sampleEvents = [
+        {
+            id: 'J2025-001',
+            title: 'Flooring Installation',
+            start: '2025-06-26T08:00:00',
+            end: '2025-06-26T16:00:00',
+            extendedProps: {
+                client: 'Jessica Houtz',
+                location: '123 Pineapple Lane, Honolulu',
+                status: 'scheduled',
+                staff: ['John Doe'],
+                jobId: 'J2025-001'
+            }
+        },
+        {
+            id: 'J2025-002',
+            title: 'Drywall Repair',
+            start: '2025-06-27T09:00:00',
+            end: '2025-06-27T12:00:00',
+            extendedProps: {
+                client: 'Michael Chen',
+                location: '456 Palm Street, Kailua',
+                status: 'tentative',
+                staff: ['Jane Smith'],
+                jobId: 'J2025-002'
+            }
+        },
+        {
+            id: 'J2025-003',
+            title: 'Fence Installation',
+            start: '2025-06-28T07:00:00',
+            end: '2025-06-28T17:00:00',
+            extendedProps: {
+                client: 'Sarah Williams',
+                location: '789 Ocean View Dr, Honolulu',
+                status: 'scheduled',
+                staff: ['John Doe', 'Mike Johnson'],
+                jobId: 'J2025-003'
+            }
+        }
+    ];
+    
+    calendar.addEventSource(sampleEvents);
+}
+
+function setupEventListeners() {
+    // View toggle buttons
+    document.querySelectorAll('[data-view]').forEach(button => {
+        button.addEventListener('click', function() {
+            const view = this.dataset.view;
+            calendar.changeView(view);
+            
+            // Update active button
+            document.querySelectorAll('[data-view]').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+    
+    // Recurring job checkbox
+    document.querySelector('input[name="recurring"]').addEventListener('change', function() {
+        document.getElementById('recurringOptions').style.display = 
+            this.checked ? 'block' : 'none';
+    });
+    
+    // Job form submission
+    document.getElementById('jobForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveJob();
+    });
+    
+    // Real-time conflict detection
+    ['scheduled_date', 'start_time', 'end_time', 'assigned_staff'].forEach(field => {
+        const element = document.querySelector(`[name="${field}"]`);
+        if (element) {
+            element.addEventListener('change', checkConflicts);
+        }
+    });
+}
+
+function addNewJob() {
+    document.getElementById('jobFormTitle').textContent = 'Schedule New Job';
+    document.getElementById('jobForm').reset();
+    loadClientOptions();
+    loadStaffOptions();
+    new bootstrap.Modal(document.getElementById('jobFormModal')).show();
+}
+
+function addNewJobAtTime(date) {
+    addNewJob();
+    
+    // Pre-fill date and time
+    const dateStr = date.toISOString().split('T')[0];
+    const timeStr = date.toTimeString().slice(0, 5);
+    
+    document.querySelector('[name="scheduled_date"]').value = dateStr;
+    document.querySelector('[name="start_time"]').value = timeStr;
+    
+    // Set default end time (2 hours later)
+    const endDate = new Date(date);
+    endDate.setHours(endDate.getHours() + 2);
+    document.querySelector('[name="end_time"]').value = endDate.toTimeString().slice(0, 5);
+}
+
+function loadClientOptions() {
+    fetch('/api/admin/clients/list')
+        .then(response => response.json())
+        .then(clients => {
+            const select = document.querySelector('[name="client_id"]');
+            select.innerHTML = '<option value="">Select Client</option>';
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.client_id;
+                option.textContent = client.name;
+                select.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error loading clients:', error));
+}
+
+function loadStaffOptions() {
+    fetch('/api/admin/staff/list')
+        .then(response => response.json())
+        .then(staff => {
+            const select = document.querySelector('[name="assigned_staff"]');
+            select.innerHTML = '';
+            staff.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.staff_id;
+                option.textContent = member.name;
+                select.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error loading staff:', error));
+}
+
+function checkConflicts() {
+    const formData = new FormData(document.getElementById('jobForm'));
+    const date = formData.get('scheduled_date');
+    const startTime = formData.get('start_time');
+    const endTime = formData.get('end_time');
+    const staff = formData.getAll('assigned_staff');
+    
+    if (!date || !startTime || !endTime || staff.length === 0) return;
+    
+    // Check for conflicts
+    fetch('/api/admin/calendar/check-conflicts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            date: date,
+            start_time: startTime,
+            end_time: endTime,
+            staff: staff
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        const warningEl = document.getElementById('conflictWarning');
+        const detailsEl = document.getElementById('conflictDetails');
+        
+        if (result.conflicts && result.conflicts.length > 0) {
+            warningEl.style.display = 'block';
+            detailsEl.innerHTML = result.conflicts.map(conflict => 
+                `<div>• ${conflict.message}</div>`
+            ).join('');
+        } else {
+            warningEl.style.display = 'none';
+        }
+    })
+    .catch(error => console.error('Error checking conflicts:', error));
+}
+
+function saveJob() {
+    const formData = new FormData(document.getElementById('jobForm'));
+    const jobData = Object.fromEntries(formData.entries());
+    
+    fetch('/api/admin/calendar/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jobData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('jobFormModal')).hide();
+            loadCalendarEvents(); // Refresh calendar
+            showNotification('Job scheduled successfully', 'success');
+        } else {
+            showNotification('Error scheduling job: ' + result.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error saving job:', error);
+        showNotification('Error saving job', 'error');
+    });
+}
+
+function handleEventMove(info) {
+    const event = info.event;
+    const newStart = event.start;
+    const newEnd = event.end;
+    
+    // Validate business hours
+    if (!isBusinessHours(newStart, newEnd)) {
+        info.revert();
+        showNotification('Jobs can only be scheduled during business hours (Mon-Fri, 7AM-5PM)', 'error');
+        return;
+    }
+    
+    // Save changes
+    updateJobTiming(event.id, newStart, newEnd);
+}
+
+function handleEventResize(info) {
+    const event = info.event;
+    const newStart = event.start;
+    const newEnd = event.end;
+    
+    // Validate business hours
+    if (!isBusinessHours(newStart, newEnd)) {
+        info.revert();
+        showNotification('Jobs must stay within business hours', 'error');
+        return;
+    }
+    
+    // Save changes
+    updateJobTiming(event.id, newStart, newEnd);
+}
+
+function isBusinessHours(start, end) {
+    const startHour = start.getHours();
+    const endHour = end.getHours();
+    const day = start.getDay();
+    
+    // Check if weekend
+    if (day === 0 || day === 6) return false;
+    
+    // Check if within business hours
+    if (startHour < 7 || endHour > 17) return false;
+    
+    // Check lunch break (12-1PM)
+    if ((startHour < 13 && start.getHours() + (start.getMinutes() / 60) > 12) ||
+        (endHour > 12 && end.getHours() - (end.getMinutes() / 60) < 13)) {
+        // Overlaps with lunch break
+        if (!(endHour <= 12 || startHour >= 13)) return false;
+    }
+    
+    return true;
+}
+
+function updateJobTiming(jobId, start, end) {
+    fetch(`/api/admin/calendar/jobs/${jobId}/timing`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            start: start.toISOString(),
+            end: end.toISOString()
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showNotification('Job updated successfully', 'success');
+        } else {
+            showNotification('Error updating job: ' + result.error, 'error');
+            loadCalendarEvents(); // Refresh to revert changes
+        }
+    })
+    .catch(error => {
+        console.error('Error updating job:', error);
+        showNotification('Error updating job', 'error');
+        loadCalendarEvents(); // Refresh to revert changes
+    });
+}
+
+function showJobDetails(event) {
+    const jobId = event.extendedProps.jobId;
+    
+    fetch(`/api/admin/jobs/${jobId}`)
+        .then(response => response.json())
+        .then(job => {
+            const content = `
+                <div class="job-details-view">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>${job.service_type}</h5>
+                            <p><strong>Client:</strong> ${job.client_name}</p>
+                            <p><strong>Location:</strong> ${job.location}</p>
+                            <p><strong>Status:</strong> <span class="badge bg-${getStatusColor(job.status)}">${job.status}</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Scheduled:</strong> ${formatDateTime(event.start)}</p>
+                            <p><strong>Duration:</strong> ${calculateDuration(event.start, event.end)}</p>
+                            <p><strong>Staff:</strong> ${event.extendedProps.staff.join(', ')}</p>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <strong>Notes:</strong>
+                        <p>${job.job_note || 'No notes'}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('jobDetailsContent').innerHTML = content;
+            new bootstrap.Modal(document.getElementById('jobDetailsModal')).show();
+        })
+        .catch(error => {
+            console.error('Error loading job details:', error);
+            showNotification('Error loading job details', 'error');
+        });
+}
+
+function viewStaffCapacity() {
+    const panel = document.getElementById('staffCapacityPanel');
+    if (panel.style.display === 'none') {
+        loadStaffCapacity();
+        panel.style.display = 'block';
+    } else {
+        panel.style.display = 'none';
+    }
+}
+
+function loadStaffCapacity() {
+    fetch('/api/admin/staff/capacity')
+        .then(response => response.json())
+        .then(data => {
+            const content = data.staff.map(member => {
+                const utilization = (member.scheduled_hours / member.available_hours) * 100;
+                const level = utilization > 80 ? 'high' : utilization > 60 ? 'medium' : 'low';
+                
+                return `
+                    <div class="staff-member">
+                        <div class="d-flex justify-content-between">
+                            <strong>${member.name}</strong>
+                            <span>${member.scheduled_hours}h / ${member.available_hours}h</span>
+                        </div>
+                        <div class="capacity-bar">
+                            <div class="capacity-fill ${level}" style="width: ${utilization}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('staffCapacityContent').innerHTML = content;
+        })
+        .catch(error => {
+            console.error('Error loading staff capacity:', error);
+        });
+}
+
+function exportCalendar() {
+    const view = calendar.view;
+    const start = view.activeStart.toISOString().split('T')[0];
+    const end = view.activeEnd.toISOString().split('T')[0];
+    
+    window.open(`/api/admin/calendar/export?start=${start}&end=${end}&format=pdf`);
+}
+
+function syncCalendar() {
+    showNotification('Syncing calendar...', 'info');
+    
+    fetch('/api/admin/calendar/sync', { method: 'POST' })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                loadCalendarEvents();
+                showNotification('Calendar synced successfully', 'success');
+            } else {
+                showNotification('Error syncing calendar: ' + result.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error syncing calendar:', error);
+            showNotification('Error syncing calendar', 'error');
+        });
+}
+
+function updateCurrentTime() {
+    const now = new Date();
+    const hawaiiTime = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Pacific/Honolulu',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    }).format(now);
+    
+    document.getElementById('currentTime').textContent = hawaiiTime;
+}
+
+function getStatusColor(status) {
+    const colors = {
+        'scheduled': 'success',
+        'tentative': 'warning',
+        'completed': 'secondary',
+        'conflict': 'danger'
+    };
+    return colors[status] || 'primary';
+}
+
+function formatDateTime(date) {
+    return new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Pacific/Honolulu',
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    }).format(date);
+}
+
+function calculateDuration(start, end) {
+    const diff = end - start;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (hours === 0) {
+        return `${minutes}m`;
+    } else if (minutes === 0) {
+        return `${hours}h`;
+    } else {
+        return `${hours}h ${minutes}m`;
+    }
+}
+
+function showNotification(message, type) {
+    // Create and show toast notification
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'error' ? 'danger' : type} position-fixed top-0 end-0 m-3`;
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+🧰 Job Management Component – Features Checklist
+Feature	Description
+Job Overview Table	Live, searchable table of all jobs with status, date, client, location, assigned staff.
+Job Status Tracking	Status stages: Draft → Scheduled → In Progress → On Hold → Completed → Invoiced.
+Create New Job	Generate new job from a quote or directly from the dashboard.
+Unique Job ID Format	Auto-generated (e.g., J2025-0231) with year and counter for easy reference.
+Client Auto-fill	Pull client details from CRM when selected or matched.
+Service Type Selector	Choose from predefined services (Flooring, Drywall, Fence, Renovation, etc.).
+Job Date & Time Scheduling	Assign date, time, and duration with calendar sync.
+Assigned Crew	Select one or more staff from dropdown (with real-time availability indicator).
+Job Notes	Internal notes, client preferences, special instructions.
+Job Checklist	Add or select task list to ensure all steps are completed (with checkbox tracker).
+Add-ons / Extras	Record upsells or extra work added mid-project.
+Photo Uploads	Before / After documentation with preview and tags.
+Document Attachments	Upload permits, signed agreements, or sketches.
+Material Logging	List materials used with auto-deduct from inventory.
+Job Cost Tracker	Calculate labor + materials + other costs vs. quoted price.
+Completion Confirmation	Mark job complete with timestamp and optional client confirmation toggle.
+Invoicing Shortcut	Button to “Convert to Invoice” from job detail view.
+Activity Log	Timestamped updates for all changes: status, assignments, uploads.
+Map Integration	View job location on map with directions (Google Maps).
+
+🖥️ Dashboard Display Features
+ Job Status Kanban Board View (optional toggle)
+
+ Color-coded labels (green = scheduled, red = overdue, yellow = pending, etc.)
+
+ Calendar Block Overlay to highlight job time slot
+
+ Quick Filters: Today / This Week / Assigned to Me / Needs Invoice
+
+ Export: Download job data (CSV, PDF)
+
+🧩 Related Integrations
+CRM – Auto-populate client data + contact history
+
+Staff Portal – Show assigned jobs for each employee
+
+Inventory Manager – Auto-log materials for costing
+
+Notifications – Alert for upcoming, overdue, or completed jobs

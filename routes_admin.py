@@ -164,20 +164,55 @@ def admin_staff():
 
 @app.route('/admin/inventory')
 def admin_inventory():
-    """Inventory management page with PostgreSQL data"""
+    """Advanced inventory management page with PostgreSQL data"""
     try:
         with db.engine.connect() as conn:
             # Get inventory information
             inventory_result = conn.execute(db.text("""
                 SELECT item_id, name, category, current_stock, 
-                       reorder_level, unit_cost, supplier
+                       reorder_level, unit_cost, supplier, location, last_updated, unit
                 FROM inventory
                 ORDER BY name
             """))
-            inventory = [dict(row._mapping) for row in inventory_result]
+            inventory_data = [dict(row._mapping) for row in inventory_result]
+            
+            # Add sample data if empty for demo
+            if not inventory_data:
+                inventory_data = [
+                    {
+                        'item_id': 'INV001', 'name': 'Drywall Sheets 4x8', 'category': 'Drywall',
+                        'current_stock': 25, 'reorder_level': 10, 'unit_cost': 12.50,
+                        'supplier': 'Home Depot', 'location': 'Main Warehouse', 'unit': 'each',
+                        'last_updated': None
+                    },
+                    {
+                        'item_id': 'INV002', 'name': 'Joint Compound 5gal', 'category': 'Drywall',
+                        'current_stock': 3, 'reorder_level': 5, 'unit_cost': 45.00,
+                        'supplier': 'Home Depot', 'location': 'Van 1', 'unit': 'bucket',
+                        'last_updated': None
+                    },
+                    {
+                        'item_id': 'INV003', 'name': 'Vinyl Plank Flooring', 'category': 'Flooring',
+                        'current_stock': 150, 'reorder_level': 50, 'unit_cost': 3.25,
+                        'supplier': 'Local Supply Co', 'location': 'Main Warehouse', 'unit': 'sq ft',
+                        'last_updated': None
+                    },
+                    {
+                        'item_id': 'INV004', 'name': 'Deck Screws 2.5"', 'category': 'Hardware',
+                        'current_stock': 2, 'reorder_level': 10, 'unit_cost': 0.25,
+                        'supplier': 'Trade Depot', 'location': 'Van 2', 'unit': 'each',
+                        'last_updated': None
+                    },
+                    {
+                        'item_id': 'INV005', 'name': 'Cordless Drill', 'category': 'Tools',
+                        'current_stock': 4, 'reorder_level': 2, 'unit_cost': 125.00,
+                        'supplier': 'Lowe\'s', 'location': 'Office', 'unit': 'each',
+                        'last_updated': None
+                    }
+                ]
         
         return render_template('admin/sections/inventory_section.html', 
-                             inventory=inventory)
+                             inventory=inventory_data)
     except Exception as e:
         logging.error(f"Inventory page error: {e}")
         flash('Error loading inventory data', 'error')

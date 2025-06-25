@@ -1,406 +1,726 @@
-<div class="content-card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h3 class="card-title">
-            <i class="fas fa-boxes me-2"></i>Inventory Management
-        </h3>
-        <div class="btn-group">
-            <button class="btn btn-spankks btn-sm" onclick="showAddInventoryModal()">
-                <i class="fas fa-plus me-1"></i>Add Item
-            </button>
-            <button class="btn btn-outline-success btn-sm" onclick="exportInventoryReport()">
-                <i class="fas fa-download me-1"></i>Export Report
-            </button>
+{% extends "admin/core/base.html" %}
+
+{% block title %}Advanced Inventory Manager - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="inventory-dashboard">
+    <!-- Inventory Header -->
+    <div class="inventory-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1">Advanced Inventory Manager</h1>
+                <p class="text-muted mb-0">Track materials, tools, and supplies across all job sites</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-success me-2" onclick="addNewItem()">
+                    <i class="fas fa-plus me-2"></i>Add Item
+                </button>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-tools me-2"></i>Actions
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="scanBarcode()">
+                            <i class="fas fa-qrcode me-2"></i>Scan QR/Barcode
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="generatePO()">
+                            <i class="fas fa-file-invoice me-2"></i>Generate PO
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportInventory()">
+                            <i class="fas fa-download me-2"></i>Export Report
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="bulkUpdate()">
+                            <i class="fas fa-edit me-2"></i>Bulk Update
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="card-body">
-        <!-- Inventory Overview Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-value" id="totalItems">0</div>
-                    <div class="stat-label">Total Items</div>
-                    <div class="stat-change">
-                        <i class="fas fa-boxes me-1"></i>In Stock
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-value" id="lowStockItems">0</div>
-                    <div class="stat-label">Low Stock</div>
-                    <div class="stat-change negative">
-                        <i class="fas fa-exclamation-triangle me-1"></i>Need Reorder
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-value" id="inventoryValue">$0</div>
-                    <div class="stat-label">Total Value</div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-dollar-sign me-1"></i>Current
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-value" id="lastUpdated">Today</div>
-                    <div class="stat-label">Last Updated</div>
-                    <div class="stat-change">
-                        <i class="fas fa-clock me-1"></i>Tracking
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Inventory Filters -->
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <input type="text" class="form-control" placeholder="Search inventory..." id="inventorySearch">
-            </div>
-            <div class="col-md-3">
-                <select class="form-select" id="categoryFilter">
-                    <option value="">All Categories</option>
-                    <option value="drywall">Drywall Materials</option>
-                    <option value="flooring">Flooring Supplies</option>
-                    <option value="fence">Fence Materials</option>
-                    <option value="tools">Tools & Equipment</option>
-                    <option value="hardware">Hardware & Fasteners</option>
-                    <option value="paint">Paint & Finishes</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <select class="form-select" id="stockFilter">
-                    <option value="">All Stock Levels</option>
-                    <option value="in_stock">In Stock</option>
-                    <option value="low_stock">Low Stock</option>
-                    <option value="out_of_stock">Out of Stock</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-outline-success" onclick="refreshInventory()">
-                    <i class="fas fa-sync-alt"></i> Refresh
-                </button>
+    <!-- Inventory Statistics -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card total-items">
+                <div class="stat-icon">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalItems">{{ inventory|length }}</h3>
+                    <p>Total Items</p>
+                    <span class="stat-trend">Active inventory</span>
+                </div>
             </div>
         </div>
-        
-        <!-- Inventory Table -->
-        <div class="table-responsive">
-            <table class="table data-table" id="inventoryTable">
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Category</th>
-                        <th>Current Stock</th>
-                        <th>Reorder Level</th>
-                        <th>Unit Cost</th>
-                        <th>Total Value</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="inventoryTableBody">
-                    <tr>
-                        <td colspan="8" class="text-center">
-                            <div class="loading-spinner me-2"></div>
-                            Loading inventory...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card low-stock">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="lowStockCount">{{ inventory|selectattr('current_stock', 'lt', inventory|map(attribute='reorder_level')|list)|list|length }}</h3>
+                    <p>Low Stock Alerts</p>
+                    <span class="stat-trend">Need reorder</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card inventory-value">
+                <div class="stat-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="inventoryValue">${{ "%.0f"|format(inventory|sum(attribute='unit_cost')|default(0) * inventory|sum(attribute='current_stock')|default(0)) }}</h3>
+                    <p>Inventory Value</p>
+                    <span class="stat-trend">Current worth</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card locations">
+                <div class="stat-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="locationCount">5</h3>
+                    <p>Storage Locations</p>
+                    <span class="stat-trend">Vans & warehouse</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Filters and Search -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Search inventory..." id="inventorySearch">
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="filter-chips">
+                                <button class="filter-chip active" data-filter="all">All Items</button>
+                                <button class="filter-chip" data-filter="low-stock">Low Stock</button>
+                                <button class="filter-chip" data-filter="drywall">Drywall</button>
+                                <button class="filter-chip" data-filter="flooring">Flooring</button>
+                                <button class="filter-chip" data-filter="tools">Tools</button>
+                                <button class="filter-chip" data-filter="hardware">Hardware</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <select class="form-control" id="locationFilter">
+                                <option value="">All Locations</option>
+                                <option value="Main Warehouse">Main Warehouse</option>
+                                <option value="Van 1">Van 1</option>
+                                <option value="Van 2">Van 2</option>
+                                <option value="Job Site">Job Site</option>
+                                <option value="Office">Office</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="supplierFilter">
+                                <option value="">All Suppliers</option>
+                                <option value="Home Depot">Home Depot</option>
+                                <option value="Lowe's">Lowe's</option>
+                                <option value="Local Supply">Local Supply Co</option>
+                                <option value="Trade Depot">Trade Depot</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-outline-primary me-2" onclick="viewUsageLogs()">
+                                <i class="fas fa-history me-2"></i>Usage Logs
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="viewWasteReport()">
+                                <i class="fas fa-trash-alt me-2"></i>Waste Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Inventory Items</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="inventoryTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Category</th>
+                                    <th>Stock Level</th>
+                                    <th>Location</th>
+                                    <th>Unit Cost</th>
+                                    <th>Supplier</th>
+                                    <th>Last Updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in inventory %}
+                                <tr class="inventory-row" data-category="{{ item.category|lower }}" data-location="{{ item.location }}" data-supplier="{{ item.supplier }}">
+                                    <td>
+                                        <div class="item-info">
+                                            <div class="item-icon">
+                                                <i class="fas fa-{{ 'tools' if 'tool' in item.category.lower() else 'box' }}"></i>
+                                            </div>
+                                            <div class="item-details">
+                                                <h6 class="mb-1">{{ item.name }}</h6>
+                                                <small class="text-muted">{{ item.item_id }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ item.category }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="stock-level">
+                                            {% set stock_ratio = (item.current_stock / item.reorder_level) if item.reorder_level > 0 else 1 %}
+                                            <div class="stock-info">
+                                                <strong class="{{ 'text-danger' if stock_ratio < 1 else 'text-success' if stock_ratio > 2 else 'text-warning' }}">
+                                                    {{ item.current_stock }}
+                                                </strong>
+                                                <span class="text-muted">/ {{ item.reorder_level }} {{ item.unit }}</span>
+                                            </div>
+                                            {% if stock_ratio < 1 %}
+                                            <small class="text-danger">
+                                                <i class="fas fa-exclamation-triangle me-1"></i>Low Stock
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ item.location }}</span>
+                                    </td>
+                                    <td>
+                                        <strong>${{ "%.2f"|format(item.unit_cost) }}</strong>
+                                        <br><small class="text-muted">per {{ item.unit }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="supplier-info">
+                                            {{ item.supplier }}
+                                            <br><small class="text-muted">Contact info</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ item.last_updated.strftime('%m/%d/%Y') if item.last_updated else 'N/A' }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="adjustStock('{{ item.item_id }}')" data-bs-toggle="tooltip" title="Adjust Stock">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="useItem('{{ item.item_id }}')" data-bs-toggle="tooltip" title="Log Usage">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="restockItem('{{ item.item_id }}')" data-bs-toggle="tooltip" title="Restock">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info" onclick="viewItemHistory('{{ item.item_id }}')" data-bs-toggle="tooltip" title="View History">
+                                                <i class="fas fa-history"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Add Inventory Item Modal -->
-<div class="modal fade" id="addInventoryModal" tabindex="-1">
-    <div class="modal-dialog">
+<!-- Add/Edit Item Modal -->
+<div class="modal fade" id="itemFormModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-plus me-2"></i>Add Inventory Item
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="itemFormTitle">Add New Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="addInventoryForm">
-                    <div class="mb-3">
-                        <label class="form-label">Item Name</label>
-                        <input type="text" class="form-control" name="item_name" required>
-                    </div>
+            <form id="itemForm">
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Category</label>
-                                <select class="form-select" name="category" required>
-                                    <option value="">Select Category</option>
-                                    <option value="drywall">Drywall Materials</option>
-                                    <option value="flooring">Flooring Supplies</option>
-                                    <option value="fence">Fence Materials</option>
-                                    <option value="tools">Tools & Equipment</option>
-                                    <option value="hardware">Hardware & Fasteners</option>
-                                    <option value="paint">Paint & Finishes</option>
-                                </select>
+                                <label class="form-label">Item Name *</label>
+                                <input type="text" class="form-control" name="name" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
+                                <label class="form-label">Category *</label>
+                                <select class="form-control" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Drywall">Drywall</option>
+                                    <option value="Flooring">Flooring</option>
+                                    <option value="Hardware">Hardware</option>
+                                    <option value="Tools">Tools</option>
+                                    <option value="Paint">Paint</option>
+                                    <option value="Electrical">Electrical</option>
+                                    <option value="Plumbing">Plumbing</option>
+                                    <option value="Safety">Safety</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="2"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
                                 <label class="form-label">Unit</label>
-                                <select class="form-select" name="unit">
+                                <select class="form-control" name="unit">
                                     <option value="each">Each</option>
                                     <option value="box">Box</option>
                                     <option value="bag">Bag</option>
                                     <option value="roll">Roll</option>
-                                    <option value="sheet">Sheet</option>
                                     <option value="gallon">Gallon</option>
-                                    <option value="linear_ft">Linear Ft</option>
-                                    <option value="sq_ft">Sq Ft</option>
+                                    <option value="sq ft">Sq Ft</option>
+                                    <option value="linear ft">Linear Ft</option>
+                                    <option value="lb">Pound</option>
                                 </select>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label class="form-label">Current Stock</label>
-                                <input type="number" class="form-control" name="current_stock" min="0" required>
+                                <input type="number" class="form-control" name="stock_quantity" min="0" step="1">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label class="form-label">Reorder Level</label>
-                                <input type="number" class="form-control" name="reorder_level" min="0" required>
+                                <input type="number" class="form-control" name="reorder_threshold" min="0" step="1">
                             </div>
                         </div>
-                        <div class="col-md-4">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label">Unit Cost</label>
-                                <input type="number" class="form-control" name="unit_cost" step="0.01" min="0" required>
+                                <input type="number" class="form-control" name="unit_cost" min="0" step="0.01">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Location</label>
+                                <select class="form-control" name="location">
+                                    <option value="Main Warehouse">Main Warehouse</option>
+                                    <option value="Van 1">Van 1</option>
+                                    <option value="Van 2">Van 2</option>
+                                    <option value="Job Site">Job Site</option>
+                                    <option value="Office">Office</option>
+                                </select>
                             </div>
                         </div>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label">Supplier</label>
-                        <input type="text" class="form-control" name="supplier" placeholder="Primary supplier name">
+                        <input type="text" class="form-control" name="supplier">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Notes</label>
-                        <textarea class="form-control" name="notes" rows="2" placeholder="Additional notes about this item"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-spankks" onclick="saveInventoryItem()">
-                    <i class="fas fa-save me-1"></i>Add Item
-                </button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Item</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<script>
-function loadInventoryData() {
-    // Load authentic inventory data from API
-    fetch('/api/inventory')
-        .then(response => response.json())
-        .then(inventory => {
-            displayInventoryData(inventory);
-        })
-        .catch(error => {
-            console.error('Error loading inventory:', error);
-            displayInventoryData([]);
-        });
-}
-
-function displayInventoryData(inventory) {
-    const tbody = document.getElementById('inventoryTableBody');
-    
-    if (inventory.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="8" class="text-center text-muted">
-                    <i class="fas fa-boxes fa-2x mb-2"></i>
-                    <div>No inventory items found. Add your first item to get started.</div>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    let totalItems = 0;
-    let lowStockCount = 0;
-    let totalValue = 0;
-    
-    tbody.innerHTML = inventory.map(item => {
-        const totalItemValue = item.current_stock * item.unit_cost;
-        const isLowStock = item.current_stock <= item.reorder_level;
-        const stockStatus = item.current_stock === 0 ? 'out_of_stock' : 
-                           isLowStock ? 'low_stock' : 'in_stock';
-        
-        totalItems += item.current_stock;
-        totalValue += totalItemValue;
-        if (isLowStock) lowStockCount++;
-        
-        return `
-            <tr>
-                <td>
-                    <strong>${item.item_name}</strong>
-                    <div class="text-muted small">ID: ${item.id}</div>
-                </td>
-                <td>
-                    <span class="badge bg-info">${getCategoryDisplay(item.category)}</span>
-                </td>
-                <td>
-                    <strong>${item.current_stock}</strong> ${item.unit}
-                </td>
-                <td>${item.reorder_level} ${item.unit}</td>
-                <td>$${item.unit_cost.toFixed(2)}</td>
-                <td>
-                    <strong>$${totalItemValue.toFixed(2)}</strong>
-                </td>
-                <td>
-                    <span class="badge bg-${stockStatus === 'in_stock' ? 'success' : stockStatus === 'low_stock' ? 'warning' : 'danger'}">
-                        ${getStatusDisplay(stockStatus)}
-                    </span>
-                </td>
-                <td>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="editInventoryItem('${item.id}')" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-outline-success" onclick="adjustStock('${item.id}')" title="Adjust Stock">
-                            <i class="fas fa-plus-minus"></i>
-                        </button>
-                        <button class="btn btn-outline-warning" onclick="reorderItem('${item.id}')" title="Reorder">
-                            <i class="fas fa-shopping-cart"></i>
-                        </button>
+<!-- Stock Adjustment Modal -->
+<div class="modal fade" id="stockAdjustModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Adjust Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="stockAdjustForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Action</label>
+                        <select class="form-control" name="action" required>
+                            <option value="add">Add Stock (Restock)</option>
+                            <option value="remove">Remove Stock (Used/Damaged)</option>
+                            <option value="set">Set Stock Level</option>
+                        </select>
                     </div>
-                </td>
-            </tr>
-        `;
-    }).join('');
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control" name="quantity" required min="1">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Job ID (if applicable)</label>
+                        <input type="text" class="form-control" name="job_id" placeholder="J2025-0001">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="3" placeholder="Reason for adjustment..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.inventory-dashboard {
+    padding: 20px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-left: 4px solid transparent;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-card.total-items { border-left-color: #007bff; }
+.stat-card.low-stock { border-left-color: #dc3545; }
+.stat-card.inventory-value { border-left-color: #28a745; }
+.stat-card.locations { border-left-color: #6f42c1; }
+
+.stat-card .stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 20px;
+    color: white;
+}
+
+.stat-card.total-items .stat-icon { background: #007bff; }
+.stat-card.low-stock .stat-icon { background: #dc3545; }
+.stat-card.inventory-value .stat-icon { background: #28a745; }
+.stat-card.locations .stat-icon { background: #6f42c1; }
+
+.stat-card h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #2c3e50;
+}
+
+.filter-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-chip {
+    padding: 6px 16px;
+    border: 1px solid #dee2e6;
+    background: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.filter-chip:hover,
+.filter-chip.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.item-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+}
+
+.stock-level {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.action-buttons .btn {
+    margin-right: 4px;
+}
+
+.inventory-row:hover {
+    background-color: rgba(0,123,255,0.05);
+}
+</style>
+
+<script>
+// Search functionality
+document.getElementById('inventorySearch').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll('.inventory-row');
     
-    // Update overview cards
-    document.getElementById('totalItems').textContent = totalItems;
-    document.getElementById('lowStockItems').textContent = lowStockCount;
-    document.getElementById('inventoryValue').textContent = `$${totalValue.toFixed(0)}`;
-    document.getElementById('lastUpdated').textContent = 'Today';
-}
+    rows.forEach(row => {
+        const itemName = row.querySelector('.item-details h6').textContent.toLowerCase();
+        const category = row.querySelector('.badge').textContent.toLowerCase();
+        
+        if (itemName.includes(searchTerm) || category.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
 
-function getCategoryDisplay(category) {
-    const categories = {
-        'drywall': 'Drywall',
-        'flooring': 'Flooring',
-        'fence': 'Fence',
-        'tools': 'Tools',
-        'hardware': 'Hardware',
-        'paint': 'Paint'
-    };
-    return categories[category] || category;
-}
+// Filter functionality
+document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        
+        const filter = this.dataset.filter;
+        const rows = document.querySelectorAll('.inventory-row');
+        
+        rows.forEach(row => {
+            if (filter === 'all') {
+                row.style.display = '';
+            } else if (filter === 'low-stock') {
+                const hasLowStock = row.querySelector('.text-danger');
+                row.style.display = hasLowStock ? '' : 'none';
+            } else {
+                const category = row.dataset.category;
+                row.style.display = category.includes(filter) ? '' : 'none';
+            }
+        });
+    });
+});
 
-function getStatusDisplay(status) {
-    const statuses = {
-        'in_stock': 'In Stock',
-        'low_stock': 'Low Stock',
-        'out_of_stock': 'Out of Stock'
-    };
-    return statuses[status] || status;
-}
-
-function showAddInventoryModal() {
-    const modal = new bootstrap.Modal(document.getElementById('addInventoryModal'));
-    modal.show();
-}
-
-function saveInventoryItem() {
-    const form = document.getElementById('addInventoryForm');
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
+// Location and supplier filters
+document.getElementById('locationFilter').addEventListener('change', function() {
+    const location = this.value;
+    const rows = document.querySelectorAll('.inventory-row');
     
-    // Add default fields
-    data.id = `INV${String(sampleInventory.length + 1).padStart(3, '0')}`;
-    data.last_updated = new Date().toISOString().split('T')[0];
+    rows.forEach(row => {
+        if (!location || row.dataset.location === location) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+document.getElementById('supplierFilter').addEventListener('change', function() {
+    const supplier = this.value;
+    const rows = document.querySelectorAll('.inventory-row');
     
-    // Save to authentic inventory database via API
-    fetch('/api/inventory/create', {
+    rows.forEach(row => {
+        if (!supplier || row.dataset.supplier === supplier) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+// Inventory actions
+function addNewItem() {
+    document.getElementById('itemFormTitle').textContent = 'Add New Item';
+    document.getElementById('itemForm').reset();
+    new bootstrap.Modal(document.getElementById('itemFormModal')).show();
+}
+
+function adjustStock(itemId) {
+    document.getElementById('stockAdjustForm').reset();
+    document.getElementById('stockAdjustForm').dataset.itemId = itemId;
+    new bootstrap.Modal(document.getElementById('stockAdjustModal')).show();
+}
+
+function useItem(itemId) {
+    // Quick usage logging
+    const quantity = prompt('Enter quantity used:');
+    if (quantity && !isNaN(quantity)) {
+        logItemUsage(itemId, 'used', parseInt(quantity));
+    }
+}
+
+function restockItem(itemId) {
+    // Quick restock
+    const quantity = prompt('Enter restock quantity:');
+    if (quantity && !isNaN(quantity)) {
+        logItemUsage(itemId, 'restocked', parseInt(quantity));
+    }
+}
+
+function viewItemHistory(itemId) {
+    fetch(`/api/admin/inventory/${itemId}/history`)
+        .then(response => response.json())
+        .then(history => {
+            // Show history modal
+            console.log('Item history:', history);
+        })
+        .catch(error => console.error('Error loading item history:', error));
+}
+
+function logItemUsage(itemId, action, quantity, jobId = null, notes = '') {
+    fetch('/api/admin/inventory/log', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            item_id: itemId,
+            action: action,
+            quantity: quantity,
+            job_id: jobId,
+            notes: notes
+        })
     })
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            loadInventoryData(); // Reload from database
+            location.reload(); // Refresh to show updated stock
         } else {
-            showToast('Error adding inventory item: ' + result.error, 'error');
+            alert('Error updating inventory: ' + result.error);
         }
     })
     .catch(error => {
-        console.error('Error adding inventory item:', error);
-        showToast('Error adding inventory item', 'error');
+        console.error('Error logging usage:', error);
+        alert('Error updating inventory');
     });
+}
+
+function scanBarcode() {
+    // Implement barcode/QR scanning
+    alert('Barcode scanning feature - would integrate with device camera');
+}
+
+function generatePO() {
+    // Generate purchase order for low stock items
+    window.open('/api/admin/inventory/purchase-order', '_blank');
+}
+
+function exportInventory() {
+    // Export inventory report
+    window.open('/api/admin/inventory/export?format=csv', '_blank');
+}
+
+function bulkUpdate() {
+    // Bulk update functionality
+    alert('Bulk update feature - would open spreadsheet-like interface');
+}
+
+function viewUsageLogs() {
+    // View usage logs
+    window.location.href = '/admin/inventory/logs';
+}
+
+function viewWasteReport() {
+    // View waste and loss report
+    window.location.href = '/admin/inventory/waste-report';
+}
+
+// Form submissions
+document.getElementById('itemForm').addEventListener('submit', function(e) {
+    e.preventDefault();
     
-    bootstrap.Modal.getInstance(document.getElementById('addInventoryModal')).hide();
-    form.reset();
-    loadInventoryData();
-    showToast('Inventory item added successfully!', 'success');
-}
+    const formData = new FormData(this);
+    const itemData = Object.fromEntries(formData.entries());
+    
+    fetch('/api/admin/inventory/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(itemData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('itemFormModal')).hide();
+            location.reload();
+        } else {
+            alert('Error saving item: ' + result.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error saving item:', error);
+        alert('Error saving item');
+    });
+});
 
-function editInventoryItem(itemId) {
-    showToast(`Edit inventory item ${itemId} feature coming soon`, 'info');
-}
+document.getElementById('stockAdjustForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const itemId = this.dataset.itemId;
+    const adjustmentData = Object.fromEntries(formData.entries());
+    
+    fetch(`/api/admin/inventory/${itemId}/adjust`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(adjustmentData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('stockAdjustModal')).hide();
+            location.reload();
+        } else {
+            alert('Error adjusting stock: ' + result.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error adjusting stock:', error);
+        alert('Error adjusting stock');
+    });
+});
 
-function adjustStock(itemId) {
-    const newStock = prompt('Enter new stock quantity:');
-    if (newStock !== null && !isNaN(newStock)) {
-        fetch('/api/inventory/adjust-stock', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                item_id: itemId,
-                new_stock: parseInt(newStock)
-            })
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.success) {
-                loadInventoryData();
-                showToast('Stock updated successfully', 'success');
-            } else {
-                showToast('Error updating stock: ' + result.error, 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error updating stock:', error);
-            showToast('Error updating stock', 'error');
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof bootstrap !== 'undefined') {
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+            new bootstrap.Tooltip(el);
         });
     }
-}
-
-function reorderItem(itemId) {
-    const item = sampleInventory.find(i => i.id === itemId);
-    if (item) {
-        showToast(`Reorder alert sent for ${item.item_name} to ${item.supplier}`, 'info');
-    }
-}
-
-function refreshInventory() {
-    loadInventoryData();
-}
-
-function exportInventoryReport() {
-    showToast('Exporting inventory report...', 'info');
-    // Implementation for inventory report export
-}
-
-// Load inventory data when section is shown
-if (typeof loadInventoryData === 'function') {
-    loadInventoryData();
-}
+});
 </script>
+{% endblock %}

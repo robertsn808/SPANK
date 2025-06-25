@@ -192,17 +192,33 @@ def get_dashboard_stats():
                 # Add recent quotes with client names
                 for quote in quotes_db[:3]:
                     client_name = clients_lookup.get(quote.get('client_id'), 'Unknown Client')
+                    created_at = quote.get('created_at')
+                    time_str = 'Recently'
+                    if created_at:
+                        if isinstance(created_at, str):
+                            time_str = created_at.split('T')[0]
+                        else:
+                            time_str = created_at.strftime('%Y-%m-%d')
+                    
                     recent_activity.append({
                         'action': f"Quote {quote.get('quote_id', 'Unknown')} generated for {client_name}",
-                        'time': quote.get('created_at', '').split('T')[0] if quote.get('created_at') else 'Recently',
+                        'time': time_str,
                         'type': 'quote'
                     })
                 
                 # Add recent payments
                 for payment in paid_invoices[:2]:
+                    payment_date = payment.get('payment_date')
+                    time_str = 'Recently'
+                    if payment_date:
+                        if isinstance(payment_date, str):
+                            time_str = payment_date.split('T')[0]
+                        else:
+                            time_str = payment_date.strftime('%Y-%m-%d')
+                    
                     recent_activity.append({
                         'action': f"Payment received ${payment.get('total_amount', 0)}",
-                        'time': payment.get('payment_date', '').split('T')[0] if payment.get('payment_date') else 'Recently',
+                        'time': time_str,
                         'type': 'payment'
                     })
                 
