@@ -112,7 +112,7 @@ def form_confirmation():
                          form_type=form_type,
                          reference_number=reference_number)
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def public_home():
     """Home page with featured services from database"""
     try:
@@ -151,15 +151,23 @@ def public_home():
             'satisfied_customers': (stats_data['total_projects'] * 2) if stats_data else 100
         }
         
-        return render_template('public/home.html', 
-                             featured_services=featured_services,
-                             stats=stats)
+        # Check if we should render the old template for backwards compatibility
+        if request.endpoint == 'index':
+            return render_template('index.html')
+        else:
+            return render_template('public/home.html', 
+                                 featured_services=featured_services,
+                                 stats=stats)
                              
     except Exception as e:
         logger.error(f"Error loading home page data: {str(e)}")
-        return render_template('public/home.html', 
-                             featured_services=[],
-                             stats={})
+        # Fallback for old index route
+        if request.endpoint == 'index':
+            return render_template('index.html')
+        else:
+            return render_template('public/home.html', 
+                                 featured_services=[],
+                                 stats={})
 
 @app.route('/services')
 def public_services():

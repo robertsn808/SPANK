@@ -10,12 +10,16 @@ import pytz
 
 # Import services after Flask setup to avoid circular imports
 try:
-    from models.models import HandymanStorage
-    from services.ai_service import ai_service
+    from models import HandymanStorage
+    from services.ai_service import AILeadGenerator
+    ai_service = AILeadGenerator()
     from services.notification_service import NotificationService
-    from auth.auth_service import auth_service
-    from utils.phone_formatter import phone_formatter
-    from services.unified_scheduler import unified_scheduler
+    from auth.auth_service import AuthService
+    auth_service = AuthService()
+    from utils.phone_formatter import PhoneFormatter
+    phone_formatter = PhoneFormatter()
+    from services.unified_scheduler import UnifiedScheduler
+    unified_scheduler = UnifiedScheduler()
     logging.info("All required modules imported successfully")
 except ImportError as e:
     logging.error(f"Critical import error in routes.py: {e}")
@@ -201,35 +205,12 @@ def get_hawaii_time():
 # Import app here to register routes
 from config.app import app
 
-@app.route('/')
-def index():
-    """Homepage with hero section and services overview"""
-    return render_template('index.html')
+@app.route('/admin-home')
+def admin_index():
+    """Admin homepage - redirects to dashboard"""
+    return redirect(url_for('admin_dashboard'))
 
-@app.route('/about')
-def about():
-    """About page with company information"""
-    return render_template('about.html')
-
-@app.route('/services')
-def services():
-    """Services page with comprehensive handyman service listings"""
-    return render_template('services.html')
-
-@app.route('/pricing')
-def pricing():
-    """Pricing page with service rates and packages"""
-    return render_template('pricing.html')
-
-@app.route('/spank-school')
-def spank_school():
-    """Spank School - Educational DIY learning platform"""
-    return render_template('spank_school.html')
-
-@app.route('/reviews')
-def reviews():
-    """Customer reviews and testimonials page"""
-    return render_template('reviews.html')
+# Legacy admin routes - public routes handled by routes_public.py
 
 @app.route('/admin')
 def admin_redirect():
