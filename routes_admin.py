@@ -824,7 +824,7 @@ def admin_service_management():
             # Get service types
             try:
                 services_result = conn.execute(db.text("""
-                    SELECT service_id, name, category_id, base_price, description
+                    SELECT id, service_code, name, category_id, min_price, max_price, description
                     FROM service_types
                     ORDER BY category_id, name
                 """))
