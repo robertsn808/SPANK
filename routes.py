@@ -583,7 +583,7 @@ def admin_login():
         flash('Invalid credentials. Please try again.', 'error')
         logging.warning(f"Failed login attempt for username: {username}")
 
-    return render_template('login.html')
+    return render_template('portal/core/login.html')
 
 @app.route('/admin/quote-invoice-form')
 def quote_invoice_form():
@@ -721,12 +721,12 @@ def admin_dashboard():
             'overdue_count': overdue_count
         }
         
-        return render_template('admin_dashboard_comprehensive.html', **dashboard_data)
+        return render_template('admin/dashboard/comprehensive.html', **dashboard_data)
     
     except Exception as e:
         logging.error(f"Modern dashboard error: {e}")
         # Return minimal dashboard with safe defaults
-        return render_template('admin_dashboard_comprehensive.html',
+        return render_template('admin/dashboard/comprehensive.html',
                                today_stats={'jobs': 0, 'quotes': 0, 'revenue': 0},
                                new_contacts=0, low_stock_count=0, overdue_count=0)
 
@@ -4258,7 +4258,7 @@ def job_photos_interface(job_id):
 @app.route('/login')
 def portal_login_page():
     """Job Site Portal login page"""
-    return render_template('login.html')
+    return render_template('portal/core/login.html')
 
 @app.route('/login', methods=['POST'])
 def portal_login():
@@ -4269,14 +4269,14 @@ def portal_login():
     
     if not client_id or not job_id:
         flash('Please enter both Client ID and Job ID', 'error')
-        return render_template('login.html')
+        return render_template('portal/core/login.html')
     
     # Authenticate user
     success, client_data, access_level = auth_service.authenticate(client_id, job_id, staff_pin)
     
     if not success:
         flash('Invalid credentials. Please check your Client ID, Job ID, and PIN (if provided).', 'error')
-        return render_template('login.html')
+        return render_template('portal/core/login.html')
     
     # Store session data
     session['portal_authenticated'] = True
@@ -4310,7 +4310,7 @@ def client_portal(client_id, job_id):
     # Update session with fresh data
     session['client_data'] = client_data
     
-    return render_template('client_portal.html', client=client_data)
+    return render_template('portal/client/main.html', client=client_data)
 
 @app.route('/job/<job_id>')
 def staff_portal(job_id):
@@ -4331,7 +4331,7 @@ def staff_portal(job_id):
     # Update session with fresh data
     session['client_data'] = client_data
     
-    return render_template('staff_portal.html', client=client_data)
+    return render_template('portal/staff/main.html', client=client_data)
 
 @app.route('/portal/logout')
 def portal_logout():
@@ -4826,7 +4826,7 @@ def staff_member_portal(staff_id):
     all_jobs = handyman_storage.get_all_jobs()
     assigned_jobs = [job for job in all_jobs if job.get('job_id') in staff_member['assigned_jobs']]
     
-    return render_template('staff_portal_individual.html', 
+    return render_template('portal/staff/individual.html', 
                          staff=staff_member, 
                          assigned_jobs=assigned_jobs)
 
@@ -5997,7 +5997,7 @@ def enhanced_client_portal(client_id, job_id):
         if session_data and session_data['client_id'] == client_id and session_data['job_id'] == job_id:
             # Already authenticated, show portal
             portal_data = portal_service.get_client_portal_data(client_id, job_id)
-            return render_template('portal/enhanced_client_portal.html', 
+            return render_template('portal/enhanced_portal/client/main.html', 
                                  client_id=client_id, 
                                  job_id=job_id,
                                  portal_data=portal_data)
