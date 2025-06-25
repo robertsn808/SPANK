@@ -156,16 +156,20 @@ def admin_staff():
             """))
             staff_data = [dict(row._mapping) for row in staff_result]
             
-            # Get time logs for each staff member (last 30 days)
-            time_logs_result = conn.execute(db.text("""
-                SELECT tl.*, s.name as staff_name, j.service_type as job_service
-                FROM time_logs tl
-                LEFT JOIN staff s ON tl.staff_id = s.staff_id
-                LEFT JOIN jobs j ON tl.job_id = j.job_id
-                WHERE tl.check_in >= NOW() - INTERVAL '30 days'
-                ORDER BY tl.check_in DESC
-            """))
-            time_logs = [dict(row._mapping) for row in time_logs_result]
+            # Get time logs for each staff member (last 30 days) - with type casting
+            try:
+                time_logs_result = conn.execute(db.text("""
+                    SELECT tl.*, s.name as staff_name, j.service_type as job_service
+                    FROM time_logs tl
+                    LEFT JOIN staff s ON tl.staff_id::text = s.staff_id::text
+                    LEFT JOIN jobs j ON tl.job_id::text = j.job_id::text
+                    WHERE tl.check_in >= NOW() - INTERVAL '30 days'
+                    ORDER BY tl.check_in DESC
+                """))
+                time_logs = [dict(row._mapping) for row in time_logs_result]
+            except Exception as time_log_error:
+                logging.error(f"Time logs query error: {time_log_error}")
+                time_logs = []
             
             # Get job assignments for each staff member
             job_assignments_result = conn.execute(db.text("""
@@ -859,14 +863,14 @@ def admin_invoices():
     """Invoice management page"""
     try:
         with db.engine.connect() as conn:
-            # Get invoice data with fallback
+            # Get invoice data with proper column names
             try:
                 result = conn.execute(db.text("""
-                    SELECT COALESCE(i.invoice_number, i.invoice_id) as invoice_number, 
+                    SELECT COALESCE(i.invoice_id, '') as invoice_number, 
                            i.client_id, 
                            COALESCE(i.status, 'pending') as status, 
-                           COALESCE(i.total_amount, i.total, 0) as total_amount,
-                           COALESCE(i.tax_amount, i.tax, 0) as tax_amount, 
+                           COALESCE(i.amount_due, 0) as total_amount,
+                           COALESCE(i.tax, 0) as tax_amount, 
                            i.created_at, i.due_date,
                            c.name as client_name, c.email as client_email
                     FROM invoices i
@@ -878,13 +882,13 @@ def admin_invoices():
                 logging.error(f"Invoice query error: {invoice_error}")
                 invoices = []
             
-            # Get payment data with fallback
+            # Get payment data with proper column handling
             try:
                 result = conn.execute(db.text("""
                     SELECT p.*, 
-                           COALESCE(p.invoice_number, i.invoice_number, i.invoice_id) as invoice_number
+                           COALESCE(i.invoice_id, '') as invoice_number
                     FROM payments p
-                    LEFT JOIN invoices i ON (p.invoice_id = i.invoice_id OR p.invoice_number = i.invoice_number)
+                    LEFT JOIN invoices i ON p.invoice_id = i.invoice_id
                     ORDER BY p.payment_date DESC
                 """))
                 payments = [dict(row._mapping) for row in result]
