@@ -1334,17 +1334,23 @@
             const activeLink = document.querySelector(`[data-section="${section}"]`);
             if (activeLink) {
                 activeLink.classList.add('active');
+                console.log('Set active link for section:', section);
             }
             
             currentSection = section;
             
             // Show/hide content
+            const dashboardSection = document.getElementById('dashboard-section');
+            const dynamicContent = document.getElementById('dynamic-content');
+            
             if (section === 'dashboard') {
-                document.getElementById('dashboard-section').style.display = 'block';
-                document.getElementById('dynamic-content').style.display = 'none';
+                dashboardSection.style.display = 'block';
+                dynamicContent.style.display = 'none';
+                console.log('Showing dashboard section');
             } else {
-                document.getElementById('dashboard-section').style.display = 'none';
-                document.getElementById('dynamic-content').style.display = 'block';
+                dashboardSection.style.display = 'none';
+                dynamicContent.style.display = 'block';
+                console.log('Loading dynamic section:', section);
                 loadSectionContent(section);
             }
         }
@@ -1552,7 +1558,7 @@
                     </div>
                 </div>
             `;
-                    document.getElementById('dynamic-content').innerHTML = `
+        }
                         <div class="content-card">
                             <div class="card-header">
                                 <h3 class="card-title"><i class="fas fa-file-invoice-dollar me-2"></i>Quote Builder</h3>
