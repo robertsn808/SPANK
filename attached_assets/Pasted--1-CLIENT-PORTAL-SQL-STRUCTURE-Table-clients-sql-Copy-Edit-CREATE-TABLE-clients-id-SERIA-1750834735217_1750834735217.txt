@@ -1,0 +1,167 @@
+📦 1. CLIENT PORTAL SQL STRUCTURE
+🗂️ Table: clients
+sql
+Copy
+Edit
+CREATE TABLE clients (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE,
+  phone TEXT,
+  address TEXT,
+  preferred_contact TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+🗂️ Table: quotes
+sql
+Copy
+Edit
+CREATE TABLE quotes (
+  id SERIAL PRIMARY KEY,
+  client_id INTEGER REFERENCES clients(id),
+  quote_total DECIMAL(10,2),
+  status TEXT CHECK (status IN ('pending', 'accepted', 'declined')),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+🗂️ Table: invoices
+sql
+Copy
+Edit
+CREATE TABLE invoices (
+  id SERIAL PRIMARY KEY,
+  quote_id INTEGER REFERENCES quotes(id),
+  job_id INTEGER,
+  amount_due DECIMAL(10,2),
+  due_date DATE,
+  status TEXT CHECK (status IN ('unpaid', 'paid', 'overdue')),
+  sent_at TIMESTAMP DEFAULT NOW()
+);
+🗂️ Table: jobs
+sql
+Copy
+Edit
+CREATE TABLE jobs (
+  id SERIAL PRIMARY KEY,
+  client_id INTEGER REFERENCES clients(id),
+  quote_id INTEGER REFERENCES quotes(id),
+  service_type TEXT,
+  status TEXT CHECK (status IN ('scheduled', 'in progress', 'completed')),
+  scheduled_date TIMESTAMP,
+  crew_assigned TEXT,
+  completed_at TIMESTAMP
+);
+📄 Query: Get all jobs for a client
+sql
+Copy
+Edit
+SELECT * FROM jobs WHERE client_id = $1 ORDER BY scheduled_date DESC;
+📄 Query: Get client portal overview
+sql
+Copy
+Edit
+SELECT 
+  c.name, 
+  c.email, 
+  j.id AS job_id, 
+  j.service_type, 
+  j.status, 
+  q.id AS quote_id, 
+  q.status AS quote_status,
+  i.id AS invoice_id, 
+  i.status AS invoice_status
+FROM clients c
+LEFT JOIN jobs j ON j.client_id = c.id
+LEFT JOIN quotes q ON q.client_id = c.id
+LEFT JOIN invoices i ON i.quote_id = q.id
+WHERE c.id = $1;
+👷 2. STAFF JOB PORTAL SQL STRUCTURE
+🗂️ Table: job_checklists
+sql
+Copy
+Edit
+CREATE TABLE job_checklists (
+  id SERIAL PRIMARY KEY,
+  job_id INTEGER REFERENCES jobs(id),
+  task TEXT,
+  is_completed BOOLEAN DEFAULT FALSE,
+  completed_at TIMESTAMP
+);
+🗂️ Table: job_photos
+sql
+Copy
+Edit
+CREATE TABLE job_photos (
+  id SERIAL PRIMARY KEY,
+  job_id INTEGER REFERENCES jobs(id),
+  photo_url TEXT,
+  label TEXT,
+  uploaded_at TIMESTAMP DEFAULT NOW()
+);
+🗂️ Table: job_notes
+sql
+Copy
+Edit
+CREATE TABLE job_notes (
+  id SERIAL PRIMARY KEY,
+  job_id INTEGER REFERENCES jobs(id),
+  note TEXT,
+  created_by TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+🗂️ Table: materials_used
+sql
+Copy
+Edit
+CREATE TABLE materials_used (
+  id SERIAL PRIMARY KEY,
+  job_id INTEGER REFERENCES jobs(id),
+  material_name TEXT,
+  quantity_used INTEGER,
+  cost_per_unit DECIMAL(10, 2)
+);
+🗂️ Table: staff
+sql
+Copy
+Edit
+CREATE TABLE staff (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  pin TEXT,
+  role TEXT CHECK (role IN ('admin', 'crew', 'supervisor'))
+);
+🗂️ Table: staff_timeclock
+sql
+Copy
+Edit
+CREATE TABLE staff_timeclock (
+  id SERIAL PRIMARY KEY,
+  job_id INTEGER REFERENCES jobs(id),
+  staff_id INTEGER REFERENCES staff(id),
+  clock_in TIMESTAMP,
+  clock_out TIMESTAMP
+);
+📄 Query: Get checklist for a job
+sql
+Copy
+Edit
+SELECT * FROM job_checklists WHERE job_id = $1 ORDER BY id;
+📄 Query: Get job notes with author
+sql
+Copy
+Edit
+SELECT note, created_by, created_at FROM job_notes WHERE job_id = $1 ORDER BY created_at DESC;
+📄 Query: Track materials cost per job
+sql
+Copy
+Edit
+SELECT 
+  job_id, 
+  SUM(quantity_used * cost_per_unit) AS total_materials_cost 
+FROM materials_used 
+GROUP BY job_id;
+🔐 SECURITY TIP
+For both portals:
+
+Use prepared statements or parameterized queries (e.g. $1) to prevent SQL injection.
+
+Store session tokens, not user IDs in cookies.

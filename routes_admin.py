@@ -846,25 +846,7 @@ def admin_data_management():
         flash('Error loading data management', 'error')
         return redirect('/admin-home')
 
-@app.route('/admin/notifications')
-def admin_notifications():
-    """Notifications management page"""
-    try:
-        with db.engine.connect() as conn:
-            # Get recent notifications
-            notifications_result = conn.execute(db.text("""
-                SELECT * FROM notifications
-                ORDER BY created_at DESC
-                LIMIT 50
-            """))
-            notifications = [dict(row._mapping) for row in notifications_result]
-            
-        return render_template('admin/sections/notifications_section.html',
-                             notifications=notifications)
-    except Exception as e:
-        logging.error(f"Notifications error: {e}")
-        flash('Error loading notifications', 'error')
-        return redirect('/admin-home')
+# Duplicate admin_notifications route removed to avoid conflicts
 
 @app.route('/admin/settings')
 def admin_settings():
