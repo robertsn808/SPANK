@@ -165,7 +165,7 @@ def public_home():
         if request.endpoint == 'index':
             return render_template('index.html')
         else:
-            return render_template('public/home.html', 
+            return render_template('home.html', 
                                  featured_services=[],
                                  stats={})
 

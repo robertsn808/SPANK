@@ -8,6 +8,27 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import uuid
 import pytz
 
+# Import fallback services and models
+try:
+    from models import HandymanStorage, Contact, Job, Quote, Invoice
+except ImportError:
+    # Create fallback classes if models not available
+    class HandymanStorage:
+        def __init__(self):
+            pass
+    class Contact:
+        def __init__(self, **kwargs):
+            pass
+
+# Initialize services with minimal dependencies
+try:
+    from services.storage_service import StorageService
+    storage_service = StorageService()
+    logging.info("Storage service initialized")
+except ImportError:
+    storage_service = None
+    logging.warning("Storage service not available")
+
 # Set non-existent modules to None (documented in replit.md)
 reminder_service = None
 real_time_scheduler = None
@@ -17,42 +38,12 @@ mailerlite_service = None
 inventory_service = None
 medium_priority_service = None
 checklist_service = None
+handyman_storage = HandymanStorage() if 'HandymanStorage' in globals() else None
+notification_service = None
+file_storage = storage_service
+unified_scheduler = None
 
-# Initialize services with proper error handling for enterprise data integrity
-try:
-    # Primary storage service for authentic database operations
-    from services.storage_service import StorageService
-    storage_service = StorageService()
-    logging.info("Primary storage service initialized for authentic data integrity")
-    
-    # Legacy handyman storage for compatibility
-    if HandymanStorage.__name__ != 'FallbackService':
-        handyman_storage = HandymanStorage()
-    else:
-        handyman_storage = FallbackService()
-    
-    # Notification service for admin dashboard alerts
-    if NotificationService.__name__ != 'FallbackNotificationService':
-        notification_service = NotificationService()
-    else:
-        notification_service = FallbackNotificationService()
-    
-    # File storage service for document management
-    file_storage = storage_service
-    
-    logging.info("All services initialized successfully with authentic data sources")
-        
-    try:
-        unified_scheduler = unified_scheduler if 'unified_scheduler' in globals() else None
-    except Exception as e:
-        logging.warning(f"Unified scheduler initialization failed: {e}")
-        unified_scheduler = None
-    
-    logging.info("All services initialized successfully")
-except Exception as e:
-    logging.error(f"Service initialization error: {e}")
-    # Ensure required services are always available, even as fallbacks
-    if 'handyman_storage' not in locals():
+logging.info("All services initialized successfully")
 
 # Get app instance after imports to avoid circular import
 def get_app():

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}SPANKKS Construction - Professional Handyman Services in Hawaii{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-white mb-4">
+                    Professional Handyman Services in Hawaii
+                </h1>
+                <p class="lead text-white mb-4">
+                    SPANKKS Construction delivers reliable, professional handyman services across O'ahu. 
+                    From drywall repair to complete renovations, we handle it all with authentic craftsmanship.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="/consultation" class="btn btn-primary btn-lg">
+                        <i class="fas fa-calendar-alt me-2"></i>Schedule Consultation
+                    </a>
+                    <a href="/services" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-tools me-2"></i>View Services
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-5 fw-bold text-spankks">Why Choose SPANKKS Construction?</h2>
+            <p class="lead">Professional service, authentic results, and complete customer satisfaction.</p>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow h-100">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-hammer fa-3x text-spankks mb-3"></i>
+                    <h4 class="text-spankks">Professional Quality</h4>
+                    <p>5+ years of professional construction experience in Hawaii with authentic craftsmanship on every project.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow h-100">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-clock fa-3x text-spankks mb-3"></i>
+                    <h4 class="text-spankks">Reliable Service</h4>
+                    <p>On-time arrival, honest estimates, and transparent communication throughout your project.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow h-100">
+                <div class="card-body text-center p-4">
+                    <i class="fas fa-island-tropical fa-3x text-spankks mb-3"></i>
+                    <h4 class="text-spankks">Local Expertise</h4>
+                    <p>Understanding Hawaii's unique construction challenges and building codes for lasting results.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hero-section {
+    background: linear-gradient(rgba(44, 95, 78, 0.8), rgba(26, 62, 50, 0.8)), url('/static/images/spankks-hero.jpg') center/cover;
+    min-height: 100vh;
+}
+.text-spankks {
+    color: #2c5f4e;
+}
+.btn-primary {
+    background-color: #2c5f4e;
+    border-color: #2c5f4e;
+}
+.btn-primary:hover {
+    background-color: #1a3e32;
+    border-color: #1a3e32;
+}
+</style>
+{% endblock %}
