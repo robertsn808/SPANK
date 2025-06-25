@@ -150,7 +150,7 @@ def get_dashboard_stats():
                 with db.engine.connect() as conn:
                     # Get invoice data for revenue calculations
                     invoice_result = conn.execute(db.text("""
-                        SELECT status, total AS total_amount, payment_date 
+                        SELECT status, total_paid as total_amount, paid_at as payment_date 
                         FROM invoices 
                         ORDER BY created_at DESC
                     """))
@@ -158,7 +158,7 @@ def get_dashboard_stats():
                     
                     # Get quotes data
                     quotes_result = conn.execute(db.text("""
-                        SELECT quote_id, status, total AS total_amount, created_at, client_id
+                        SELECT quote_id, status, total, created_at, client_id
                         FROM quotes 
                         ORDER BY created_at DESC
                     """))
@@ -216,6 +216,10 @@ def get_dashboard_stats():
                 
                 if paid_invoices:
                     avg_value = sum(float(i.get('total_amount', 0)) for i in paid_invoices) / len(paid_invoices)
+                    stats['kpis']['avg_job_value'] = round(avg_value, 2)
+                elif quotes_db:
+                    # Use quote values if no paid invoices yet
+                    avg_value = sum(float(q.get('total', 0)) for q in quotes_db) / len(quotes_db)
                     stats['kpis']['avg_job_value'] = round(avg_value, 2)
                 
                 # Get upcoming jobs

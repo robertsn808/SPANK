@@ -3,6 +3,8 @@ Admin-specific routes for SPANKKS Construction
 All admin functionality using PostgreSQL database
 """
 
+import os
+import json
 import logging
 from flask import render_template, request, jsonify, redirect, url_for, flash
 from datetime import datetime, timedelta
@@ -24,24 +26,59 @@ storage_service = StorageService()
 def admin_crm():
     """Customer CRM page with PostgreSQL data"""
     try:
-        clients = db.session.query(Client).order_by(Client.created_date.desc()).all()
-        
-        # Get client statistics
-        client_stats = []
-        for client in clients:
-            jobs_count = db.session.query(Job).filter(Job.client_id == client.id).count()
-            quotes_count = db.session.query(Quote).filter(Quote.client_id == client.id).count()
-            total_revenue = db.session.query(func.sum(Invoice.total_amount)).filter(
-                Invoice.client_id == client.id, 
-                Invoice.status == 'paid'
-            ).scalar() or 0
+        # Get clients with comprehensive data using direct SQL
+        with db.engine.connect() as conn:
+            # Get all clients
+            clients_result = conn.execute(db.text("""
+                SELECT client_id, name, email, phone, address, billing_address, 
+                       preferred_contact_method, created_at, notes
+                FROM clients 
+                ORDER BY created_at DESC
+            """))
+            clients = [dict(row._mapping) for row in clients_result]
             
-            client_stats.append({
-                'client': client,
-                'jobs_count': jobs_count,
-                'quotes_count': quotes_count,
-                'total_revenue': float(total_revenue)
-            })
+            # Get client statistics
+            client_stats = []
+            for client in clients:
+                client_id = client['client_id']
+                
+                # Get jobs count
+                jobs_result = conn.execute(db.text("""
+                    SELECT COUNT(*) as count FROM jobs WHERE client_id = :client_id
+                """), {'client_id': client_id})
+                jobs_count = jobs_result.scalar()
+                
+                # Get quotes count
+                quotes_result = conn.execute(db.text("""
+                    SELECT COUNT(*) as count FROM quotes WHERE client_id = :client_id
+                """), {'client_id': client_id})
+                quotes_count = quotes_result.scalar()
+                
+                # Get total revenue
+                revenue_result = conn.execute(db.text("""
+                    SELECT COALESCE(SUM(total_paid), 0) as total
+                    FROM invoices 
+                    WHERE client_id = :client_id AND status = 'paid'
+                """), {'client_id': client_id})
+                total_revenue = float(revenue_result.scalar() or 0)
+                
+                # Get recent job
+                recent_job_result = conn.execute(db.text("""
+                    SELECT service_type, status, scheduled_date 
+                    FROM jobs 
+                    WHERE client_id = :client_id 
+                    ORDER BY timestamp_created DESC 
+                    LIMIT 1
+                """), {'client_id': client_id})
+                recent_job = recent_job_result.first()
+                
+                client_stats.append({
+                    'client': client,
+                    'jobs_count': jobs_count,
+                    'quotes_count': quotes_count,
+                    'total_revenue': total_revenue,
+                    'recent_job': dict(recent_job._mapping) if recent_job else None
+                })
         
         return render_template('admin/sections/crm_section.html', 
                              clients=client_stats, 
@@ -55,19 +92,19 @@ def admin_crm():
 def admin_jobs():
     """Job management page with PostgreSQL data"""
     try:
-        jobs = db.session.query(Job).order_by(Job.created_date.desc()).all()
+        with db.engine.connect() as conn:
+            # Get all jobs with client information
+            jobs_result = conn.execute(db.text("""
+                SELECT j.job_id, j.service_type, j.status, j.scheduled_date, 
+                       j.estimated_hours, j.actual_hours, j.location,
+                       c.name as client_name, c.phone as client_phone
+                FROM jobs j
+                LEFT JOIN clients c ON j.client_id = c.client_id
+                ORDER BY j.timestamp_created DESC
+            """))
+            jobs = [dict(row._mapping) for row in jobs_result]
         
-        # Group jobs by status
-        job_stats = {
-            'scheduled': db.session.query(Job).filter(Job.status == 'scheduled').count(),
-            'in_progress': db.session.query(Job).filter(Job.status == 'in_progress').count(),
-            'completed': db.session.query(Job).filter(Job.status == 'completed').count(),
-            'cancelled': db.session.query(Job).filter(Job.status == 'cancelled').count()
-        }
-        
-        return render_template('admin/sections/jobs_section.html', 
-                             jobs=jobs, 
-                             job_stats=job_stats)
+        return render_template('admin/sections/jobs_section.html', jobs=jobs)
     except Exception as e:
         logging.error(f"Jobs page error: {e}")
         flash('Error loading jobs data', 'error')
@@ -77,31 +114,29 @@ def admin_jobs():
 def admin_financial():
     """Financial reports page with PostgreSQL data"""
     try:
-        # Get financial metrics
-        total_revenue = db.session.query(func.sum(Invoice.total_amount)).filter(
-            Invoice.status == 'paid'
-        ).scalar() or 0
-        
-        pending_invoices = db.session.query(func.sum(Invoice.total_amount)).filter(
-            Invoice.status == 'pending'
-        ).scalar() or 0
-        
-        overdue_invoices = db.session.query(func.sum(Invoice.total_amount)).filter(
-            Invoice.status == 'overdue'
-        ).scalar() or 0
-        
-        # Recent invoices
-        recent_invoices = db.session.query(Invoice).order_by(Invoice.created_date.desc()).limit(10).all()
-        
-        financial_data = {
-            'total_revenue': float(total_revenue),
-            'pending_amount': float(pending_invoices),
-            'overdue_amount': float(overdue_invoices),
-            'recent_invoices': recent_invoices
-        }
+        with db.engine.connect() as conn:
+            # Get financial overview
+            revenue_result = conn.execute(db.text("""
+                SELECT COALESCE(SUM(total_paid), 0) as total_revenue
+                FROM invoices WHERE status = 'paid'
+            """))
+            total_revenue = float(revenue_result.scalar() or 0)
+            
+            # Get pending invoices
+            pending_result = conn.execute(db.text("""
+                SELECT COUNT(*) as count, COALESCE(SUM(amount_due), 0) as amount
+                FROM invoices WHERE status = 'pending'
+            """))
+            pending_data = pending_result.first()
+            
+            financial_data = {
+                'total_revenue': total_revenue,
+                'pending_invoices': pending_data.count,
+                'pending_amount': float(pending_data.amount)
+            }
         
         return render_template('admin/sections/financial_section.html', 
-                             financial_data=financial_data)
+                             financial=financial_data)
     except Exception as e:
         logging.error(f"Financial page error: {e}")
         flash('Error loading financial data', 'error')
@@ -111,27 +146,17 @@ def admin_financial():
 def admin_staff():
     """Staff management page with PostgreSQL data"""
     try:
-        staff_members = db.session.query(Staff).all()
+        with db.engine.connect() as conn:
+            # Get staff information
+            staff_result = conn.execute(db.text("""
+                SELECT staff_id, name, email, phone, role, hourly_rate, 
+                       skills, availability, active, created_at
+                FROM staff
+                ORDER BY created_at DESC
+            """))
+            staff = [dict(row._mapping) for row in staff_result]
         
-        # Get staff statistics
-        staff_stats = []
-        for staff in staff_members:
-            assigned_jobs = db.session.query(Job).filter(Job.assigned_staff_id == staff.id).count()
-            completed_jobs = db.session.query(Job).filter(
-                Job.assigned_staff_id == staff.id, 
-                Job.status == 'completed'
-            ).count()
-            
-            staff_stats.append({
-                'staff': staff,
-                'assigned_jobs': assigned_jobs,
-                'completed_jobs': completed_jobs,
-                'completion_rate': (completed_jobs / assigned_jobs * 100) if assigned_jobs > 0 else 0
-            })
-        
-        return render_template('admin/sections/staff_crm_section.html', 
-                             staff_stats=staff_stats,
-                             total_staff=len(staff_members))
+        return render_template('admin/sections/staff_section.html', staff=staff)
     except Exception as e:
         logging.error(f"Staff page error: {e}")
         flash('Error loading staff data', 'error')
@@ -141,24 +166,18 @@ def admin_staff():
 def admin_inventory():
     """Inventory management page with PostgreSQL data"""
     try:
-        # Get materials usage data
-        materials = db.session.query(MaterialsUsed).all()
-        
-        # Group by material type and calculate totals
-        material_summary = {}
-        for material in materials:
-            if material.material_name not in material_summary:
-                material_summary[material.material_name] = {
-                    'total_quantity': 0,
-                    'total_cost': 0,
-                    'supplier': material.supplier,
-                    'unit': material.unit
-                }
-            material_summary[material.material_name]['total_quantity'] += material.quantity_used
-            material_summary[material.material_name]['total_cost'] += float(material.cost_per_unit or 0) * material.quantity_used
+        with db.engine.connect() as conn:
+            # Get inventory information
+            inventory_result = conn.execute(db.text("""
+                SELECT item_id, name, category, current_stock, 
+                       reorder_level, unit_cost, supplier
+                FROM inventory
+                ORDER BY name
+            """))
+            inventory = [dict(row._mapping) for row in inventory_result]
         
         return render_template('admin/sections/inventory_section.html', 
-                             material_summary=material_summary)
+                             inventory=inventory)
     except Exception as e:
         logging.error(f"Inventory page error: {e}")
         flash('Error loading inventory data', 'error')
@@ -168,12 +187,12 @@ def admin_inventory():
 def admin_analytics():
     """Business analytics page with PostgreSQL data"""
     try:
-        from analytics.business_intelligence import BusinessIntelligence
+        # Use analytics service for comprehensive data
+        from analytics.analytics_manager import AnalyticsManager
+        analytics_manager = AnalyticsManager()
+        analytics_data = analytics_manager.get_comprehensive_analytics(storage_service)
         
-        bi_service = BusinessIntelligence()
-        analytics_data = bi_service.generate_business_insights(storage_service)
-        
-        return render_template('admin/sections/business_intelligence_section.html', 
+        return render_template('admin/sections/analytics_section.html', 
                              analytics=analytics_data)
     except Exception as e:
         logging.error(f"Analytics page error: {e}")
@@ -182,91 +201,88 @@ def admin_analytics():
 
 @app.route('/admin/service-management')
 def admin_service_management():
-    """Service management page with PostgreSQL data"""
+    """Service management page"""
     try:
-        service_types = db.session.query(ServiceType).all()
-        
-        # Get service statistics
-        service_stats = []
-        for service in service_types:
-            jobs_count = db.session.query(Job).filter(Job.service_type == service.name).count()
-            quotes_count = db.session.query(Quote).filter(Quote.service_type == service.name).count()
-            
-            service_stats.append({
-                'service': service,
-                'jobs_count': jobs_count,
-                'quotes_count': quotes_count
-            })
+        if database_available:
+            service_types = db.session.query(ServiceType).all()
+        else:
+            service_types = []
         
         return render_template('admin/sections/service_management_section.html', 
-                             service_stats=service_stats)
+                             service_types=service_types)
     except Exception as e:
         logging.error(f"Service management page error: {e}")
-        flash('Error loading service data', 'error')
+        flash('Error loading service management data', 'error')
         return redirect('/admin-home')
 
 @app.route('/admin/calendar')
 def admin_calendar():
     """Calendar and scheduling page"""
     try:
-        # Get scheduled jobs for calendar
-        scheduled_jobs = db.session.query(Job).filter(Job.status.in_(['scheduled', 'in_progress'])).all()
+        with db.engine.connect() as conn:
+            # Get scheduled jobs for calendar
+            calendar_result = conn.execute(db.text("""
+                SELECT j.job_id, j.service_type, j.scheduled_date,
+                       c.name as client_name
+                FROM jobs j
+                LEFT JOIN clients c ON j.client_id = c.client_id
+                WHERE j.status = 'scheduled'
+                ORDER BY j.scheduled_date
+            """))
+            calendar_events = [dict(row._mapping) for row in calendar_result]
         
-        # Format for FullCalendar
-        calendar_events = []
-        for job in scheduled_jobs:
-            calendar_events.append({
-                'id': job.id,
-                'title': f"{job.service_type} - {job.client.name if job.client else 'Unknown'}",
-                'start': job.scheduled_date.isoformat() if job.scheduled_date else None,
-                'backgroundColor': '#007bff' if job.status == 'scheduled' else '#28a745',
-                'borderColor': '#007bff' if job.status == 'scheduled' else '#28a745'
-            })
-        
-        return render_template('admin/sections/advanced_schedule_section.html', 
-                             calendar_events=calendar_events)
+        return render_template('admin/sections/calendar_section.html', 
+                             events=calendar_events)
     except Exception as e:
         logging.error(f"Calendar page error: {e}")
         flash('Error loading calendar data', 'error')
         return redirect('/admin-home')
 
-# API endpoints for AJAX requests
-@app.route('/api/admin/dashboard-stats')
+# API Endpoints
+@app.route('/api/dashboard/stats')
 def api_dashboard_stats():
     """API endpoint for dashboard statistics"""
     try:
+        from routes import get_dashboard_stats
         stats = get_dashboard_stats()
         return jsonify(stats)
     except Exception as e:
-        logging.error(f"Dashboard stats API error: {e}")
+        logging.error(f"Dashboard API error: {e}")
         return jsonify({'error': 'Failed to load dashboard stats'}), 500
 
-@app.route('/api/admin/client/<int:client_id>')
+@app.route('/api/admin/client/<client_id>')
 def api_client_details(client_id):
     """API endpoint for client details"""
     try:
-        client = db.session.query(Client).get(client_id)
-        if not client:
-            return jsonify({'error': 'Client not found'}), 404
-        
-        # Get client's jobs and quotes
-        jobs = db.session.query(Job).filter(Job.client_id == client_id).all()
-        quotes = db.session.query(Quote).filter(Quote.client_id == client_id).all()
-        
-        return jsonify({
-            'client': {
-                'id': client.id,
-                'name': client.name,
-                'email': client.email,
-                'phone': client.phone,
-                'address': client.address
-            },
-            'jobs': [{'id': j.id, 'service_type': j.service_type, 'status': j.status} for j in jobs],
-            'quotes': [{'id': q.id, 'quote_id': q.quote_id, 'status': q.status, 'total_amount': float(q.total_amount or 0)} for q in quotes]
-        })
+        with db.engine.connect() as conn:
+            # Get client details
+            client_result = conn.execute(db.text("""
+                SELECT * FROM clients WHERE client_id = :client_id
+            """), {'client_id': client_id})
+            client = client_result.first()
+            
+            if not client:
+                return jsonify({'error': 'Client not found'}), 404
+            
+            # Get client jobs
+            jobs_result = conn.execute(db.text("""
+                SELECT * FROM jobs WHERE client_id = :client_id
+                ORDER BY timestamp_created DESC
+            """), {'client_id': client_id})
+            jobs = [dict(row._mapping) for row in jobs_result]
+            
+            # Get client quotes
+            quotes_result = conn.execute(db.text("""
+                SELECT * FROM quotes WHERE client_id = :client_id
+                ORDER BY created_at DESC
+            """), {'client_id': client_id})
+            quotes = [dict(row._mapping) for row in quotes_result]
+            
+            return jsonify({
+                'client': dict(client._mapping),
+                'jobs': jobs,
+                'quotes': quotes
+            })
     except Exception as e:
         logging.error(f"Client details API error: {e}")
         return jsonify({'error': 'Failed to load client details'}), 500
-
-# Import the dashboard stats function from routes.py
-from routes import get_dashboard_stats

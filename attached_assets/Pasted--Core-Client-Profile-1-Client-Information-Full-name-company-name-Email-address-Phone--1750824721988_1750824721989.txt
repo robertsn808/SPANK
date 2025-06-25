@@ -1,0 +1,112 @@
+🧱 Core Client Profile
+
+1. Client Information
+	•	Full name / company name
+	•	Email address
+	•	Phone number
+	•	Service address(es)
+	•	Billing address (if different)
+	•	Preferred contact method (email, SMS, phone)
+
+2. Job History
+	•	Linked job records with:
+	•	Job ID (e.g., J2025-0341)
+	•	Service type
+	•	Status: Quote / Scheduled / In Progress / Completed / Invoiced / Paid
+	•	Dates
+	•	Revenue from each job
+
+3. Lifetime Value
+	•	Total spend across all jobs
+	•	Count of completed jobs
+	•	Notes on upsells, repeat service needs
+
+⸻
+
+🗂️ Related Records & Files
+
+4. Photos & Media
+	•	Before & After images (per job)
+	•	Upload metadata (who uploaded, when, what job)
+	•	Optional: interactive slider comparison
+
+5. Job Notes
+	•	Internal staff notes (e.g., “Client prefers text over calls”)
+	•	Linked to specific job IDs
+	•	Date-stamped + author logged
+
+6. Checklists
+	•	Task lists for each job
+	•	Completion toggles
+	•	Finalized requirements (must be complete before job can be closed)
+
+⸻
+
+🧾 Quote & Invoice Integration
+
+7. Quotes
+	•	View, create, or edit past quotes
+	•	Status: Draft / Sent / Accepted
+	•	PDF download & email status
+	•	Tax auto-calculated (Hawaii GET)
+
+8. Invoices
+	•	Linked invoices by job
+	•	Payment status: Unpaid / Paid / Overdue
+	•	Manual payment logging
+	•	Auto-reminder status
+	•	PDF records with timestamps
+
+⸻
+
+📅 Schedule Integration
+
+9. Appointment History
+	•	List of all job dates
+	•	Assigned crew
+	•	Time clock data if applicable
+	•	Calendar view of past/future appointments
+
+⸻
+
+📬 Communication Log
+
+10. Messages & Activity
+	•	Emails sent (quotes, reminders)
+	•	SMS status (e.g., reminders via Twilio)
+	•	System notes (e.g., “Client opened quote”)
+
+⸻
+
+🧠 CRM Intelligence
+
+11. Engagement Score
+	•	Based on:
+	•	Frequency of jobs
+	•	Promptness of responses
+	•	Payment history
+
+12. Tags or Segments
+	•	Labels like “VIP,” “Repeat,” “Follow-Up,” “Needs Estimate”
+	•	Used for bulk filtering, marketing lists, or reminders
+
+⸻
+
+🛠 Admin Controls
+
+13. Edit Profile
+	•	Ability to update client info
+	•	Merge duplicate clients
+	•	Delete/archive records
+
+14. Access to Client Portal
+	•	Generate secure client login credentials
+	•	Track which jobs they can view
+	•	Link to /portal/:clientId path
+
+⸻
+
+🧩 Bonus Features
+	•	Export client records (CSV, PDF)
+	•	Add-to-calendar integration
+	•	Auto-fill quote builder when accessed from CRM

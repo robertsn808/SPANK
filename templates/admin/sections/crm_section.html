@@ -1,624 +1,499 @@
-<!-- Working CRM Section -->
-<div class="content-card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h3 class="card-title">
-            <i class="fas fa-users me-2"></i>Client Management
-        </h3>
-        <div class="btn-group">
-            <button class="btn btn-spankks btn-sm" onclick="addContact()">
-                <i class="fas fa-user-plus me-1"></i>Add Client
-            </button>
-            <button class="btn btn-outline-success btn-sm" onclick="refreshTable()">
-                <i class="fas fa-sync-alt me-1"></i>Refresh
-            </button>
-            <button class="btn btn-outline-info btn-sm" onclick="importContacts()">
-                <i class="fas fa-upload me-1"></i>Import
-            </button>
-            <button class="btn btn-outline-secondary btn-sm" onclick="crmSettings()">
-                <i class="fas fa-cog me-1"></i>Settings
-            </button>
-        </div>
-    </div>
-    <div class="card-body">
-        <!-- Search and Filter Controls -->
-        <div class="row mb-4">
-            <div class="col-12 col-lg-6 mb-3 mb-lg-0">
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input type="text" class="form-control" id="contactSearch" placeholder="Search contacts..." onkeyup="window.filterContacts()">
+{% extends "admin/core/base.html" %}
+
+{% block title %}Customer CRM - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="crm-dashboard">
+    <!-- CRM Header -->
+    <div class="crm-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1">Customer CRM</h1>
+                <p class="text-muted mb-0">Manage client relationships and track business performance</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-primary me-2" onclick="addNewClient()">
+                    <i class="fas fa-user-plus me-2"></i>Add Client
+                </button>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-download me-2"></i>Export
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/api/crm/export/csv">Export CSV</a></li>
+                        <li><a class="dropdown-item" href="/api/crm/export/pdf">Export PDF</a></li>
+                    </ul>
                 </div>
             </div>
-            <div class="col-6 col-lg-3 mb-3 mb-lg-0">
-                <select class="form-select" id="statusFilter" onchange="window.filterContacts()">
-                    <option value="">All Clients</option>
-                    <option value="inquiry">Inquiry Stage</option>
-                    <option value="active">Active Projects</option>
-                    <option value="completed">Completed</option>
-                </select>
-            </div>
-            <div class="col-6 col-lg-3">
-                <select class="form-select" id="sourceFilter" onchange="window.filterContacts()">
-                    <option value="">All Sources</option>
-                    <option value="Inquiry Database">Inquiry Stage</option>
-                    <option value="Active Projects">Active Projects</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="row mb-3 align-items-center">
-            <div class="col-12 col-md-8 mb-2 mb-md-0">
-                <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-outline-primary btn-sm" onclick="window.exportContacts()">
-                        <i class="fas fa-download me-1"></i><span class="d-none d-sm-inline">Export CSV</span>
-                    </button>
-                    <button class="btn btn-outline-secondary btn-sm" onclick="window.bulkActions()">
-                        <i class="fas fa-tasks me-1"></i><span class="d-none d-sm-inline">Bulk</span>
-                    </button>
-                    <button class="btn btn-outline-info btn-sm" onclick="window.syncData()">
-                        <i class="fas fa-sync me-1"></i><span class="d-none d-sm-inline">Sync</span>
-                    </button>
-                </div>
-            </div>
-            <div class="col-12 col-md-4 text-md-end">
-                <span class="text-muted small" id="contactCount">Showing {{ contacts|length if contacts else 0 }} contacts</span>
-            </div>
-        </div>
-
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th>Service</th>
-                        <th>Status</th>
-                        <th>Created</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="crmTableBody">
-                    {% if contacts %}
-                        {% for contact in contacts %}
-                        <tr>
-                            <td>
-                                <strong>{{ contact.name }}</strong>
-                                <br><small class="text-info">{{ contact.source }}</small>
-                                {% if contact.address %}
-                                <br><small class="text-muted">{{ contact.address }}</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if contact.phone %}
-                                <a href="tel:{{ contact.phone }}" class="text-decoration-none">{{ contact.phone }}</a>
-                                {% else %}
-                                <span class="text-muted">No phone</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if contact.email %}
-                                <a href="mailto:{{ contact.email }}" class="text-decoration-none">{{ contact.email }}</a>
-                                {% else %}
-                                <span class="text-muted">No email</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="badge bg-secondary">{{ contact.service_type }}</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-success">{{ contact.status|title }}</span>
-                            </td>
-                            <td>
-                                <small>{{ contact.created_date or 'N/A' }}</small>
-                            </td>
-                            <td>
-                                <div class="d-flex flex-wrap gap-1">
-                                    <button class="btn btn-outline-primary btn-sm" onclick="window.viewContact('{{ contact.id }}')" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-outline-success btn-sm" onclick="window.createQuote('{{ contact.id }}')" title="Create Quote">
-                                        <i class="fas fa-file-invoice-dollar"></i>
-                                    </button>
-                                    <button class="btn btn-outline-info btn-sm d-none d-lg-inline-block" onclick="window.editContact('{{ contact.id }}')" title="Edit Contact">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline-warning btn-sm d-none d-lg-inline-block" onclick="window.scheduleJob('{{ contact.id }}')" title="Schedule Job">
-                                        <i class="fas fa-calendar-plus"></i>
-                                    </button>
-                                    {% if contact.client_type == 'inquiry' %}
-                                    <button class="btn btn-outline-primary btn-sm d-none d-md-inline-block" onclick="window.activateClient('{{ contact.id }}')" title="Activate Project">
-                                        <i class="fas fa-arrow-up"></i>
-                                    </button>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    {% else %}
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
-                                <i class="fas fa-address-book fa-2x mb-2"></i>
-                                <div>No contacts found</div>
-                            </td>
-                        </tr>
-                    {% endif %}
-                </tbody>
-            </table>
         </div>
     </div>
-</div>
 
-<!-- Data Sources Explanation -->
-<div class="alert alert-info mt-4">
-    <h6><i class="fas fa-info-circle me-2"></i>Data Sources Explained</h6>
+    <!-- CRM Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card clients">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ total_clients }}</h3>
+                    <p>Total Clients</p>
+                    <span class="stat-trend">Active customers</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card revenue">
+                <div class="stat-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>${{ "%.0f"|format(clients|sum(attribute='total_revenue')) }}</h3>
+                    <p>Total Revenue</p>
+                    <span class="stat-trend">All time</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card jobs">
+                <div class="stat-icon">
+                    <i class="fas fa-hammer"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ clients|sum(attribute='jobs_count') }}</h3>
+                    <p>Total Jobs</p>
+                    <span class="stat-trend">All projects</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card quotes">
+                <div class="stat-icon">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ clients|sum(attribute='quotes_count') }}</h3>
+                    <p>Total Quotes</p>
+                    <span class="stat-trend">Generated</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Bar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Search clients..." id="clientSearch">
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="filter-chips">
+                                <button class="filter-chip active" data-filter="all">All Clients</button>
+                                <button class="filter-chip" data-filter="active">Active</button>
+                                <button class="filter-chip" data-filter="high-value">High Value</button>
+                                <button class="filter-chip" data-filter="recent">Recent</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Table -->
     <div class="row">
-        <div class="col-md-6">
-            <strong>Contact Database (contacts.json):</strong>
-            <ul class="mb-0 mt-1">
-                <li>Inquiry form submissions from public website</li>
-                <li>Customer consultation requests</li>
-                <li>General business contact leads</li>
-                <li>Marketing and referral contacts</li>
-            </ul>
-        </div>
-        <div class="col-md-6">
-            <strong>Client Database (clients.json):</strong>
-            <ul class="mb-0 mt-1">
-                <li>Job site portal access credentials</li>
-                <li>Active project clients with assigned jobs</li>
-                <li>Staff members with portal access</li>
-                <li>Authenticated portal users</li>
-            </ul>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Client Directory</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="clientsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Contact Info</th>
+                                    <th>Jobs</th>
+                                    <th>Revenue</th>
+                                    <th>Recent Activity</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for client_data in clients %}
+                                <tr class="client-row" data-client-id="{{ client_data.client.client_id }}">
+                                    <td>
+                                        <div class="client-info">
+                                            <div class="client-avatar">
+                                                {{ client_data.client.name[0]|upper }}
+                                            </div>
+                                            <div class="client-details">
+                                                <h6 class="mb-1">{{ client_data.client.name }}</h6>
+                                                <small class="text-muted">{{ client_data.client.client_id }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="contact-info">
+                                            <div><i class="fas fa-envelope text-muted me-2"></i>{{ client_data.client.email }}</div>
+                                            <div><i class="fas fa-phone text-muted me-2"></i>{{ client_data.client.phone }}</div>
+                                            <small class="text-muted">{{ client_data.client.preferred_contact_method|title }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="job-stats">
+                                            <span class="badge bg-primary">{{ client_data.jobs_count }} Jobs</span>
+                                            <span class="badge bg-secondary">{{ client_data.quotes_count }} Quotes</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="revenue-info">
+                                            <strong>${{ "%.0f"|format(client_data.total_revenue) }}</strong>
+                                            <br><small class="text-muted">Lifetime value</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if client_data.recent_job %}
+                                        <div class="recent-activity">
+                                            <div>{{ client_data.recent_job.service_type }}</div>
+                                            <small class="text-muted">{{ client_data.recent_job.status|title }}</small>
+                                        </div>
+                                        {% else %}
+                                        <small class="text-muted">No recent activity</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewClientDetails('{{ client_data.client.client_id }}')" data-bs-toggle="tooltip" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="createQuote('{{ client_data.client.client_id }}')" data-bs-toggle="tooltip" title="Create Quote">
+                                                <i class="fas fa-file-invoice"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="editClient('{{ client_data.client.client_id }}')" data-bs-toggle="tooltip" title="Edit Client">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- CRM Metrics Widget -->
-<div class="row mt-4">
-    <div class="col-md-3">
-        <div class="metric-card text-center">
-            <i class="fas fa-users fa-2x text-primary mb-2"></i>
-            <h4>{{ contacts|length if contacts else 0 }}</h4>
-            <p class="text-muted">Total Contacts</p>
+<!-- Client Details Modal -->
+<div class="modal fade" id="clientDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Client Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="clientDetailsContent">
+                <!-- Content loaded via AJAX -->
+            </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="metric-card text-center">
-            <i class="fas fa-database fa-2x text-info mb-2"></i>
-            <h4>2</h4>
-            <p class="text-muted">Data Sources</p>
-            <small class="text-info">Contact DB + Client DB</small>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="metric-card text-center">
-            <i class="fas fa-chart-line fa-2x text-success mb-2"></i>
-            <h4>100%</h4>
-            <p class="text-muted">Active Status</p>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="metric-card text-center">
-            <i class="fas fa-shield-alt fa-2x text-warning mb-2"></i>
-            <h4>Secure</h4>
-            <p class="text-muted">Data Integrity</p>
+</div>
+
+<!-- Add/Edit Client Modal -->
+<div class="modal fade" id="clientFormModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clientFormTitle">Add New Client</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="clientForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" name="phone">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Preferred Contact</label>
+                                <select class="form-control" name="preferred_contact_method">
+                                    <option value="email">Email</option>
+                                    <option value="phone">Phone</option>
+                                    <option value="sms">SMS</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Service Address</label>
+                        <input type="text" class="form-control" name="address">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Billing Address (if different)</label>
+                        <input type="text" class="form-control" name="billing_address">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Client</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 <style>
-.metric-card {
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 1rem;
-    height: 100%;
-    transition: transform 0.2s;
-    text-align: center;
+.crm-dashboard {
+    padding: 20px;
 }
 
-.metric-card:hover {
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-left: 4px solid transparent;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.content-card {
-    background: white;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    overflow: hidden;
-    margin-bottom: 1rem;
-}
+.stat-card.clients { border-left-color: #007bff; }
+.stat-card.revenue { border-left-color: #28a745; }
+.stat-card.jobs { border-left-color: #ffc107; }
+.stat-card.quotes { border-left-color: #dc3545; }
 
-.card-header {
-    background: linear-gradient(135deg, var(--spankks-green) 0%, #1e7e34 100%);
+.stat-card .stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 20px;
     color: white;
-    padding: 1rem;
-    border-bottom: none;
 }
 
-.card-title {
-    margin: 0;
-    font-size: 1.125rem;
+.stat-card.clients .stat-icon { background: #007bff; }
+.stat-card.revenue .stat-icon { background: #28a745; }
+.stat-card.jobs .stat-icon { background: #ffc107; }
+.stat-card.quotes .stat-icon { background: #dc3545; }
+
+.stat-card h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #2c3e50;
+}
+
+.filter-chips {
+    display: flex;
+    gap: 8px;
+}
+
+.filter-chip {
+    padding: 6px 16px;
+    border: 1px solid #dee2e6;
+    background: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.filter-chip:hover,
+.filter-chip.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.client-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.client-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
     font-weight: 600;
 }
 
-.card-body {
-    padding: 1rem;
+.contact-info div {
+    margin-bottom: 4px;
 }
 
-/* Mobile Optimizations */
-@media (max-width: 768px) {
-    .card-header {
-        padding: 0.75rem;
-        text-align: center;
-    }
-    
-    .card-header .btn-group {
-        flex-direction: column;
-        width: 100%;
-        gap: 0.25rem;
-    }
-    
-    .card-header .btn-group .btn {
-        width: 100%;
-        font-size: 0.875rem;
-    }
-    
-    .card-body {
-        padding: 0.75rem;
-    }
-    
-    .table-responsive {
-        font-size: 0.875rem;
-    }
-    
-    .table td {
-        padding: 0.5rem 0.25rem;
-        vertical-align: middle;
-    }
-    
-    .metric-card {
-        padding: 0.75rem;
-        margin-bottom: 1rem;
-    }
-    
-    .metric-card h4 {
-        font-size: 1.25rem;
-    }
-    
-    .metric-card p {
-        font-size: 0.875rem;
-        margin-bottom: 0;
-    }
-    
-    .alert {
-        font-size: 0.875rem;
-        padding: 0.75rem;
-    }
-    
-    .btn-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
-    }
+.job-stats .badge {
+    margin-right: 4px;
 }
 
-@media (max-width: 576px) {
-    .table td:nth-child(3), 
-    .table th:nth-child(3) {
-        display: none; /* Hide email column on very small screens */
-    }
-    
-    .table td:nth-child(6), 
-    .table th:nth-child(6) {
-        display: none; /* Hide created date column */
-    }
+.action-buttons .btn {
+    margin-right: 4px;
+}
+
+.client-row:hover {
+    background-color: rgba(0,123,255,0.05);
 }
 </style>
 
 <script>
-// CRM functionality - Global functions defined immediately
-console.log('CRM section loaded with server-rendered data');
-
-// Global function definitions
-window.viewContact = function(id) { 
-    // Find contact data
-    const contacts = {{ contacts|tojson }};
-    const contact = contacts.find(c => c.id === id);
-    
-    if (!contact) {
-        alert('Contact not found');
-        return;
-    }
-    
-    // Populate modal with contact data
-    document.getElementById('clientName').textContent = contact.name;
-    document.getElementById('clientEmail').textContent = contact.email;
-    document.getElementById('clientPhone').textContent = contact.phone;
-    document.getElementById('lifetimeValue').textContent = '$' + (contact.lifetime_value || 0).toFixed(2);
-    document.getElementById('jobCount').textContent = contact.job_count || 0;
-    document.getElementById('quoteCount').textContent = contact.quotes ? contact.quotes.length : 0;
-    
-    // Fill overview tab
-    document.getElementById('profileFullName').textContent = contact.name;
-    document.getElementById('profileEmail').textContent = contact.email;
-    document.getElementById('profilePhone').textContent = contact.phone;
-    document.getElementById('profileAddress').textContent = contact.address || 'Not provided';
-    document.getElementById('profileSource').textContent = contact.source || 'Unknown';
-    document.getElementById('profileCreated').textContent = contact.created_date || 'Unknown';
-    
-    // Populate client actions based on source
-    const clientActionsContainer = document.getElementById('clientActions');
-    if (contact.source === 'Contact Database') {
-        clientActionsContainer.innerHTML = `
-            <button class="btn btn-primary btn-sm me-2" onclick="window.convertToClient('${contact.id}')">
-                <i class="fas fa-user-plus me-1"></i>Convert to Client
-            </button>
-            <small class="text-muted">Convert this contact to create portal access</small>
-        `;
-    } else if (contact.source === 'Client Database') {
-        clientActionsContainer.innerHTML = `
-            <button class="btn btn-success btn-sm me-2" onclick="generatePortalLink('${contact.id}')">
-                <i class="fas fa-link me-1"></i>Portal Access
-            </button>
-            <small class="text-muted">Client has portal access credentials</small>
-        `;
-    } else {
-        clientActionsContainer.innerHTML = '<small class="text-muted">No special actions available</small>';
-    }
-    
-    // Populate job history
-    const jobHistoryContainer = document.getElementById('jobHistoryList');
-    if (contact.job_history && contact.job_history.length > 0) {
-        jobHistoryContainer.innerHTML = contact.job_history.map(job => `
-            <div class="job-item">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h6 class="mb-1">${job.service_type || 'Service'}</h6>
-                        <p class="mb-1 text-muted">Job ID: ${job.id || 'N/A'}</p>
-                        <p class="mb-0 text-muted">${job.date || 'Date not available'}</p>
-                    </div>
-                    <div class="text-end">
-                        <span class="badge bg-${job.status === 'completed' ? 'success' : job.status === 'in_progress' ? 'warning' : 'secondary'}">${job.status || 'Pending'}</span>
-                        <p class="mb-0 fw-bold">$${(job.total_amount || 0).toFixed(2)}</p>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    } else {
-        jobHistoryContainer.innerHTML = '<p class="text-muted">No job history available</p>';
-    }
-    
-    // Populate quotes
-    const quotesContainer = document.getElementById('quotesHistoryList');
-    if (contact.quotes && contact.quotes.length > 0) {
-        quotesContainer.innerHTML = contact.quotes.map(quote => `
-            <div class="job-item">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h6 class="mb-1">Quote ${quote.quote_id}</h6>
-                        <p class="mb-1 text-muted">${quote.service_type || 'Service'}</p>
-                        <p class="mb-0 text-muted">${quote.date || 'Date not available'}</p>
-                    </div>
-                    <div class="text-end">
-                        <span class="badge bg-${quote.status === 'accepted' ? 'success' : quote.status === 'sent' ? 'warning' : 'secondary'}">${quote.status || 'Draft'}</span>
-                        <p class="mb-0 fw-bold">$${(quote.total_amount || 0).toFixed(2)}</p>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    } else {
-        quotesContainer.innerHTML = '<p class="text-muted">No quotes available</p>';
-    }
-    
-    // Populate invoices
-    const invoicesContainer = document.getElementById('invoicesHistoryList');
-    if (contact.invoices && contact.invoices.length > 0) {
-        invoicesContainer.innerHTML = contact.invoices.map(invoice => `
-            <div class="job-item">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h6 class="mb-1">Invoice ${invoice.invoice_id}</h6>
-                        <p class="mb-1 text-muted">${invoice.service_type || 'Service'}</p>
-                        <p class="mb-0 text-muted">${invoice.date || 'Date not available'}</p>
-                    </div>
-                    <div class="text-end">
-                        <span class="badge bg-${invoice.status === 'paid' ? 'success' : invoice.status === 'sent' ? 'warning' : 'danger'}">${invoice.status || 'Unpaid'}</span>
-                        <p class="mb-0 fw-bold">$${(invoice.total_amount || 0).toFixed(2)}</p>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    } else {
-        invoicesContainer.innerHTML = '<p class="text-muted">No invoices available</p>';
-    }
-    
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('clientProfileModal'));
-    modal.show();
-};
-
-window.createQuote = function(id) { 
-    window.open('/admin/quote-invoice-form?contactId=' + id, '_blank'); 
-};
-
-window.addContact = function() { 
-    alert('Add contact modal - Coming soon'); 
-};
-
-window.importContacts = function() {
-    alert('Import contacts from CSV - Coming soon');
-};
-
-window.crmSettings = function() {
-    alert('CRM settings and configuration - Coming soon');
-};
-
-window.refreshTable = function() { 
-    location.reload(); 
-};
-
-window.editContact = function(id) {
-    alert('Edit contact functionality for ID: ' + id + ' - Coming soon');
-};
-
-window.scheduleJob = function(id) {
-    alert('Schedule job for contact ID: ' + id + ' - Coming soon');
-};
-
-window.exportContacts = function() {
-    // Simple CSV export
-    const rows = document.querySelectorAll('#crmTableBody tr');
-    let csv = 'Name,Phone,Email,Service Type,Status,Source\n';
+// Search functionality
+document.getElementById('clientSearch').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll('.client-row');
     
     rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length > 1) {
-            const name = cells[0].querySelector('strong')?.textContent || '';
-            const phone = cells[1].textContent.trim();
-            const email = cells[2].textContent.trim();
-            const service = cells[3].textContent.trim();
-            const status = cells[4].textContent.trim();
-            const source = cells[0].querySelector('.text-info')?.textContent || '';
-            csv += `"${name}","${phone}","${email}","${service}","${status}","${source}"\n`;
+        const clientName = row.querySelector('.client-details h6').textContent.toLowerCase();
+        const clientEmail = row.querySelector('.contact-info div').textContent.toLowerCase();
+        
+        if (clientName.includes(searchTerm) || clientEmail.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
         }
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'spankks_contacts.csv';
-    a.click();
-    window.URL.revokeObjectURL(url);
-};
-
-window.bulkActions = function() {
-    alert('Bulk actions - Coming soon');
-};
-
-window.syncData = function() {
-    alert('Data synchronization - Coming soon');
-};
-
-window.filterContacts = function() {
-    const searchTerm = document.getElementById('contactSearch').value.toLowerCase();
-    const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
-    const sourceFilter = document.getElementById('sourceFilter').value;
-    
-    const rows = document.querySelectorAll('#crmTableBody tr');
-    let visibleCount = 0;
-    
-    rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells.length > 1) {
-            const name = cells[0].textContent.toLowerCase();
-            const phone = cells[1].textContent.toLowerCase();
-            const email = cells[2].textContent.toLowerCase();
-            const status = cells[4].textContent.toLowerCase();
-            const source = cells[0].querySelector('.text-info')?.textContent || '';
-            
-            const matchesSearch = name.includes(searchTerm) || 
-                                phone.includes(searchTerm) || 
-                                email.includes(searchTerm);
-            const matchesStatus = !statusFilter || status.includes(statusFilter);
-            const matchesSource = !sourceFilter || source === sourceFilter;
-            
-            if (matchesSearch && matchesStatus && matchesSource) {
-                row.style.display = '';
-                visibleCount++;
-            } else {
-                row.style.display = 'none';
-            }
-        }
-    });
-    
-    document.getElementById('contactCount').textContent = `Showing ${visibleCount} contacts`;
-};
-
-// Initialize tooltips
-document.addEventListener('DOMContentLoaded', function() {
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 });
 
-// Display contact count
-const contactRows = document.querySelectorAll('#crmTableBody tr');
-const contactCount = contactRows.length;
-console.log('CRM: Displaying', contactCount, 'contacts with enhanced features');
-
-window.editClientProfile = function() {
-    alert('Edit client profile functionality - Coming soon');
-};
-
-window.createQuoteForClient = function() {
-    alert('Create quote for client - Coming soon');
-};
-
-window.activateClient = function(clientId) {
-    if (!confirm('Activate this client for a project? This will create portal access credentials and move them to active projects.')) {
-        return;
-    }
-    
-    // Find the client
-    const contacts = {{ contacts|tojson }};
-    const client = contacts.find(c => c.id === clientId);
-    
-    if (!client) {
-        alert('Client not found');
-        return;
-    }
-    
-    // Generate project credentials
-    const portalClientId = 'CLI' + String(Math.floor(Math.random() * 900) + 100);
-    const jobId = 'JOB' + String(Math.floor(Math.random() * 9000) + 1000);
-    
-    // Prepare active client data
-    const clientData = {
-        client_id: portalClientId,
-        job_id: jobId,
-        name: client.name,
-        phone: client.phone,
-        email: client.email,
-        address: client.address || '',
-        access_level: 'client',
-        created_date: new Date().toISOString().split('T')[0],
-        activated_from_inquiry: clientId,
-        staff_notes: [{
-            note: `Activated from inquiry stage on ${new Date().toLocaleDateString()}`,
-            date: new Date().toISOString().split('T')[0],
-            author: 'admin'
-        }]
-    };
-    
-    // Call API to activate client
-    fetch('/api/convert-contact-to-client', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            contact_id: clientId,
-            client_data: clientData
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(`Client activated successfully!\n\nPortal Credentials:\nClient ID: ${portalClientId}\nJob ID: ${jobId}\n\nClient can now access the project portal.`);
-            
-            // Refresh the CRM to show updated data
-            location.reload();
-        } else {
-            alert('Error activating client: ' + (data.error || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error activating client. Please try again.');
+// Filter functionality
+document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        
+        const filter = this.dataset.filter;
+        const rows = document.querySelectorAll('.client-row');
+        
+        rows.forEach(row => {
+            row.style.display = '';
+        });
     });
-};
+});
+
+// Client actions
+function viewClientDetails(clientId) {
+    // Load client details via AJAX
+    fetch(`/api/admin/client/${clientId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('clientDetailsContent').innerHTML = generateClientDetailsHTML(data);
+            new bootstrap.Modal(document.getElementById('clientDetailsModal')).show();
+        })
+        .catch(error => {
+            console.error('Error loading client details:', error);
+            alert('Error loading client details');
+        });
+}
+
+function createQuote(clientId) {
+    // Redirect to quote builder with client pre-populated
+    window.location.href = `/generate-quote?client_id=${clientId}`;
+}
+
+function editClient(clientId) {
+    // Load client data and show edit form
+    document.getElementById('clientFormTitle').textContent = 'Edit Client';
+    // Load existing data via AJAX and populate form
+    new bootstrap.Modal(document.getElementById('clientFormModal')).show();
+}
+
+function addNewClient() {
+    document.getElementById('clientFormTitle').textContent = 'Add New Client';
+    document.getElementById('clientForm').reset();
+    new bootstrap.Modal(document.getElementById('clientFormModal')).show();
+}
+
+function generateClientDetailsHTML(data) {
+    return `
+        <div class="client-details-view">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4>${data.client.name}</h4>
+                    <p><strong>Email:</strong> ${data.client.email}</p>
+                    <p><strong>Phone:</strong> ${data.client.phone}</p>
+                    <p><strong>Address:</strong> ${data.client.address}</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="client-stats">
+                        <div class="stat-item">
+                            <strong>${data.jobs.length}</strong> Jobs
+                        </div>
+                        <div class="stat-item">
+                            <strong>${data.quotes.length}</strong> Quotes
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Recent Jobs</h6>
+                    <div class="job-list">
+                        ${data.jobs.map(job => `
+                            <div class="job-item">
+                                <strong>${job.service_type}</strong>
+                                <span class="badge bg-${job.status === 'completed' ? 'success' : 'primary'}">${job.status}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h6>Recent Quotes</h6>
+                    <div class="quote-list">
+                        ${data.quotes.map(quote => `
+                            <div class="quote-item">
+                                <strong>${quote.quote_id}</strong> - $${quote.total_amount}
+                                <span class="badge bg-${quote.status === 'accepted' ? 'success' : 'warning'}">${quote.status}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Initialize tooltips
+document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+    new bootstrap.Tooltip(el);
+});
 </script>
+{% endblock %}
