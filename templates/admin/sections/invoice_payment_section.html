@@ -601,7 +601,7 @@ document.getElementById('recordPaymentForm').addEventListener('submit', function
         payment_notes: formData.get('payment_notes')
     };
     
-    fetch('/api/admin/payments', {
+    fetch('/api/admin/payment-records', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(paymentData)

@@ -890,21 +890,7 @@ def admin_invoices():
         flash('Error loading invoices', 'error')
         return redirect('/admin-home')
 
-@app.route('/admin/analytics')
-def admin_analytics():
-    """Business analytics page with PostgreSQL data"""
-    try:
-        # Use analytics service for comprehensive data
-        from analytics.analytics_manager import AnalyticsManager
-        analytics_manager = AnalyticsManager()
-        analytics_data = analytics_manager.get_comprehensive_analytics(storage_service)
-        
-        return render_template('admin/sections/analytics_section.html', 
-                             analytics=analytics_data)
-    except Exception as e:
-        logging.error(f"Analytics page error: {e}")
-        flash('Error loading analytics data', 'error')
-        return redirect('/admin-home')
+
 
 @app.route('/admin/service-management')
 def admin_service_management():

@@ -1151,8 +1151,8 @@ def api_revoke_portal_access(access_id):
         return jsonify({'error': str(e)}), 500
 
 # Additional API endpoints for invoices and payments
-@app.route('/api/admin/payments', methods=['POST'])
-def api_record_payment():
+@app.route('/api/admin/payment-records', methods=['POST'])
+def api_record_new_payment():
     """Record a payment for an invoice"""
     try:
         data = request.get_json()
