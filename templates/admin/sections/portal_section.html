@@ -1,74 +1,495 @@
-<div class="content-card">
-    <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-user-circle me-2"></i>Client Portal Management</h3>
-    </div>
-    <div class="card-body">
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <p class="text-muted">Manage client portal access and settings for SPANKKS Construction customers.</p>
-                <div class="d-flex gap-2 mb-3">
-                    <button class="btn btn-spankks" onclick="window.open('/portal', '_blank')">
-                        <i class="fas fa-external-link-alt me-1"></i>View Client Portal
-                    </button>
-                    <button class="btn btn-outline-primary" onclick="refreshPortalStatus()">
-                        <i class="fas fa-sync me-1"></i>Refresh Status
-                    </button>
-                </div>
-            </div>
+{% extends "admin/core/base.html" %}
+
+{% block title %}Portal Management - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="portal-management-dashboard">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Portal Management</h1>
+            <p class="text-muted mb-0">Manage client and staff portal access credentials</p>
         </div>
-        
-        <div class="row">
-            <div class="col-md-6">
-                <h5>Portal Access Statistics</h5>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-value" id="activeClients">-</div>
-                        <div class="stat-label">Active Clients</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="portalLogins">-</div>
-                        <div class="stat-label">Recent Logins</div>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="createPortalAccess()">
+                <i class="fas fa-plus me-2"></i>New Portal Access
+            </button>
+            <button class="btn btn-outline-secondary" onclick="generateStaffPIN()">
+                <i class="fas fa-key me-2"></i>Generate Staff PIN
+            </button>
+        </div>
+    </div>
+
+    <!-- Portal Access Tabs -->
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="portalTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#client-portal-tab">
+                        <i class="fas fa-users me-2"></i>Client Portal Access ({{ portal_access|length }})
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#staff-portal-tab">
+                        <i class="fas fa-user-hard-hat me-2"></i>Staff Portal Access ({{ staff_access|length }})
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#create-access-tab">
+                        <i class="fas fa-plus me-2"></i>Create Access
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="portalTabContent">
+                <!-- Client Portal Access Tab -->
+                <div class="tab-pane fade show active" id="client-portal-tab">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Access Credentials</th>
+                                    <th>Portal URL</th>
+                                    <th>Expires</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if portal_access %}
+                                {% for access in portal_access %}
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <strong>{{ access.client_name or 'Unknown Client' }}</strong>
+                                        </div>
+                                        <small class="text-muted">{{ access.client_email or '' }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="credential-info">
+                                            <div><strong>Client ID:</strong> {{ access.client_id }}</div>
+                                            <div><strong>Job ID:</strong> {{ access.job_id or 'All Jobs' }}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="portal-url">
+                                            <code>/job-portal/{{ access.client_id }}/{{ access.job_id or 'all' }}</code>
+                                            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyPortalURL('{{ access.client_id }}', '{{ access.job_id or 'all' }}')">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if access.expires_at %}
+                                        {{ access.expires_at.strftime('%m/%d/%Y') if access.expires_at.strftime else access.expires_at }}
+                                        {% else %}
+                                        Never
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Active</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" onclick="emailPortalLink('{{ access.client_id }}', '{{ access.job_id }}')">
+                                                <i class="fas fa-envelope"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" onclick="extendAccess('{{ access.id }}')">
+                                                <i class="fas fa-clock"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger" onclick="revokeAccess('{{ access.id }}')">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="fas fa-door-open fa-3x mb-3"></i>
+                                        <div>No client portal access found</div>
+                                        <small>Create portal access for clients to view their projects</small>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <h5>Portal Features</h5>
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Quote Access
-                        <span class="badge bg-success">Active</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Invoice Viewing
-                        <span class="badge bg-success">Active</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Photo Gallery
-                        <span class="badge bg-success">Active</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Project Updates
-                        <span class="badge bg-success">Active</span>
-                    </li>
-                </ul>
+
+                <!-- Staff Portal Access Tab -->
+                <div class="tab-pane fade" id="staff-portal-tab">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Staff Member</th>
+                                    <th>Staff ID</th>
+                                    <th>PIN</th>
+                                    <th>Portal Access</th>
+                                    <th>Last Login</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if staff_access %}
+                                {% for staff in staff_access %}
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <strong>{{ staff.name }}</strong>
+                                        </div>
+                                        <small class="text-muted">{{ staff.email or '' }}</small>
+                                    </td>
+                                    <td><code>{{ staff.staff_id }}</code></td>
+                                    <td>
+                                        <div class="pin-display">
+                                            <span class="pin-hidden">****</span>
+                                            <span class="pin-visible d-none">{{ staff.pin }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="togglePIN(this)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="portal-url">
+                                            <code>/staff-portal/{{ staff.staff_id }}</code>
+                                            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyStaffURL('{{ staff.staff_id }}')">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">Not tracked</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" onclick="resetPIN('{{ staff.staff_id }}')">
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" onclick="emailStaffAccess('{{ staff.staff_id }}')">
+                                                <i class="fas fa-envelope"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="fas fa-user-hard-hat fa-3x mb-3"></i>
+                                        <div>No staff found</div>
+                                        <small>Add staff members to enable portal access</small>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Create Access Tab -->
+                <div class="tab-pane fade" id="create-access-tab">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <form id="createAccessForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Access Type</label>
+                                    <select class="form-select" name="access_type" required onchange="toggleAccessFields()">
+                                        <option value="">Select Access Type</option>
+                                        <option value="client">Client Portal Access</option>
+                                        <option value="staff">Staff Portal Access</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Client Access Fields -->
+                                <div id="client-fields" class="d-none">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Client</label>
+                                            <select class="form-select" name="client_id">
+                                                <option value="">Select Client</option>
+                                                <!-- Client options will be populated via JavaScript -->
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Job (Optional)</label>
+                                            <select class="form-select" name="job_id">
+                                                <option value="">All Jobs</option>
+                                                <!-- Job options will be populated via JavaScript -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Access Duration</label>
+                                            <select class="form-select" name="duration">
+                                                <option value="30">30 Days</option>
+                                                <option value="60">60 Days</option>
+                                                <option value="90">90 Days</option>
+                                                <option value="365">1 Year</option>
+                                                <option value="0">Never Expires</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Send Email Notification</label>
+                                            <div class="form-check form-switch mt-2">
+                                                <input class="form-check-input" type="checkbox" name="send_email" checked>
+                                                <label class="form-check-label">Email portal link to client</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Staff Access Fields -->
+                                <div id="staff-fields" class="d-none">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Staff Member</label>
+                                            <select class="form-select" name="staff_id">
+                                                <option value="">Select Staff</option>
+                                                <!-- Staff options will be populated via JavaScript -->
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">New PIN</label>
+                                            <input type="text" class="form-control" name="new_pin" placeholder="Enter 5-digit PIN" maxlength="5">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Create Portal Access
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">Portal Access Info</h6>
+                                    <div class="portal-info">
+                                        <div class="mb-2">
+                                            <strong>Client Portal:</strong> Read-only access to project details, photos, and invoices
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Staff Portal:</strong> Full access to job management, photo uploads, and completion tracking
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Security:</strong> All access is logged and can be revoked at any time
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-function refreshPortalStatus() {
-    fetch('/api/portal-stats')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('activeClients').textContent = data.active_clients || '0';
-            document.getElementById('portalLogins').textContent = data.recent_logins || '0';
-        })
-        .catch(error => {
-            console.error('Error loading portal stats:', error);
-        });
+<style>
+.credential-info {
+    font-size: 0.9rem;
 }
 
-// Auto-load stats when section loads
-refreshPortalStatus();
+.portal-url {
+    font-family: monospace;
+    font-size: 0.8rem;
+}
+
+.pin-display {
+    font-family: monospace;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+}
+
+.nav-tabs .nav-link.active {
+    color: #667eea;
+    border-bottom: 2px solid #667eea;
+    background: none;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+</style>
+
+<script>
+function toggleAccessFields() {
+    const accessType = document.querySelector('select[name="access_type"]').value;
+    const clientFields = document.getElementById('client-fields');
+    const staffFields = document.getElementById('staff-fields');
+    
+    if (accessType === 'client') {
+        clientFields.classList.remove('d-none');
+        staffFields.classList.add('d-none');
+    } else if (accessType === 'staff') {
+        staffFields.classList.remove('d-none');
+        clientFields.classList.add('d-none');
+    } else {
+        clientFields.classList.add('d-none');
+        staffFields.classList.add('d-none');
+    }
+}
+
+function togglePIN(button) {
+    const row = button.closest('tr');
+    const hiddenPin = row.querySelector('.pin-hidden');
+    const visiblePin = row.querySelector('.pin-visible');
+    const icon = button.querySelector('i');
+    
+    if (hiddenPin.classList.contains('d-none')) {
+        hiddenPin.classList.remove('d-none');
+        visiblePin.classList.add('d-none');
+        icon.className = 'fas fa-eye';
+    } else {
+        hiddenPin.classList.add('d-none');
+        visiblePin.classList.remove('d-none');
+        icon.className = 'fas fa-eye-slash';
+    }
+}
+
+function copyPortalURL(clientId, jobId) {
+    const url = `${window.location.origin}/job-portal/${clientId}/${jobId}`;
+    navigator.clipboard.writeText(url).then(() => {
+        showToast('Portal URL copied to clipboard', 'success');
+    });
+}
+
+function copyStaffURL(staffId) {
+    const url = `${window.location.origin}/staff-portal/${staffId}`;
+    navigator.clipboard.writeText(url).then(() => {
+        showToast('Staff portal URL copied to clipboard', 'success');
+    });
+}
+
+function createPortalAccess() {
+    // Switch to create access tab
+    const createTab = document.querySelector('a[href="#create-access-tab"]');
+    if (createTab) {
+        createTab.click();
+    }
+}
+
+function emailPortalLink(clientId, jobId) {
+    fetch('/api/admin/portal/email-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ client_id: clientId, job_id: jobId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Portal link emailed successfully', 'success');
+        } else {
+            showToast('Error sending email: ' + data.error, 'error');
+        }
+    })
+    .catch(error => {
+        showToast('Error sending email: ' + error.message, 'error');
+    });
+}
+
+function revokeAccess(accessId) {
+    if (confirm('Are you sure you want to revoke this portal access?')) {
+        fetch(`/api/admin/portal/revoke/${accessId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Portal access revoked', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showToast('Error revoking access: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            showToast('Error revoking access: ' + error.message, 'error');
+        });
+    }
+}
+
+function resetPIN(staffId) {
+    const newPin = prompt('Enter new 5-digit PIN for staff member:');
+    if (newPin && newPin.length === 5 && /^\d+$/.test(newPin)) {
+        fetch('/api/admin/staff/reset-pin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ staff_id: staffId, new_pin: newPin })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('PIN reset successfully', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showToast('Error resetting PIN: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            showToast('Error resetting PIN: ' + error.message, 'error');
+        });
+    } else {
+        showToast('Please enter a valid 5-digit PIN', 'error');
+    }
+}
+
+function showToast(message, type) {
+    // Simple toast notification
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'error' ? 'danger' : 'success'} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// Create access form submission
+document.getElementById('createAccessForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const accessData = {
+        access_type: formData.get('access_type'),
+        client_id: formData.get('client_id'),
+        job_id: formData.get('job_id'),
+        staff_id: formData.get('staff_id'),
+        duration: formData.get('duration'),
+        new_pin: formData.get('new_pin'),
+        send_email: formData.get('send_email') === 'on'
+    };
+    
+    fetch('/api/admin/portal/create-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(accessData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Portal access created successfully', 'success');
+            setTimeout(() => window.location.reload(), 1000);
+        } else {
+            showToast('Error creating access: ' + data.error, 'error');
+        }
+    })
+    .catch(error => {
+        showToast('Error creating access: ' + error.message, 'error');
+    });
+});
 </script>
+{% endblock %}
