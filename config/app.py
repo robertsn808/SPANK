@@ -13,10 +13,11 @@ logging.basicConfig(
 class Base(DeclarativeBase):
     pass
 
-# Initialize Flask app with absolute template folder path
+# Initialize Flask app with absolute template and static folder paths
 import os
 template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
-app = Flask(__name__, template_folder=template_dir)
+static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.secret_key = os.environ.get("SESSION_SECRET", "triton-concrete-coating-secret-key-2025")
 
 # Configure database
