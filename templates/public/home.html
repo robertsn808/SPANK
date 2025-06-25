@@ -210,7 +210,7 @@
                     <h1 class="hero-title">Professional Handyman Services in Hawaii</h1>
                     <p class="hero-subtitle">From small repairs to major renovations, SPANKKS Construction delivers quality workmanship with authentic island expertise. Licensed, insured, and committed to excellence.</p>
                     <div class="hero-buttons">
-                        <a href="{{ url_for('public_consultation') }}" class="btn btn-primary btn-lg me-3">
+                        <a href="{{ url_for('consultation') }}" class="btn btn-primary btn-lg me-3">
                             <i class="fas fa-calendar-check me-2"></i>Free Consultation
                         </a>
                         <a href="{{ url_for('public_services') }}" class="btn btn-outline-light btn-lg">
@@ -295,7 +295,7 @@
                             ${{ "%.0f"|format(service.min_price) }} - ${{ "%.0f"|format(service.max_price) }}
                         {% endif %}
                     </div>
-                    <a href="{{ url_for('public_consultation') }}?service={{ service.service_code }}" class="btn btn-outline-primary mt-3">
+                    <a href="{{ url_for('consultation') }}?service={{ service.service_code }}" class="btn btn-outline-primary mt-3">
                         Get Quote
                     </a>
                 </div>
@@ -431,7 +431,7 @@
             <div class="col-12 text-center">
                 <h2>Ready to Start Your Project?</h2>
                 <p class="lead mb-4">Get your free consultation and discover why Hawaii homeowners trust SPANKKS Construction</p>
-                <a href="{{ url_for('public_consultation') }}" class="btn btn-primary btn-lg me-3">
+                <a href="{{ url_for('consultation') }}" class="btn btn-primary btn-lg me-3">
                     <i class="fas fa-calendar-check me-2"></i>Schedule Consultation
                 </a>
                 <a href="tel:+18087789132" class="btn btn-outline-light btn-lg">
