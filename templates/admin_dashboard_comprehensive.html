@@ -903,11 +903,13 @@
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const section = this.dataset.section;
+                    console.log('Navigation clicked:', section);
                     if (section) {
                         showSection(section);
                     }
                 });
             });
+            console.log('Navigation system initialized with', document.querySelectorAll('.nav-link').length, 'links');
         }
         
         function initializeNavigation() {

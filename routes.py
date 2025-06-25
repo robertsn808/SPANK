@@ -8467,6 +8467,52 @@ def get_portal_stats():
         logging.error(f"Error getting portal stats: {e}")
         return jsonify({'error': 'Failed to load stats'}), 500
 
+@app.route('/api/dashboard/stats')
+def dashboard_stats():
+    """Get dashboard statistics using authentic data"""
+    if not session.get('admin_logged_in'):
+        return jsonify({'error': 'Admin authentication required'}), 401
+    
+    try:
+        stats = {
+            'today_jobs': 0,
+            'week_quotes': 0,
+            'month_revenue': 0,
+            'pending_invoices': 0
+        }
+        
+        # Get quotes count and revenue
+        quotes_file = os.path.join('data', 'quotes.json')
+        if os.path.exists(quotes_file):
+            with open(quotes_file, 'r') as f:
+                quotes = json.load(f)
+                stats['week_quotes'] = len(quotes)
+                stats['month_revenue'] = sum(float(quote.get('total_amount', 0)) for quote in quotes)
+        
+        # Get contacts count (representing today's jobs)
+        contacts_file = os.path.join('data', 'contacts.json')
+        if os.path.exists(contacts_file):
+            with open(contacts_file, 'r') as f:
+                contacts = json.load(f)
+                stats['today_jobs'] = len(contacts)
+        
+        # Get pending invoices
+        invoices_file = os.path.join('data', 'invoices.json')
+        if os.path.exists(invoices_file):
+            with open(invoices_file, 'r') as f:
+                invoices = json.load(f)
+                stats['pending_invoices'] = len([inv for inv in invoices if inv.get('status') == 'pending'])
+        
+        return jsonify(stats)
+    except Exception as e:
+        logging.error(f"Error getting dashboard stats: {e}")
+        return jsonify({
+            'today_jobs': 0,
+            'week_quotes': 0,
+            'month_revenue': 0,
+            'pending_invoices': 0
+        })
+
 # Service Type Management API Routes
 @app.route('/api/service-types', methods=['GET'])
 def api_get_service_types():
