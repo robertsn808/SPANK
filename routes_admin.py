@@ -346,7 +346,7 @@ def admin_performance():
             
             # Jobs per Staff Member
             result = conn.execute(db.text("""
-                SELECT ROUND(COUNT(*)::DECIMAL / NULLIF((SELECT COUNT(*) FROM staff WHERE active = true), 0), 2) AS jobs_per_staff
+                SELECT ROUND(COUNT(*)::DECIMAL / NULLIF((SELECT COUNT(*) FROM staff), 0), 2) AS jobs_per_staff
                 FROM jobs
                 WHERE status = 'completed'
             """))
@@ -366,9 +366,9 @@ def admin_performance():
             
             # Average Job Value
             result = conn.execute(db.text("""
-                SELECT ROUND(AVG(total), 2) AS avg_job_value
+                SELECT ROUND(AVG(amount_due), 2) AS avg_job_value
                 FROM invoices
-                WHERE total > 0
+                WHERE amount_due > 0
             """))
             performance_data['avg_job_value'] = result.scalar() or 0
             
@@ -390,9 +390,9 @@ def admin_performance():
             
             # Average Revenue Per Client
             result = conn.execute(db.text("""
-                SELECT ROUND(AVG(total), 2) AS avg_client_revenue
+                SELECT ROUND(AVG(total_paid), 2) AS avg_client_revenue
                 FROM (
-                  SELECT client_id, SUM(amount_paid) AS total
+                  SELECT client_id, SUM(amount_paid) AS total_paid
                   FROM payments
                   GROUP BY client_id
                 ) AS client_totals
@@ -772,8 +772,8 @@ def admin_portal_management():
                            WHEN pa.user_type = 'staff' THEN s.email
                        END as user_email
                 FROM portal_access pa
-                LEFT JOIN clients c ON pa.user_type = 'client' AND pa.user_id = c.client_id
-                LEFT JOIN staff s ON pa.user_type = 'staff' AND pa.user_id = s.staff_id
+                LEFT JOIN clients c ON pa.user_type = 'client' AND pa.user_id::text = c.client_id::text
+                LEFT JOIN staff s ON pa.user_type = 'staff' AND pa.user_id::text = s.staff_id::text
                 ORDER BY pa.created_at DESC
             """))
             portal_access_data = [dict(row._mapping) for row in portal_result]
