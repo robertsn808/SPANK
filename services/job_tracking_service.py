@@ -9,7 +9,7 @@ import os
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 import uuid
-from phone_formatter import PhoneFormatter
+from utils.phone_formatter import PhoneFormatter
 
 class JobTrackingService:
     """Comprehensive job records and payment tracking system"""

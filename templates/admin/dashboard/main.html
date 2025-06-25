@@ -185,30 +185,25 @@
                 </div>
                 <div class="card-body">
                     <div class="schedule-items">
-                        <div class="schedule-item">
-                            <div class="schedule-time">9:00 AM</div>
-                            <div class="schedule-content">
-                                <h6>Kitchen Renovation - Johnson Family</h6>
-                                <p class="text-muted mb-1">1234 Aloha Street, Honolulu</p>
-                                <span class="badge bg-primary">In Progress</span>
+                        {% if stats.upcoming_jobs %}
+                            {% for job in stats.upcoming_jobs %}
+                            <div class="schedule-item">
+                                <div class="schedule-time">{{ job.date }}</div>
+                                <div class="schedule-content">
+                                    <h6>{{ job.service }} - {{ job.client }}</h6>
+                                    <p class="text-muted mb-1">{{ job.location or 'Location TBD' }}</p>
+                                    <span class="badge bg-{{ 'primary' if job.status == 'scheduled' else 'success' }}">{{ job.status.title() }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="schedule-item">
-                            <div class="schedule-time">1:00 PM</div>
-                            <div class="schedule-content">
-                                <h6>Fence Repair Consultation - Smith Residence</h6>
-                                <p class="text-muted mb-1">5678 Paradise Drive, Kailua</p>
-                                <span class="badge bg-success">Scheduled</span>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-calendar-check fa-3x mb-3"></i>
+                                <h6>No upcoming jobs scheduled</h6>
+                                <p>Use the calendar to schedule new appointments</p>
+                                <a href="/admin/calendar" class="btn btn-primary btn-sm">Schedule Job</a>
                             </div>
-                        </div>
-                        <div class="schedule-item">
-                            <div class="schedule-time">3:30 PM</div>
-                            <div class="schedule-content">
-                                <h6>Drywall Installation - Office Complex</h6>
-                                <p class="text-muted mb-1">9101 Business Park, Honolulu</p>
-                                <span class="badge bg-warning">Tentative</span>
-                            </div>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
