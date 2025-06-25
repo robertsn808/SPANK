@@ -81,6 +81,70 @@
         </div>
     </div>
 
+    <!-- Admin & Staff Password Management -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-lock me-2"></i>Admin Password</h5>
+                </div>
+                <div class="card-body">
+                    <form id="adminPasswordForm">
+                        <div class="mb-3">
+                            <label for="currentAdminPassword" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentAdminPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newAdminPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newAdminPassword" required>
+                            <div class="form-text">Minimum 8 characters with uppercase, lowercase, and numbers</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmAdminPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmAdminPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Update Admin Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-hard-hat me-2"></i>Staff PIN Management</h5>
+                </div>
+                <div class="card-body">
+                    <form id="staffPinForm">
+                        <div class="mb-3">
+                            <label for="staffSelect" class="form-label">Select Staff Member</label>
+                            <select class="form-select" id="staffSelect" required>
+                                <option value="">Choose staff member...</option>
+                                <option value="SPK001">Mike Rodriguez (SPK001)</option>
+                                <option value="SPK002">Sarah Johnson (SPK002)</option>
+                                <option value="SPK003">David Chen (SPK003)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newStaffPin" class="form-label">New 5-Digit PIN</label>
+                            <input type="password" class="form-control" id="newStaffPin" maxlength="5" pattern="[0-9]{5}" required>
+                            <div class="form-text">Enter exactly 5 digits (e.g., 12345)</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmStaffPin" class="form-label">Confirm PIN</label>
+                            <input type="password" class="form-control" id="confirmStaffPin" maxlength="5" pattern="[0-9]{5}" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i>Update Staff PIN
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content Tabs -->
     <div class="card">
         <div class="card-header">
@@ -498,6 +562,149 @@
 </style>
 
 <script>
+// Password Management Functions
+document.addEventListener('DOMContentLoaded', function() {
+    // Admin password form
+    const adminPasswordForm = document.getElementById('adminPasswordForm');
+    if (adminPasswordForm) {
+        adminPasswordForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentAdminPassword').value;
+            const newPassword = document.getElementById('newAdminPassword').value;
+            const confirmPassword = document.getElementById('confirmAdminPassword').value;
+            
+            // Validate password strength
+            if (newPassword.length < 8) {
+                showNotification('Password must be at least 8 characters long', 'error');
+                return;
+            }
+            
+            if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(newPassword)) {
+                showNotification('Password must contain uppercase, lowercase, and numbers', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showNotification('Passwords do not match', 'error');
+                return;
+            }
+            
+            // Send password update request
+            fetch('/api/admin/update-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    currentPassword: currentPassword,
+                    newPassword: newPassword
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Admin password updated successfully', 'success');
+                    adminPasswordForm.reset();
+                } else {
+                    showNotification(data.message || 'Failed to update password', 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Error updating password', 'error');
+                console.error('Error:', error);
+            });
+        });
+    }
+    
+    // Staff PIN form
+    const staffPinForm = document.getElementById('staffPinForm');
+    if (staffPinForm) {
+        staffPinForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const staffId = document.getElementById('staffSelect').value;
+            const newPin = document.getElementById('newStaffPin').value;
+            const confirmPin = document.getElementById('confirmStaffPin').value;
+            
+            if (!staffId) {
+                showNotification('Please select a staff member', 'error');
+                return;
+            }
+            
+            if (newPin.length !== 5 || !/^\d{5}$/.test(newPin)) {
+                showNotification('PIN must be exactly 5 digits', 'error');
+                return;
+            }
+            
+            if (newPin !== confirmPin) {
+                showNotification('PINs do not match', 'error');
+                return;
+            }
+            
+            // Send PIN update request
+            fetch('/api/admin/update-staff-pin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    staffId: staffId,
+                    newPin: newPin
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(`PIN updated successfully for ${staffId}`, 'success');
+                    staffPinForm.reset();
+                } else {
+                    showNotification(data.message || 'Failed to update PIN', 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Error updating PIN', 'error');
+                console.error('Error:', error);
+            });
+        });
+    }
+    
+    // Only allow numeric input for PIN fields
+    const newStaffPin = document.getElementById('newStaffPin');
+    const confirmStaffPin = document.getElementById('confirmStaffPin');
+    
+    if (newStaffPin) {
+        newStaffPin.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+    }
+    
+    if (confirmStaffPin) {
+        confirmStaffPin.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+    }
+});
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 4000);
+}
+
 // Portal management functions
 function createPortalAccess() {
     // Switch to link generator tab
