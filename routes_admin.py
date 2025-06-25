@@ -816,6 +816,40 @@ def admin_portal_management():
         flash('Error loading portal management data', 'error')
         return redirect('/admin-home')
 
+@app.route('/admin/sections/service_management')
+def admin_service_management():
+    """Service management page"""
+    try:
+        with db.engine.connect() as conn:
+            # Get service types
+            try:
+                services_result = conn.execute(db.text("""
+                    SELECT service_id, name, category_id, base_price, description
+                    FROM service_types
+                    ORDER BY category_id, name
+                """))
+                services = [dict(row._mapping) for row in services_result]
+            except Exception as service_error:
+                logging.error(f"Service query error: {service_error}")
+                services = []
+        
+        return render_template('admin/sections/service_management_section.html',
+                             services=services)
+    except Exception as e:
+        logging.error(f"Service management error: {e}")
+        flash('Error loading service management', 'error')
+        return redirect('/admin-home')
+
+@app.route('/admin/data-management')
+def admin_data_management():
+    """Data management and CSV operations page"""
+    try:
+        return render_template('admin/sections/csv_management_section.html')
+    except Exception as e:
+        logging.error(f"Data management error: {e}")
+        flash('Error loading data management', 'error')
+        return redirect('/admin-home')
+
 @app.route('/admin/quote-builder')
 def admin_quote_builder():
     """Quote builder page"""
@@ -832,7 +866,6 @@ def admin_quote_builder():
             # Get service types
             result = conn.execute(db.text("""
                 SELECT DISTINCT name as service_type FROM service_types
-
                 ORDER BY name
             """))
             services = [dict(row._mapping) for row in result]
@@ -905,21 +938,7 @@ def admin_invoices():
 
 
 
-@app.route('/admin/service-management')
-def admin_service_management():
-    """Service management page"""
-    try:
-        if database_available:
-            service_types = db.session.query(ServiceType).all()
-        else:
-            service_types = []
-        
-        return render_template('admin/sections/service_management_section.html', 
-                             service_types=service_types)
-    except Exception as e:
-        logging.error(f"Service management page error: {e}")
-        flash('Error loading service management data', 'error')
-        return redirect('/admin-home')
+# Duplicate route removed - using /admin/sections/service_management instead
 
 @app.route('/admin/calendar')
 def admin_calendar():
