@@ -547,6 +547,9 @@
                     <i class="fas fa-clock me-1"></i>
                     Hawaii: <span id="hawaiiTime"></span>
                 </div>
+                <button class="btn btn-outline-primary d-md-none me-2" type="button" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div class="dropdown">
                     <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         <i class="fas fa-user me-1"></i>Admin
@@ -927,17 +930,8 @@
         });
         
         function setupNavigationSystem() {
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const section = this.dataset.section;
-                    console.log('Navigation clicked:', section);
-                    if (section) {
-                        showSection(section);
-                    }
-                });
-            });
-            console.log('Navigation system initialized with', document.querySelectorAll('.nav-link').length, 'links');
+            // Legacy function - now handled by initializeNavigation
+            initializeNavigation();
         }
         
         function initializeNavigation() {
@@ -994,26 +988,7 @@
             }
         }
         
-        function handleNavigation(section) {
-            console.log('Handling navigation to:', section);
-            
-            // Update active states
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            const activeLink = document.querySelector(`[data-section="${section}"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-            
-            // Handle section display
-            if (section === 'dashboard') {
-                showDashboard();
-            } else {
-                showDynamicSection(section);
-            }
-        }
+
         
         function showDashboard() {
             document.getElementById('dashboard-section').style.display = 'block';
@@ -1577,7 +1552,6 @@
                     </div>
                 </div>
             `;
-                    console.error('Error loading quotes section:', error);
                     document.getElementById('dynamic-content').innerHTML = `
                         <div class="content-card">
                             <div class="card-header">
