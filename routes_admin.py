@@ -646,18 +646,15 @@ def admin_quotes():
 def admin_analytics():
     """Business analytics dashboard with authentic data"""
     try:
-        # Import analytics components
-        from analytics.analytics_manager import AnalyticsManager
         
-        # Initialize analytics manager
-        analytics_manager = AnalyticsManager()
-        
-        # Get comprehensive analytics with proper error handling
+        # Get analytics data with fallback handling
         try:
+            from analytics.analytics_manager import AnalyticsManager
+            analytics_manager = AnalyticsManager()
             analytics_data = analytics_manager.get_comprehensive_analytics(None)
         except Exception as analytics_error:
             logging.error(f"Analytics error: {analytics_error}")
-            # Provide minimal fallback data structure
+            # Provide basic analytics data structure
             analytics_data = {
                 'revenue_metrics': {'total_revenue': 0, 'monthly_revenue': 0},
                 'customer_insights': {'total_customers': 0, 'retention_rate': 0},
@@ -831,9 +828,9 @@ def admin_quote_builder():
             
             # Get service types
             result = conn.execute(db.text("""
-                SELECT DISTINCT service_type FROM service_types
+                SELECT DISTINCT service_name as service_type FROM service_types
                 WHERE active = TRUE
-                ORDER BY service_type
+                ORDER BY service_name
             """))
             services = [dict(row._mapping) for row in result]
             
@@ -862,25 +859,38 @@ def admin_invoices():
     """Invoice management page"""
     try:
         with db.engine.connect() as conn:
-            # Get invoice data
-            result = conn.execute(db.text("""
-                SELECT i.invoice_number, i.client_id, i.status, i.total_amount,
-                       i.tax_amount, i.created_at, i.due_date,
-                       c.name as client_name, c.email as client_email
-                FROM invoices i
-                LEFT JOIN clients c ON i.client_id = c.client_id
-                ORDER BY i.created_at DESC
-            """))
-            invoices = [dict(row._mapping) for row in result]
+            # Get invoice data with fallback
+            try:
+                result = conn.execute(db.text("""
+                    SELECT COALESCE(i.invoice_number, i.invoice_id) as invoice_number, 
+                           i.client_id, 
+                           COALESCE(i.status, 'pending') as status, 
+                           COALESCE(i.total_amount, i.total, 0) as total_amount,
+                           COALESCE(i.tax_amount, i.tax, 0) as tax_amount, 
+                           i.created_at, i.due_date,
+                           c.name as client_name, c.email as client_email
+                    FROM invoices i
+                    LEFT JOIN clients c ON i.client_id = c.client_id
+                    ORDER BY i.created_at DESC
+                """))
+                invoices = [dict(row._mapping) for row in result]
+            except Exception as invoice_error:
+                logging.error(f"Invoice query error: {invoice_error}")
+                invoices = []
             
-            # Get payment data
-            result = conn.execute(db.text("""
-                SELECT p.*, i.invoice_number
-                FROM payments p
-                LEFT JOIN invoices i ON p.invoice_id = i.invoice_id
-                ORDER BY p.payment_date DESC
-            """))
-            payments = [dict(row._mapping) for row in result]
+            # Get payment data with fallback
+            try:
+                result = conn.execute(db.text("""
+                    SELECT p.*, 
+                           COALESCE(p.invoice_number, i.invoice_number, i.invoice_id) as invoice_number
+                    FROM payments p
+                    LEFT JOIN invoices i ON (p.invoice_id = i.invoice_id OR p.invoice_number = i.invoice_number)
+                    ORDER BY p.payment_date DESC
+                """))
+                payments = [dict(row._mapping) for row in result]
+            except Exception as payment_error:
+                logging.error(f"Payment query error: {payment_error}")
+                payments = []
         
         return render_template('admin/sections/invoice_payment_section.html',
                              invoices=invoices,
