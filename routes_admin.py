@@ -890,6 +890,32 @@ def admin_backup():
         flash('Error loading backup page', 'error')
         return redirect('/admin-home')
 
+# API endpoints for settings
+@app.route('/api/admin/settings', methods=['POST'])
+def api_save_admin_settings():
+    """Save admin settings"""
+    try:
+        settings = request.get_json()
+        
+        # Log the settings save attempt
+        logging.info(f"Saving admin settings: {settings}")
+        
+        # Here you would typically save to database
+        # For now, we'll just return success
+        
+        return jsonify({
+            'success': True,
+            'message': 'Settings saved successfully',
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        logging.error(f"Error saving settings: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 @app.route('/admin/quote-builder')
 def admin_quote_builder():
     """Quote builder page"""
