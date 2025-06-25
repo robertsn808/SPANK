@@ -1,0 +1,907 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Job Management - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="jobs-dashboard">
+    <!-- Jobs Header -->
+    <div class="jobs-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1">Job Management System</h1>
+                <p class="text-muted mb-0">Track and manage all construction projects from quote to completion</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-success me-2" onclick="createNewJob()">
+                    <i class="fas fa-plus me-2"></i>Create Job
+                </button>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-tools me-2"></i>Actions
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="toggleKanbanView()">
+                            <i class="fas fa-columns me-2"></i>Kanban View
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportJobs()">
+                            <i class="fas fa-download me-2"></i>Export Jobs
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="bulkAssign()">
+                            <i class="fas fa-users me-2"></i>Bulk Assign
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Statistics -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card total-jobs">
+                <div class="stat-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalJobs">{{ jobs|length }}</h3>
+                    <p>Total Jobs</p>
+                    <span class="stat-trend">All projects</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card active-jobs">
+                <div class="stat-icon">
+                    <i class="fas fa-hammer"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="activeJobs">{{ jobs|selectattr('status', 'in', ['scheduled', 'in_progress'])|list|length }}</h3>
+                    <p>Active Jobs</p>
+                    <span class="stat-trend">In progress</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card completed-jobs">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="completedJobs">{{ jobs|selectattr('status', 'equalto', 'completed')|list|length }}</h3>
+                    <p>Completed</p>
+                    <span class="stat-trend">This month</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card overdue-jobs">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="overdueJobs">0</h3>
+                    <p>Overdue</p>
+                    <span class="stat-trend">Need attention</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Filters and Search -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" placeholder="Search jobs..." id="jobSearch">
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="filter-chips">
+                                <button class="filter-chip active" data-filter="all">All Jobs</button>
+                                <button class="filter-chip" data-filter="today">Today</button>
+                                <button class="filter-chip" data-filter="this-week">This Week</button>
+                                <button class="filter-chip" data-filter="in-progress">In Progress</button>
+                                <button class="filter-chip" data-filter="needs-invoice">Needs Invoice</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <select class="form-control" id="statusFilter">
+                                <option value="">All Status</option>
+                                <option value="draft">Draft</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="on_hold">On Hold</option>
+                                <option value="completed">Completed</option>
+                                <option value="invoiced">Invoiced</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="serviceFilter">
+                                <option value="">All Services</option>
+                                <option value="Drywall Services">Drywall Services</option>
+                                <option value="Flooring Installation">Flooring Installation</option>
+                                <option value="Fence Installation">Fence Installation</option>
+                                <option value="General Handyman">General Handyman</option>
+                                <option value="Home Renovation">Home Renovation</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="staffFilter">
+                                <option value="">All Staff</option>
+                                <!-- Dynamic staff options -->
+                            </select>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-outline-primary" onclick="showCalendarView()">
+                                <i class="fas fa-calendar me-2"></i>Calendar View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jobs Table/Kanban View -->
+    <div class="row">
+        <div class="col-12">
+            <!-- Table View -->
+            <div class="card" id="tableView">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Job Overview</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="jobsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Job ID</th>
+                                    <th>Client</th>
+                                    <th>Service Type</th>
+                                    <th>Status</th>
+                                    <th>Scheduled Date</th>
+                                    <th>Assigned Staff</th>
+                                    <th>Location</th>
+                                    <th>Progress</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in jobs %}
+                                <tr class="job-row" data-status="{{ job.status }}" data-service="{{ job.service_type }}" data-client="{{ job.client_name }}">
+                                    <td>
+                                        <div class="job-id">
+                                            <strong>{{ job.job_id }}</strong>
+                                            {% if job.estimated_hours %}
+                                            <br><small class="text-muted">{{ job.estimated_hours }}h est.</small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="client-info">
+                                            <strong>{{ job.client_name }}</strong>
+                                            {% if job.client_phone %}
+                                            <br><small class="text-muted">{{ job.client_phone }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ job.service_type }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if job.status == 'completed' else 'warning' if job.status == 'scheduled' else 'info' if job.status == 'in_progress' else 'secondary' }}">
+                                            {{ job.status|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if job.scheduled_date %}
+                                        <div class="scheduled-date">
+                                            <strong>{{ job.scheduled_date }}</strong>
+                                            <br><small class="text-muted">
+                                                {% set days_until = ((job.scheduled_date|string|as_datetime) - (moment().startOf('day')|as_datetime)).days %}
+                                                {% if days_until == 0 %}Today
+                                                {% elif days_until == 1 %}Tomorrow
+                                                {% elif days_until > 1 %}{{ days_until }} days
+                                                {% elif days_until < 0 %}{{ abs(days_until) }} days ago
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                        {% else %}
+                                        <span class="text-muted">Not scheduled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="staff-assignment">
+                                            {% if job.assigned_staff_ids %}
+                                            <span class="badge bg-info">Assigned</span>
+                                            {% else %}
+                                            <span class="badge bg-warning">Unassigned</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if job.location %}
+                                        <div class="location-info">
+                                            <i class="fas fa-map-marker-alt text-muted me-1"></i>
+                                            <small>{{ job.location[:30] }}{% if job.location|length > 30 %}...{% endif %}</small>
+                                        </div>
+                                        {% else %}
+                                        <span class="text-muted">No location</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="progress-info">
+                                            {% set progress = 0 %}
+                                            {% if job.status == 'draft' %}{% set progress = 10 %}
+                                            {% elif job.status == 'scheduled' %}{% set progress = 25 %}
+                                            {% elif job.status == 'in_progress' %}{% set progress = 60 %}
+                                            {% elif job.status == 'completed' %}{% set progress = 100 %}
+                                            {% endif %}
+                                            
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-{{ 'success' if progress == 100 else 'primary' }}" style="width: {{ progress }}%"></div>
+                                            </div>
+                                            <small class="text-muted">{{ progress }}%</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewJobDetails('{{ job.job_id }}')" data-bs-toggle="tooltip" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="updateJobStatus('{{ job.job_id }}')" data-bs-toggle="tooltip" title="Update Status">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info" onclick="viewJobLocation('{{ job.job_id }}')" data-bs-toggle="tooltip" title="View Map">
+                                                <i class="fas fa-map"></i>
+                                            </button>
+                                            {% if job.status == 'completed' %}
+                                            <button class="btn btn-sm btn-outline-warning" onclick="generateInvoice('{{ job.job_id }}')" data-bs-toggle="tooltip" title="Generate Invoice">
+                                                <i class="fas fa-file-invoice"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kanban View -->
+            <div class="card" id="kanbanView" style="display: none;">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Job Kanban Board</h5>
+                </div>
+                <div class="card-body">
+                    <div class="kanban-board">
+                        <div class="kanban-column">
+                            <div class="kanban-header bg-secondary">
+                                <h6>Draft</h6>
+                                <span class="badge bg-light text-dark" id="draftCount">0</span>
+                            </div>
+                            <div class="kanban-items" data-status="draft">
+                                <!-- Dynamic job cards -->
+                            </div>
+                        </div>
+                        <div class="kanban-column">
+                            <div class="kanban-header bg-warning">
+                                <h6>Scheduled</h6>
+                                <span class="badge bg-light text-dark" id="scheduledCount">0</span>
+                            </div>
+                            <div class="kanban-items" data-status="scheduled">
+                                <!-- Dynamic job cards -->
+                            </div>
+                        </div>
+                        <div class="kanban-column">
+                            <div class="kanban-header bg-info">
+                                <h6>In Progress</h6>
+                                <span class="badge bg-light text-dark" id="inProgressCount">0</span>
+                            </div>
+                            <div class="kanban-items" data-status="in_progress">
+                                <!-- Dynamic job cards -->
+                            </div>
+                        </div>
+                        <div class="kanban-column">
+                            <div class="kanban-header bg-danger">
+                                <h6>On Hold</h6>
+                                <span class="badge bg-light text-dark" id="onHoldCount">0</span>
+                            </div>
+                            <div class="kanban-items" data-status="on_hold">
+                                <!-- Dynamic job cards -->
+                            </div>
+                        </div>
+                        <div class="kanban-column">
+                            <div class="kanban-header bg-success">
+                                <h6>Completed</h6>
+                                <span class="badge bg-light text-dark" id="completedCount">0</span>
+                            </div>
+                            <div class="kanban-items" data-status="completed">
+                                <!-- Dynamic job cards -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Job Details Modal -->
+<div class="modal fade" id="jobDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Job Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="jobDetailsContent">
+                <!-- Content loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" onclick="editJob()">Edit Job</button>
+                <button type="button" class="btn btn-success" onclick="markCompleted()">Mark Completed</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Job Modal -->
+<div class="modal fade" id="createJobModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Job</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createJobForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Client *</label>
+                                <select class="form-control" name="client_id" required>
+                                    <option value="">Select Client</option>
+                                    <!-- Options loaded dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Service Type *</label>
+                                <select class="form-control" name="service_type" required>
+                                    <option value="">Select Service</option>
+                                    <option value="Drywall Services">Drywall Services</option>
+                                    <option value="Flooring Installation">Flooring Installation</option>
+                                    <option value="Fence Installation">Fence Installation</option>
+                                    <option value="General Handyman">General Handyman</option>
+                                    <option value="Plumbing Repair">Plumbing Repair</option>
+                                    <option value="Electrical Work">Electrical Work</option>
+                                    <option value="Painting">Painting</option>
+                                    <option value="Home Renovation">Home Renovation</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Job Location</label>
+                        <input type="text" class="form-control" name="location" placeholder="Job site address">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Scheduled Date</label>
+                                <input type="date" class="form-control" name="scheduled_date">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Estimated Hours</label>
+                                <input type="number" class="form-control" name="estimated_hours" step="0.5" min="0.5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Job Notes</label>
+                        <textarea class="form-control" name="job_note" rows="3" placeholder="Special instructions, client preferences, etc."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Assigned Staff</label>
+                        <select class="form-control" name="assigned_staff" multiple>
+                            <!-- Options loaded dynamically -->
+                        </select>
+                        <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple staff members</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Create Job</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.jobs-dashboard {
+    padding: 20px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-left: 4px solid transparent;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-card.total-jobs { border-left-color: #007bff; }
+.stat-card.active-jobs { border-left-color: #ffc107; }
+.stat-card.completed-jobs { border-left-color: #28a745; }
+.stat-card.overdue-jobs { border-left-color: #dc3545; }
+
+.stat-card .stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 20px;
+    color: white;
+}
+
+.stat-card.total-jobs .stat-icon { background: #007bff; }
+.stat-card.active-jobs .stat-icon { background: #ffc107; }
+.stat-card.completed-jobs .stat-icon { background: #28a745; }
+.stat-card.overdue-jobs .stat-icon { background: #dc3545; }
+
+.stat-card h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #2c3e50;
+}
+
+.filter-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-chip {
+    padding: 6px 16px;
+    border: 1px solid #dee2e6;
+    background: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.filter-chip:hover,
+.filter-chip.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.kanban-board {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    min-height: 500px;
+}
+
+.kanban-column {
+    flex: 1;
+    min-width: 250px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 0;
+}
+
+.kanban-header {
+    padding: 15px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.kanban-header h6 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.kanban-items {
+    padding: 15px;
+    min-height: 400px;
+}
+
+.job-card {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+}
+
+.action-buttons .btn {
+    margin-right: 4px;
+}
+
+.job-row:hover {
+    background-color: rgba(0,123,255,0.05);
+}
+
+.progress-info .progress {
+    margin-bottom: 4px;
+}
+</style>
+
+<script>
+let currentView = 'table';
+let jobsData = {{ jobs|tojson }};
+
+// Search functionality
+document.getElementById('jobSearch').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll('.job-row');
+    
+    rows.forEach(row => {
+        const jobId = row.querySelector('.job-id strong').textContent.toLowerCase();
+        const clientName = row.querySelector('.client-info strong').textContent.toLowerCase();
+        const serviceType = row.querySelector('.badge').textContent.toLowerCase();
+        
+        if (jobId.includes(searchTerm) || clientName.includes(searchTerm) || serviceType.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+// Filter functionality
+document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        
+        const filter = this.dataset.filter;
+        filterJobs(filter);
+    });
+});
+
+function filterJobs(filter) {
+    const rows = document.querySelectorAll('.job-row');
+    const today = new Date();
+    const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
+    const weekEnd = new Date(today.setDate(today.getDate() - today.getDay() + 6));
+    
+    rows.forEach(row => {
+        let show = true;
+        
+        switch(filter) {
+            case 'all':
+                show = true;
+                break;
+            case 'today':
+                // Check if scheduled for today
+                const dateCell = row.querySelector('.scheduled-date strong');
+                if (dateCell) {
+                    const jobDate = new Date(dateCell.textContent);
+                    show = jobDate.toDateString() === new Date().toDateString();
+                } else {
+                    show = false;
+                }
+                break;
+            case 'this-week':
+                // Check if scheduled this week
+                const weekDateCell = row.querySelector('.scheduled-date strong');
+                if (weekDateCell) {
+                    const jobDate = new Date(weekDateCell.textContent);
+                    show = jobDate >= weekStart && jobDate <= weekEnd;
+                } else {
+                    show = false;
+                }
+                break;
+            case 'in-progress':
+                show = row.dataset.status === 'in_progress';
+                break;
+            case 'needs-invoice':
+                show = row.dataset.status === 'completed' && !row.querySelector('.btn-outline-warning');
+                break;
+        }
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+// Status and service filters
+document.getElementById('statusFilter').addEventListener('change', function() {
+    const status = this.value;
+    const rows = document.querySelectorAll('.job-row');
+    
+    rows.forEach(row => {
+        if (!status || row.dataset.status === status) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+document.getElementById('serviceFilter').addEventListener('change', function() {
+    const service = this.value;
+    const rows = document.querySelectorAll('.job-row');
+    
+    rows.forEach(row => {
+        if (!service || row.dataset.service === service) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+// Job management functions
+function createNewJob() {
+    document.getElementById('createJobForm').reset();
+    loadClientOptions();
+    loadStaffOptions();
+    new bootstrap.Modal(document.getElementById('createJobModal')).show();
+}
+
+function viewJobDetails(jobId) {
+    fetch(`/api/admin/jobs/${jobId}`)
+        .then(response => response.json())
+        .then(job => {
+            const content = generateJobDetailsHTML(job);
+            document.getElementById('jobDetailsContent').innerHTML = content;
+            new bootstrap.Modal(document.getElementById('jobDetailsModal')).show();
+        })
+        .catch(error => {
+            console.error('Error loading job details:', error);
+            alert('Error loading job details');
+        });
+}
+
+function updateJobStatus(jobId) {
+    const newStatus = prompt('Enter new status (draft, scheduled, in_progress, on_hold, completed, invoiced):');
+    if (newStatus) {
+        fetch(`/api/admin/jobs/${jobId}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                location.reload();
+            } else {
+                alert('Error updating status: ' + result.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error updating status:', error);
+            alert('Error updating status');
+        });
+    }
+}
+
+function viewJobLocation(jobId) {
+    // Open Google Maps with job location
+    const job = jobsData.find(j => j.job_id === jobId);
+    if (job && job.location) {
+        const encodedLocation = encodeURIComponent(job.location);
+        window.open(`https://maps.google.com?q=${encodedLocation}`, '_blank');
+    } else {
+        alert('No location available for this job');
+    }
+}
+
+function generateInvoice(jobId) {
+    window.open(`/generate-invoice?job_id=${jobId}`, '_blank');
+}
+
+function toggleKanbanView() {
+    const tableView = document.getElementById('tableView');
+    const kanbanView = document.getElementById('kanbanView');
+    
+    if (currentView === 'table') {
+        tableView.style.display = 'none';
+        kanbanView.style.display = 'block';
+        loadKanbanBoard();
+        currentView = 'kanban';
+    } else {
+        tableView.style.display = 'block';
+        kanbanView.style.display = 'none';
+        currentView = 'table';
+    }
+}
+
+function loadKanbanBoard() {
+    const statuses = ['draft', 'scheduled', 'in_progress', 'on_hold', 'completed'];
+    
+    statuses.forEach(status => {
+        const container = document.querySelector(`[data-status="${status}"]`);
+        const statusJobs = jobsData.filter(job => job.status === status);
+        
+        container.innerHTML = statusJobs.map(job => `
+            <div class="job-card" onclick="viewJobDetails('${job.job_id}')">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <strong>${job.job_id}</strong>
+                    <span class="badge bg-primary">${job.service_type}</span>
+                </div>
+                <div class="mb-2">
+                    <strong>${job.client_name}</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">${job.scheduled_date || 'Not scheduled'}</small>
+                    <small class="text-muted">${job.estimated_hours || 0}h</small>
+                </div>
+            </div>
+        `).join('');
+        
+        // Update counter
+        document.getElementById(`${status.replace('_', '')}Count`).textContent = statusJobs.length;
+    });
+}
+
+function showCalendarView() {
+    window.location.href = '/admin/calendar';
+}
+
+function exportJobs() {
+    window.open('/api/admin/jobs/export?format=csv', '_blank');
+}
+
+function bulkAssign() {
+    alert('Bulk assignment feature - would allow selecting multiple jobs and assigning staff');
+}
+
+function loadClientOptions() {
+    fetch('/api/admin/clients/list')
+        .then(response => response.json())
+        .then(clients => {
+            const select = document.querySelector('[name="client_id"]');
+            select.innerHTML = '<option value="">Select Client</option>';
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.client_id;
+                option.textContent = client.name;
+                select.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error loading clients:', error));
+}
+
+function loadStaffOptions() {
+    fetch('/api/admin/staff/list')
+        .then(response => response.json())
+        .then(staff => {
+            const select = document.querySelector('[name="assigned_staff"]');
+            select.innerHTML = '';
+            staff.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.staff_id;
+                option.textContent = member.name;
+                select.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error loading staff:', error));
+}
+
+function generateJobDetailsHTML(job) {
+    return `
+        <div class="job-details-view">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4>${job.job_id} - ${job.service_type}</h4>
+                    <p><strong>Client:</strong> ${job.client_name}</p>
+                    <p><strong>Location:</strong> ${job.location || 'Not specified'}</p>
+                    <p><strong>Status:</strong> <span class="badge bg-primary">${job.status}</span></p>
+                    <p><strong>Notes:</strong> ${job.job_note || 'No notes'}</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="job-stats">
+                        <p><strong>Scheduled:</strong> ${job.scheduled_date || 'Not scheduled'}</p>
+                        <p><strong>Estimated Hours:</strong> ${job.estimated_hours || 'Not specified'}</p>
+                        <p><strong>Staff Assigned:</strong> ${job.assigned_staff_ids ? 'Yes' : 'No'}</p>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Job Progress</h6>
+                    <div class="progress mb-3">
+                        <div class="progress-bar" style="width: ${getJobProgress(job.status)}%"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h6>Quick Actions</h6>
+                    <button class="btn btn-sm btn-primary me-2" onclick="updateJobStatus('${job.job_id}')">Update Status</button>
+                    <button class="btn btn-sm btn-success" onclick="viewJobLocation('${job.job_id}')">View Map</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function getJobProgress(status) {
+    const progressMap = {
+        'draft': 10,
+        'scheduled': 25,
+        'in_progress': 60,
+        'on_hold': 40,
+        'completed': 100,
+        'invoiced': 100
+    };
+    return progressMap[status] || 0;
+}
+
+// Form submission
+document.getElementById('createJobForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const jobData = Object.fromEntries(formData.entries());
+    
+    fetch('/api/admin/jobs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jobData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('createJobModal')).hide();
+            location.reload();
+        } else {
+            alert('Error creating job: ' + result.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error creating job:', error);
+        alert('Error creating job');
+    });
+});
+
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof bootstrap !== 'undefined') {
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+            new bootstrap.Tooltip(el);
+        });
+    }
+});
+</script>
+{% endblock %}

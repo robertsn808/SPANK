@@ -240,12 +240,22 @@ def get_dashboard_stats():
                 
                 # Get upcoming jobs
                 upcoming_jobs = [j for j in jobs_db if j.get('status') == 'scheduled'][:3]
-                stats['upcoming_jobs'] = [{
-                    'client': clients_lookup.get(job.get('client_id'), 'Unknown'),
-                    'service': job.get('service_type', 'Service'),
-                    'date': job.get('scheduled_date', '').split('T')[0] if job.get('scheduled_date') else 'TBD',
-                    'status': job.get('status', 'scheduled')
-                } for job in upcoming_jobs]
+                stats['upcoming_jobs'] = []
+                for job in upcoming_jobs:
+                    scheduled_date = job.get('scheduled_date')
+                    date_str = 'TBD'
+                    if scheduled_date:
+                        if isinstance(scheduled_date, str):
+                            date_str = scheduled_date.split('T')[0]
+                        else:
+                            date_str = scheduled_date.strftime('%Y-%m-%d')
+                    
+                    stats['upcoming_jobs'].append({
+                        'client': clients_lookup.get(job.get('client_id'), 'Unknown'),
+                        'service': job.get('service_type', 'Service'),
+                        'date': date_str,
+                        'status': job.get('status', 'scheduled')
+                    })
                 
             except Exception as db_error:
                 logging.error(f"Database query error: {db_error}")
