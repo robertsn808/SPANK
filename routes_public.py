@@ -281,20 +281,20 @@ def public_pricing():
 def public_about():
     """About page with company information"""
     try:
-        # Get basic stats from database
+        # Small husband and wife business in Honolulu - use authentic minimal stats only
         with psycopg2.connect(os.environ.get('DATABASE_URL')) as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 cur.execute("""
                     SELECT 
-                        COUNT(DISTINCT client_id) as total_projects,
-                        EXTRACT(YEAR FROM AGE(NOW(), MIN(created_at))) as years_experience
+                        COUNT(DISTINCT client_id) as total_projects
                     FROM jobs WHERE status != 'cancelled'
                 """)
                 stats_data = cur.fetchone()
                 
         stats = {
             'total_projects': stats_data['total_projects'] if stats_data else 0,
-            'years_experience': int(stats_data['years_experience']) if stats_data and stats_data['years_experience'] else 5
+            'business_type': 'Family-owned construction business',
+            'location': 'Honolulu, Hawaii'
         }
         
         return render_template('about.html', stats=stats)
