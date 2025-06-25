@@ -964,6 +964,41 @@ def admin_calendar():
         return redirect('/admin-home')
 
 # API Endpoints
+
+# Service Management API Endpoints
+@app.route('/api/service-categories')
+def api_service_categories():
+    """Get service categories"""
+    try:
+        with db.engine.connect() as conn:
+            result = conn.execute(db.text("""
+                SELECT DISTINCT category_id as id, category_id as name
+                FROM service_types
+                WHERE category_id IS NOT NULL
+                ORDER BY category_id
+            """))
+            categories = [dict(row._mapping) for row in result]
+            return jsonify(categories)
+    except Exception as e:
+        logging.error(f"API service categories error: {e}")
+        return jsonify([])
+
+@app.route('/api/service-types')
+def api_service_types():
+    """Get service types"""
+    try:
+        with db.engine.connect() as conn:
+            result = conn.execute(db.text("""
+                SELECT id, service_code, name, category_id, min_price, max_price, description
+                FROM service_types
+                ORDER BY category_id, name
+            """))
+            services = [dict(row._mapping) for row in result]
+            return jsonify(services)
+    except Exception as e:
+        logging.error(f"API service types error: {e}")
+        return jsonify([])
+
 @app.route('/api/dashboard/stats')
 def api_dashboard_stats():
     """API endpoint for dashboard statistics"""
