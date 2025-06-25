@@ -1,0 +1,80 @@
+🧑‍💼 Client Portal (/portal/:clientId)
+🔐 Access
+Requires: clientId and optional secure code or email verification
+
+Read-only for most sections (clients cannot modify critical data)
+
+🔧 Core Components
+Section	Description
+Dashboard Overview	Summary of upcoming jobs, latest invoices, quotes, and job progress
+My Quotes	View all quotes with status (pending, accepted, declined); download PDF
+Invoices	View/pay invoices (if payments enabled); show status: unpaid/paid/overdue
+Scheduled Jobs	Job dates, times, assigned team, checklist preview
+Before & After Photos	Gallery of project images with dates and descriptions
+Messages / Notes	Client-facing job notes or instructions added by staff
+Contact / Support	Direct message form to reach out to SPANKKS admin or support team
+
+📁 Technical Notes
+Routes like /portal/:clientId/jobs, /portal/:clientId/quotes
+
+Tokens or hashed IDs can be used for enhanced security
+
+Restrict file sizes (e.g. photo previews) to ensure fast loading
+
+🛠️ Job Portal for Staff (/jobsite/:jobId)
+🔐 Access
+Requires: jobId and staff PIN or authenticated staff login
+
+Full write/edit access based on role (admin, crew, supervisor)
+
+🧱 Key Features
+Feature	Functionality
+Job Details Panel	Client name, address, job type, contact info, scheduled time
+Live Checklist	Task completion system with timestamps (checkbox, add task, reorder)
+Photo Upload	Upload before/after photos; auto-tags date/time and job stage
+Job Notes	Add/edit internal notes and summary reports
+Materials Used	Select from inventory or add manually; links to inventory deduction
+Crew Assignment	List crew members; allow clock-in/out for each
+Daily Log	Staff can submit daily progress, time in/out, issues encountered
+Client Signature Panel	Optional signature capture for milestones (e.g., completion)
+
+📁 Technical Notes
+Auto-assign photos and checklists to jobId
+
+Can link directly from quote view → job portal (quote-to-job flow)
+
+Record every update with staff_id and timestamp for audit logs
+
+📊 Admin Dashboard Integration
+Jobs from the staff portal feed directly into:
+
+Schedule calendar
+
+Inventory system
+
+CRM client history
+
+Financial reports (materials, labor, quote total)
+
+🧩 Suggested Database Tables (Simplified)
+sql
+Copy
+Edit
+-- Clients
+clients(id, name, email, phone, address, preferred_contact)
+
+-- Jobs
+jobs(id, client_id, service_type, status, start_date, end_date, assigned_staff)
+
+-- Quotes & Invoices
+quotes(id, client_id, total, status), invoices(id, job_id, amount_due, due_date)
+
+-- Job Portal Related
+job_checklists(id, job_id, task, completed, completed_at)
+job_photos(id, job_id, file_path, label, timestamp)
+job_notes(id, job_id, note_text, created_by, created_at)
+materials_used(id, job_id, material_id, quantity)
+
+-- Staff
+staff(id, name, pin, role)
+staff_timeclock(id, job_id, staff_id, clock_in, clock_out)

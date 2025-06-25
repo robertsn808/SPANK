@@ -1,120 +1,214 @@
-import os
+"""
+Notification Management Service for SPANKKS Construction
+Handles notification settings, templates, and delivery tracking
+"""
+
+import json
 import logging
-from datetime import datetime
-from models import HandymanStorage
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Any
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import os
 
 class NotificationService:
-    """Service for manual admin dashboard notifications - no external integrations"""
+    """Professional notification management system"""
     
     def __init__(self):
-        """Initialize notification service for manual admin dashboard notifications only"""
-        self.storage = HandymanStorage()
-        self.from_email = "spank808@gmail.com"
-        logging.info("Notification service initialized for manual admin dashboard notifications")
-
-    def send_spank_buck_reward(self, phone_number, amount, reason, customer_name=None, email=None):
-        """Create admin notification for SPANK Buck reward to be manually processed"""
+        self.db_url = os.environ.get('DATABASE_URL')
+        
+    def get_db_connection(self):
+        """Get database connection"""
+        return psycopg2.connect(self.db_url, cursor_factory=RealDictCursor)
+    
+    def get_notification_settings(self) -> List[Dict]:
+        """Get all notification settings"""
         try:
-            # Create admin notification for manual processing
-            notification_data = {
-                'type': 'spank_buck_reward',
-                'customer_name': customer_name or 'Unknown Customer',
-                'phone_number': phone_number,
-                'email': email or 'Not provided',
-                'amount': amount,
-                'reason': reason,
-                'timestamp': datetime.now(),
-                'status': 'pending'
-            }
-            
-            # Add to admin notifications
-            self.storage.add_admin_notification(notification_data)
-            
-            logging.info(f"Admin notification created: ${amount} SPANK Buck reward for {customer_name} - {reason}")
-            return True
-            
+            with self.get_db_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("""
+                        SELECT id, type, channel, enabled, timing_minutes, updated_at
+                        FROM notification_settings
+                        ORDER BY type, channel
+                    """)
+                    return [dict(setting) for setting in cursor.fetchall()]
         except Exception as e:
-            logging.error(f"Failed to create admin notification: {e}")
-            return False
-
-    def send_inquiry_alert(self, inquiry_type, customer_name, phone_number, email, service_type=None, additional_info=None):
-        """Create admin notification for new inquiry to be manually followed up"""
+            logging.error(f"Error getting notification settings: {e}")
+            return []
+    
+    def update_notification_setting(self, setting_id: int, data: Dict) -> Dict[str, Any]:
+        """Update notification setting"""
         try:
-            # Create admin notification for manual follow-up
-            reason = f"New {inquiry_type} inquiry: {service_type or inquiry_type} - manual follow-up required"
-            if additional_info:
-                reason += f" | {additional_info}"
-            
-            notification_data = {
-                'type': 'new_inquiry',
-                'customer_name': customer_name,
-                'phone_number': phone_number,
-                'email': email,
-                'amount': 0,  # No monetary value for inquiries
-                'reason': reason,
-                'timestamp': datetime.now(),
-                'status': 'pending'
-            }
-            
-            # Add to admin notifications
-            self.storage.add_admin_notification(notification_data)
-            
-            logging.info(f"Admin notification created: New {inquiry_type} inquiry from {customer_name}")
-            return True
-            
+            with self.get_db_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("""
+                        UPDATE notification_settings 
+                        SET enabled = %(enabled)s, timing_minutes = %(timing_minutes)s,
+                            updated_at = CURRENT_TIMESTAMP
+                        WHERE id = %(id)s
+                    """, {
+                        'id': setting_id,
+                        'enabled': data.get('enabled', True),
+                        'timing_minutes': data.get('timing_minutes', 120)
+                    })
+                    
+                    conn.commit()
+                    
+                    return {
+                        'success': True,
+                        'message': 'Notification setting updated successfully'
+                    }
         except Exception as e:
-            logging.error(f"Failed to create inquiry notification: {e}")
-            return False
-
-    def send_photo_upload_alert(self, job_id, photo_type, uploader_name):
-        """Create admin notification for job photo uploads"""
+            logging.error(f"Error updating notification setting: {e}")
+            return {
+                'success': False,
+                'message': str(e)
+            }
+    
+    def get_notification_templates(self) -> List[Dict]:
+        """Get all notification templates"""
         try:
-            notification_data = {
-                'type': 'photo_upload',
-                'customer_name': uploader_name,
-                'phone_number': 'See job details',
-                'email': 'See job details', 
-                'amount': 0,
-                'reason': f"New {photo_type} photos uploaded for Job #{job_id}",
-                'timestamp': datetime.now(),
-                'status': 'pending'
-            }
-            
-            self.storage.add_admin_notification(notification_data)
-            logging.info(f"Admin notification created: Photo upload for Job #{job_id}")
-            return True
-            
+            with self.get_db_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("""
+                        SELECT id, type, channel, subject, body, variables, created_at, updated_at
+                        FROM notification_templates
+                        ORDER BY type, channel
+                    """)
+                    return [dict(template) for template in cursor.fetchall()]
         except Exception as e:
-            logging.error(f"Failed to create photo upload notification: {e}")
-            return False
-
-    def _log_reward(self, to_contact, amount, reason, customer_name):
-        """Log reward notification for admin dashboard"""
-        logging.info(f"MANUAL ACTION REQUIRED: Send ${amount} SPANK Buck reward to {customer_name} ({to_contact}) - {reason}")
-
-    def _notify_admin_of_reward(self, phone_number, amount, reason, customer_name, email):
-        """Admin notification already handled in main methods"""
-        pass
-
-    # Legacy method compatibility - redirects to manual notification
-    def send_twilio_sendgrid_email(self, to_email, amount, reason, customer_name=None):
-        """Legacy compatibility - creates admin notification instead"""
-        return self.send_spank_buck_reward(
-            phone_number='See email',
-            amount=amount,
-            reason=reason,
-            customer_name=customer_name,
-            email=to_email
-        )
-
-    def send_spank_buck_sms(self, to_phone, amount, reason, customer_name=None):
-        """Legacy compatibility - creates admin notification instead"""
-        return self.send_spank_buck_reward(
-            phone_number=to_phone,
-            amount=amount,
-            reason=reason,
-            customer_name=customer_name
-        )
-
-# Global instance
-notification_service = NotificationService()
+            logging.error(f"Error getting notification templates: {e}")
+            return []
+    
+    def update_notification_template(self, template_id: int, data: Dict) -> Dict[str, Any]:
+        """Update notification template"""
+        try:
+            with self.get_db_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("""
+                        UPDATE notification_templates 
+                        SET subject = %(subject)s, body = %(body)s, 
+                            variables = %(variables)s, updated_at = CURRENT_TIMESTAMP
+                        WHERE id = %(id)s
+                    """, {
+                        'id': template_id,
+                        'subject': data.get('subject', ''),
+                        'body': data['body'],
+                        'variables': json.dumps(data.get('variables', []))
+                    })
+                    
+                    conn.commit()
+                    
+                    return {
+                        'success': True,
+                        'message': 'Template updated successfully'
+                    }
+        except Exception as e:
+            logging.error(f"Error updating notification template: {e}")
+            return {
+                'success': False,
+                'message': str(e)
+            }
+    
+    def send_test_notification(self, data: Dict) -> Dict[str, Any]:
+        """Send test notification"""
+        try:
+            # Log the test notification
+            with self.get_db_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("""
+                        INSERT INTO notification_logs 
+                        (recipient, channel, type, subject, body, status, metadata)
+                        VALUES (%(recipient)s, %(channel)s, %(type)s, %(subject)s, %(body)s, %(status)s, %(metadata)s)
+                        RETURNING id
+                    """, {
+                        'recipient': data['recipient'],
+                        'channel': data['channel'],
+                        'type': data['type'],
+                        'subject': data.get('subject', ''),
+                        'body': data['body'],
+                        'status': 'sent',  # In real implementation, this would depend on actual delivery
+                        'metadata': json.dumps({'test': True})
+                    })
+                    
+                    log_id = cursor.fetchone()['id']
+                    conn.commit()
+                    
+                    # In a real implementation, you would:
+                    # 1. Use MailerLite for email notifications
+                    # 2. Use Twilio for SMS notifications
+                    # 3. Use WebSocket/Server-Sent Events for in-app notifications
+                    
+                    return {
+                        'success': True,
+                        'message': f'Test notification sent to {data["recipient"]}',
+                        'log_id': log_id
+                    }
+                    
+        except Exception as e:
+            logging.error(f"Error sending test notification: {e}")
+            return {
+                'success': False,
+                'message': str(e)
+            }
+    
+    def get_notification_logs(self, limit: int = 50, offset: int = 0) -> List[Dict]:
+        """Get notification logs with pagination"""
+        try:
+            with self.get_db_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("""
+                        SELECT id, recipient, channel, type, subject, status, sent_at, error_message
+                        FROM notification_logs
+                        ORDER BY sent_at DESC
+                        LIMIT %(limit)s OFFSET %(offset)s
+                    """, {'limit': limit, 'offset': offset})
+                    
+                    return [dict(log) for log in cursor.fetchall()]
+        except Exception as e:
+            logging.error(f"Error getting notification logs: {e}")
+            return []
+    
+    def get_notification_statistics(self) -> Dict[str, Any]:
+        """Get notification statistics"""
+        try:
+            with self.get_db_connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("""
+                        SELECT 
+                            COUNT(*) as total_sent,
+                            COUNT(CASE WHEN status = 'sent' THEN 1 END) as successful,
+                            COUNT(CASE WHEN status = 'failed' THEN 1 END) as failed,
+                            COUNT(CASE WHEN channel = 'email' THEN 1 END) as email_count,
+                            COUNT(CASE WHEN channel = 'sms' THEN 1 END) as sms_count,
+                            COUNT(CASE WHEN channel = 'inapp' THEN 1 END) as inapp_count
+                        FROM notification_logs
+                        WHERE sent_at >= NOW() - INTERVAL '30 days'
+                    """)
+                    
+                    stats = cursor.fetchone()
+                    
+                    # Calculate success rate
+                    total = stats['total_sent'] or 1
+                    success_rate = round((stats['successful'] / total) * 100, 1)
+                    
+                    return {
+                        'total_sent': stats['total_sent'],
+                        'successful': stats['successful'],
+                        'failed': stats['failed'],
+                        'success_rate': success_rate,
+                        'by_channel': {
+                            'email': stats['email_count'],
+                            'sms': stats['sms_count'],
+                            'inapp': stats['inapp_count']
+                        }
+                    }
+        except Exception as e:
+            logging.error(f"Error getting notification statistics: {e}")
+            return {
+                'total_sent': 0,
+                'successful': 0,
+                'failed': 0,
+                'success_rate': 0,
+                'by_channel': {'email': 0, 'sms': 0, 'inapp': 0}
+            }

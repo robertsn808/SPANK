@@ -826,6 +826,16 @@ def admin_service_management():
         flash('Error loading service management', 'error')
         return redirect('/admin-home')
 
+@app.route('/admin/sections/notifications')
+def admin_notifications():
+    """Notifications management page"""
+    try:
+        return render_template('admin/sections/notifications_section.html')
+    except Exception as e:
+        logging.error(f"Notifications error: {e}")
+        flash('Error loading notifications', 'error')
+        return redirect('/admin-home')
+
 @app.route('/admin/data-management')
 def admin_data_management():
     """Data management and CSV operations page"""
@@ -1430,6 +1440,148 @@ def api_export_services():
         return jsonify({
             'success': False,
             'message': 'Failed to export services'
+        }), 500
+
+# Notification Management API Endpoints
+@app.route('/api/admin/notifications/statistics')
+def api_notification_statistics():
+    """Get notification statistics"""
+    try:
+        from services.notification_service import NotificationService
+        notification_service = NotificationService()
+        
+        stats = notification_service.get_notification_statistics()
+        
+        return jsonify({
+            'success': True,
+            'statistics': stats
+        })
+        
+    except Exception as e:
+        logging.error(f"Error fetching notification statistics: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Unable to fetch notification statistics'
+        }), 500
+
+@app.route('/api/admin/notifications/settings')
+def api_notification_settings():
+    """Get notification settings"""
+    try:
+        from services.notification_service import NotificationService
+        notification_service = NotificationService()
+        
+        settings = notification_service.get_notification_settings()
+        
+        return jsonify({
+            'success': True,
+            'settings': settings
+        })
+        
+    except Exception as e:
+        logging.error(f"Error fetching notification settings: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Unable to fetch notification settings'
+        }), 500
+
+@app.route('/api/admin/notifications/settings/<int:setting_id>', methods=['PUT'])
+def api_update_notification_setting(setting_id):
+    """Update notification setting"""
+    try:
+        from services.notification_service import NotificationService
+        notification_service = NotificationService()
+        
+        data = request.get_json()
+        result = notification_service.update_notification_setting(setting_id, data)
+        
+        if result['success']:
+            return jsonify(result)
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        logging.error(f"Error updating notification setting: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Failed to update notification setting'
+        }), 500
+
+@app.route('/api/admin/notifications/templates')
+def api_notification_templates():
+    """Get notification templates"""
+    try:
+        from services.notification_service import NotificationService
+        notification_service = NotificationService()
+        
+        templates = notification_service.get_notification_templates()
+        
+        return jsonify({
+            'success': True,
+            'templates': templates
+        })
+        
+    except Exception as e:
+        logging.error(f"Error fetching notification templates: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Unable to fetch notification templates'
+        }), 500
+
+@app.route('/api/admin/notifications/test', methods=['POST'])
+def api_send_test_notification():
+    """Send test notification"""
+    try:
+        from services.notification_service import NotificationService
+        notification_service = NotificationService()
+        
+        data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['recipient', 'type', 'channel', 'body']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({
+                    'success': False,
+                    'message': f'Missing required field: {field}'
+                }), 400
+        
+        result = notification_service.send_test_notification(data)
+        
+        if result['success']:
+            return jsonify(result)
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        logging.error(f"Error sending test notification: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Failed to send test notification'
+        }), 500
+
+@app.route('/api/admin/notifications/logs')
+def api_notification_logs():
+    """Get notification logs"""
+    try:
+        from services.notification_service import NotificationService
+        notification_service = NotificationService()
+        
+        limit = int(request.args.get('limit', 50))
+        offset = int(request.args.get('offset', 0))
+        
+        logs = notification_service.get_notification_logs(limit=limit, offset=offset)
+        
+        return jsonify({
+            'success': True,
+            'logs': logs
+        })
+        
+    except Exception as e:
+        logging.error(f"Error fetching notification logs: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Unable to fetch notification logs'
         }), 500
 
 @app.route('/admin/quote-builder')
