@@ -1,0 +1,430 @@
+{% extends "public/base.html" %}
+
+{% block title %}Professional Services - SPANKKS Construction Hawaii{% endblock %}
+
+{% block extra_css %}
+<style>
+    .services-hero {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1a3e32 100%);
+        color: white;
+        padding: 120px 0 80px;
+        margin-top: 80px;
+    }
+    
+    .service-category {
+        margin-bottom: 60px;
+    }
+    
+    .category-header {
+        background: var(--primary-color);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .category-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: var(--secondary-color);
+    }
+    
+    .service-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+    
+    .service-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: none;
+        height: 100%;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .service-header {
+        display: flex;
+        justify-content: between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+    
+    .service-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0;
+        flex: 1;
+    }
+    
+    .portal-badge {
+        background: var(--secondary-color);
+        color: var(--text-dark);
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 15px;
+        white-space: nowrap;
+    }
+    
+    .service-description {
+        color: var(--text-light);
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+    
+    .service-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: var(--bg-light);
+        border-radius: 10px;
+    }
+    
+    .service-price {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+    
+    .service-unit {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-top: 2px;
+    }
+    
+    .service-duration {
+        text-align: right;
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+    
+    .service-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-quote {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        flex: 1;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-quote:hover {
+        background: #1a3e32;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .btn-learn {
+        background: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-learn:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .why-spankks {
+        background: var(--bg-light);
+        padding: 60px 0;
+        margin-top: 60px;
+    }
+    
+    .benefit-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        height: 100%;
+        margin-bottom: 30px;
+    }
+    
+    .benefit-icon {
+        font-size: 2.5rem;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #1a3e32 100%);
+        color: white;
+        padding: 60px 0;
+        text-align: center;
+    }
+    
+    @media (max-width: 768px) {
+        .services-hero {
+            padding: 100px 0 60px;
+        }
+        
+        .service-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .service-details {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .service-duration {
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .service-actions {
+            flex-direction: column;
+        }
+        
+        .service-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .portal-badge {
+            margin-left: 0;
+            margin-top: 10px;
+            align-self: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="services-hero">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">Professional Services</h1>
+                <p class="lead mb-4">Comprehensive handyman and construction services for Hawaii homeowners. From small repairs to major renovations, we deliver quality craftsmanship with transparent pricing.</p>
+                <p class="mb-0"><i class="fas fa-map-marker-alt me-2"></i> Serving All of Oahu</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services by Category -->
+<section class="py-5">
+    <div class="container">
+        {% for category_name, services in services_by_category.items() %}
+        <div class="service-category">
+            <div class="category-header">
+                <div class="category-icon">
+                    {% if category_name == 'Drywall Services' %}
+                        <i class="fas fa-hammer"></i>
+                    {% elif category_name == 'Flooring Installation' %}
+                        <i class="fas fa-layer-group"></i>
+                    {% elif category_name == 'Fence Building' %}
+                        <i class="fas fa-border-all"></i>
+                    {% elif category_name == 'General Handyman' %}
+                        <i class="fas fa-tools"></i>
+                    {% elif category_name == 'Home Renovation' %}
+                        <i class="fas fa-home"></i>
+                    {% elif category_name == 'Consultation' %}
+                        <i class="fas fa-clipboard-check"></i>
+                    {% else %}
+                        <i class="fas fa-wrench"></i>
+                    {% endif %}
+                </div>
+                <h2 class="mb-0">{{ category_name }}</h2>
+            </div>
+            
+            <div class="service-grid">
+                {% for service in services %}
+                <div class="service-card">
+                    <div class="service-header">
+                        <h4 class="service-name">{{ service.name }}</h4>
+                        {% if service.portal_access %}
+                        <span class="portal-badge">Portal Access</span>
+                        {% endif %}
+                    </div>
+                    
+                    <p class="service-description">{{ service.description }}</p>
+                    
+                    <div class="service-details">
+                        <div class="pricing-info">
+                            <div class="service-price">
+                                {% if service.min_price == service.max_price %}
+                                    {% if service.min_price == 0 %}
+                                        FREE
+                                    {% else %}
+                                        ${{ "%.2f"|format(service.min_price) }}
+                                    {% endif %}
+                                {% else %}
+                                    ${{ "%.2f"|format(service.min_price) }} - ${{ "%.2f"|format(service.max_price) }}
+                                {% endif %}
+                            </div>
+                            <div class="service-unit">{{ service.unit }}</div>
+                        </div>
+                        
+                        <div class="service-duration">
+                            <i class="fas fa-clock me-1"></i>
+                            {% if service.estimated_hours < 1 %}
+                                {{ (service.estimated_hours * 60)|int }} min
+                            {% elif service.estimated_hours == 1 %}
+                                1 hour
+                            {% else %}
+                                {{ service.estimated_hours }} hours
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="service-actions">
+                        <a href="{{ url_for('consultation') }}?service={{ service.service_code }}" class="btn-quote">
+                            <i class="fas fa-calculator me-2"></i>Get Quote
+                        </a>
+                        <a href="{{ url_for('spankks_skool') }}" class="btn-learn">
+                            <i class="fas fa-graduation-cap me-2"></i>Learn DIY
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Why Choose SPANKKS -->
+<section class="why-spankks">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title">Why Choose SPANKKS Construction?</h2>
+                <p class="lead">Professional service that sets us apart in Hawaii</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h5>Licensed & Insured</h5>
+                    <p>Fully licensed contractor with comprehensive insurance coverage for complete peace of mind.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <h5>Transparent Pricing</h5>
+                    <p>Honest, upfront pricing with detailed estimates. No hidden fees or surprise charges.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h5>Client Portal Access</h5>
+                    <p>Track your project progress with photos, invoices, and real-time updates through our portal.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h5>SPANKKS SKOOL</h5>
+                    <p>Free DIY education platform with professional tips and safety guidance for homeowners.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2>Ready to Get Started?</h2>
+                <p class="lead mb-4">Contact us today for a free consultation and personalized quote</p>
+                <a href="{{ url_for('consultation') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-calendar-check me-2"></i>Free Consultation
+                </a>
+                <a href="tel:+18087789132" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-phone me-2"></i>(808) 778-9132
+                </a>
+                
+                <div class="mt-4">
+                    <small>
+                        <i class="fas fa-envelope me-2"></i>spank808@gmail.com
+                        <span class="mx-3">|</span>
+                        <i class="fas fa-clock me-2"></i>Mon-Fri: 7AM-5PM, Sat: 8AM-3PM
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add loading states to quote buttons
+    document.querySelectorAll('.btn-quote').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+            
+            // Reset after 3 seconds if navigation doesn't happen
+            setTimeout(() => {
+                this.innerHTML = originalText;
+            }, 3000);
+        });
+    });
+    
+    // Smooth scroll for internal links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
