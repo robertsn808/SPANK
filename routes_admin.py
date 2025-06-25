@@ -203,8 +203,8 @@ def admin_staff():
             for staff in staff_data:
                 staff_id = staff['staff_id']
                 
-                # Hours worked this week
-                staff_logs = [log for log in time_logs if log['staff_id'] == staff_id]
+                # Hours worked this week - handle UUID comparison
+                staff_logs = [log for log in time_logs if str(log['staff_id']) == str(staff_id)]
                 total_hours = 0
                 for log in staff_logs:
                     if log['check_in'] and log['check_out']:
@@ -212,8 +212,8 @@ def admin_staff():
                         total_hours += hours
                 staff['hours_this_week'] = round(total_hours, 1)
                 
-                # Active jobs
-                staff_jobs = [job for job in job_assignments if staff_id in (job['assigned_staff_ids'] or '')]
+                # Active jobs - handle UUID comparison
+                staff_jobs = [job for job in job_assignments if str(staff_id) in str(job['assigned_staff_ids'] or '')]
                 staff['active_jobs'] = len(staff_jobs)
                 staff['assigned_jobs'] = staff_jobs[:3]  # Show first 3 jobs
         
