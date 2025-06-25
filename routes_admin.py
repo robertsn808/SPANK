@@ -1006,7 +1006,7 @@ def api_csv_stats():
     try:
         with db.engine.connect() as conn:
             # Get counts for different data types (use existing tables)
-            contacts_count = conn.execute(db.text("SELECT COUNT(*) FROM contact_messages")).scalar() or 0
+            contacts_count = conn.execute(db.text("SELECT COUNT(*) FROM clients")).scalar() or 0
             quotes_count = conn.execute(db.text("SELECT COUNT(*) FROM quotes")).scalar() or 0
             invoices_count = conn.execute(db.text("SELECT COUNT(*) FROM invoices")).scalar() or 0
             clients_count = conn.execute(db.text("SELECT COUNT(*) FROM clients")).scalar() or 0
@@ -1028,8 +1028,8 @@ def api_contacts():
     try:
         with db.engine.connect() as conn:
             result = conn.execute(db.text("""
-                SELECT id as contact_id, name, email, phone, message, created_at
-                FROM contact_messages
+                SELECT client_id as contact_id, name, email, phone, notes as message, created_at
+                FROM clients
                 ORDER BY created_at DESC
             """))
             contacts = [dict(row._mapping) for row in result]
@@ -1044,7 +1044,7 @@ def api_quotes():
     try:
         with db.engine.connect() as conn:
             result = conn.execute(db.text("""
-                SELECT quote_number as quote_id, client_name, service_name as service_type, 
+                SELECT quote_number as quote_id, client_id, 'Service' as service_type, 
                        total_amount, status, created_at
                 FROM quotes
                 ORDER BY created_at DESC
