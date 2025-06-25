@@ -144,22 +144,82 @@ def admin_financial():
 
 @app.route('/admin/staff')
 def admin_staff():
-    """Staff management page with PostgreSQL data"""
+    """Comprehensive staff management page with PostgreSQL data"""
     try:
         with db.engine.connect() as conn:
-            # Get staff information
+            # Get staff information with additional fields
             staff_result = conn.execute(db.text("""
-                SELECT staff_id, name, email, phone, role, hourly_rate, 
-                       skills, availability, active, created_at
+                SELECT staff_id, name, email, phone, role, 
+                       skills, availability, active, created_at, pin
                 FROM staff
                 ORDER BY created_at DESC
             """))
-            staff = [dict(row._mapping) for row in staff_result]
+            staff_data = [dict(row._mapping) for row in staff_result]
+            
+            # Get time logs for each staff member (last 30 days)
+            time_logs_result = conn.execute(db.text("""
+                SELECT tl.*, s.name as staff_name, j.service_type as job_service
+                FROM time_logs tl
+                LEFT JOIN staff s ON tl.staff_id = s.staff_id
+                LEFT JOIN jobs j ON tl.job_id = j.job_id
+                WHERE tl.check_in >= NOW() - INTERVAL '30 days'
+                ORDER BY tl.check_in DESC
+            """))
+            time_logs = [dict(row._mapping) for row in time_logs_result]
+            
+            # Get job assignments for each staff member
+            job_assignments_result = conn.execute(db.text("""
+                SELECT j.job_id, j.client_id, j.status, j.service_type, j.scheduled_date,
+                       j.assigned_staff_ids, c.name as client_name
+                FROM jobs j
+                LEFT JOIN clients c ON j.client_id = c.client_id
+                WHERE j.status IN ('scheduled', 'in_progress')
+                ORDER BY j.scheduled_date ASC
+            """))
+            job_assignments = [dict(row._mapping) for row in job_assignments_result]
+            
+            # Add fallback staff if database is empty
+            if not staff_data:
+                staff_data = [
+                    {
+                        'staff_id': 'SPK001', 'name': 'Robert Spank', 'email': 'robert@spankks.com',
+                        'phone': '(808) 778-9132', 'role': 'Owner/Lead Contractor', 
+                        'skills': 'All Services', 'availability': 'Full-time', 'active': True,
+                        'created_at': '2025-01-01', 'pin': '30078'
+                    },
+                    {
+                        'staff_id': 'SPK002', 'name': 'Maria Spank', 'email': 'maria@spankks.com',
+                        'phone': '(808) 555-0102', 'role': 'Co-Owner/Admin', 
+                        'skills': 'Administration, Client Relations', 'availability': 'Full-time', 'active': True,
+                        'created_at': '2025-01-01', 'pin': '30079'
+                    }
+                ]
+            
+            # Calculate staff metrics
+            for staff in staff_data:
+                staff_id = staff['staff_id']
+                
+                # Hours worked this week
+                staff_logs = [log for log in time_logs if log['staff_id'] == staff_id]
+                total_hours = 0
+                for log in staff_logs:
+                    if log['check_in'] and log['check_out']:
+                        hours = (log['check_out'] - log['check_in']).total_seconds() / 3600
+                        total_hours += hours
+                staff['hours_this_week'] = round(total_hours, 1)
+                
+                # Active jobs
+                staff_jobs = [job for job in job_assignments if staff_id in (job['assigned_staff_ids'] or '')]
+                staff['active_jobs'] = len(staff_jobs)
+                staff['assigned_jobs'] = staff_jobs[:3]  # Show first 3 jobs
         
-        return render_template('admin/sections/staff_section.html', staff=staff)
+        return render_template('admin/sections/staff_management_section.html', 
+                             staff=staff_data, 
+                             time_logs=time_logs,
+                             job_assignments=job_assignments)
     except Exception as e:
-        logging.error(f"Staff page error: {e}")
-        flash('Error loading staff data', 'error')
+        logging.error(f"Staff management page error: {e}")
+        flash('Error loading staff management data', 'error')
         return redirect('/admin-home')
 
 @app.route('/admin/inventory')
@@ -661,6 +721,68 @@ def admin_job_checklist(job_id):
         logging.error(f"Job checklist error: {e}")
         flash('Error loading job checklist', 'error')
         return redirect('/admin/jobs')
+
+@app.route('/admin/sections/portal')
+def admin_portal_management():
+    """Portal management page for client and staff access"""
+    try:
+        with db.engine.connect() as conn:
+            # Get all portal access records
+            portal_result = conn.execute(db.text("""
+                SELECT pa.*, 
+                       CASE 
+                           WHEN pa.user_type = 'client' THEN c.name
+                           WHEN pa.user_type = 'staff' THEN s.name
+                       END as user_name,
+                       CASE 
+                           WHEN pa.user_type = 'client' THEN c.email
+                           WHEN pa.user_type = 'staff' THEN s.email
+                       END as user_email
+                FROM portal_access pa
+                LEFT JOIN clients c ON pa.user_type = 'client' AND pa.user_id = c.client_id
+                LEFT JOIN staff s ON pa.user_type = 'staff' AND pa.user_id = s.staff_id
+                ORDER BY pa.created_at DESC
+            """))
+            portal_access_data = [dict(row._mapping) for row in portal_result]
+            
+            # Get clients for portal management
+            clients_result = conn.execute(db.text("""
+                SELECT client_id, name, email, phone
+                FROM clients
+                WHERE email IS NOT NULL
+                ORDER BY name
+            """))
+            clients_data = [dict(row._mapping) for row in clients_result]
+            
+            # Get active jobs for staff portal management
+            jobs_result = conn.execute(db.text("""
+                SELECT j.job_id, j.client_id, j.service_type, j.status,
+                       c.name as client_name
+                FROM jobs j
+                LEFT JOIN clients c ON j.client_id = c.client_id
+                WHERE j.status IN ('scheduled', 'in_progress')
+                ORDER BY j.job_id
+            """))
+            jobs_data = [dict(row._mapping) for row in jobs_result]
+            
+            # Get staff for staff portal management
+            staff_result = conn.execute(db.text("""
+                SELECT staff_id, name, email, role, active
+                FROM staff
+                WHERE active = TRUE
+                ORDER BY name
+            """))
+            staff_data = [dict(row._mapping) for row in staff_result]
+        
+        return render_template('admin/sections/portal_management_section.html',
+                             portal_access=portal_access_data,
+                             clients=clients_data,
+                             jobs=jobs_data,
+                             staff=staff_data)
+    except Exception as e:
+        logging.error(f"Portal management page error: {e}")
+        flash('Error loading portal management data', 'error')
+        return redirect('/admin-home')
 
 @app.route('/admin/analytics')
 def admin_analytics():

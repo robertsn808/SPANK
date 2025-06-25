@@ -1,0 +1,660 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Staff Management - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="staff-management-dashboard">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Staff Management</h1>
+            <p class="text-muted mb-0">Manage employees, time logs, and job assignments</p>
+        </div>
+        <div>
+            <button class="btn btn-primary" onclick="addNewStaff()">
+                <i class="fas fa-user-plus me-2"></i>Add Staff Member
+            </button>
+        </div>
+    </div>
+
+    <!-- Staff Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Active Staff</h6>
+                            <h3 class="card-title">{{ staff|selectattr('active')|list|length }}</h3>
+                        </div>
+                        <div class="stat-icon bg-primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">On Duty</h6>
+                            <h3 class="card-title">{{ staff|selectattr('availability', 'equalto', 'Full-time')|list|length }}</h3>
+                        </div>
+                        <div class="stat-icon bg-success">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Active Jobs</h6>
+                            <h3 class="card-title">{{ job_assignments|length }}</h3>
+                        </div>
+                        <div class="stat-icon bg-warning">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Total Hours (Week)</h6>
+                            <h3 class="card-title">{{ (staff|sum(attribute='hours_this_week') or 0)|round(1) }}</h3>
+                        </div>
+                        <div class="stat-icon bg-info">
+                            <i class="fas fa-stopwatch"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="staffTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#staff-directory">
+                        <i class="fas fa-users me-2"></i>Staff Directory
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#time-logs">
+                        <i class="fas fa-clock me-2"></i>Time Logs
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#availability">
+                        <i class="fas fa-calendar-alt me-2"></i>Availability
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#assignments">
+                        <i class="fas fa-tasks me-2"></i>Job Assignments
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="staffTabContent">
+                <!-- Staff Directory Tab -->
+                <div class="tab-pane fade show active" id="staff-directory">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <input type="text" class="form-control" id="staffSearch" placeholder="Search staff..." style="width: 300px;">
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                Filter by Role
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="filterStaff('all')">All Roles</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterStaff('Owner')">Owner</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterStaff('Admin')">Admin</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterStaff('Contractor')">Contractor</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterStaff('Crew')">Crew</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="staffTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Role</th>
+                                    <th>Contact</th>
+                                    <th>Skills</th>
+                                    <th>Availability</th>
+                                    <th>Hours (Week)</th>
+                                    <th>Active Jobs</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for member in staff %}
+                                <tr data-staff-id="{{ member.staff_id }}" data-role="{{ member.role }}">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-2">
+                                                {{ member.name[:2].upper() }}
+                                            </div>
+                                            <div>
+                                                <strong>{{ member.name }}</strong>
+                                                <br><small class="text-muted">{{ member.staff_id }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'primary' if 'Owner' in member.role else 'secondary' }}">
+                                            {{ member.role }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <small>{{ member.email or 'No email' }}</small><br>
+                                            <small>{{ member.phone or 'No phone' }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small>{{ member.skills or 'Not specified' }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if member.availability == 'Full-time' else 'warning' }}">
+                                            {{ member.availability or 'Not set' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <strong>{{ member.hours_this_week or 0 }}h</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ member.active_jobs or 0 }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if member.active else 'danger' }}">
+                                            {{ 'Active' if member.active else 'Inactive' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" onclick="editStaff('{{ member.staff_id }}')" title="Edit Staff">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" onclick="viewTimeLog('{{ member.staff_id }}')" title="Time Log">
+                                                <i class="fas fa-clock"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" onclick="manageAccess('{{ member.staff_id }}')" title="Portal Access">
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                            <button class="btn btn-outline-{{ 'danger' if member.active else 'success' }}" 
+                                                    onclick="toggleStaffStatus('{{ member.staff_id }}', {{ member.active|lower }})" 
+                                                    title="{{ 'Deactivate' if member.active else 'Activate' }}">
+                                                <i class="fas fa-{{ 'user-slash' if member.active else 'user-check' }}"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Time Logs Tab -->
+                <div class="tab-pane fade" id="time-logs">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Recent Time Logs (Last 30 Days)</h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="exportTimeLogs()">
+                            <i class="fas fa-download me-2"></i>Export Logs
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Staff</th>
+                                    <th>Job ID</th>
+                                    <th>Service</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Hours</th>
+                                    <th>Location</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in time_logs %}
+                                <tr>
+                                    <td>{{ log.staff_name or 'Unknown' }}</td>
+                                    <td>{{ log.job_id or 'N/A' }}</td>
+                                    <td>{{ log.job_service or 'N/A' }}</td>
+                                    <td>
+                                        {% if log.check_in %}
+                                        {{ log.check_in.strftime('%m/%d/%Y %I:%M %p') }}
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if log.check_out %}
+                                        {{ log.check_out.strftime('%m/%d/%Y %I:%M %p') }}
+                                        {% else %}
+                                        <span class="badge bg-warning">Still clocked in</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if log.check_in and log.check_out %}
+                                        {{ "%.1f"|format((log.check_out - log.check_in).total_seconds() / 3600) }}h
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if log.gps_coords %}
+                                        <button class="btn btn-sm btn-outline-info" onclick="viewLocation('{{ log.gps_coords }}')">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                        </button>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Availability Tab -->
+                <div class="tab-pane fade" id="availability">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5>Staff Availability Calendar</h5>
+                            <div id="availabilityCalendar" class="bg-light p-3 rounded">
+                                <!-- FullCalendar will be initialized here -->
+                                <p class="text-center text-muted py-5">
+                                    <i class="fas fa-calendar-alt fa-3x mb-3"></i><br>
+                                    Staff availability calendar will be displayed here
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Quick Availability</h5>
+                            {% for member in staff %}
+                            <div class="card mb-2">
+                                <div class="card-body py-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ member.name }}</strong><br>
+                                            <small class="text-muted">{{ member.role }}</small>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-{{ 'success' if member.availability == 'Full-time' else 'warning' }}">
+                                                {{ member.availability or 'Not set' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Assignments Tab -->
+                <div class="tab-pane fade" id="assignments">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Current Job Assignments</h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="assignJob()">
+                            <i class="fas fa-plus me-2"></i>Assign Job
+                        </button>
+                    </div>
+                    
+                    <div class="row">
+                        {% for job in job_assignments %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card job-assignment-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="card-title">{{ job.job_id }}</h6>
+                                            <p class="card-text">
+                                                <strong>Client:</strong> {{ job.client_name or 'Unknown' }}<br>
+                                                <strong>Service:</strong> {{ job.service_type or 'Custom' }}<br>
+                                                <strong>Date:</strong> {{ job.scheduled_date.strftime('%m/%d/%Y') if job.scheduled_date else 'Not scheduled' }}
+                                            </p>
+                                        </div>
+                                        <span class="badge bg-{{ 'primary' if job.status == 'scheduled' else 'warning' }}">
+                                            {{ job.status|title }}
+                                        </span>
+                                    </div>
+                                    <div class="assigned-staff">
+                                        <strong>Assigned:</strong>
+                                        {% if job.assigned_staff_ids %}
+                                        {{ job.assigned_staff_ids }}
+                                        {% else %}
+                                        <span class="text-muted">Unassigned</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mt-2">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="editAssignment('{{ job.job_id }}')">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" onclick="viewJobDetails('{{ job.job_id }}')">
+                                            <i class="fas fa-eye"></i> Details
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Staff Modal -->
+<div class="modal fade" id="staffModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staffModalTitle">Add New Staff Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="staffForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Role *</label>
+                                <select class="form-select" name="role" required>
+                                    <option value="">Select Role</option>
+                                    <option value="Owner">Owner</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Lead Contractor">Lead Contractor</option>
+                                    <option value="Contractor">Contractor</option>
+                                    <option value="Crew Member">Crew Member</option>
+                                    <option value="Scheduler">Scheduler</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" name="phone">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Portal PIN (6 digits)</label>
+                                <input type="text" class="form-control" name="pin" maxlength="6" pattern="[0-9]{6}">
+                                <small class="form-text text-muted">6-digit PIN for staff portal access</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Availability</label>
+                                <select class="form-select" name="availability">
+                                    <option value="Full-time">Full-time</option>
+                                    <option value="Part-time">Part-time</option>
+                                    <option value="Contract">Contract</option>
+                                    <option value="On-call">On-call</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Skills & Specializations</label>
+                        <textarea class="form-control" name="skills" rows="3" placeholder="List skills, certifications, and specializations..."></textarea>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="active" id="staffActive" checked>
+                        <label class="form-check-label" for="staffActive">
+                            Active Employee
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Staff Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.staff-management-dashboard {
+    padding: 20px;
+}
+
+.stat-card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #667eea;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.job-assignment-card {
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.job-assignment-card:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.assigned-staff {
+    background: #f8f9fa;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+#staffTable tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+}
+
+.nav-tabs .nav-link.active {
+    color: #667eea;
+    border-bottom: 2px solid #667eea;
+    background: none;
+}
+</style>
+
+<script>
+// Search functionality
+document.getElementById('staffSearch').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#staffTable tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+});
+
+// Filter functionality
+function filterStaff(role) {
+    const rows = document.querySelectorAll('#staffTable tbody tr');
+    
+    rows.forEach(row => {
+        if (role === 'all') {
+            row.style.display = '';
+        } else {
+            const staffRole = row.getAttribute('data-role');
+            row.style.display = staffRole && staffRole.includes(role) ? '' : 'none';
+        }
+    });
+}
+
+// Staff management functions
+function addNewStaff() {
+    document.getElementById('staffModalTitle').textContent = 'Add New Staff Member';
+    document.getElementById('staffForm').reset();
+    new bootstrap.Modal(document.getElementById('staffModal')).show();
+}
+
+function editStaff(staffId) {
+    document.getElementById('staffModalTitle').textContent = 'Edit Staff Member';
+    // Load staff data and populate form
+    new bootstrap.Modal(document.getElementById('staffModal')).show();
+}
+
+function viewTimeLog(staffId) {
+    // Switch to time logs tab and filter by staff
+    const timeLogsTab = new bootstrap.Tab(document.querySelector('[data-bs-toggle="tab"][href="#time-logs"]'));
+    timeLogsTab.show();
+}
+
+function manageAccess(staffId) {
+    // Redirect to portal management for this staff member
+    window.location.href = `/admin/sections/portal?staff=${staffId}`;
+}
+
+function toggleStaffStatus(staffId, currentStatus) {
+    const action = currentStatus ? 'deactivate' : 'activate';
+    if (confirm(`Are you sure you want to ${action} this staff member?`)) {
+        fetch(`/api/admin/staff/${staffId}/toggle-status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ active: !currentStatus })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                location.reload();
+            } else {
+                alert(`Error: ${result.error}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating staff status');
+        });
+    }
+}
+
+function exportTimeLogs() {
+    window.open('/api/admin/staff/time-logs/export', '_blank');
+}
+
+function viewLocation(coords) {
+    if (coords) {
+        const [lat, lng] = coords.split(',');
+        window.open(`https://maps.google.com?q=${lat},${lng}`, '_blank');
+    }
+}
+
+function assignJob() {
+    alert('Job assignment feature - would show assignment dialog');
+}
+
+function editAssignment(jobId) {
+    alert(`Edit assignment for job ${jobId}`);
+}
+
+function viewJobDetails(jobId) {
+    window.location.href = `/admin/jobs/${jobId}/checklist`;
+}
+
+// Form submission
+document.getElementById('staffForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const staffData = {
+        name: formData.get('name'),
+        role: formData.get('role'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        pin: formData.get('pin'),
+        availability: formData.get('availability'),
+        skills: formData.get('skills'),
+        active: formData.has('active')
+    };
+    
+    fetch('/api/admin/staff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(staffData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            bootstrap.Modal.getInstance(document.getElementById('staffModal')).hide();
+            location.reload();
+        } else {
+            alert(`Error: ${result.error}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving staff member');
+    });
+});
+</script>
+{% endblock %}

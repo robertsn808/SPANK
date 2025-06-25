@@ -1,0 +1,83 @@
+👷 STAFF MANAGEMENT PAGE
+🧭 Location
+bash
+Copy
+Edit
+/admin/staff
+📋 Features & Components
+Section	Description
+👤 Staff Directory	Table view of all staff with search, filter, and sort
+➕ Add/Edit Staff	Form to register new employees (name, role, contact, PIN, availability)
+⏱ Time Clock Logs	Track daily clock-ins/outs, job check-ins, hours worked
+🗓 Availability Calendar	Visual calendar to show available days/hours
+🧑‍💻 Role & Access Control	Assign permissions: Admin, Scheduler, Crew
+📋 Job Assignments	See what jobs each staff member is assigned to
+📍 GPS Job Check-ins	Show location & timestamp of each job check-in
+🛑 Inactive Status	Toggle to deactivate employees no longer with the company
+
+📊 Data Schema (SQL)
+sql
+Copy
+Edit
+CREATE TABLE staff (
+  staff_id SERIAL PRIMARY KEY,
+  name TEXT,
+  email TEXT,
+  phone TEXT,
+  role TEXT,
+  pin VARCHAR(6),
+  is_active BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE time_logs (
+  log_id SERIAL PRIMARY KEY,
+  staff_id INT REFERENCES staff(staff_id),
+  job_id INT REFERENCES jobs(job_id),
+  check_in TIMESTAMP,
+  check_out TIMESTAMP,
+  gps_coords TEXT
+);
+💡 Optional Features
+Profile picture upload
+
+Performance metrics
+
+Vacation & sick day tracking
+
+🔐 PORTAL MANAGEMENT PAGE
+🧭 Location
+bash
+Copy
+Edit
+/admin/portals
+📋 Features & Components
+Section	Description
+👤 Client Portal Management	View all clients with portal access (by clientId)
+🔑 Access Link Generator	Regenerate client login links (/portal/:clientId)
+🧾 Quote/Invoice Tracking	See if the client has viewed or accepted quotes
+🛠 Job Portal Link Manager	Manage /jobsite/:jobId staff-access pages
+📄 Portal Permissions	Toggle read-only or file-upload access for clients
+📥 Upload Access	Enable clients to send photos/docs to job records
+🔒 Session Logs	Record login timestamps for both clients and staff
+✉️ Send Portal Link	One-click to email portal login to client or crew
+
+📊 Data Schema (SQL)
+sql
+Copy
+Edit
+CREATE TABLE portal_access (
+  id SERIAL PRIMARY KEY,
+  user_type TEXT CHECK (user_type IN ('client', 'staff')),
+  user_id INT,
+  job_id INT,
+  access_link TEXT,
+  last_login TIMESTAMP,
+  access_level TEXT CHECK (access_level IN ('read', 'edit', 'admin'))
+);
+🔐 Security Logic
+Client Portal: /portal/:clientId access with secret token or lookup + job ID
+
+Staff Portal: /jobsite/:jobId with PIN-based login
+
+Auto-expire links after X days or allow manual expiration
+

@@ -1,0 +1,726 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Portal Management - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="portal-management-dashboard">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Portal Management</h1>
+            <p class="text-muted mb-0">Manage client and staff portal access</p>
+        </div>
+        <div>
+            <button class="btn btn-primary" onclick="createPortalAccess()">
+                <i class="fas fa-plus me-2"></i>Create Portal Access
+            </button>
+        </div>
+    </div>
+
+    <!-- Portal Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Client Portals</h6>
+                            <h3 class="card-title">{{ portal_access|selectattr('user_type', 'equalto', 'client')|list|length }}</h3>
+                        </div>
+                        <div class="stat-icon bg-primary">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Staff Portals</h6>
+                            <h3 class="card-title">{{ portal_access|selectattr('user_type', 'equalto', 'staff')|list|length }}</h3>
+                        </div>
+                        <div class="stat-icon bg-success">
+                            <i class="fas fa-hard-hat"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Active Sessions</h6>
+                            <h3 class="card-title">{{ portal_access|selectattr('last_login')|list|length }}</h3>
+                        </div>
+                        <div class="stat-icon bg-warning">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-subtitle text-muted">Expired Links</h6>
+                            <h3 class="card-title">{{ portal_access|selectattr('expires_at')|select('expired')|list|length }}</h3>
+                        </div>
+                        <div class="stat-icon bg-danger">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="portalTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#client-portals">
+                        <i class="fas fa-user me-2"></i>Client Portals
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#staff-portals">
+                        <i class="fas fa-hard-hat me-2"></i>Staff Portals
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#access-logs">
+                        <i class="fas fa-list me-2"></i>Access Logs
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#link-generator">
+                        <i class="fas fa-link me-2"></i>Link Generator
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="portalTabContent">
+                <!-- Client Portals Tab -->
+                <div class="tab-pane fade show active" id="client-portals">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Client Portal Access Management</h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="bulkEmailPortalLinks('client')">
+                            <i class="fas fa-envelope me-2"></i>Bulk Email Links
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Contact</th>
+                                    <th>Portal Link</th>
+                                    <th>Access Level</th>
+                                    <th>Last Login</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for client in clients %}
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <strong>{{ client.name }}</strong><br>
+                                            <small class="text-muted">{{ client.client_id }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <small>{{ client.email or 'No email' }}</small><br>
+                                            <small>{{ client.phone or 'No phone' }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" class="form-control" 
+                                                   value="/portal/{{ client.client_id }}" readonly>
+                                            <button class="btn btn-outline-secondary" 
+                                                    onclick="copyToClipboard('/portal/{{ client.client_id }}')">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">Read</span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">Never</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">Active</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" 
+                                                    onclick="emailPortalLink('{{ client.client_id }}', '{{ client.email }}')"
+                                                    title="Email Portal Link">
+                                                <i class="fas fa-envelope"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" 
+                                                    onclick="regenerateLink('{{ client.client_id }}')"
+                                                    title="Regenerate Link">
+                                                <i class="fas fa-sync"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" 
+                                                    onclick="editPortalAccess('{{ client.client_id }}')"
+                                                    title="Edit Access">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Staff Portals Tab -->
+                <div class="tab-pane fade" id="staff-portals">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Staff Portal Access Management</h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="bulkEmailPortalLinks('staff')">
+                            <i class="fas fa-envelope me-2"></i>Send Staff Portal Links
+                        </button>
+                    </div>
+                    
+                    <div class="row">
+                        {% for job in jobs %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card job-portal-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="card-title">{{ job.job_id }}</h6>
+                                            <p class="card-text">
+                                                <strong>Client:</strong> {{ job.client_name or 'Unknown' }}<br>
+                                                <strong>Service:</strong> {{ job.service_type or 'Custom' }}<br>
+                                                <strong>Status:</strong> 
+                                                <span class="badge bg-{{ 'primary' if job.status == 'scheduled' else 'warning' }}">
+                                                    {{ job.status|title }}
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="portal-link-section">
+                                        <label class="form-label small">Staff Portal Link:</label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" class="form-control" 
+                                                   value="/jobsite/{{ job.job_id }}" readonly>
+                                            <button class="btn btn-outline-secondary" 
+                                                    onclick="copyToClipboard('/jobsite/{{ job.job_id }}')">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-3 d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                onclick="emailJobPortalLink('{{ job.job_id }}')">
+                                            <i class="fas fa-envelope"></i> Email Link
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info" 
+                                                onclick="viewJobPortal('{{ job.job_id }}')">
+                                            <i class="fas fa-external-link-alt"></i> View Portal
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" 
+                                                onclick="editJobPortalAccess('{{ job.job_id }}')">
+                                            <i class="fas fa-cog"></i> Settings
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Access Logs Tab -->
+                <div class="tab-pane fade" id="access-logs">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>Portal Access Logs</h5>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                Filter by Type
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="filterLogs('all')">All Access</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterLogs('client')">Client Only</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="filterLogs('staff')">Staff Only</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Type</th>
+                                    <th>Portal/Job</th>
+                                    <th>Access Level</th>
+                                    <th>Last Login</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for access in portal_access %}
+                                <tr data-user-type="{{ access.user_type }}">
+                                    <td>
+                                        <div>
+                                            <strong>{{ access.user_name or 'Unknown' }}</strong><br>
+                                            <small class="text-muted">{{ access.user_id }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'primary' if access.user_type == 'client' else 'success' }}">
+                                            {{ access.user_type|title }}
+                                        </span>
+                                    </td>
+                                    <td>{{ access.job_id or 'General Portal' }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ access.access_level|title }}</span>
+                                    </td>
+                                    <td>
+                                        {% if access.last_login %}
+                                        {{ access.last_login.strftime('%m/%d/%Y %I:%M %p') }}
+                                        {% else %}
+                                        <span class="text-muted">Never</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if access.expires_at and access.expires_at < now %}
+                                        <span class="badge bg-danger">Expired</span>
+                                        {% else %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-info" 
+                                                    onclick="viewAccessDetails({{ access.id }})"
+                                                    title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" 
+                                                    onclick="editAccess({{ access.id }})"
+                                                    title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger" 
+                                                    onclick="revokeAccess({{ access.id }})"
+                                                    title="Revoke">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Link Generator Tab -->
+                <div class="tab-pane fade" id="link-generator">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6><i class="fas fa-user me-2"></i>Client Portal Link Generator</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form id="clientLinkForm">
+                                        <div class="mb-3">
+                                            <label class="form-label">Select Client</label>
+                                            <select class="form-select" name="client_id" required>
+                                                <option value="">Choose client...</option>
+                                                {% for client in clients %}
+                                                <option value="{{ client.client_id }}">{{ client.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Access Level</label>
+                                            <select class="form-select" name="access_level">
+                                                <option value="read">Read Only</option>
+                                                <option value="edit">Edit Access</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Expiration (days)</label>
+                                            <input type="number" class="form-control" name="expiry_days" value="30" min="1" max="365">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-link me-2"></i>Generate Client Link
+                                        </button>
+                                    </form>
+                                    
+                                    <div id="clientLinkResult" class="mt-3" style="display: none;">
+                                        <label class="form-label">Generated Link:</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="clientLinkOutput" readonly>
+                                            <button class="btn btn-outline-secondary" onclick="copyToClipboard(document.getElementById('clientLinkOutput').value)">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6><i class="fas fa-hard-hat me-2"></i>Staff Portal Link Generator</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form id="staffLinkForm">
+                                        <div class="mb-3">
+                                            <label class="form-label">Select Job</label>
+                                            <select class="form-select" name="job_id" required>
+                                                <option value="">Choose job...</option>
+                                                {% for job in jobs %}
+                                                <option value="{{ job.job_id }}">{{ job.job_id }} - {{ job.client_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Assign to Staff</label>
+                                            <select class="form-select" name="staff_id">
+                                                <option value="">All staff (PIN required)</option>
+                                                {% for member in staff %}
+                                                <option value="{{ member.staff_id }}">{{ member.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Access Level</label>
+                                            <select class="form-select" name="access_level">
+                                                <option value="edit">Full Access</option>
+                                                <option value="read">View Only</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-link me-2"></i>Generate Staff Link
+                                        </button>
+                                    </form>
+                                    
+                                    <div id="staffLinkResult" class="mt-3" style="display: none;">
+                                        <label class="form-label">Generated Link:</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="staffLinkOutput" readonly>
+                                            <button class="btn btn-outline-secondary" onclick="copyToClipboard(document.getElementById('staffLinkOutput').value)">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.portal-management-dashboard {
+    padding: 20px;
+}
+
+.stat-card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.job-portal-card {
+    border-left: 4px solid #28a745;
+    transition: all 0.3s ease;
+}
+
+.job-portal-card:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.portal-link-section {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+}
+
+.nav-tabs .nav-link.active {
+    color: #667eea;
+    border-bottom: 2px solid #667eea;
+    background: none;
+}
+</style>
+
+<script>
+// Portal management functions
+function createPortalAccess() {
+    // Switch to link generator tab
+    const linkGeneratorTab = new bootstrap.Tab(document.querySelector('[data-bs-toggle="tab"][href="#link-generator"]'));
+    linkGeneratorTab.show();
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(window.location.origin + text).then(() => {
+        // Show temporary success message
+        const button = event.target.closest('button');
+        const icon = button.querySelector('i');
+        icon.className = 'fas fa-check';
+        setTimeout(() => {
+            icon.className = 'fas fa-copy';
+        }, 2000);
+    });
+}
+
+function emailPortalLink(clientId, email) {
+    if (!email) {
+        alert('No email address available for this client');
+        return;
+    }
+    
+    fetch('/api/admin/portal/email-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_type: 'client',
+            user_id: clientId,
+            email: email
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Portal link emailed successfully!');
+        } else {
+            alert(`Error: ${result.error}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error sending email');
+    });
+}
+
+function regenerateLink(clientId) {
+    if (confirm('Are you sure you want to regenerate this portal link? The old link will become invalid.')) {
+        fetch(`/api/admin/portal/regenerate/${clientId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                location.reload();
+            } else {
+                alert(`Error: ${result.error}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error regenerating link');
+        });
+    }
+}
+
+function editPortalAccess(clientId) {
+    alert(`Edit portal access for client ${clientId} - modal would appear`);
+}
+
+function bulkEmailPortalLinks(type) {
+    if (confirm(`Send portal links to all ${type}s via email?`)) {
+        fetch('/api/admin/portal/bulk-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_type: type })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert(`Portal links sent to ${result.sent_count} ${type}s`);
+            } else {
+                alert(`Error: ${result.error}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error sending bulk emails');
+        });
+    }
+}
+
+function emailJobPortalLink(jobId) {
+    fetch('/api/admin/portal/email-job-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ job_id: jobId })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Job portal link emailed to assigned staff!');
+        } else {
+            alert(`Error: ${result.error}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error sending email');
+    });
+}
+
+function viewJobPortal(jobId) {
+    window.open(`/jobsite/${jobId}`, '_blank');
+}
+
+function editJobPortalAccess(jobId) {
+    alert(`Edit job portal access for ${jobId} - settings modal would appear`);
+}
+
+function filterLogs(type) {
+    const rows = document.querySelectorAll('#access-logs tbody tr');
+    rows.forEach(row => {
+        if (type === 'all') {
+            row.style.display = '';
+        } else {
+            const userType = row.getAttribute('data-user-type');
+            row.style.display = userType === type ? '' : 'none';
+        }
+    });
+}
+
+function viewAccessDetails(accessId) {
+    alert(`View access details for ID ${accessId} - modal would appear`);
+}
+
+function editAccess(accessId) {
+    alert(`Edit access for ID ${accessId} - modal would appear`);
+}
+
+function revokeAccess(accessId) {
+    if (confirm('Are you sure you want to revoke this portal access?')) {
+        fetch(`/api/admin/portal/revoke/${accessId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                location.reload();
+            } else {
+                alert(`Error: ${result.error}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error revoking access');
+        });
+    }
+}
+
+// Form submissions
+document.getElementById('clientLinkForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const linkData = {
+        user_type: 'client',
+        user_id: formData.get('client_id'),
+        access_level: formData.get('access_level'),
+        expiry_days: parseInt(formData.get('expiry_days'))
+    };
+    
+    fetch('/api/admin/portal/generate-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(linkData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            document.getElementById('clientLinkOutput').value = result.link;
+            document.getElementById('clientLinkResult').style.display = 'block';
+        } else {
+            alert(`Error: ${result.error}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error generating link');
+    });
+});
+
+document.getElementById('staffLinkForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const linkData = {
+        user_type: 'staff',
+        job_id: formData.get('job_id'),
+        staff_id: formData.get('staff_id'),
+        access_level: formData.get('access_level')
+    };
+    
+    fetch('/api/admin/portal/generate-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(linkData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            document.getElementById('staffLinkOutput').value = result.link;
+            document.getElementById('staffLinkResult').style.display = 'block';
+        } else {
+            alert(`Error: ${result.error}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error generating link');
+    });
+});
+</script>
+{% endblock %}

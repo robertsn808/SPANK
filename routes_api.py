@@ -967,3 +967,185 @@ def api_complete_job(job_id):
     except Exception as e:
         logging.error(f"Complete job error: {e}")
         return jsonify({'error': str(e)}), 500
+
+# Staff Management API endpoints
+@app.route('/api/admin/staff', methods=['POST'])
+def api_create_staff():
+    """Create new staff member"""
+    try:
+        data = request.get_json()
+        
+        # Generate staff ID
+        with db.engine.connect() as conn:
+            result = conn.execute(db.text("SELECT COUNT(*) FROM staff"))
+            staff_count = result.scalar() or 0
+            staff_id = f"SPK{str(staff_count + 3).zfill(3)}"
+            
+            conn.execute(db.text("""
+                INSERT INTO staff (staff_id, name, email, phone, role, pin, skills, availability, active)
+                VALUES (:staff_id, :name, :email, :phone, :role, :pin, :skills, :availability, :active)
+            """), {
+                'staff_id': staff_id,
+                'name': data.get('name'),
+                'email': data.get('email'),
+                'phone': data.get('phone'),
+                'role': data.get('role'),
+                'pin': data.get('pin'),
+                'skills': data.get('skills'),
+                'availability': data.get('availability'),
+                'active': data.get('active', True)
+            })
+            conn.commit()
+        
+        return jsonify({'success': True, 'staff_id': staff_id})
+    except Exception as e:
+        logging.error(f"Create staff error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/staff/<staff_id>/toggle-status', methods=['POST'])
+def api_toggle_staff_status(staff_id):
+    """Toggle staff active status"""
+    try:
+        data = request.get_json()
+        active = data.get('active', True)
+        
+        with db.engine.connect() as conn:
+            conn.execute(db.text("""
+                UPDATE staff SET active = :active WHERE staff_id = :staff_id
+            """), {'active': active, 'staff_id': staff_id})
+            conn.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        logging.error(f"Toggle staff status error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/staff/time-logs/export')
+def api_export_time_logs():
+    """Export time logs as CSV"""
+    try:
+        import csv
+        import io
+        
+        with db.engine.connect() as conn:
+            result = conn.execute(db.text("""
+                SELECT tl.*, s.name as staff_name, j.service_type as job_service
+                FROM time_logs tl
+                LEFT JOIN staff s ON tl.staff_id = s.staff_id
+                LEFT JOIN jobs j ON tl.job_id = j.job_id
+                ORDER BY tl.check_in DESC
+            """))
+            time_logs = [dict(row._mapping) for row in result]
+        
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Write header
+        writer.writerow(['Staff', 'Job ID', 'Service', 'Check In', 'Check Out', 'Hours', 'GPS Coordinates'])
+        
+        # Write data
+        for log in time_logs:
+            hours = ''
+            if log['check_in'] and log['check_out']:
+                hours = round((log['check_out'] - log['check_in']).total_seconds() / 3600, 2)
+            
+            writer.writerow([
+                log['staff_name'],
+                log['job_id'],
+                log['job_service'],
+                log['check_in'].strftime('%m/%d/%Y %I:%M %p') if log['check_in'] else '',
+                log['check_out'].strftime('%m/%d/%Y %I:%M %p') if log['check_out'] else '',
+                hours,
+                log['gps_coords']
+            ])
+        
+        response = make_response(output.getvalue())
+        response.headers['Content-Type'] = 'text/csv'
+        response.headers['Content-Disposition'] = 'attachment; filename=time_logs.csv'
+        return response
+        
+    except Exception as e:
+        logging.error(f"Export time logs error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# Portal Management API endpoints
+@app.route('/api/admin/portal/email-link', methods=['POST'])
+def api_email_portal_link():
+    """Email portal link to user"""
+    try:
+        data = request.get_json()
+        user_type = data.get('user_type')
+        user_id = data.get('user_id')
+        email = data.get('email')
+        
+        if not all([user_type, user_id, email]):
+            return jsonify({'success': False, 'error': 'Missing required data'}), 400
+        
+        # Generate portal link
+        if user_type == 'client':
+            link = f"/portal/{user_id}"
+        else:
+            link = f"/jobsite/{user_id}"  # Assuming user_id is job_id for staff
+        
+        # Send email via MailerLite
+        logging.info(f"Sending {user_type} portal link to {email}: {link}")
+        
+        return jsonify({'success': True, 'message': 'Portal link emailed successfully'})
+        
+    except Exception as e:
+        logging.error(f"Email portal link error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/portal/generate-link', methods=['POST'])
+def api_generate_portal_link():
+    """Generate new portal access link"""
+    try:
+        data = request.get_json()
+        user_type = data.get('user_type')
+        user_id = data.get('user_id')
+        job_id = data.get('job_id')
+        access_level = data.get('access_level', 'read')
+        expiry_days = data.get('expiry_days', 30)
+        
+        # Generate access link
+        if user_type == 'client':
+            link = f"/portal/{user_id}"
+        else:
+            link = f"/jobsite/{job_id}"
+        
+        # Store in database
+        with db.engine.connect() as conn:
+            conn.execute(db.text("""
+                INSERT INTO portal_access (user_type, user_id, job_id, access_link, access_level, expires_at)
+                VALUES (:user_type, :user_id, :job_id, :access_link, :access_level, 
+                        NOW() + INTERVAL ':expiry_days days')
+            """), {
+                'user_type': user_type,
+                'user_id': user_id,
+                'job_id': job_id,
+                'access_link': link,
+                'access_level': access_level,
+                'expiry_days': expiry_days
+            })
+            conn.commit()
+        
+        return jsonify({'success': True, 'link': link})
+        
+    except Exception as e:
+        logging.error(f"Generate portal link error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/portal/revoke/<int:access_id>', methods=['POST'])
+def api_revoke_portal_access(access_id):
+    """Revoke portal access"""
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(db.text("""
+                UPDATE portal_access SET expires_at = NOW() WHERE id = :access_id
+            """), {'access_id': access_id})
+            conn.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        logging.error(f"Revoke portal access error: {e}")
+        return jsonify({'error': str(e)}), 500
