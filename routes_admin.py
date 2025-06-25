@@ -1005,8 +1005,8 @@ def api_csv_stats():
     """Get CSV export statistics"""
     try:
         with db.engine.connect() as conn:
-            # Get counts for different data types
-            contacts_count = conn.execute(db.text("SELECT COUNT(*) FROM contacts")).scalar() or 0
+            # Get counts for different data types (use existing tables)
+            contacts_count = conn.execute(db.text("SELECT COUNT(*) FROM contact_messages")).scalar() or 0
             quotes_count = conn.execute(db.text("SELECT COUNT(*) FROM quotes")).scalar() or 0
             invoices_count = conn.execute(db.text("SELECT COUNT(*) FROM invoices")).scalar() or 0
             clients_count = conn.execute(db.text("SELECT COUNT(*) FROM clients")).scalar() or 0
@@ -1028,8 +1028,8 @@ def api_contacts():
     try:
         with db.engine.connect() as conn:
             result = conn.execute(db.text("""
-                SELECT contact_id, name, email, phone, message, created_at
-                FROM contacts
+                SELECT id as contact_id, name, email, phone, message, created_at
+                FROM contact_messages
                 ORDER BY created_at DESC
             """))
             contacts = [dict(row._mapping) for row in result]
@@ -1044,7 +1044,8 @@ def api_quotes():
     try:
         with db.engine.connect() as conn:
             result = conn.execute(db.text("""
-                SELECT quote_id, client_id, service_type, total_amount, status, created_at
+                SELECT quote_number as quote_id, client_name, service_name as service_type, 
+                       total_amount, status, created_at
                 FROM quotes
                 ORDER BY created_at DESC
             """))
