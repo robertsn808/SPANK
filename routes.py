@@ -98,36 +98,130 @@ from config.app import app
 
 @app.route('/admin-home')
 def admin_home_redirect():
-    """Admin homepage - simple admin login page"""
-    return '''
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>SPANKKS Construction - Admin Portal</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    </head>
-    <body class="bg-light">
-        <div class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h4 class="mb-0">SPANKKS Construction Admin Portal</h4>
-                        </div>
-                        <div class="card-body">
-                            <p>Welcome to the SPANKKS Construction admin portal.</p>
-                            <div class="d-grid gap-2">
-                                <a href="/" class="btn btn-secondary">Return to Website</a>
-                                <a href="/consultation" class="btn btn-primary">Manage Consultations</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-    '''
+    """Admin homepage - comprehensive dashboard"""
+    try:
+        # Get dashboard stats
+        dashboard_stats = get_dashboard_stats()
+        return render_template('admin/dashboard/main.html', stats=dashboard_stats)
+    except Exception as e:
+        logging.error(f"Admin dashboard error: {e}")
+        return render_template('admin/core/login.html')
+
+def get_dashboard_stats():
+    """Get comprehensive dashboard statistics using existing services"""
+    try:
+        from services.financial_reporting_service import FinancialReportingService
+        from services.job_tracking_service import JobTrackingService
+        from analytics.business_intelligence import BusinessIntelligence
+        from services.enhanced_staff_service import EnhancedStaffService
+        
+        # Initialize services
+        financial_service = FinancialReportingService()
+        job_service = JobTrackingService()
+        bi_service = BusinessIntelligence()
+        staff_service = EnhancedStaffService()
+        
+        stats = {
+            'overview': {
+                'total_revenue': 0,
+                'active_jobs': 0,
+                'pending_quotes': 0,
+                'overdue_invoices': 0
+            },
+            'recent_activity': [],
+            'upcoming_jobs': [],
+            'kpis': {
+                'conversion_rate': 0,
+                'avg_job_value': 0,
+                'customer_satisfaction': 0,
+                'staff_utilization': 0
+            },
+            'quick_actions': [
+                {'title': 'Generate Quote', 'url': '/generate-quote', 'icon': 'fas fa-file-invoice'},
+                {'title': 'View Calendar', 'url': '/admin/calendar', 'icon': 'fas fa-calendar-plus'},
+                {'title': 'Customer CRM', 'url': '/admin/crm', 'icon': 'fas fa-user-plus'},
+                {'title': 'Staff Management', 'url': '/admin/staff', 'icon': 'fas fa-users'},
+                {'title': 'Financial Reports', 'url': '/admin/financial', 'icon': 'fas fa-chart-line'},
+                {'title': 'Job Tracking', 'url': '/admin/jobs', 'icon': 'fas fa-tasks'},
+                {'title': 'Inventory', 'url': '/admin/inventory', 'icon': 'fas fa-boxes'},
+                {'title': 'Analytics', 'url': '/admin/analytics', 'icon': 'fas fa-analytics'}
+            ]
+        }
+        
+        # Get real data from storage service
+        if storage_service:
+            try:
+                # Financial data
+                invoices = storage_service.load_data('invoices.json') or []
+                quotes = storage_service.load_data('quotes.json') or []
+                jobs = storage_service.load_data('jobs.json') or []
+                contacts = storage_service.get_all_contacts() or []
+                
+                # Calculate overview metrics
+                paid_invoices = [i for i in invoices if i.get('status') == 'paid']
+                stats['overview']['total_revenue'] = sum(float(i.get('total_amount', 0)) for i in paid_invoices)
+                stats['overview']['active_jobs'] = len([j for j in jobs if j.get('status') in ['scheduled', 'in_progress']])
+                stats['overview']['pending_quotes'] = len([q for q in quotes if q.get('status') == 'pending'])
+                stats['overview']['overdue_invoices'] = len([i for i in invoices if i.get('status') == 'overdue'])
+                
+                # Recent activity from real data
+                recent_activity = []
+                
+                # Add recent quotes
+                recent_quotes = sorted([q for q in quotes if q.get('created_date')], 
+                                     key=lambda x: x.get('created_date', ''), reverse=True)[:3]
+                for quote in recent_quotes:
+                    recent_activity.append({
+                        'action': f"Quote {quote.get('quote_id', 'Unknown')} generated for {quote.get('client_name', 'Client')}",
+                        'time': 'Recently',
+                        'type': 'quote'
+                    })
+                
+                # Add recent payments
+                recent_payments = sorted([i for i in paid_invoices if i.get('payment_date')], 
+                                       key=lambda x: x.get('payment_date', ''), reverse=True)[:2]
+                for payment in recent_payments:
+                    recent_activity.append({
+                        'action': f"Payment received ${payment.get('total_amount', 0)} - {payment.get('invoice_id', 'Unknown')}",
+                        'time': 'Recently',
+                        'type': 'payment'
+                    })
+                
+                stats['recent_activity'] = recent_activity[:5]  # Limit to 5 items
+                
+                # Calculate KPIs
+                if quotes and invoices:
+                    paid_quote_ids = [i.get('quote_id') for i in paid_invoices if i.get('quote_id')]
+                    conversion_rate = (len(paid_quote_ids) / len(quotes)) * 100 if quotes else 0
+                    stats['kpis']['conversion_rate'] = round(conversion_rate, 1)
+                
+                if paid_invoices:
+                    avg_value = sum(float(i.get('total_amount', 0)) for i in paid_invoices) / len(paid_invoices)
+                    stats['kpis']['avg_job_value'] = round(avg_value, 2)
+                
+                # Get upcoming jobs from scheduler
+                upcoming = storage_service.load_data('unified_appointments.json') or []
+                upcoming_jobs = [j for j in upcoming if j.get('status') == 'scheduled'][:3]
+                stats['upcoming_jobs'] = upcoming_jobs
+                
+            except Exception as e:
+                logging.error(f"Error loading dashboard data: {e}")
+        
+        return stats
+    except Exception as e:
+        logging.error(f"Dashboard stats error: {e}")
+        return {
+            'overview': {'total_revenue': 0, 'active_jobs': 0, 'pending_quotes': 0, 'overdue_invoices': 0},
+            'recent_activity': [],
+            'upcoming_jobs': [],
+            'kpis': {'conversion_rate': 0, 'avg_job_value': 0, 'customer_satisfaction': 0, 'staff_utilization': 0},
+            'quick_actions': [
+                {'title': 'Generate Quote', 'url': '/generate-quote', 'icon': 'fas fa-file-invoice'},
+                {'title': 'View Calendar', 'url': '/admin/calendar', 'icon': 'fas fa-calendar-plus'},
+                {'title': 'Customer CRM', 'url': '/admin/crm', 'icon': 'fas fa-user-plus'},
+                {'title': 'Staff Management', 'url': '/admin/staff', 'icon': 'fas fa-users'}
+            ]
+        }
 
 # Legacy admin routes - public routes handled by routes_public.py
 

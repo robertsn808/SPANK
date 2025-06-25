@@ -1,0 +1,111 @@
+✅ Admin Dashboard Component Checklist
+
+🧱 Core Management
+	•	Company dashboard overview (stats, KPIs, quick actions)
+	•	Multi-service Quote Builder
+	•	Auto-calculated tax (Hawaii GET 4.712%)
+	•	Quote-to-Invoice conversion workflow
+	•	Professional PDF generator for quotes/invoices
+	•	Digital client quote acceptance with timestamp
+	•	Client portal access with secure auth (ID + job number)
+	•	Job ID system (e.g., J2025-####)
+
+⸻
+
+📆 Scheduling & Calendar
+	•	Drag-and-drop calendar (FullCalendar or equivalent)
+	•	Color-coded events (Scheduled, In Progress, Completed, Tentative)
+	•	Conflict detection & buffer management
+	•	Recurring appointment system (weekly/monthly/custom)
+	•	Business hours & lunch break rules
+	•	Staff-specific scheduling views
+	•	SMS & Email reminders (24h, 2h)
+
+⸻
+
+👥 Customer CRM
+	•	Multi-project support for each client
+	•	Smart client detection (name/phone/email)
+	•	Client intake form
+	•	Client history timeline (quotes, invoices, jobs)
+	•	Lifetime value calculator
+	•	Communication log (SMS, email, calls)
+
+⸻
+
+🧑‍🔧 Staff Management
+	•	Staff user roles and permissions
+	•	Availability tracking
+	•	Task/job assignments
+	•	PIN-based staff login/check-in
+	•	Real-time time clock
+	•	GPS job site check-in with timestamp
+	•	Internal messages or alerts
+
+⸻
+
+💰 Financials & Payments
+	•	Invoice tracking (sent, unpaid, paid, overdue)
+	•	Payment logging (cash, card, Venmo, Zelle, check)
+	•	P&L statement generator
+	•	Job costing and profitability report
+	•	Tax summary report (Hawaii GET & federal)
+	•	Cash flow projections
+	•	Expense logging and budget tracking
+
+⸻
+
+🧰 Job & Material Management
+	•	Job checklist creator (with required task enforcement)
+	•	Material tracking with quantities & suppliers
+	•	Job photo upload (before/after)
+	•	Inventory manager (auto-decrement on use)
+	•	Job notes and internal comments
+
+⸻
+
+📸 Media & Documentation
+	•	Before/after photo galleries
+	•	Interactive comparison slider
+	•	Image compression & type validation
+	•	File uploads (HEIC, JPEG, PNG, PDF)
+	•	Auto-thumbnail previews
+
+⸻
+
+📊 Reports & Analytics
+	•	Job completion stats
+	•	Revenue breakdown by service type
+	•	Staff performance tracker
+	•	Seasonal demand forecasting
+	•	Business health dashboard (traffic light indicators)
+	•	Monthly growth and retention charts
+
+⸻
+
+🛠 Workflow Automation
+	•	Auto-assign job IDs
+	•	Auto-update quote status
+	•	Trigger client reminders
+	•	Flag overdue invoices
+	•	Onboarding walk-through
+	•	Confirmations for high-risk actions
+
+⸻
+
+🌐 User Experience
+	•	Mobile-first responsive layout
+	•	Sidebar with collapsible nav
+	•	Quick action shortcuts (keyboard or nav bar)
+	•	Notification system (toast/pop-up)
+	•	Role-based onboarding tooltips
+	•	Light/dark theme toggle
+
+⸻
+
+🔐 Security & Access
+	•	Role-based access control (RBAC)
+	•	Auto logout on inactivity
+	•	Session tracking
+	•	Secure PDF download URLs
+	•	Login activity logs

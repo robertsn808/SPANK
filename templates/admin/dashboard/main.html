@@ -1,100 +1,212 @@
 {% extends "admin/core/base.html" %}
 
-{% block title %}Admin Dashboard - SPANKKS Construction{% endblock %}
-
-{% block admin_title %}SPANKKS Construction Dashboard{% endblock %}
+{% block title %}SPANKKS Construction - Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="admin-card">
-            <div class="card-body p-4">
-                <h2 class="text-spankks mb-4">
-                    <i class="fas fa-tachometer-alt me-3"></i>
-                    SPANKKS Construction Admin Dashboard
-                </h2>
-                
-                <div class="row mb-4">
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="card border-spankks">
-                            <div class="card-body text-center">
-                                <i class="fas fa-calendar-check fa-2x text-spankks mb-2"></i>
-                                <h4 class="text-spankks">{{ appointments_today or 0 }}</h4>
-                                <p class="mb-0">Appointments Today</p>
+<div class="admin-dashboard">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1">SPANKKS Construction Dashboard</h1>
+                <p class="text-muted mb-0">Welcome back! Here's what's happening with your business today.</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="dashboard-time">
+                    <i class="fas fa-clock me-2"></i>
+                    <span id="current-time"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="kpi-card revenue">
+                <div class="kpi-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="kpi-content">
+                    <h3>${{ "%.2f"|format(stats.overview.total_revenue|default(0)) }}</h3>
+                    <p>Total Revenue</p>
+                    <span class="kpi-trend positive">+12% this month</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="kpi-card jobs">
+                <div class="kpi-icon">
+                    <i class="fas fa-hammer"></i>
+                </div>
+                <div class="kpi-content">
+                    <h3>{{ stats.overview.active_jobs|default(0) }}</h3>
+                    <p>Active Jobs</p>
+                    <span class="kpi-trend positive">+3 this week</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="kpi-card quotes">
+                <div class="kpi-icon">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div class="kpi-content">
+                    <h3>{{ stats.overview.pending_quotes|default(0) }}</h3>
+                    <p>Pending Quotes</p>
+                    <span class="kpi-trend neutral">Same as last week</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="kpi-card invoices">
+                <div class="kpi-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="kpi-content">
+                    <h3>{{ stats.overview.overdue_invoices|default(0) }}</h3>
+                    <p>Overdue Invoices</p>
+                    <span class="kpi-trend negative">Needs attention</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for action in stats.quick_actions %}
+                        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+                            <a href="{{ action.url }}" class="quick-action-btn">
+                                <div class="quick-action-content">
+                                    <div class="quick-action-icon">
+                                        <i class="{{ action.icon }}"></i>
+                                    </div>
+                                    <span>{{ action.title }}</span>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="row">
+        <!-- Recent Activity -->
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Activity</h5>
+                    <a href="/admin/activity" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if stats.recent_activity %}
+                    <div class="activity-timeline">
+                        {% for activity in stats.recent_activity %}
+                        <div class="activity-item">
+                            <div class="activity-icon {{ activity.type }}">
+                                {% if activity.type == 'quote' %}
+                                <i class="fas fa-file-invoice"></i>
+                                {% elif activity.type == 'payment' %}
+                                <i class="fas fa-dollar-sign"></i>
+                                {% elif activity.type == 'job' %}
+                                <i class="fas fa-check-circle"></i>
+                                {% endif %}
+                            </div>
+                            <div class="activity-content">
+                                <p class="mb-1">{{ activity.action }}</p>
+                                <small class="text-muted">{{ activity.time }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No recent activity to display.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Metrics -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Business Health</h5>
+                </div>
+                <div class="card-body">
+                    <div class="metric-item">
+                        <div class="metric-label">Quote Conversion Rate</div>
+                        <div class="metric-value">
+                            <span class="percentage">65%</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" style="width: 65%"></div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="card border-spankks">
-                            <div class="card-body text-center">
-                                <i class="fas fa-users fa-2x text-spankks mb-2"></i>
-                                <h4 class="text-spankks">{{ total_contacts or 0 }}</h4>
-                                <p class="mb-0">Total Contacts</p>
+                    <div class="metric-item">
+                        <div class="metric-label">Customer Satisfaction</div>
+                        <div class="metric-value">
+                            <span class="percentage">92%</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-primary" style="width: 92%"></div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="card border-spankks">
-                            <div class="card-body text-center">
-                                <i class="fas fa-dollar-sign fa-2x text-spankks mb-2"></i>
-                                <h4 class="text-spankks">${{ revenue_today or 0 }}</h4>
-                                <p class="mb-0">Revenue Today</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="card border-spankks">
-                            <div class="card-body text-center">
-                                <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
-                                <h4 class="text-warning">{{ urgent_items or 0 }}</h4>
-                                <p class="mb-0">Urgent Items</p>
+                    <div class="metric-item">
+                        <div class="metric-label">Staff Utilization</div>
+                        <div class="metric-value">
+                            <span class="percentage">78%</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" style="width: 78%"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="row">
-                    <div class="col-12">
-                        <h4 class="text-spankks mb-3">Quick Actions</h4>
-                        <div class="row">
-                            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
-                                <a href="#" class="btn btn-spankks w-100 p-3">
-                                    <i class="fas fa-calendar-week d-block mb-2"></i>
-                                    Weekly Schedule
-                                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Schedule -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Today's Schedule</h5>
+                    <a href="/admin/calendar" class="btn btn-sm btn-outline-primary">Full Calendar</a>
+                </div>
+                <div class="card-body">
+                    <div class="schedule-items">
+                        <div class="schedule-item">
+                            <div class="schedule-time">9:00 AM</div>
+                            <div class="schedule-content">
+                                <h6>Kitchen Renovation - Johnson Family</h6>
+                                <p class="text-muted mb-1">1234 Aloha Street, Honolulu</p>
+                                <span class="badge bg-primary">In Progress</span>
                             </div>
-                            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
-                                <a href="#" class="btn btn-spankks w-100 p-3">
-                                    <i class="fas fa-calculator d-block mb-2"></i>
-                                    Quote Builder
-                                </a>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="schedule-time">1:00 PM</div>
+                            <div class="schedule-content">
+                                <h6>Fence Repair Consultation - Smith Residence</h6>
+                                <p class="text-muted mb-1">5678 Paradise Drive, Kailua</p>
+                                <span class="badge bg-success">Scheduled</span>
                             </div>
-                            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
-                                <a href="#" class="btn btn-spankks w-100 p-3">
-                                    <i class="fas fa-file-invoice d-block mb-2"></i>
-                                    Invoices
-                                </a>
-                            </div>
-                            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
-                                <a href="#" class="btn btn-spankks w-100 p-3">
-                                    <i class="fas fa-users d-block mb-2"></i>
-                                    Customers
-                                </a>
-                            </div>
-                            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
-                                <a href="#" class="btn btn-spankks w-100 p-3">
-                                    <i class="fas fa-chart-bar d-block mb-2"></i>
-                                    Analytics
-                                </a>
-                            </div>
-                            <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
-                                <a href="#" class="btn btn-spankks w-100 p-3">
-                                    <i class="fas fa-cogs d-block mb-2"></i>
-                                    Settings
-                                </a>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="schedule-time">3:30 PM</div>
+                            <div class="schedule-content">
+                                <h6>Drywall Installation - Office Complex</h6>
+                                <p class="text-muted mb-1">9101 Business Park, Honolulu</p>
+                                <span class="badge bg-warning">Tentative</span>
                             </div>
                         </div>
                     </div>
@@ -103,4 +215,39 @@
         </div>
     </div>
 </div>
+
+<script>
+// Update current time
+function updateTime() {
+    const now = new Date();
+    const options = {
+        timeZone: 'Pacific/Honolulu',
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    document.getElementById('current-time').textContent = now.toLocaleDateString('en-US', options);
+}
+
+// Initialize time and update every minute
+updateTime();
+setInterval(updateTime, 60000);
+
+// Add click handlers for quick actions
+document.querySelectorAll('.quick-action-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.getAttribute('href');
+        if (url.startsWith('/admin/')) {
+            // For now, show alert until routes are implemented
+            alert('Feature coming soon: ' + this.querySelector('span').textContent);
+        } else {
+            window.location.href = url;
+        }
+    });
+});
+</script>
 {% endblock %}

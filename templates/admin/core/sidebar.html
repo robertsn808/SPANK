@@ -1,0 +1,340 @@
+<!-- Admin Sidebar Navigation -->
+<nav class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-brand">
+            <img src="/static/images/spank-logo.png" alt="SPANKKS" class="sidebar-logo">
+            <span class="brand-text">SPANKKS Admin</span>
+        </div>
+        <button class="sidebar-toggle d-md-none" type="button" onclick="toggleSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-content">
+        <!-- Main Navigation -->
+        <div class="nav-section">
+            <h6 class="nav-section-title">Main</h6>
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/admin-home">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/calendar">
+                        <i class="fas fa-calendar-alt me-2"></i>Calendar & Scheduling
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/jobs">
+                        <i class="fas fa-hammer me-2"></i>Job Management
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Customer Management -->
+        <div class="nav-section">
+            <h6 class="nav-section-title">Customers</h6>
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/crm">
+                        <i class="fas fa-users me-2"></i>Customer CRM
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/generate-quote">
+                        <i class="fas fa-file-invoice me-2"></i>Quote Builder
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/invoices">
+                        <i class="fas fa-receipt me-2"></i>Invoices & Payments
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Operations -->
+        <div class="nav-section">
+            <h6 class="nav-section-title">Operations</h6>
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/staff">
+                        <i class="fas fa-user-hard-hat me-2"></i>Staff Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/inventory">
+                        <i class="fas fa-boxes me-2"></i>Inventory
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/checklists">
+                        <i class="fas fa-tasks me-2"></i>Job Checklists
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/photos">
+                        <i class="fas fa-camera me-2"></i>Photo Management
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Business Intelligence -->
+        <div class="nav-section">
+            <h6 class="nav-section-title">Analytics</h6>
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/financial">
+                        <i class="fas fa-chart-line me-2"></i>Financial Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/analytics">
+                        <i class="fas fa-analytics me-2"></i>Business Analytics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/performance">
+                        <i class="fas fa-chart-bar me-2"></i>Performance
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Tools -->
+        <div class="nav-section">
+            <h6 class="nav-section-title">Tools</h6>
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/service-management">
+                        <i class="fas fa-cogs me-2"></i>Service Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/data-management">
+                        <i class="fas fa-database me-2"></i>Data Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/portal">
+                        <i class="fas fa-door-open me-2"></i>Portal Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/notifications">
+                        <i class="fas fa-bell me-2"></i>Notifications
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+        <div class="business-info">
+            <div class="hawaii-time">
+                <i class="fas fa-clock me-2"></i>
+                <span id="sidebar-time">Loading...</span>
+            </div>
+            <small class="text-muted">Hawaii Time</small>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Sidebar Overlay -->
+<div class="sidebar-overlay d-md-none" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<script>
+// Sidebar functionality
+function toggleSidebar() {
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    
+    sidebar.classList.toggle('sidebar-open');
+    overlay.classList.toggle('show');
+}
+
+// Update Hawaii time in sidebar
+function updateSidebarTime() {
+    const now = new Date();
+    const hawaiiTime = now.toLocaleString('en-US', {
+        timeZone: 'Pacific/Honolulu',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+    
+    const timeElement = document.getElementById('sidebar-time');
+    if (timeElement) {
+        timeElement.textContent = hawaiiTime;
+    }
+}
+
+// Initialize sidebar time and update every minute
+updateSidebarTime();
+setInterval(updateSidebarTime, 60000);
+
+// Set active navigation item based on current page
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.admin-sidebar .nav-link');
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+
+<style>
+.admin-sidebar {
+    background: linear-gradient(180deg, #1a5f3f 0%, #145a34 100%);
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    color: white;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-logo {
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+    border-radius: 8px;
+}
+
+.brand-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: white;
+}
+
+.sidebar-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.25rem;
+    padding: 0.5rem;
+}
+
+.sidebar-content {
+    padding: 1rem 0;
+}
+
+.nav-section {
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+.nav-section-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.nav-pills .nav-link {
+    color: rgba(255,255,255,0.8);
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.nav-pills .nav-link:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    transform: translateX(4px);
+}
+
+.nav-pills .nav-link.active {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-weight: 500;
+}
+
+.nav-pills .nav-link i {
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.1);
+}
+
+.business-info {
+    text-align: center;
+}
+
+.hawaii-time {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+/* Mobile styles */
+@media (max-width: 767.98px) {
+    .admin-sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .admin-sidebar.sidebar-open {
+        transform: translateX(0);
+    }
+    
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+/* Main content offset when sidebar is visible */
+@media (min-width: 768px) {
+    .admin-main-content {
+        margin-left: 280px;
+    }
+}
+</style>

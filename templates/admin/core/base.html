@@ -107,33 +107,53 @@
                 </div>
                 <div class="col-md-6 text-end">
                     {% block header_actions %}
-                    <a href="{{ url_for('public_home') }}" class="btn btn-outline-light btn-sm me-2">
+                    <a href="/" class="btn btn-outline-light btn-sm me-2">
                         <i class="fas fa-home me-1"></i>Public Site
                     </a>
-                    <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-light btn-sm">
-                        <i class="fas fa-sign-out-alt me-1"></i>Logout
-                    </a>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>Admin
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/admin/settings"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="/admin/backup"><i class="fas fa-download me-2"></i>Backup Data</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
                     {% endblock %}
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Include Sidebar -->
+    {% include 'admin/core/sidebar.html' %}
+
     <!-- Main Content -->
-    <div class="admin-container">
-        <div class="container-fluid">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            
-            {% block content %}{% endblock %}
+    <div class="admin-main-content">
+        <div class="admin-container">
+            <div class="container-fluid">
+                <!-- Mobile Header -->
+                <div class="d-md-none mb-3">
+                    <button class="btn btn-outline-secondary" onclick="toggleSidebar()">
+                        <i class="fas fa-bars me-2"></i>Menu
+                    </button>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                {% block content %}{% endblock %}
+            </div>
         </div>
     </div>
 
