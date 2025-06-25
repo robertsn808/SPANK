@@ -892,11 +892,23 @@
             updateHawaiiTime();
             setInterval(updateHawaiiTime, 1000);
             
-            // Simple navigation system
-            initializeNavigation();
+            // Initialize navigation with proper error handling
+            setupNavigationSystem();
             
             console.log('Dashboard initialization complete');
         });
+        
+        function setupNavigationSystem() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.dataset.section;
+                    if (section) {
+                        showSection(section);
+                    }
+                });
+            });
+        }
         
         function initializeNavigation() {
             // Remove any existing event listeners and add fresh ones
@@ -1276,12 +1288,73 @@
 
         function showSection(section) {
             console.log('showSection called with:', section);
-            handleNavigation(section);
+            
+            // Update navigation states
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            const activeLink = document.querySelector(`[data-section="${section}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            currentSection = section;
+            
+            // Show/hide content
+            if (section === 'dashboard') {
+                document.getElementById('dashboard-section').style.display = 'block';
+                document.getElementById('dynamic-content').style.display = 'none';
+            } else {
+                document.getElementById('dashboard-section').style.display = 'none';
+                document.getElementById('dynamic-content').style.display = 'block';
+                loadSectionContent(section);
+            }
         }
 
         function loadSectionContent(section) {
-            // Redirect to new navigation system
-            showDynamicSection(section);
+            const content = document.getElementById('dynamic-content');
+            content.innerHTML = '<div class="text-center py-5"><div class="loading-spinner me-2"></div>Loading...</div>';
+            
+            // Load section-specific content with proper error handling
+            const endpoint = `/admin/sections/${section}`;
+            
+            fetch(endpoint)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    content.innerHTML = html;
+                    
+                    // Initialize section-specific features
+                    if (section === 'service_management') {
+                        // Auto-load services for service management
+                        setTimeout(() => {
+                            if (typeof loadServices === 'function') {
+                                loadServices();
+                            }
+                        }, 100);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading section:', error);
+                    content.innerHTML = `
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-exclamation-triangle me-2"></i>Section Unavailable</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted">This section is temporarily unavailable.</p>
+                                <button class="btn btn-outline-primary" onclick="location.reload()">
+                                    <i class="fas fa-sync me-1"></i>Refresh Page
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
         }
 
         function showNewAppointmentModal(date = null) {

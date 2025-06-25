@@ -8391,10 +8391,7 @@ def serve_crm_section():
                     pass
         
         logging.info(f"CRM: Loading {len(contacts)} contacts from 2 data sources with complete profiles")
-        content = render_template('crm_section.html', contacts=contacts)
-        response = make_response(content)
-        response.headers['Content-Type'] = 'text/html; charset=utf-8'
-        return response
+        return render_template('crm_section.html', contacts=contacts)
     except Exception as e:
         logging.error(f"Error serving CRM section: {e}")
         return jsonify({'error': 'Template error'}), 500
@@ -8406,10 +8403,7 @@ def serve_business_contacts_section():
         return jsonify({'error': 'Admin authentication required'}), 401
     
     try:
-        content = render_template('business_contacts_section.html')
-        response = make_response(content)
-        response.headers['Content-Type'] = 'text/html; charset=utf-8'
-        return response
+        return render_template('business_contacts_section.html')
     except Exception as e:
         logging.error(f"Error serving business contacts section: {e}")
         return "Template error", 404
@@ -8421,10 +8415,7 @@ def serve_service_management_section():
         return jsonify({'error': 'Admin authentication required'}), 401
     
     try:
-        content = render_template('service_management_section.html')
-        response = make_response(content)
-        response.headers['Content-Type'] = 'text/html; charset=utf-8'
-        return response
+        return render_template('service_management_section.html')
     except Exception as e:
         logging.error(f"Error serving service management section: {e}")
         return "Template error", 404
