@@ -1,2 +1,2 @@
-# Models module
-from models.models import HandymanStorage, Contact
+# Models module  
+from models.models import HandymanStorage, Contact, Job
