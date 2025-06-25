@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Portal - SPANKKS Construction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .job-header {
+            background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .job-card {
+            background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+            border: 1px solid rgba(26, 95, 63, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .job-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1a5f3f, #2d7a5a);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .status-scheduled { background: linear-gradient(135deg, #0dcaf0, #0d6efd); color: white; }
+        .status-in-progress { background: linear-gradient(135deg, #ffc107, #fd7e14); color: white; }
+        .status-completed { background: linear-gradient(135deg, #20c997, #198754); color: white; }
+
+        .btn-spankks {
+            background: linear-gradient(135deg, #1a5f3f, #2d7a5a);
+            border: none;
+            color: white;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-spankks:hover {
+            background: linear-gradient(135deg, #164a35, #256650);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .checklist-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item.completed {
+            background: linear-gradient(135deg, rgba(32, 201, 151, 0.1), rgba(25, 135, 84, 0.1));
+            border-color: #198754;
+        }
+
+        .photo-upload-zone {
+            border: 3px dashed #dee2e6;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            background: rgba(26, 95, 63, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .photo-upload-zone:hover {
+            border-color: #1a5f3f;
+            background: rgba(26, 95, 63, 0.1);
+        }
+
+        .nav-pills .nav-link {
+            border-radius: 15px;
+            margin: 0 0.25rem;
+            font-weight: 600;
+            color: #1a5f3f;
+        }
+
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, #1a5f3f, #2d7a5a);
+            color: white;
+        }
+
+        .time-clock {
+            background: rgba(26, 95, 63, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .clock-time {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1a5f3f;
+            font-family: 'Courier New', monospace;
+        }
+
+        .material-item {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .note-item {
+            background: #fff;
+            border-left: 4px solid #1a5f3f;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .client-info {
+            background: rgba(26, 95, 63, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Job Header -->
+    <div class="job-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="mb-2">
+                        <i class="fas fa-hard-hat me-3"></i>Job Portal
+                    </h1>
+                    <p class="mb-0 opacity-75">{{ job_data.job.service_type }} - Job #{{ job_id }}</p>
+                </div>
+                <div class="col-auto">
+                    <div class="d-flex gap-2">
+                        <span class="status-badge status-{{ job_data.job.status.replace(' ', '-') }}">
+                            {{ job_data.job.status.title() }}
+                        </span>
+                        <button class="btn btn-light" onclick="window.history.back()">
+                            <i class="fas fa-arrow-left me-2"></i>Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Client Information -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="job-card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="fas fa-user me-2 text-primary"></i>Client Information
+                        </h5>
+                        <div class="client-info">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-2"><strong>Name:</strong> {{ job_data.job.client_name }}</p>
+                                    <p class="mb-2"><strong>Phone:</strong> 
+                                        <a href="tel:{{ job_data.job.client_phone }}" class="text-decoration-none">
+                                            {{ job_data.job.client_phone }}
+                                        </a>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-2"><strong>Email:</strong> 
+                                        <a href="mailto:{{ job_data.job.client_email }}" class="text-decoration-none">
+                                            {{ job_data.job.client_email }}
+                                        </a>
+                                    </p>
+                                    <p class="mb-0"><strong>Address:</strong> {{ job_data.job.client_address }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-pills justify-content-center mb-4" id="jobTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="checklist-tab" data-bs-toggle="pill" data-bs-target="#checklist" type="button" role="tab">
+                    <i class="fas fa-tasks me-2"></i>Checklist
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="photos-tab" data-bs-toggle="pill" data-bs-target="#photos" type="button" role="tab">
+                    <i class="fas fa-camera me-2"></i>Photos
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="materials-tab" data-bs-toggle="pill" data-bs-target="#materials" type="button" role="tab">
+                    <i class="fas fa-boxes me-2"></i>Materials
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="notes-tab" data-bs-toggle="pill" data-bs-target="#notes" type="button" role="tab">
+                    <i class="fas fa-sticky-note me-2"></i>Notes
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="timeclock-tab" data-bs-toggle="pill" data-bs-target="#timeclock" type="button" role="tab">
+                    <i class="fas fa-clock me-2"></i>Time Clock
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="jobTabContent">
+            <!-- Checklist Tab -->
+            <div class="tab-pane fade show active" id="checklist" role="tabpanel">
+                <div class="job-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-tasks me-2"></i>Job Checklist
+                            </h5>
+                            <button class="btn btn-spankks btn-sm" onclick="addChecklistItem()">
+                                <i class="fas fa-plus me-2"></i>Add Task
+                            </button>
+                        </div>
+                        
+                        <div id="checklistItems">
+                            {% for item in job_data.checklist %}
+                            <div class="checklist-item {% if item.is_completed %}completed{% endif %}" data-item-id="{{ item.id }}">
+                                <div class="d-flex align-items-center">
+                                    <input type="checkbox" class="form-check-input me-3" 
+                                           {% if item.is_completed %}checked{% endif %}
+                                           onchange="toggleChecklistItem({{ item.id }}, this.checked)">
+                                    <div class="flex-grow-1">
+                                        <div class="fw-medium">{{ item.task }}</div>
+                                        {% if item.completed_at %}
+                                        <small class="text-success">
+                                            <i class="fas fa-check me-1"></i>Completed {{ item.completed_at.strftime('%m/%d/%Y %I:%M %p') }}
+                                        </small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if not job_data.checklist %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No checklist items yet. Add your first task!</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Photos Tab -->
+            <div class="tab-pane fade" id="photos" role="tabpanel">
+                <div class="job-card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-camera me-2"></i>Job Photos
+                        </h5>
+                        
+                        <!-- Photo Upload -->
+                        <div class="photo-upload-zone mb-4" onclick="document.getElementById('photoUpload').click()">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                            <h6>Upload Photos</h6>
+                            <p class="text-muted mb-0">Click to select photos or drag and drop</p>
+                            <input type="file" id="photoUpload" class="d-none" multiple accept="image/*" onchange="uploadPhotos(this.files)">
+                        </div>
+
+                        <!-- Photo Gallery -->
+                        <div class="row" id="photoGallery">
+                            {% for photo in job_data.photos %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <img src="{{ photo.photo_url }}" class="card-img-top" alt="{{ photo.label }}" style="height: 200px; object-fit: cover;">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title">{{ photo.label or 'Job Photo' }}</h6>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">{{ photo.stage.title() }}</small>
+                                            <small class="text-muted">{{ photo.uploaded_at.strftime('%m/%d/%Y') }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materials Tab -->
+            <div class="tab-pane fade" id="materials" role="tabpanel">
+                <div class="job-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-boxes me-2"></i>Materials Used
+                            </h5>
+                            <button class="btn btn-spankks btn-sm" onclick="addMaterial()">
+                                <i class="fas fa-plus me-2"></i>Add Material
+                            </button>
+                        </div>
+
+                        <div id="materialsList">
+                            {% for material in job_data.materials %}
+                            <div class="material-item">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4">
+                                        <div class="fw-medium">{{ material.material_name }}</div>
+                                        <small class="text-muted">Added by {{ material.added_by }}</small>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <div class="fw-bold">{{ material.quantity_used }}</div>
+                                        <small class="text-muted">{{ material.unit_type }}</small>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <div class="fw-bold">${{ "%.2f"|format(material.cost_per_unit) }}</div>
+                                        <small class="text-muted">per {{ material.unit_type }}</small>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <div class="fw-bold text-success">${{ "%.2f"|format(material.quantity_used * material.cost_per_unit) }}</div>
+                                        <small class="text-muted">total</small>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <small class="text-muted">{{ material.added_at.strftime('%m/%d/%Y') }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if not job_data.materials %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-boxes fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No materials recorded yet.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Tab -->
+            <div class="tab-pane fade" id="notes" role="tabpanel">
+                <div class="job-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-sticky-note me-2"></i>Job Notes
+                            </h5>
+                            <button class="btn btn-spankks btn-sm" onclick="addNote()">
+                                <i class="fas fa-plus me-2"></i>Add Note
+                            </button>
+                        </div>
+
+                        <div id="notesList">
+                            {% for note in job_data.notes %}
+                            <div class="note-item">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="fw-medium">{{ note.created_by }}</div>
+                                    <div class="d-flex gap-2">
+                                        <span class="badge bg-{{ 'success' if note.note_type == 'client_facing' else 'secondary' }}">
+                                            {{ note.note_type.replace('_', ' ').title() }}
+                                        </span>
+                                        <small class="text-muted">{{ note.created_at.strftime('%m/%d/%Y %I:%M %p') }}</small>
+                                    </div>
+                                </div>
+                                <p class="mb-0">{{ note.note }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        {% if not job_data.notes %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-sticky-note fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No notes added yet.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Time Clock Tab -->
+            <div class="tab-pane fade" id="timeclock" role="tabpanel">
+                <div class="job-card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-clock me-2"></i>Time Clock
+                        </h5>
+                        
+                        <!-- Current Time -->
+                        <div class="time-clock mb-4">
+                            <div class="clock-time" id="currentTime"></div>
+                            <p class="text-muted mb-3">Hawaii Time</p>
+                            <div class="d-flex justify-content-center gap-3">
+                                <button class="btn btn-spankks" onclick="clockIn()">
+                                    <i class="fas fa-play me-2"></i>Clock In
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="clockOut()">
+                                    <i class="fas fa-stop me-2"></i>Clock Out
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Time Records -->
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Staff Member</th>
+                                        <th>Clock In</th>
+                                        <th>Clock Out</th>
+                                        <th>Total Hours</th>
+                                        <th>Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in job_data.timeclock %}
+                                    <tr>
+                                        <td>{{ record.staff_name }}</td>
+                                        <td>{{ record.clock_in.strftime('%m/%d/%Y %I:%M %p') if record.clock_in else '-' }}</td>
+                                        <td>{{ record.clock_out.strftime('%m/%d/%Y %I:%M %p') if record.clock_out else 'Active' }}</td>
+                                        <td>{{ "%.2f"|format(record.total_hours) if record.total_hours else '-' }}</td>
+                                        <td>${{ "%.2f"|format(record.hourly_rate) if record.hourly_rate else '-' }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update clock every second
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                timeZone: 'Pacific/Honolulu',
+                hour12: true,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        // Initialize clock
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        function addChecklistItem() {
+            const task = prompt('Enter task description:');
+            if (task) {
+                fetch(`/api/staff/job/{{ job_id }}/checklist`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        task: task,
+                        created_by: 'Staff'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error adding task: ' + data.message);
+                    }
+                });
+            }
+        }
+
+        function toggleChecklistItem(itemId, isCompleted) {
+            fetch(`/api/staff/checklist/${itemId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    is_completed: isCompleted,
+                    completed_by: 'Staff'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error updating task: ' + data.message);
+                }
+            });
+        }
+
+        function addMaterial() {
+            const materialName = prompt('Material name:');
+            if (!materialName) return;
+            
+            const quantity = parseFloat(prompt('Quantity used:'));
+            if (!quantity || quantity <= 0) return;
+            
+            const costPerUnit = parseFloat(prompt('Cost per unit:'));
+            if (!costPerUnit || costPerUnit < 0) return;
+            
+            const unitType = prompt('Unit type (each, sq ft, linear ft, etc.):') || 'each';
+
+            fetch(`/api/staff/job/{{ job_id }}/materials`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    material_name: materialName,
+                    quantity: quantity,
+                    cost_per_unit: costPerUnit,
+                    unit_type: unitType,
+                    added_by: 'Staff'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error adding material: ' + data.message);
+                }
+            });
+        }
+
+        function addNote() {
+            const note = prompt('Enter note:');
+            if (!note) return;
+            
+            const noteType = confirm('Is this note for the client to see?') ? 'client_facing' : 'internal';
+
+            fetch(`/api/staff/job/{{ job_id }}/notes`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    note: note,
+                    note_type: noteType,
+                    created_by: 'Staff'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error adding note: ' + data.message);
+                }
+            });
+        }
+
+        function clockIn() {
+            const staffName = prompt('Staff member name:');
+            if (!staffName) return;
+            
+            const hourlyRate = parseFloat(prompt('Hourly rate:'));
+
+            fetch(`/api/staff/job/{{ job_id }}/timeclock`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    staff_id: 'STAFF001',
+                    staff_name: staffName,
+                    action: 'clock_in',
+                    hourly_rate: hourlyRate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Clocked in successfully!');
+                    location.reload();
+                } else {
+                    alert('Error clocking in: ' + data.message);
+                }
+            });
+        }
+
+        function clockOut() {
+            const staffName = prompt('Staff member name:');
+            if (!staffName) return;
+
+            fetch(`/api/staff/job/{{ job_id }}/timeclock`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    staff_id: 'STAFF001',
+                    staff_name: staffName,
+                    action: 'clock_out'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Clocked out successfully!');
+                    location.reload();
+                } else {
+                    alert('Error clocking out: ' + data.message);
+                }
+            });
+        }
+
+        function uploadPhotos(files) {
+            // Implementation for photo upload
+            console.log('Upload photos:', files);
+        }
+    </script>
+</body>
+</html>

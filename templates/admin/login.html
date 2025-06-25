@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - SPANKKS Construction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 50%, #1a5f3f 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-container {
+            background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+            border-radius: 25px;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.2),
+                0 8px 30px rgba(26, 95, 63, 0.1),
+                inset 0 1px 0 rgba(255,255,255,0.9);
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1a5f3f, #2d7a5a, #1a5f3f);
+            border-radius: 25px 25px 0 0;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-section img {
+            height: 80px;
+            margin-bottom: 1rem;
+        }
+
+        .login-title {
+            background: linear-gradient(135deg, #1a5f3f, #2d7a5a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-control:focus {
+            border-color: #1a5f3f;
+            box-shadow: 0 0 0 0.2rem rgba(26, 95, 63, 0.15);
+            background: white;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            z-index: 5;
+        }
+
+        .form-control.with-icon {
+            padding-left: 3rem;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 100%);
+            border: none;
+            color: white;
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #164a35 0%, #256650 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26, 95, 63, 0.4);
+            color: white;
+        }
+
+        .btn-login:hover::before {
+            left: 100%;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .forgot-password a {
+            color: #1a5f3f;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #2d7a5a;
+            text-decoration: underline;
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-check {
+            margin: 1.5rem 0;
+        }
+
+        .form-check-input:checked {
+            background-color: #1a5f3f;
+            border-color: #1a5f3f;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .loading-spinner {
+            display: none;
+        }
+
+        .btn-login.loading .loading-spinner {
+            display: inline-block;
+        }
+
+        .btn-login.loading .btn-text {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-section">
+            <img src="/static/images/spank-logo.png" alt="SPANKKS Construction" onerror="this.style.display='none'">
+            <h1 class="login-title">Admin Portal</h1>
+            <p class="login-subtitle">SPANKKS Construction Management System</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'info-circle' }} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form id="loginForm" method="POST" action="/admin/login">
+            <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" class="form-control with-icon" name="username" id="username" 
+                       placeholder="Admin Username" required autocomplete="username">
+            </div>
+
+            <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" class="form-control with-icon" name="password" id="password" 
+                       placeholder="Password" required autocomplete="current-password">
+            </div>
+
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="rememberMe" name="remember_me">
+                <label class="form-check-label" for="rememberMe">
+                    Remember me for 30 days
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-login">
+                <span class="btn-text">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login to Dashboard
+                </span>
+                <span class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin me-2"></i>Authenticating...
+                </span>
+            </button>
+        </form>
+
+        <div class="forgot-password">
+            <a href="#" onclick="forgotPassword()">
+                <i class="fas fa-question-circle me-1"></i>Forgot your password?
+            </a>
+        </div>
+
+        <div class="footer-text">
+            <i class="fas fa-shield-alt me-1"></i>
+            Secure admin access for SPANKKS Construction
+            <br>
+            <small class="text-muted">
+                For support: <a href="tel:(808) 778-9132" class="text-decoration-none">(808) 778-9132</a>
+            </small>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            
+            // Re-enable after 5 seconds if still loading
+            setTimeout(() => {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }, 5000);
+        });
+
+        function forgotPassword() {
+            alert('Please contact SPANKKS Construction support at (808) 778-9132 for password reset assistance.');
+        }
+
+        // Auto-focus username field
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('username').focus();
+        });
+
+        // Handle enter key
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('loginForm').submit();
+            }
+        });
+    </script>
+</body>
+</html>

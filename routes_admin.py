@@ -25,6 +25,11 @@ storage_service = StorageService()
 @app.route('/admin/crm')
 def admin_crm():
     """Customer CRM page with PostgreSQL data"""
+    # Check admin authentication
+    if not session.get('admin_logged_in'):
+        flash('Please log in to access the admin portal.', 'warning')
+        return redirect('/admin/login')
+    
     try:
         # Get clients with comprehensive data using direct SQL
         with db.engine.connect() as conn:

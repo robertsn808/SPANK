@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal - SPANKKS Construction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .portal-header {
+            background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .portal-card {
+            background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+            border: 1px solid rgba(26, 95, 63, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1a5f3f, #2d7a5a);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .status-scheduled { background: linear-gradient(135deg, #0dcaf0, #0d6efd); color: white; }
+        .status-in-progress { background: linear-gradient(135deg, #ffc107, #fd7e14); color: white; }
+        .status-completed { background: linear-gradient(135deg, #20c997, #198754); color: white; }
+        .status-pending { background: linear-gradient(135deg, #6f42c1, #d63384); color: white; }
+        .status-paid { background: linear-gradient(135deg, #20c997, #198754); color: white; }
+        .status-unpaid { background: linear-gradient(135deg, #dc3545, #fd5e53); color: white; }
+
+        .nav-pills .nav-link {
+            border-radius: 15px;
+            margin: 0 0.25rem;
+            font-weight: 600;
+            color: #1a5f3f;
+        }
+
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, #1a5f3f, #2d7a5a);
+            color: white;
+        }
+
+        .progress-ring {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+
+        .btn-portal {
+            background: linear-gradient(135deg, #1a5f3f, #2d7a5a);
+            border: none;
+            color: white;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-portal:hover {
+            background: linear-gradient(135deg, #164a35, #256650);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .client-info {
+            background: rgba(26, 95, 63, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Portal Header -->
+    <div class="portal-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="mb-2">
+                        <i class="fas fa-user-circle me-3"></i>Client Portal
+                    </h1>
+                    <p class="mb-0 opacity-75">Welcome back, {{ overview.client.name }}</p>
+                </div>
+                <div class="col-auto">
+                    <img src="/static/images/spank-logo.png" alt="SPANKKS Construction" height="60">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Client Information -->
+        <div class="client-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-user me-2"></i>Contact Information
+                    </h5>
+                    <p class="mb-1"><strong>Name:</strong> {{ overview.client.name }}</p>
+                    <p class="mb-1"><strong>Email:</strong> {{ overview.client.email }}</p>
+                    <p class="mb-1"><strong>Phone:</strong> {{ overview.client.phone }}</p>
+                    {% if overview.client.address %}
+                    <p class="mb-0"><strong>Address:</strong> {{ overview.client.address }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-chart-line me-2"></i>Account Summary
+                    </h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <div class="h4 text-success">{{ overview.summary.total_jobs }}</div>
+                                <small class="text-muted">Total Jobs</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <div class="h4 text-info">{{ overview.summary.active_jobs }}</div>
+                                <small class="text-muted">Active Jobs</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-pills justify-content-center mb-4" id="portalTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview" type="button" role="tab">
+                    <i class="fas fa-tachometer-alt me-2"></i>Overview
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="jobs-tab" data-bs-toggle="pill" data-bs-target="#jobs" type="button" role="tab">
+                    <i class="fas fa-hammer me-2"></i>My Jobs
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="quotes-tab" data-bs-toggle="pill" data-bs-target="#quotes" type="button" role="tab">
+                    <i class="fas fa-file-invoice me-2"></i>Quotes
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="invoices-tab" data-bs-toggle="pill" data-bs-target="#invoices" type="button" role="tab">
+                    <i class="fas fa-receipt me-2"></i>Invoices
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="photos-tab" data-bs-toggle="pill" data-bs-target="#photos" type="button" role="tab">
+                    <i class="fas fa-camera me-2"></i>Photos
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="portalTabContent">
+            <!-- Overview Tab -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                <div class="row">
+                    <!-- Recent Jobs -->
+                    <div class="col-md-6 mb-4">
+                        <div class="portal-card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-tools me-2 text-primary"></i>Recent Jobs
+                                </h5>
+                                {% if overview.jobs %}
+                                    {% for job in overview.jobs[:3] %}
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <div class="fw-bold">{{ job.service_type }}</div>
+                                            <small class="text-muted">{{ job.scheduled_date.strftime('%m/%d/%Y') if job.scheduled_date else 'TBD' }}</small>
+                                        </div>
+                                        <span class="status-badge status-{{ job.status.replace(' ', '-') }}">
+                                            {{ job.status.title() }}
+                                        </span>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-muted">No jobs scheduled yet.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Quotes -->
+                    <div class="col-md-6 mb-4">
+                        <div class="portal-card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-file-alt me-2 text-warning"></i>Pending Quotes
+                                </h5>
+                                {% set pending_quotes = overview.quotes|selectattr('status', 'equalto', 'pending')|list %}
+                                {% if pending_quotes %}
+                                    {% for quote in pending_quotes[:3] %}
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <div class="fw-bold">Quote #{{ quote.quote_number }}</div>
+                                            <small class="text-muted">${{ "%.2f"|format(quote.total_amount) }}</small>
+                                        </div>
+                                        <button class="btn btn-portal btn-sm" onclick="viewQuote('{{ quote.quote_number }}')">
+                                            View
+                                        </button>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-muted">No pending quotes.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs Tab -->
+            <div class="tab-pane fade" id="jobs" role="tabpanel">
+                <div class="portal-card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-hammer me-2"></i>My Jobs
+                        </h5>
+                        {% if overview.jobs %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Service Type</th>
+                                            <th>Scheduled Date</th>
+                                            <th>Status</th>
+                                            <th>Crew</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for job in overview.jobs %}
+                                        <tr>
+                                            <td>{{ job.service_type }}</td>
+                                            <td>{{ job.scheduled_date.strftime('%m/%d/%Y %I:%M %p') if job.scheduled_date else 'TBD' }}</td>
+                                            <td>
+                                                <span class="status-badge status-{{ job.status.replace(' ', '-') }}">
+                                                    {{ job.status.title() }}
+                                                </span>
+                                            </td>
+                                            <td>{{ job.crew_assigned or 'TBD' }}</td>
+                                            <td>
+                                                <button class="btn btn-outline-primary btn-sm" onclick="viewJobDetails('{{ job.job_id }}')">
+                                                    <i class="fas fa-eye me-1"></i>Details
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-hammer fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No jobs scheduled yet.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quotes Tab -->
+            <div class="tab-pane fade" id="quotes" role="tabpanel">
+                <div class="portal-card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-file-invoice me-2"></i>My Quotes
+                        </h5>
+                        {% if overview.quotes %}
+                            <div class="row">
+                                {% for quote in overview.quotes %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <div>
+                                                    <h6 class="card-title">Quote #{{ quote.quote_number }}</h6>
+                                                    <p class="text-muted mb-1">{{ quote.created_at.strftime('%m/%d/%Y') }}</p>
+                                                </div>
+                                                <span class="status-badge status-{{ quote.status }}">
+                                                    {{ quote.status.title() }}
+                                                </span>
+                                            </div>
+                                            <div class="h5 text-success mb-3">${{ "%.2f"|format(quote.total_amount) }}</div>
+                                            {% if quote.message %}
+                                            <p class="small text-muted mb-3">{{ quote.message[:100] }}...</p>
+                                            {% endif %}
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-outline-primary btn-sm" onclick="downloadQuote('{{ quote.quote_number }}')">
+                                                    <i class="fas fa-download me-1"></i>PDF
+                                                </button>
+                                                {% if quote.status == 'pending' %}
+                                                <button class="btn btn-portal btn-sm" onclick="acceptQuote('{{ quote.quote_number }}')">
+                                                    <i class="fas fa-check me-1"></i>Accept
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-file-invoice fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No quotes available.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoices Tab -->
+            <div class="tab-pane fade" id="invoices" role="tabpanel">
+                <div class="portal-card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-receipt me-2"></i>My Invoices
+                        </h5>
+                        {% if overview.invoices %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Invoice #</th>
+                                            <th>Amount</th>
+                                            <th>Due Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for invoice in overview.invoices %}
+                                        <tr>
+                                            <td>{{ invoice.invoice_number }}</td>
+                                            <td class="fw-bold">${{ "%.2f"|format(invoice.total_amount) }}</td>
+                                            <td>{{ invoice.due_date.strftime('%m/%d/%Y') if invoice.due_date else 'N/A' }}</td>
+                                            <td>
+                                                <span class="status-badge status-{{ invoice.status }}">
+                                                    {{ invoice.status.title() }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary" onclick="downloadInvoice('{{ invoice.invoice_number }}')">
+                                                        <i class="fas fa-download"></i>
+                                                    </button>
+                                                    {% if invoice.status != 'paid' %}
+                                                    <button class="btn btn-portal" onclick="payInvoice('{{ invoice.invoice_number }}')">
+                                                        <i class="fas fa-credit-card"></i>
+                                                    </button>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No invoices available.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Photos Tab -->
+            <div class="tab-pane fade" id="photos" role="tabpanel">
+                <div class="portal-card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-camera me-2"></i>Project Photos
+                        </h5>
+                        <div id="photoGallery">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p class="mt-2 text-muted">Loading photos...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Support -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="portal-card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">
+                            <i class="fas fa-headset me-2 text-primary"></i>Need Help?
+                        </h5>
+                        <p class="text-muted mb-3">Have questions about your project or need to schedule a consultation?</p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="tel:(808) 778-9132" class="btn btn-portal">
+                                <i class="fas fa-phone me-2"></i>Call Us
+                            </a>
+                            <a href="mailto:spank808@gmail.com" class="btn btn-outline-primary">
+                                <i class="fas fa-envelope me-2"></i>Email Us
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPhotos();
+        });
+
+        function loadPhotos() {
+            fetch(`/api/portal/client/{{ client_id }}/photos`)
+            .then(response => response.json())
+            .then(data => {
+                const gallery = document.getElementById('photoGallery');
+                
+                if (data.success && data.photos.length > 0) {
+                    gallery.innerHTML = data.photos.map(photo => `
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <img src="${photo.photo_url}" class="card-img-top" alt="${photo.label}" style="height: 200px; object-fit: cover;">
+                                <div class="card-body p-2">
+                                    <h6 class="card-title">${photo.label || 'Project Photo'}</h6>
+                                    <small class="text-muted">${photo.stage} - ${new Date(photo.uploaded_at).toLocaleDateString()}</small>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    gallery.innerHTML = `
+                        <div class="text-center py-4">
+                            <i class="fas fa-camera fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No photos available yet.</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading photos:', error);
+                document.getElementById('photoGallery').innerHTML = `
+                    <div class="text-center py-4">
+                        <p class="text-danger">Error loading photos.</p>
+                    </div>
+                `;
+            });
+        }
+
+        function viewJobDetails(jobId) {
+            // Implementation for viewing job details
+            console.log('View job details:', jobId);
+        }
+
+        function downloadQuote(quoteNumber) {
+            window.open(`/api/download-quote/${quoteNumber}`, '_blank');
+        }
+
+        function downloadInvoice(invoiceNumber) {
+            window.open(`/api/download-invoice/${invoiceNumber}`, '_blank');
+        }
+
+        function acceptQuote(quoteNumber) {
+            if (confirm('Are you sure you want to accept this quote?')) {
+                // Implementation for accepting quote
+                console.log('Accept quote:', quoteNumber);
+            }
+        }
+
+        function payInvoice(invoiceNumber) {
+            // Implementation for invoice payment
+            console.log('Pay invoice:', invoiceNumber);
+        }
+    </script>
+</body>
+</html>
