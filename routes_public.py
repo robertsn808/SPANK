@@ -145,19 +145,14 @@ def public_home():
                 """)
                 stats_data = cur.fetchone()
                 
-        stats = {
-            'total_projects': stats_data['total_projects'] if stats_data else 0,
-            'years_experience': int(stats_data['years_experience']) if stats_data and stats_data['years_experience'] else 5,
-            'satisfied_customers': (stats_data['total_projects'] * 2) if stats_data else 100
-        }
+        # Remove fake statistics - using authentic data only
         
         # Check if we should render the old template for backwards compatibility
         if request.endpoint == 'index':
             return render_template('index.html')
         else:
             return render_template('home.html', 
-                                 featured_services=featured_services,
-                                 stats=stats)
+                                 featured_services=featured_services)
                              
     except Exception as e:
         logger.error(f"Error loading home page data: {str(e)}")
@@ -166,8 +161,7 @@ def public_home():
             return render_template('index.html')
         else:
             return render_template('home.html', 
-                                 featured_services=[],
-                                 stats={})
+                                 featured_services=[])
 
 @app.route('/services')
 def public_services():
