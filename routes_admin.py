@@ -318,9 +318,9 @@ def admin_performance():
             
             # Outstanding Invoices  
             result = conn.execute(db.text("""
-                SELECT COUNT(*) AS unpaid_invoices, COALESCE(SUM(total), 0) AS outstanding_amount
+                SELECT COUNT(*) AS unpaid_invoices, COALESCE(SUM(amount_due), 0) AS outstanding_amount
                 FROM invoices
-                WHERE status IN ('unsent', 'sent', 'overdue')
+                WHERE status IN ('unsent', 'sent', 'overdue', 'pending')
             """))
             outstanding = result.first()
             performance_data['outstanding_invoices'] = outstanding[0] if outstanding else 0
@@ -485,7 +485,7 @@ def admin_financial_reports():
                 SELECT
                   status,
                   COUNT(*) AS count,
-                  COALESCE(SUM(total), 0) AS total_value
+                  COALESCE(SUM(amount_due), 0) AS total_value
                 FROM invoices
                 GROUP BY status
             """))
