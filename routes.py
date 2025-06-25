@@ -98,8 +98,36 @@ from config.app import app
 
 @app.route('/admin-home')
 def admin_home_redirect():
-    """Admin homepage - redirects to dashboard"""
-    return redirect(url_for('admin_dashboard'))
+    """Admin homepage - simple admin login page"""
+    return '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>SPANKKS Construction - Admin Portal</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-light">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">SPANKKS Construction Admin Portal</h4>
+                        </div>
+                        <div class="card-body">
+                            <p>Welcome to the SPANKKS Construction admin portal.</p>
+                            <div class="d-grid gap-2">
+                                <a href="/" class="btn btn-secondary">Return to Website</a>
+                                <a href="/consultation" class="btn btn-primary">Manage Consultations</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    '''
 
 # Legacy admin routes - public routes handled by routes_public.py
 
@@ -110,8 +138,36 @@ def admin_redirect():
 
 @app.route('/staff-portal')
 def staff_portal_redirect():
-    """Redirect to staff portal login"""
-    return redirect(url_for('portal_login'))
+    """Staff portal login page"""
+    return '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>SPANKKS Construction - Staff Portal</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-light">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h4 class="mb-0">SPANKKS Construction Staff Portal</h4>
+                        </div>
+                        <div class="card-body">
+                            <p>Welcome to the SPANKKS Construction staff portal.</p>
+                            <div class="d-grid gap-2">
+                                <a href="/" class="btn btn-secondary">Return to Website</a>
+                                <a href="/consultation" class="btn btn-success">View Jobs</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    '''
 
 @app.route('/test-email-interface')
 def test_email_interface():
