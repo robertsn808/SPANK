@@ -1,88 +1,187 @@
 <style>
 body {
-    background-color: #f8f9fa !important;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-.container-fluid {
-    background-color: #f8f9fa;
-    min-height: 100vh;
-    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Enhanced Email Management Design */
+.container-fluid {
+    background: transparent;
+    min-height: 100vh;
+    padding: 30px;
+}
+
+/* Professional Email Management Design */
 .email-card {
-    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+    border: 1px solid rgba(26, 95, 63, 0.1);
+    border-radius: 20px;
+    box-shadow: 
+        0 10px 40px rgba(0,0,0,0.08),
+        0 4px 20px rgba(26, 95, 63, 0.05),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.email-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #1a5f3f, #2d7a5a, #1a5f3f);
+    border-radius: 20px 20px 0 0;
 }
 
 .email-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 
+        0 20px 60px rgba(0,0,0,0.15),
+        0 8px 30px rgba(26, 95, 63, 0.1),
+        inset 0 1px 0 rgba(255,255,255,0.9);
 }
 
 .card-header {
-    background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 100%) !important;
+    background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 50%, #1a5f3f 100%) !important;
     color: white !important;
-    border-radius: 12px 12px 0 0 !important;
-    padding: 1.25rem !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 2rem !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
 }
 
 .card-header h5 {
     color: white !important;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1.4rem;
     margin-bottom: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .stats-card {
-    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
+    background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+    border: 1px solid rgba(26, 95, 63, 0.08);
+    border-radius: 20px;
+    box-shadow: 
+        0 8px 32px rgba(0,0,0,0.06),
+        0 4px 16px rgba(26, 95, 63, 0.04),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+    position: relative;
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #1a5f3f, #2d7a5a);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .stats-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 
+        0 16px 48px rgba(0,0,0,0.12),
+        0 8px 24px rgba(26, 95, 63, 0.08),
+        inset 0 1px 0 rgba(255,255,255,1);
+}
+
+.stats-card:hover::before {
+    opacity: 1;
+}
+
+.stats-card .card-body {
+    padding: 2rem 1.5rem;
 }
 
 .stats-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 15px;
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-icon::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit;
+    filter: blur(20px);
+    opacity: 0.3;
+    transform: scale(1.2);
+}
+
+.stats-icon i {
+    position: relative;
+    z-index: 2;
 }
 
 .stats-icon.primary {
-    background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 100%);
+    background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 50%, #1a5f3f 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(26, 95, 63, 0.3);
+    box-shadow: 
+        0 8px 32px rgba(26, 95, 63, 0.4),
+        0 4px 16px rgba(26, 95, 63, 0.2),
+        inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .stats-icon.success {
-    background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+    background: linear-gradient(135deg, #198754 0%, #20c997 50%, #198754 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
+    box-shadow: 
+        0 8px 32px rgba(25, 135, 84, 0.4),
+        0 4px 16px rgba(25, 135, 84, 0.2),
+        inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .stats-icon.warning {
-    background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%);
+    background: linear-gradient(135deg, #fd7e14 0%, #ffc107 50%, #fd7e14 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(253, 126, 20, 0.3);
+    box-shadow: 
+        0 8px 32px rgba(253, 126, 20, 0.4),
+        0 4px 16px rgba(253, 126, 20, 0.2),
+        inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .stats-icon.info {
-    background: linear-gradient(135deg, #0dcaf0 0%, #6f42c1 100%);
+    background: linear-gradient(135deg, #0dcaf0 0%, #6f42c1 50%, #0dcaf0 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(13, 202, 240, 0.3);
+    box-shadow: 
+        0 8px 32px rgba(13, 202, 240, 0.4),
+        0 4px 16px rgba(13, 202, 240, 0.2),
+        inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .btn-primary {
@@ -283,25 +382,29 @@ body {
 
 <div class="container-fluid">
     <!-- Header Section -->
-    <div class="row mb-4">
+    <div class="row mb-5">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <a href="/admin-home" class="btn btn-outline-secondary me-3">
-                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                    </a>
-                    <div>
-                        <h2 class="mb-0"><i class="fas fa-envelope me-2 text-primary"></i>Email Management</h2>
-                        <p class="text-muted mb-0">Manage email campaigns, templates, and notifications</p>
+            <div class="header-section p-4 rounded-4" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border: 1px solid rgba(26, 95, 63, 0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.08);">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="d-flex align-items-center mb-3 mb-md-0">
+                        <a href="/admin-home" class="btn btn-outline-secondary me-4 rounded-pill px-4 py-2" style="border-width: 2px; font-weight: 600;">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                        <div>
+                            <h1 class="mb-2 fw-bold" style="background: linear-gradient(135deg, #1a5f3f, #2d7a5a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem;">
+                                <i class="fas fa-envelope me-3"></i>Email Management
+                            </h1>
+                            <p class="text-muted mb-0 fs-5">Professional email campaigns and customer communications</p>
+                        </div>
                     </div>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="sendEmail()">
-                        <i class="fas fa-paper-plane me-1"></i>Send Email
-                    </button>
-                    <button class="btn btn-outline-primary" onclick="createTemplate()">
-                        <i class="fas fa-plus me-1"></i>New Template
-                    </button>
+                    <div class="btn-group shadow-lg rounded-pill" style="box-shadow: 0 4px 20px rgba(26, 95, 63, 0.2) !important;">
+                        <button class="btn btn-primary rounded-start-pill px-4 py-3 fw-bold" onclick="sendEmail()" style="background: linear-gradient(135deg, #1a5f3f, #2d7a5a); border: none; font-size: 1.1rem;">
+                            <i class="fas fa-paper-plane me-2"></i>Send Campaign
+                        </button>
+                        <button class="btn btn-outline-primary rounded-end-pill px-4 py-3 fw-bold" onclick="createTemplate()" style="border-color: #1a5f3f; color: #1a5f3f; border-width: 2px; font-size: 1.1rem;">
+                            <i class="fas fa-plus me-2"></i>New Template
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -315,8 +418,8 @@ body {
                     <div class="stats-icon primary mx-auto">
                         <i class="fas fa-paper-plane"></i>
                     </div>
-                    <h4 class="mb-1" id="emailsSent">0</h4>
-                    <p class="text-muted mb-0">Emails Sent</p>
+                    <h3 class="mb-2 fw-bold" id="emailsSent" style="font-size: 2.5rem; color: #1a5f3f;">0</h3>
+                    <p class="text-muted mb-0 fw-semibold">Emails Sent</p>
                 </div>
             </div>
         </div>
@@ -326,8 +429,8 @@ body {
                     <div class="stats-icon success mx-auto">
                         <i class="fas fa-eye"></i>
                     </div>
-                    <h4 class="mb-1" id="openRate">-</h4>
-                    <p class="text-muted mb-0">Open Rate</p>
+                    <h3 class="mb-2 fw-bold" id="openRate" style="font-size: 2.5rem; color: #198754;">-</h3>
+                    <p class="text-muted mb-0 fw-semibold">Open Rate</p>
                 </div>
             </div>
         </div>
@@ -337,8 +440,8 @@ body {
                     <div class="stats-icon warning mx-auto">
                         <i class="fas fa-mouse-pointer"></i>
                     </div>
-                    <h4 class="mb-1" id="clickRate">-</h4>
-                    <p class="text-muted mb-0">Click Rate</p>
+                    <h3 class="mb-2 fw-bold" id="clickRate" style="font-size: 2.5rem; color: #fd7e14;">-</h3>
+                    <p class="text-muted mb-0 fw-semibold">Click Rate</p>
                 </div>
             </div>
         </div>
@@ -348,8 +451,8 @@ body {
                     <div class="stats-icon info mx-auto">
                         <i class="fas fa-users"></i>
                     </div>
-                    <h4 class="mb-1" id="totalSubscribers">0</h4>
-                    <p class="text-muted mb-0">Subscribers</p>
+                    <h3 class="mb-2 fw-bold" id="totalSubscribers" style="font-size: 2.5rem; color: #0dcaf0;">0</h3>
+                    <p class="text-muted mb-0 fw-semibold">Subscribers</p>
                 </div>
             </div>
         </div>
@@ -362,7 +465,7 @@ body {
                 <div class="card-header">
                     <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Email Composer</h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <form id="emailForm">
                         <div class="row mb-4">
                             <div class="col-md-6">
