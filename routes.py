@@ -10,12 +10,12 @@ import pytz
 
 # Import services after Flask setup to avoid circular imports
 try:
-    from models import HandymanStorage
-    from ai_service import ai_service
-    from notification_service import NotificationService
-    from auth_service import auth_service
-    from phone_formatter import phone_formatter
-    from unified_scheduler import unified_scheduler
+    from models.models import HandymanStorage
+    from services.ai_service import ai_service
+    from services.notification_service import NotificationService
+    from auth.auth_service import auth_service
+    from utils.phone_formatter import phone_formatter
+    from services.unified_scheduler import unified_scheduler
     logging.info("All required modules imported successfully")
 except ImportError as e:
     logging.error(f"Critical import error in routes.py: {e}")
@@ -42,7 +42,7 @@ except ImportError as e:
 # Initialize services with proper error handling for enterprise data integrity
 try:
     # Primary storage service for authentic database operations
-    from storage_service import StorageService
+    from services.storage_service import StorageService
     storage_service = StorageService()
     logging.info("Primary storage service initialized for authentic data integrity")
     
@@ -158,7 +158,7 @@ except Exception as e:
 
 # Get app instance after imports to avoid circular import
 def get_app():
-    from app import app
+    from config.app import app
     return app
 
 # Additional storage for appointments and staff

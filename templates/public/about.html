@@ -1,0 +1,448 @@
+{% extends "public/base.html" %}
+
+{% block title %}About SPANKKS Construction - Professional Handyman Services in Hawaii{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        background: linear-gradient(rgba(44, 95, 78, 0.9), rgba(26, 62, 50, 0.9)), url('/static/images/spankks-team.jpg') center/cover;
+        color: white;
+        padding: 120px 0 80px;
+        margin-top: 80px;
+    }
+    
+    .story-section {
+        padding: 80px 0;
+    }
+    
+    .story-content {
+        background: white;
+        border-radius: 15px;
+        padding: 50px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 50px;
+    }
+    
+    .values-section {
+        background: var(--bg-light);
+        padding: 80px 0;
+    }
+    
+    .value-card {
+        background: white;
+        border-radius: 15px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        height: 100%;
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+    }
+    
+    .value-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .value-icon {
+        font-size: 3rem;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+    }
+    
+    .team-section {
+        padding: 80px 0;
+    }
+    
+    .team-member {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .team-photo {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 20px;
+        border: 5px solid var(--secondary-color);
+    }
+    
+    .team-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 5px;
+    }
+    
+    .team-role {
+        color: var(--text-light);
+        margin-bottom: 15px;
+    }
+    
+    .team-bio {
+        color: var(--text-dark);
+        line-height: 1.6;
+    }
+    
+    .certifications-section {
+        background: var(--primary-color);
+        color: white;
+        padding: 80px 0;
+    }
+    
+    .cert-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+    
+    .cert-item {
+        background: rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+    
+    .cert-icon {
+        font-size: 2.5rem;
+        color: var(--secondary-color);
+        margin-bottom: 15px;
+    }
+    
+    .process-section {
+        padding: 80px 0;
+        background: white;
+    }
+    
+    .process-step {
+        display: flex;
+        align-items: center;
+        margin-bottom: 40px;
+        padding: 30px;
+        background: var(--bg-light);
+        border-radius: 15px;
+    }
+    
+    .step-number {
+        background: var(--primary-color);
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-right: 30px;
+        flex-shrink: 0;
+    }
+    
+    .step-content h4 {
+        color: var(--primary-color);
+        margin-bottom: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .about-hero {
+            padding: 100px 0 60px;
+        }
+        
+        .story-content {
+            padding: 30px;
+        }
+        
+        .process-step {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .step-number {
+            margin-right: 0;
+            margin-bottom: 20px;
+        }
+        
+        .cert-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="about-hero">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">About SPANKKS Construction</h1>
+                <p class="lead mb-4">Professional handyman services with authentic Hawaii craftsmanship. We're not just contractors – we're your neighbors, committed to quality work and honest service.</p>
+                <div class="d-flex justify-content-center">
+                    <div class="me-4">
+                        <i class="fas fa-certificate fa-lg me-2"></i>Licensed
+                    </div>
+                    <div class="me-4">
+                        <i class="fas fa-shield-alt fa-lg me-2"></i>Insured
+                    </div>
+                    <div>
+                        <i class="fas fa-heart fa-lg me-2"></i>Local
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Story -->
+<section class="story-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="story-content">
+                    <h2 class="section-title text-center">Our Story</h2>
+                    <p class="lead text-center mb-4">Born in Hawaii, built for Hawaii homes.</p>
+                    
+                    <p>SPANKKS Construction started with a simple mission: provide honest, reliable handyman services to Hawaii families. We understand the unique challenges of island living – from salt air corrosion to limited material availability – and we've built our expertise around these realities.</p>
+                    
+                    <p>What sets us apart isn't just our technical skills, but our commitment to education. Through SPANKKS SKOOL, we empower homeowners with the knowledge to handle basic repairs safely, while knowing when to call the professionals.</p>
+                    
+                    <p>Every project we take on is approached with the same care we'd give our own homes. We're not just building repairs – we're building relationships that last.</p>
+                    
+                    <div class="row mt-5">
+                        <div class="col-md-4 text-center">
+                            <h3 class="text-primary">{{ stats.years_experience or '5+' }}</h3>
+                            <p class="mb-0">Years Serving Hawaii</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h3 class="text-primary">{{ stats.total_projects or '100+' }}</h3>
+                            <p class="mb-0">Projects Completed</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h3 class="text-primary">100%</h3>
+                            <p class="mb-0">Customer Satisfaction</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Values -->
+<section class="values-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title">Our Values</h2>
+                <p class="lead">The principles that guide everything we do</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h4>Integrity</h4>
+                    <p>Honest pricing, transparent communication, and standing behind our work with guarantees you can trust.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h4>Education</h4>
+                    <p>Empowering homeowners through SPANKKS SKOOL while providing professional expertise when needed.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h4>Sustainability</h4>
+                    <p>Respecting Hawaii's environment with eco-friendly practices and materials whenever possible.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4>Reliability</h4>
+                    <p>Showing up when we say we will, completing projects on time, and being available when you need us.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h4>Quality</h4>
+                    <p>Using the best materials and techniques, with attention to detail that ensures lasting results.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>Community</h4>
+                    <p>Supporting local families and businesses while contributing to the strength of our island community.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Process -->
+<section class="process-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="section-title">How We Work</h2>
+                <p class="lead">Simple, transparent process from consultation to completion</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Free Consultation</h4>
+                        <p class="mb-0">We visit your home, assess your needs, and provide honest recommendations. No pressure, no hidden fees – just professional advice.</p>
+                    </div>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Detailed Estimate</h4>
+                        <p class="mb-0">Clear, itemized estimates with material costs, labor, and timeline. You'll know exactly what to expect before we start.</p>
+                    </div>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Professional Execution</h4>
+                        <p class="mb-0">Licensed, insured craftsmen using quality materials and proven techniques. We treat your home like our own.</p>
+                    </div>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Quality Guarantee</h4>
+                        <p class="mb-0">Final walkthrough, cleanup, and warranty on our work. Your satisfaction is our success.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Certifications -->
+<section class="certifications-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2>Licenses & Certifications</h2>
+                <p class="lead">Professional credentials you can trust</p>
+            </div>
+        </div>
+        
+        <div class="cert-grid">
+            <div class="cert-item">
+                <div class="cert-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <h5>Hawaii Contractor License</h5>
+                <p class="mb-0">State-licensed general contractor #SPANKKS-2025</p>
+            </div>
+            
+            <div class="cert-item">
+                <div class="cert-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h5>General Liability Insurance</h5>
+                <p class="mb-0">Comprehensive coverage protecting your property</p>
+            </div>
+            
+            <div class="cert-item">
+                <div class="cert-icon">
+                    <i class="fas fa-hard-hat"></i>
+                </div>
+                <h5>OSHA Safety Certified</h5>
+                <p class="mb-0">Workplace safety training and protocols</p>
+            </div>
+            
+            <div class="cert-item">
+                <div class="cert-icon">
+                    <i class="fas fa-first-aid"></i>
+                </div>
+                <h5>First Aid/CPR Certified</h5>
+                <p class="mb-0">Emergency response training for job site safety</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="mb-4">Ready to Work Together?</h2>
+                <p class="lead mb-4">Experience the SPANKKS difference – professional service with authentic Hawaii spirit</p>
+                <a href="{{ url_for('consultation') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-calendar-check me-2"></i>Schedule Consultation
+                </a>
+                <a href="{{ url_for('public_contact') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-envelope me-2"></i>Contact Us
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate statistics on scroll
+    const stats = document.querySelectorAll('.story-content h3');
+    
+    const animateStats = () => {
+        stats.forEach(stat => {
+            const rect = stat.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                stat.style.opacity = '1';
+                stat.style.transform = 'translateY(0)';
+            }
+        });
+    };
+    
+    // Initial setup
+    stats.forEach(stat => {
+        stat.style.opacity = '0';
+        stat.style.transform = 'translateY(20px)';
+        stat.style.transition = 'all 0.6s ease';
+    });
+    
+    window.addEventListener('scroll', animateStats);
+    animateStats();
+});
+</script>
+{% endblock %}

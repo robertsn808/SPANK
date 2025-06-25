@@ -39,7 +39,7 @@ if os.environ.get('FLASK_ENV') == 'development' or '/admin' in os.environ.get('R
 
 # Register template helpers
 try:
-    from template_helpers import register_template_helpers
+    from utils.template_helpers import register_template_helpers
     register_template_helpers(app)
     logging.info("Template helpers registered successfully")
 except ImportError as e:
@@ -48,7 +48,7 @@ except ImportError as e:
 # Create database tables
 with app.app_context():
     # Import models to create tables
-    import models_db  # noqa: F401
+    import models.models_db  # noqa: F401
     db.create_all()
 
 # Import routes after app creation to avoid circular imports
