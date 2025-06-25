@@ -150,7 +150,7 @@ def admin_staff():
             # Get staff information with additional fields
             staff_result = conn.execute(db.text("""
                 SELECT staff_id, name, email, phone, role, 
-                       skills, availability, active, created_at, pin
+                       skills, availability, created_at, pin
                 FROM staff
                 ORDER BY created_at DESC
             """))
@@ -184,13 +184,13 @@ def admin_staff():
                     {
                         'staff_id': 'SPK001', 'name': 'Robert Spank', 'email': 'robert@spankks.com',
                         'phone': '(808) 778-9132', 'role': 'Owner/Lead Contractor', 
-                        'skills': 'All Services', 'availability': 'Full-time', 'active': True,
+                        'skills': 'All Services', 'availability': 'Full-time',
                         'created_at': '2025-01-01', 'pin': '30078'
                     },
                     {
                         'staff_id': 'SPK002', 'name': 'Maria Spank', 'email': 'maria@spankks.com',
                         'phone': '(808) 555-0102', 'role': 'Co-Owner/Admin', 
-                        'skills': 'Administration, Client Relations', 'availability': 'Full-time', 'active': True,
+                        'skills': 'Administration, Client Relations', 'availability': 'Full-time',
                         'created_at': '2025-01-01', 'pin': '30079'
                     }
                 ]
