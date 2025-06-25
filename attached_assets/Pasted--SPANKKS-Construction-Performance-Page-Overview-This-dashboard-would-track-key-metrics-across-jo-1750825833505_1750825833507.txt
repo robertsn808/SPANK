@@ -1,0 +1,62 @@
+📊 SPANKKS Construction – Performance Page Overview
+This dashboard would track key metrics across job success, crew productivity, client engagement, financial performance, and scheduling efficiency.
+
+✅ Core Performance Widgets
+Section	Metrics
+📈 Business Health	🔹 Total Jobs This Month
+🔹 Completed Jobs %
+🔹 Revenue This Month
+🔹 Outstanding Invoices
+🔹 Quote-to-Job Conversion Rate
+👷 Staff Productivity	🔹 Jobs Completed Per Crew Member
+🔹 Average Job Time
+🔹 Time Clock Logs (Hours Worked)
+🔹 Tardiness or Missed Check-Ins
+📅 Scheduling Efficiency	🔹 % Jobs Rescheduled or Overlapping
+🔹 Calendar Utilization Rate
+🔹 Recurring Appointments Success Rate
+🛠️ Operational Metrics	🔹 Material Waste Reports
+🔹 Checklist Completion Rates
+🔹 Job Completion without Rework %
+🧾 Financial Insights	🔹 Total Invoiced vs. Paid
+🔹 Average Job Cost
+🔹 Profit Margin per Job
+🔹 Forecast Next 3 Months
+📸 Quality Control	🔹 % of Jobs with Before/After Photos
+🔹 Jobs with Client Comments or Reviews
+🧍‍♂️ Client Retention	🔹 Repeat Clients
+🔹 Average Revenue per Client
+🔹 Follow-Up Success Rate
+
+📋 Suggested Layout & Sections
+plaintext
+Copy
+Edit
+--------------------------------------------------------
+| 🔹 Business Snapshot (cards: Jobs, Revenue, Quotes)  |
+--------------------------------------------------------
+| 📈 Performance Graph (line chart: Jobs per Week)     |
+| 📊 Revenue Forecast (bar chart: This quarter)        |
+--------------------------------------------------------
+| 👷 Staff Activity Panel                              |
+| 📅 Scheduling Efficiency Panel                       |
+--------------------------------------------------------
+| 📋 Job Quality & Completion Panel                    |
+| 💵 Payments & Cash Flow Panel                        |
+--------------------------------------------------------
+🧠 Optional Features
+Feature	Description
+PDF Export	Share monthly performance reports with stakeholders
+Goal Tracker	Set & visualize monthly targets (revenue, jobs, efficiency)
+Alerts	E.g., “Low crew productivity” or “Overdue invoices up 20%”
+Trends	Auto-highlight growth or decline in key areas
+
+🛠️ Tech Suggestions (Replit/React)
+Use Chart.js or Recharts for graphs
+
+Pull metrics from:
+
+jobs, invoices, payments, checklists, materials, staff_logs
+
+Build with a tabbed layout or collapsible sections
+

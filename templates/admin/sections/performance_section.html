@@ -1,0 +1,726 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Performance Dashboard - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="performance-dashboard">
+    <!-- Performance Header -->
+    <div class="performance-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1">Performance Dashboard</h1>
+                <p class="text-muted mb-0">Track key metrics across job success, crew productivity, and financial performance</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-success me-2" onclick="exportReport()">
+                    <i class="fas fa-download me-2"></i>Export Report
+                </button>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-cog me-2"></i>Options
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="setGoals()">
+                            <i class="fas fa-target me-2"></i>Set Goals
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="refreshMetrics()">
+                            <i class="fas fa-sync me-2"></i>Refresh Data
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="generateForecast()">
+                            <i class="fas fa-chart-line me-2"></i>3-Month Forecast
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Snapshot Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="metric-card jobs-metric">
+                <div class="metric-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="metric-content">
+                    <h3 id="totalJobsMonth">{{ performance.total_jobs_month|default(0) }}</h3>
+                    <p>Jobs This Month</p>
+                    <div class="metric-trend">
+                        <span class="trend-indicator positive">+{{ performance.jobs_growth|default(0) }}%</span>
+                        <span class="trend-text">vs last month</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="metric-card completion-metric">
+                <div class="metric-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="metric-content">
+                    <h3 id="completionRate">{{ "%.1f"|format(performance.completion_rate|default(0)) }}%</h3>
+                    <p>Job Completion Rate</p>
+                    <div class="metric-trend">
+                        <span class="trend-indicator {{ 'positive' if (performance.completion_rate|default(0)) > 85 else 'warning' }}">
+                            {{ "Excellent" if (performance.completion_rate|default(0)) > 85 else "Good" if (performance.completion_rate|default(0)) > 70 else "Needs Improvement" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="metric-card revenue-metric">
+                <div class="metric-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="metric-content">
+                    <h3 id="revenueMonth">${{ "%.0f"|format(performance.revenue_month|default(0)) }}</h3>
+                    <p>Revenue This Month</p>
+                    <div class="metric-trend">
+                        <span class="trend-indicator positive">+{{ performance.revenue_growth|default(0) }}%</span>
+                        <span class="trend-text">vs last month</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="metric-card conversion-metric">
+                <div class="metric-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="metric-content">
+                    <h3 id="conversionRate">{{ "%.1f"|format(performance.quote_conversion|default(0)) }}%</h3>
+                    <p>Quote Conversion</p>
+                    <div class="metric-trend">
+                        <span class="trend-indicator {{ 'positive' if (performance.quote_conversion|default(0)) > 50 else 'warning' }}">
+                            {{ "Strong" if (performance.quote_conversion|default(0)) > 50 else "Moderate" if (performance.quote_conversion|default(0)) > 30 else "Low" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Charts -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Jobs Performance Trend</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="jobsChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Revenue Forecast</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Metrics Panels -->
+    <div class="row mb-4">
+        <!-- Staff Productivity Panel -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Staff Productivity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="productivity-metrics">
+                        <div class="metric-row">
+                            <div class="metric-label">Average Job Time</div>
+                            <div class="metric-value">{{ "%.1f"|format(performance.avg_job_hours|default(0)) }}h</div>
+                            <div class="metric-status good">Within Target</div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">Jobs per Staff Member</div>
+                            <div class="metric-value">{{ "%.1f"|format(performance.jobs_per_staff|default(0)) }}</div>
+                            <div class="metric-status good">Productive</div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">Checklist Completion Rate</div>
+                            <div class="metric-value">{{ "%.1f"|format(performance.checklist_completion|default(0)) }}%</div>
+                            <div class="metric-status {{ 'good' if (performance.checklist_completion|default(0)) > 80 else 'warning' }}">
+                                {{ "Excellent" if (performance.checklist_completion|default(0)) > 80 else "Needs Focus" }}
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">On-Time Completion</div>
+                            <div class="metric-value">{{ "%.1f"|format(performance.ontime_completion|default(0)) }}%</div>
+                            <div class="metric-status good">Reliable</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scheduling Efficiency Panel -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Scheduling Efficiency</h5>
+                </div>
+                <div class="card-body">
+                    <div class="scheduling-metrics">
+                        <div class="metric-row">
+                            <div class="metric-label">Calendar Utilization</div>
+                            <div class="metric-value">{{ "%.1f"|format(performance.calendar_utilization|default(0)) }}%</div>
+                            <div class="metric-status {{ 'good' if (performance.calendar_utilization|default(0)) > 70 else 'warning' }}">
+                                {{ "Optimal" if (performance.calendar_utilization|default(0)) > 70 else "Could Improve" }}
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">Jobs Rescheduled</div>
+                            <div class="metric-value">{{ performance.rescheduled_jobs|default(0) }}</div>
+                            <div class="metric-status {{ 'good' if (performance.rescheduled_jobs|default(0)) < 5 else 'warning' }}">
+                                {{ "Low" if (performance.rescheduled_jobs|default(0)) < 5 else "Moderate" }}
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">Schedule Conflicts</div>
+                            <div class="metric-value">{{ performance.schedule_conflicts|default(0) }}</div>
+                            <div class="metric-status good">Minimal</div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">Recurring Success Rate</div>
+                            <div class="metric-value">{{ "%.1f"|format(performance.recurring_success|default(0)) }}%</div>
+                            <div class="metric-status good">Strong</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial & Operational Panels -->
+    <div class="row mb-4">
+        <!-- Job Quality & Completion Panel -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quality Control</h5>
+                </div>
+                <div class="card-body">
+                    <div class="quality-metrics">
+                        <div class="metric-row">
+                            <div class="metric-label">Jobs with Photos</div>
+                            <div class="metric-value">{{ "%.1f"|format(performance.jobs_with_photos|default(0)) }}%</div>
+                            <div class="metric-status {{ 'good' if (performance.jobs_with_photos|default(0)) > 80 else 'warning' }}">
+                                {{ "Excellent" if (performance.jobs_with_photos|default(0)) > 80 else "Improving" }}
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">Zero Rework Jobs</div>
+                            <div class="metric-value">{{ "%.1f"|format(performance.zero_rework|default(0)) }}%</div>
+                            <div class="metric-status good">High Quality</div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">Client Satisfaction</div>
+                            <div class="metric-value">{{ "%.1f"|format(performance.client_satisfaction|default(0)) }}/5</div>
+                            <div class="metric-status good">Excellent</div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">Material Waste Rate</div>
+                            <div class="metric-value">{{ "%.1f"|format(performance.material_waste|default(0)) }}%</div>
+                            <div class="metric-status {{ 'good' if (performance.material_waste|default(0)) < 5 else 'warning' }}">
+                                {{ "Low" if (performance.material_waste|default(0)) < 5 else "Monitor" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments & Cash Flow Panel -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Financial Performance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="financial-metrics">
+                        <div class="metric-row">
+                            <div class="metric-label">Outstanding Invoices</div>
+                            <div class="metric-value">${{ "%.0f"|format(performance.outstanding_amount|default(0)) }}</div>
+                            <div class="metric-status {{ 'good' if (performance.outstanding_amount|default(0)) < 5000 else 'warning' }}">
+                                {{ performance.outstanding_invoices|default(0) }} invoices
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">Average Job Value</div>
+                            <div class="metric-value">${{ "%.0f"|format(performance.avg_job_value|default(0)) }}</div>
+                            <div class="metric-status good">Strong</div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">Profit Margin</div>
+                            <div class="metric-value">{{ "%.1f"|format(performance.profit_margin|default(0)) }}%</div>
+                            <div class="metric-status {{ 'good' if (performance.profit_margin|default(0)) > 25 else 'warning' }}">
+                                {{ "Healthy" if (performance.profit_margin|default(0)) > 25 else "Monitor" }}
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">Collection Rate</div>
+                            <div class="metric-value">{{ "%.1f"|format(performance.collection_rate|default(0)) }}%</div>
+                            <div class="metric-status good">Excellent</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Retention Panel -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Client Retention & Growth</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="retention-stat">
+                                <div class="stat-number">{{ performance.repeat_clients|default(0) }}</div>
+                                <div class="stat-label">Repeat Clients</div>
+                                <div class="stat-percentage">{{ "%.1f"|format(performance.repeat_client_rate|default(0)) }}% of total</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="retention-stat">
+                                <div class="stat-number">${{ "%.0f"|format(performance.avg_client_revenue|default(0)) }}</div>
+                                <div class="stat-label">Avg Revenue per Client</div>
+                                <div class="stat-percentage">Lifetime value</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="retention-stat">
+                                <div class="stat-number">{{ "%.1f"|format(performance.followup_success|default(0)) }}%</div>
+                                <div class="stat-label">Follow-Up Success</div>
+                                <div class="stat-percentage">Response rate</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="retention-stat">
+                                <div class="stat-number">{{ performance.referral_jobs|default(0) }}</div>
+                                <div class="stat-label">Referral Jobs</div>
+                                <div class="stat-percentage">This month</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Alerts Modal -->
+<div class="modal fade" id="alertsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Performance Alerts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="alertsContent">
+                <!-- Dynamic alerts content -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="markAlertsRead()">Mark All Read</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.performance-dashboard {
+    padding: 20px;
+}
+
+.metric-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-left: 4px solid transparent;
+    transition: transform 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+}
+
+.metric-card.jobs-metric { border-left-color: #007bff; }
+.metric-card.completion-metric { border-left-color: #28a745; }
+.metric-card.revenue-metric { border-left-color: #17a2b8; }
+.metric-card.conversion-metric { border-left-color: #6f42c1; }
+
+.metric-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 20px;
+    color: white;
+}
+
+.metric-card.jobs-metric .metric-icon { background: #007bff; }
+.metric-card.completion-metric .metric-icon { background: #28a745; }
+.metric-card.revenue-metric .metric-icon { background: #17a2b8; }
+.metric-card.conversion-metric .metric-icon { background: #6f42c1; }
+
+.metric-card h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #2c3e50;
+}
+
+.metric-trend {
+    margin-top: 8px;
+}
+
+.trend-indicator {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.trend-indicator.positive { color: #28a745; }
+.trend-indicator.negative { color: #dc3545; }
+.trend-indicator.warning { color: #ffc107; }
+
+.trend-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-left: 4px;
+}
+
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.metric-row:last-child {
+    border-bottom: none;
+}
+
+.metric-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+.metric-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #2c3e50;
+}
+
+.metric-status {
+    font-size: 0.9rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.metric-status.good {
+    background: #d4edda;
+    color: #155724;
+}
+
+.metric-status.warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.metric-status.danger {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.retention-stat {
+    text-align: center;
+    padding: 20px;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.stat-label {
+    font-weight: 600;
+    color: #495057;
+    margin: 8px 0 4px 0;
+}
+
+.stat-percentage {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Performance dashboard functionality
+let jobsChart, revenueChart;
+
+// Initialize charts
+document.addEventListener('DOMContentLoaded', function() {
+    initializeJobsChart();
+    initializeRevenueChart();
+    checkPerformanceAlerts();
+});
+
+function initializeJobsChart() {
+    const ctx = document.getElementById('jobsChart').getContext('2d');
+    
+    // Sample data - would be populated from API
+    const jobsData = {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        datasets: [{
+            label: 'Jobs Completed',
+            data: [8, 12, 15, 18],
+            borderColor: '#007bff',
+            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+            tension: 0.4,
+            fill: true
+        }, {
+            label: 'Jobs Scheduled',
+            data: [10, 14, 16, 20],
+            borderColor: '#28a745',
+            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    };
+    
+    jobsChart = new Chart(ctx, {
+        type: 'line',
+        data: jobsData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#f1f3f4'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: '#f1f3f4'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function initializeRevenueChart() {
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    
+    // Sample forecast data
+    const revenueData = {
+        labels: ['This Month', 'Next Month', 'Month 3'],
+        datasets: [{
+            label: 'Projected Revenue',
+            data: [15000, 18000, 22000],
+            backgroundColor: ['#007bff', '#17a2b8', '#28a745'],
+            borderWidth: 0
+        }]
+    };
+    
+    revenueChart = new Chart(ctx, {
+        type: 'bar',
+        data: revenueData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
+                    },
+                    grid: {
+                        color: '#f1f3f4'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+function checkPerformanceAlerts() {
+    // Simulate performance alerts
+    const alerts = [];
+    
+    // Check completion rate
+    const completionRate = parseFloat(document.getElementById('completionRate').textContent);
+    if (completionRate < 80) {
+        alerts.push({
+            type: 'warning',
+            title: 'Job Completion Rate Below Target',
+            message: `Current completion rate is ${completionRate}%. Target is 85%+.`,
+            action: 'Review scheduling and resource allocation'
+        });
+    }
+    
+    // Check outstanding invoices
+    const outstanding = document.getElementById('outstanding').textContent;
+    if (outstanding.includes('$')) {
+        const amount = parseFloat(outstanding.replace('$', '').replace(',', ''));
+        if (amount > 5000) {
+            alerts.push({
+                type: 'danger',
+                title: 'High Outstanding Invoices',
+                message: `${outstanding} in unpaid invoices requires attention.`,
+                action: 'Follow up on overdue payments'
+            });
+        }
+    }
+    
+    if (alerts.length > 0) {
+        showAlertsBadge(alerts.length);
+    }
+}
+
+function showAlertsBadge(count) {
+    // Add alert badge to performance header
+    const header = document.querySelector('.performance-header h1');
+    if (!header.querySelector('.alert-badge')) {
+        const badge = document.createElement('span');
+        badge.className = 'badge bg-warning ms-2 alert-badge';
+        badge.textContent = count;
+        badge.style.cursor = 'pointer';
+        badge.onclick = showAlerts;
+        header.appendChild(badge);
+    }
+}
+
+function showAlerts() {
+    // Show alerts modal
+    new bootstrap.Modal(document.getElementById('alertsModal')).show();
+    
+    // Populate alerts content
+    const content = document.getElementById('alertsContent');
+    content.innerHTML = `
+        <div class="alert alert-warning">
+            <h6><i class="fas fa-exclamation-triangle me-2"></i>Job Completion Rate Below Target</h6>
+            <p>Current completion rate is below 85% target. Review scheduling and resource allocation.</p>
+        </div>
+        <div class="alert alert-info">
+            <h6><i class="fas fa-info-circle me-2"></i>Optimization Opportunity</h6>
+            <p>Schedule utilization could be improved by 15% with better time management.</p>
+        </div>
+    `;
+}
+
+function markAlertsRead() {
+    // Remove alert badge
+    const badge = document.querySelector('.alert-badge');
+    if (badge) badge.remove();
+    
+    bootstrap.Modal.getInstance(document.getElementById('alertsModal')).hide();
+}
+
+// Dashboard actions
+function exportReport() {
+    window.open('/api/admin/performance/export?format=pdf', '_blank');
+}
+
+function setGoals() {
+    const goals = prompt('Set monthly goals (format: jobs:20,revenue:25000):');
+    if (goals) {
+        // Parse and save goals
+        console.log('Goals set:', goals);
+        alert('Goals updated successfully');
+    }
+}
+
+function refreshMetrics() {
+    // Refresh performance data
+    location.reload();
+}
+
+function generateForecast() {
+    // Generate 3-month forecast
+    window.open('/api/admin/performance/forecast', '_blank');
+}
+
+// Update charts with real data (would be called from API)
+function updateChartsWithRealData(data) {
+    if (jobsChart && data.jobsChartData) {
+        jobsChart.data = data.jobsChartData;
+        jobsChart.update();
+    }
+    
+    if (revenueChart && data.revenueChartData) {
+        revenueChart.data = data.revenueChartData;
+        revenueChart.update();
+    }
+}
+
+// Auto-refresh every 5 minutes
+setInterval(function() {
+    fetch('/api/admin/performance/live-data')
+        .then(response => response.json())
+        .then(data => {
+            // Update metric values
+            updateMetricValues(data);
+            updateChartsWithRealData(data);
+        })
+        .catch(error => console.log('Auto-refresh failed:', error));
+}, 300000); // 5 minutes
+
+function updateMetricValues(data) {
+    // Update live metric values
+    if (data.totalJobsMonth) {
+        document.getElementById('totalJobsMonth').textContent = data.totalJobsMonth;
+    }
+    if (data.completionRate) {
+        document.getElementById('completionRate').textContent = data.completionRate.toFixed(1) + '%';
+    }
+    if (data.revenueMonth) {
+        document.getElementById('revenueMonth').textContent = '$' + data.revenueMonth.toFixed(0);
+    }
+    if (data.conversionRate) {
+        document.getElementById('conversionRate').textContent = data.conversionRate.toFixed(1) + '%';
+    }
+}
+</script>
+{% endblock %}

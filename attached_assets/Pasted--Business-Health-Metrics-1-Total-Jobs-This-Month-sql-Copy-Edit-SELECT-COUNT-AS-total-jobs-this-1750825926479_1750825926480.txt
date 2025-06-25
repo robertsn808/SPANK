@@ -1,0 +1,111 @@
+🧾 Business Health Metrics
+1. Total Jobs This Month
+sql
+Copy
+Edit
+SELECT COUNT(*) AS total_jobs_this_month
+FROM jobs
+WHERE DATE_TRUNC('month', scheduled_date) = DATE_TRUNC('month', CURRENT_DATE);
+2. Completed Jobs %
+sql
+Copy
+Edit
+SELECT 
+  ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'Completed') / NULLIF(COUNT(*), 0), 2) AS completion_rate
+FROM jobs
+WHERE DATE_TRUNC('month', scheduled_date) = DATE_TRUNC('month', CURRENT_DATE);
+3. Revenue This Month
+sql
+Copy
+Edit
+SELECT COALESCE(SUM(amount_paid), 0) AS revenue_this_month
+FROM payments
+WHERE DATE_TRUNC('month', payment_date) = DATE_TRUNC('month', CURRENT_DATE);
+4. Outstanding Invoices
+sql
+Copy
+Edit
+SELECT COUNT(*) AS unpaid_invoices
+FROM invoices
+WHERE status IN ('Unsent', 'Sent', 'Overdue');
+5. Quote-to-Job Conversion Rate
+sql
+Copy
+Edit
+SELECT 
+  ROUND(100.0 * COUNT(*) FILTER (WHERE converted_to_invoice = TRUE) / NULLIF(COUNT(*), 0), 2) AS conversion_rate
+FROM quotes
+WHERE DATE_TRUNC('month', date_created) = DATE_TRUNC('month', CURRENT_DATE);
+👷 Staff Productivity Metrics
+6. Jobs Completed Per Staff
+sql
+Copy
+Edit
+SELECT assigned_to, COUNT(*) AS jobs_completed
+FROM jobs
+WHERE status = 'Completed'
+GROUP BY assigned_to;
+7. Average Job Time
+sql
+Copy
+Edit
+SELECT ROUND(AVG(EXTRACT(EPOCH FROM (completed_at - started_at)) / 3600), 2) AS avg_hours_per_job
+FROM jobs
+WHERE status = 'Completed' AND completed_at IS NOT NULL AND started_at IS NOT NULL;
+📅 Scheduling Efficiency
+8. Jobs Rescheduled This Month
+sql
+Copy
+Edit
+SELECT COUNT(*) AS rescheduled_jobs
+FROM jobs
+WHERE DATE_TRUNC('month', last_rescheduled_at) = DATE_TRUNC('month', CURRENT_DATE);
+🛠️ Operational Metrics
+9. Checklist Completion Rate
+sql
+Copy
+Edit
+SELECT 
+  ROUND(100.0 * COUNT(*) FILTER (WHERE checklist_complete = TRUE) / NULLIF(COUNT(*), 0), 2) AS checklist_completion_rate
+FROM jobs
+WHERE scheduled_date >= CURRENT_DATE - INTERVAL '30 days';
+💰 Financial Insights
+10. Total Invoiced vs. Paid
+sql
+Copy
+Edit
+SELECT
+  (SELECT SUM(total_amount) FROM invoices WHERE DATE_TRUNC('month', issue_date) = DATE_TRUNC('month', CURRENT_DATE)) AS total_invoiced,
+  (SELECT SUM(amount_paid) FROM payments WHERE DATE_TRUNC('month', payment_date) = DATE_TRUNC('month', CURRENT_DATE)) AS total_paid;
+11. Profit Margin per Job (Sample, requires costs)
+sql
+Copy
+Edit
+SELECT
+  job_id,
+  (invoice_total - job_cost) AS profit,
+  ROUND(100.0 * (invoice_total - job_cost) / invoice_total, 2) AS margin_percent
+FROM jobs
+WHERE invoice_total IS NOT NULL AND job_cost IS NOT NULL;
+🧍‍♂️ Client Retention
+12. Repeat Clients Count
+sql
+Copy
+Edit
+SELECT COUNT(*) 
+FROM (
+  SELECT client_id 
+  FROM jobs 
+  GROUP BY client_id 
+  HAVING COUNT(*) > 1
+) AS repeat_clients;
+13. Average Revenue Per Client
+sql
+Copy
+Edit
+SELECT ROUND(AVG(total), 2) AS avg_client_revenue
+FROM (
+  SELECT client_id, SUM(amount_paid) AS total
+  FROM payments
+  GROUP BY client_id
+) AS client_totals;
