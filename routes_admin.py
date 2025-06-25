@@ -800,9 +800,8 @@ def admin_portal_management():
             
             # Get staff for staff portal management
             staff_result = conn.execute(db.text("""
-                SELECT staff_id, name, email, role, active
+                SELECT staff_id, name, email, role
                 FROM staff
-                WHERE active = TRUE
                 ORDER BY name
             """))
             staff_data = [dict(row._mapping) for row in staff_result]
