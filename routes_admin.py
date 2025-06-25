@@ -807,7 +807,7 @@ def admin_portal_management():
             """))
             staff_data = [dict(row._mapping) for row in staff_result]
         
-        return render_template('admin/sections/portal_management_section.html',
+        return render_template('admin/sections/portal_section.html',
                              portal_access=portal_access_data,
                              clients=clients_data,
                              jobs=jobs_data,
