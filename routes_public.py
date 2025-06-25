@@ -100,7 +100,7 @@ def consultation():
                              
     except Exception as e:
         logger.error(f"Error loading consultation page: {str(e)}")
-        return render_template('consultation.html', services_by_category={})
+        return render_template('consultation.html', services_by_category=services_by_category)
 
 # Import successful completion message
 @app.route('/form-confirmation')
