@@ -1,0 +1,210 @@
+🧱 Core Entities & Tables
+1. Clients
+client_id (UUID)
+
+name
+
+email
+
+phone
+
+address
+
+billing_address
+
+preferred_contact_method
+
+created_at
+
+notes (general or custom tags)
+
+2. Jobs
+job_id (e.g., J2025-XXXX)
+
+client_id (FK to Clients)
+
+service_type (flooring, drywall, fence, etc.)
+
+status (quote, scheduled, in progress, completed, invoiced, paid)
+
+scheduled_date
+
+completed_date
+
+job_note
+
+assigned_staff_ids (array or join table)
+
+checklist_status (JSON or FK)
+
+materials_used (JSON or FK)
+
+photos (array of image paths or links)
+
+quote_id / invoice_id
+
+timestamp_created
+
+3. Quotes
+quote_id
+
+client_id
+
+job_id
+
+line_items (JSON or relational)
+
+subtotal
+
+tax (calculated: Hawaii GET 4.712%)
+
+total
+
+status (draft, sent, accepted, rejected)
+
+pdf_url
+
+accepted_at (timestamp)
+
+created_by (staff ID)
+
+4. Invoices
+invoice_id
+
+job_id
+
+client_id
+
+quote_id (optional)
+
+amount_due
+
+tax
+
+total_paid
+
+payment_method (cash, check, Venmo, etc.)
+
+status (unpaid, paid, overdue)
+
+due_date
+
+pdf_url
+
+payment_log (array of entries)
+
+5. Staff
+staff_id
+
+name
+
+email
+
+phone
+
+role (admin, scheduler, field tech)
+
+start_date
+
+availability
+
+permissions
+
+pin or password (for login or check-in)
+
+assigned_jobs (array or join table)
+
+time_clock_logs (JSON or log table)
+
+6. Scheduling / Calendar
+event_id
+
+job_id
+
+staff_ids
+
+start_time
+
+end_time
+
+location
+
+status
+
+notes
+
+7. Checklists
+checklist_id
+
+job_id
+
+task_list (array or JSON)
+
+completed_by (staff_id)
+
+status (complete/incomplete)
+
+photos_uploaded (if required)
+
+8. Photo Documentation
+photo_id
+
+job_id
+
+uploaded_by (staff_id or system)
+
+timestamp
+
+type (before, after, in-progress)
+
+file_path
+
+notes
+
+9. Materials Used
+material_id
+
+job_id
+
+name
+
+quantity
+
+unit_cost
+
+supplier
+
+category
+
+10. System & Logs
+notifications
+
+audit_logs (who did what and when)
+
+error_logs
+
+email_activity_logs
+
+sms_activity_logs
+
+🧩 Optional Add-ons
+11. Client Portal Access
+login_token or portal_access_id
+
+client_id
+
+last_accessed
+
+permissions (read-only, view-photos)
+
+12. Recurring Jobs / Maintenance
+recurring_job_id
+
+client_id
+
+job_type
+
+frequency (weekly, monthly)
+
+next_scheduled_date
+
