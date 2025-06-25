@@ -816,25 +816,11 @@ def admin_portal_management():
         flash('Error loading portal management data', 'error')
         return redirect('/admin-home')
 
-@app.route('/admin/sections/service_management')
+@app.route('/admin/sections/service-management')
 def admin_service_management():
-    """Service management page"""
+    """Service management page using new services table"""
     try:
-        with db.engine.connect() as conn:
-            # Get service types
-            try:
-                services_result = conn.execute(db.text("""
-                    SELECT id, service_code, name, category_id, min_price, max_price, description
-                    FROM service_types
-                    ORDER BY category_id, name
-                """))
-                services = [dict(row._mapping) for row in services_result]
-            except Exception as service_error:
-                logging.error(f"Service query error: {service_error}")
-                services = []
-        
-        return render_template('admin/sections/service_management_section.html',
-                             services=services)
+        return render_template('admin/sections/service_management_section.html')
     except Exception as e:
         logging.error(f"Service management error: {e}")
         flash('Error loading service management', 'error')
@@ -1008,6 +994,8 @@ def admin_email_management():
         logging.error(f"Email management error: {e}")
         flash('Error loading email management', 'error')
         return redirect('/admin-home')
+
+# Service management route moved to avoid conflicts
 
 @app.route('/api/admin/send-email', methods=['POST'])
 def api_send_email():
