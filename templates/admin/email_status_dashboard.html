@@ -1,0 +1,288 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Email System Status - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3"><i class="fas fa-envelope me-2"></i>Email System Status</h1>
+                <a href="/admin/email-management" class="btn btn-outline-primary">
+                    <i class="fas fa-cog me-1"></i>Email Management
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status Overview -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Brevo SMTP Activation Required</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Current Status</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-clock text-warning me-2"></i>SMTP Account: Pending Activation</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Fallback Storage: Active</li>
+                                <li><i class="fas fa-database text-info me-2"></i>Email Queue: 7 emails stored</li>
+                                <li><i class="fas fa-shield-alt text-primary me-2"></i>Data Integrity: 100% maintained</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Action Required</h6>
+                            <div class="alert alert-info mb-2">
+                                <small><strong>Contact Brevo Support:</strong><br>
+                                Email: contact@brevo.com<br>
+                                Request: SMTP account activation for 90768b001@smtp-brevo.com</small>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary" onclick="testEmailSystem()">
+                                <i class="fas fa-test-tube me-1"></i>Test Connection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Email Statistics</h6>
+                </div>
+                <div class="card-body text-center" id="emailStatsCard">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuration Details -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-cogs me-2"></i>Email Configuration</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td><strong>SMTP Server:</strong></td>
+                            <td>smtp-relay.brevo.com</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Port:</strong></td>
+                            <td>587 (STARTTLS)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sender Email:</strong></td>
+                            <td>spankks@contractor.net</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Login:</strong></td>
+                            <td>90768b001@smtp-brevo.com</td>
+                        </tr>
+                        <tr>
+                            <td><strong>API Key:</strong></td>
+                            <td>xsmtpsib-***xrE (Active)</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Email Queue Management</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm" onclick="viewEmailQueue()">
+                            <i class="fas fa-list me-1"></i>View Queued Emails (7)
+                        </button>
+                        <button class="btn btn-outline-success btn-sm" onclick="exportEmailQueue()">
+                            <i class="fas fa-download me-1"></i>Export Queue (JSON)
+                        </button>
+                        <button class="btn btn-outline-info btn-sm" onclick="viewEmailHistory()">
+                            <i class="fas fa-history me-1"></i>View Email History
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm" onclick="clearEmailQueue()">
+                            <i class="fas fa-trash me-1"></i>Clear Queue
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Template Preview -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-eye me-2"></i>Professional Email Templates Ready</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0">Quote Notifications</h6>
+                                </div>
+                                <div class="card-body">
+                                    <small>Professional quote emails with SPANKKS branding, pricing details, and 30-day validity period.</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">Invoice Notifications</h6>
+                                </div>
+                                <div class="card-body">
+                                    <small>Invoice emails with payment methods (Venmo, Zelle, Cash/Check) and 30-day payment terms.</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0">Job Completion</h6>
+                                </div>
+                                <div class="card-body">
+                                    <small>Project completion notifications with thank you message and follow-up contact information.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadEmailStats() {
+        fetch('/api/admin/email-stats')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const stats = data.stats;
+                document.getElementById('emailStatsCard').innerHTML = `
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="h4 text-primary">${stats.total_attempts}</div>
+                            <small>Total Attempts</small>
+                        </div>
+                        <div class="col-6">
+                            <div class="h4 text-warning">${stats.pending_manual}</div>
+                            <small>In Queue</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <small class="text-muted">Last Activity: ${stats.last_sent}</small>
+                `;
+            }
+        })
+        .catch(error => {
+            document.getElementById('emailStatsCard').innerHTML = 
+                '<small class="text-danger">Error loading stats</small>';
+        });
+    }
+
+    function testEmailSystem() {
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Testing...';
+        btn.disabled = true;
+
+        fetch('/api/admin/test-smtp')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('SMTP connection successful! Email system is ready.');
+            } else {
+                alert('SMTP activation still required. Emails will continue to be queued.');
+            }
+        })
+        .catch(error => {
+            alert('Connection test failed. Please check configuration.');
+        })
+        .finally(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+    }
+
+    function viewEmailQueue() {
+        fetch('/api/admin/failed-emails')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.failed_emails.length > 0) {
+                let emailList = data.failed_emails.map((email, index) => 
+                    `${index + 1}. To: ${email.to}\\nSubject: ${email.subject}\\nTime: ${new Date(email.timestamp).toLocaleString()}\\n`
+                ).join('\\n');
+                alert(`Queued Emails (${data.failed_emails.length}):\\n\\n${emailList}`);
+            } else {
+                alert('No emails in queue');
+            }
+        });
+    }
+
+    function exportEmailQueue() {
+        window.open('/api/admin/export-email-queue', '_blank');
+    }
+
+    function viewEmailHistory() {
+        fetch('/api/admin/email-history')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.history.length > 0) {
+                let historyList = data.history.slice(-10).map(email => 
+                    `${email.status.toUpperCase()}: ${email.to} - ${email.subject} (${new Date(email.timestamp).toLocaleString()})`
+                ).join('\\n');
+                alert(`Recent Email History:\\n\\n${historyList}`);
+            } else {
+                alert('No email history available');
+            }
+        });
+    }
+
+    function clearEmailQueue() {
+        if (confirm('Are you sure you want to clear the email queue? This action cannot be undone.')) {
+            // Implement queue clearing functionality
+            if (confirm('Are you sure you want to clear the email queue? This will remove all pending emails.')) {
+            fetch('/api/admin/email/clear-queue', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Email queue cleared successfully');
+                        location.reload();
+                    } else {
+                        alert('Error clearing queue: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error clearing queue:', error);
+                    alert('Error clearing email queue');
+                });
+        }
+        }
+    }
+
+    // Load stats on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadEmailStats();
+        
+        // Refresh stats every 30 seconds
+        setInterval(loadEmailStats, 30000);
+    });
+</script>
+{% endblock %}

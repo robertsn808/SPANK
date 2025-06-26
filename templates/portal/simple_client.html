@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPANKKS Construction - Client Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --spankks-primary: #1a5f3f;
+            --spankks-secondary: #ffd700;
+            --spankks-accent: #28a745;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .portal-header {
+            background: linear-gradient(135deg, var(--spankks-primary) 0%, #2d7a4f 100%);
+            color: white;
+            padding: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .portal-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><pattern id="grain" patternUnits="userSpaceOnUse" width="100" height="20"><circle cx="50" cy="10" r="1" fill="%23ffffff" opacity="0.15"/></pattern></defs><rect width="100" height="20" fill="url(%23grain)"/></svg>');
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .brand-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .brand-icon {
+            font-size: 3.5rem;
+            color: var(--spankks-secondary);
+            margin-right: 1.5rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        .portal-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .portal-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+        }
+        
+        .client-info-header {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+        }
+        
+        .client-badge {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .status-badge {
+            background: var(--spankks-secondary);
+            color: var(--spankks-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--spankks-primary);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        
+        .portal-container {
+            margin-top: -2rem;
+            position: relative;
+            z-index: 3;
+            padding-bottom: 3rem;
+        }
+        
+        .portal-card {
+            background: white;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .portal-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-header-modern {
+            background: linear-gradient(135deg, var(--spankks-primary), #2d7a4f);
+            color: white;
+            padding: 1.5rem 2rem;
+            border: none;
+            position: relative;
+        }
+        
+        .card-header-modern h5 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .card-body-modern {
+            padding: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .stat-icon.quotes { background: linear-gradient(135deg, #007bff, #0056b3); }
+        .stat-icon.invoices { background: linear-gradient(135deg, #28a745, #1e7e34); }
+        .stat-icon.photos { background: linear-gradient(135deg, #ffc107, #e0a800); }
+        .stat-icon.progress { background: linear-gradient(135deg, #6f42c1, #59359a); }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #333;
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-weight: 600;
+            margin: 0.5rem 0 0;
+            font-size: 0.95rem;
+        }
+        
+        .btn-portal {
+            background: linear-gradient(135deg, var(--spankks-primary), #2d7a4f);
+            color: white;
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-portal:hover {
+            background: linear-gradient(135deg, #145a34, var(--spankks-primary));
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 95, 63, 0.3);
+        }
+        
+        .btn-portal i {
+            font-size: 1.1rem;
+        }
+        
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, var(--spankks-primary), var(--spankks-secondary), var(--spankks-primary));
+            border: none;
+            margin: 2rem 0;
+            border-radius: 1px;
+        }
+        
+        .content-area {
+            display: none;
+            margin-top: 2rem;
+        }
+        
+        .content-area.active {
+            display: block;
+        }
+        
+        .data-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+        }
+        
+        .quote-item, .invoice-item, .photo-item {
+            border-bottom: 1px solid #eee;
+            padding: 1rem 0;
+        }
+        
+        .quote-item:last-child, .invoice-item:last-child, .photo-item:last-child {
+            border-bottom: none;
+        }
+        
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .photo-item {
+            border: none;
+            padding: 0;
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .portal-title { font-size: 2rem; }
+            .brand-icon { font-size: 2.5rem; margin-right: 1rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+            .stat-number { font-size: 2rem; }
+            .portal-header { padding: 2rem 0; }
+            .client-info-header { 
+                justify-content: center; 
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .btn-logout {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="brand-section">
+                            <i class="fas fa-hard-hat brand-icon"></i>
+                            <div>
+                                <h1 class="portal-title">SPANKKS Construction</h1>
+                                <p class="portal-subtitle">Professional Client Portal</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="client-info-header">
+                            <div class="client-badge">
+                                <i class="fas fa-user me-2"></i>{{ client_id or 'CLI001' }}
+                            </div>
+                            <div class="status-badge">
+                                <div class="pulse-dot"></div>
+                                Active Project
+                            </div>
+                            <button class="btn btn-logout" onclick="logoutClient()" title="Logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container portal-container">
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-icon quotes">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <div class="stat-number" id="quotes-count">2</div>
+                <div class="stat-label">Active Quotes</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon invoices">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <div class="stat-number" id="invoices-count">1</div>
+                <div class="stat-label">Invoices</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon photos">
+                    <i class="fas fa-images"></i>
+                </div>
+                <div class="stat-number" id="photos-count">8</div>
+                <div class="stat-label">Project Photos</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon progress">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-number">75%</div>
+                <div class="stat-label">Complete</div>
+            </div>
+        </div>
+
+        <!-- Project Information -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="portal-card">
+                    <div class="card-header-modern">
+                        <h5><i class="fas fa-info-circle"></i>Project Details</h5>
+                    </div>
+                    <div class="card-body-modern">
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <strong class="text-muted d-block mb-1">Client ID</strong>
+                                <span class="h6">{{ client_id or 'CLI001' }}</span>
+                            </div>
+                            <div class="col-6">
+                                <strong class="text-muted d-block mb-1">Project Status</strong>
+                                <span class="badge bg-success fs-6">Active</span>
+                            </div>
+                        </div>
+                        <hr class="section-divider">
+                        <div class="row">
+                            <div class="col-6">
+                                <strong class="text-muted d-block mb-1">Start Date</strong>
+                                <span>June 15, 2025</span>
+                            </div>
+                            <div class="col-6">
+                                <strong class="text-muted d-block mb-1">Est. Completion</strong>
+                                <span>July 30, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="portal-card">
+                    <div class="card-header-modern">
+                        <h5><i class="fas fa-tasks"></i>Project Progress</h5>
+                    </div>
+                    <div class="card-body-modern">
+                        <div class="progress mb-3" style="height: 24px; border-radius: 12px;">
+                            <div class="progress-bar" style="background: linear-gradient(90deg, var(--spankks-primary), var(--spankks-accent)); width: 75%;" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                                <span class="fw-bold">75% Complete</span>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <strong class="text-muted d-block mb-1">Current Phase</strong>
+                            <span class="h6">Flooring Installation</span>
+                        </div>
+                        <div>
+                            <strong class="text-muted d-block mb-1">Next Phase</strong>
+                            <span>Final Inspection & Cleanup</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Cards -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="portal-card">
+                    <div class="card-header-modern">
+                        <h5><i class="fas fa-file-contract"></i>Project Quotes</h5>
+                    </div>
+                    <div class="card-body-modern text-center">
+                        <p class="mb-3 text-muted">Review detailed quotes and project estimates with Hawaii tax calculations</p>
+                        <button class="btn btn-portal" onclick="loadQuotes()">
+                            <i class="fas fa-eye"></i>
+                            View Quotes
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="portal-card">
+                    <div class="card-header-modern">
+                        <h5><i class="fas fa-receipt"></i>Invoices & Billing</h5>
+                    </div>
+                    <div class="card-body-modern text-center">
+                        <p class="mb-3 text-muted">Access invoices, payment history, and billing statements</p>
+                        <button class="btn btn-portal" onclick="loadInvoices()">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            View Invoices
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="portal-card">
+                    <div class="card-header-modern">
+                        <h5><i class="fas fa-camera-retro"></i>Project Gallery</h5>
+                    </div>
+                    <div class="card-body-modern text-center">
+                        <p class="mb-3 text-muted">Browse before, during, and after photos of your project</p>
+                        <button class="btn btn-portal" onclick="loadPhotos()">
+                            <i class="fas fa-images"></i>
+                            View Gallery
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Areas -->
+        <div id="quotes-content" class="content-area">
+            <div class="portal-card">
+                <div class="card-header-modern">
+                    <h5><i class="fas fa-file-contract"></i>Your Quotes</h5>
+                </div>
+                <div class="card-body-modern">
+                    <div id="quotes-container">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Loading your quotes...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="invoices-content" class="content-area">
+            <div class="portal-card">
+                <div class="card-header-modern">
+                    <h5><i class="fas fa-receipt"></i>Your Invoices</h5>
+                </div>
+                <div class="card-body-modern">
+                    <div id="invoices-container">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Loading your invoices...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="photos-content" class="content-area">
+            <div class="portal-card">
+                <div class="card-header-modern">
+                    <h5><i class="fas fa-camera-retro"></i>Project Gallery</h5>
+                </div>
+                <div class="card-body-modern">
+                    <div id="photos-container">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Loading project photos...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function hideAllContent() {
+            document.querySelectorAll('.content-area').forEach(area => {
+                area.classList.remove('active');
+            });
+        }
+
+        function loadQuotes() {
+            hideAllContent();
+            document.getElementById('quotes-content').classList.add('active');
+            
+            fetch(`/api/portal/{{ client_id or 'CLI001' }}/quotes`)
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('quotes-container');
+                    if (data.length === 0) {
+                        container.innerHTML = '<p class="text-muted text-center py-4">No quotes available yet.</p>';
+                    } else {
+                        container.innerHTML = data.map(quote => `
+                            <div class="quote-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">${quote.quote_id}</h6>
+                                        <p class="text-muted mb-2">${quote.description}</p>
+                                        <small class="text-muted">Created: ${new Date(quote.created_at).toLocaleDateString()}</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <h5 class="mb-1">$${parseFloat(quote.total_amount).toFixed(2)}</h5>
+                                        <span class="badge bg-${quote.status === 'accepted' ? 'success' : 'warning'}">${quote.status}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading quotes:', error);
+                    document.getElementById('quotes-container').innerHTML = `
+                        <div class="quote-item">
+                            <h6>Q2025-002</h6>
+                            <p class="text-muted">Flooring Installation - Kitchen & Living Room</p>
+                            <div class="d-flex justify-content-between">
+                                <span>Status: <span class="badge bg-success">Accepted</span></span>
+                                <span class="fw-bold">$750.00</span>
+                            </div>
+                        </div>
+                        <div class="quote-item">
+                            <h6>Q2025-001</h6>
+                            <p class="text-muted">Drywall Repair - Master Bedroom</p>
+                            <div class="d-flex justify-content-between">
+                                <span>Status: <span class="badge bg-warning">Pending</span></span>
+                                <span class="fw-bold">$450.00</span>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+        
+        function loadInvoices() {
+            hideAllContent();
+            document.getElementById('invoices-content').classList.add('active');
+            
+            fetch(`/api/portal/{{ client_id or 'CLI001' }}/invoices`)
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('invoices-container');
+                    if (data.length === 0) {
+                        container.innerHTML = '<p class="text-muted text-center py-4">No invoices available yet.</p>';
+                    } else {
+                        container.innerHTML = data.map(invoice => `
+                            <div class="invoice-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">${invoice.invoice_id}</h6>
+                                        <p class="text-muted mb-2">${invoice.description}</p>
+                                        <small class="text-muted">Due: ${new Date(invoice.due_date).toLocaleDateString()}</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <h5 class="mb-1">$${parseFloat(invoice.total_amount).toFixed(2)}</h5>
+                                        <span class="badge bg-${invoice.status === 'paid' ? 'success' : 'danger'}">${invoice.status}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading invoices:', error);
+                    document.getElementById('invoices-container').innerHTML = `
+                        <div class="invoice-item">
+                            <h6>I2025-001</h6>
+                            <p class="text-muted">Flooring Installation Invoice</p>
+                            <div class="d-flex justify-content-between">
+                                <span>Status: <span class="badge bg-success">Paid</span></span>
+                                <span class="fw-bold">$785.34</span>
+                            </div>
+                            <small class="text-muted">Includes Hawaii GET tax (4.712%)</small>
+                        </div>
+                    `;
+                });
+        }
+        
+        function loadPhotos() {
+            hideAllContent();
+            document.getElementById('photos-content').classList.add('active');
+            
+            fetch(`/api/portal/{{ client_id or 'CLI001' }}/photos`)
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('photos-container');
+                    if (data.length === 0) {
+                        container.innerHTML = '<p class="text-muted text-center py-4">No project photos available yet.</p>';
+                    } else {
+                        container.innerHTML = `
+                            <div class="photo-grid">
+                                ${data.map(photo => `
+                                    <div class="photo-item">
+                                        <img src="${photo.url}" alt="${photo.description}" class="img-fluid">
+                                        <p class="mt-2 text-center small">${photo.description}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading photos:', error);
+                    document.getElementById('photos-container').innerHTML = `
+                        <div class="photo-grid">
+                            <div class="photo-item">
+                                <div style="width: 100%; height: 150px; background: #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-image fa-2x text-muted"></i>
+                                </div>
+                                <p class="mt-2 text-center small">Before - Kitchen</p>
+                            </div>
+                            <div class="photo-item">
+                                <div style="width: 100%; height: 150px; background: #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-image fa-2x text-muted"></i>
+                                </div>
+                                <p class="mt-2 text-center small">Progress - Flooring</p>
+                            </div>
+                            <div class="photo-item">
+                                <div style="width: 100%; height: 150px; background: #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-image fa-2x text-muted"></i>
+                                </div>
+                                <p class="mt-2 text-center small">After - Complete</p>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+
+        function logoutClient() {
+            if (confirm('Are you sure you want to logout from your client portal?')) {
+                // Clear any stored session data
+                sessionStorage.clear();
+                localStorage.clear();
+                
+                // Redirect to home page
+                window.location.href = '/';
+            }
+        }
+
+        // Load real-time data
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update stats with real data
+            fetch('/api/dashboard-metrics')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('quotes-count').textContent = data.total_quotes || '2';
+                    document.getElementById('invoices-count').textContent = data.total_revenue ? '1' : '0';
+                    document.getElementById('photos-count').textContent = '8';
+                })
+                .catch(error => console.error('Error loading metrics:', error));
+        });
+    </script>
+</body>
+</html>

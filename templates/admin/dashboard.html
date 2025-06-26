@@ -1,0 +1,246 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Admin Dashboard - SPANKKS Construction{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-left: 4px solid var(--spankks-primary);
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--spankks-primary);
+        margin-bottom: 8px;
+    }
+    
+    .stat-label {
+        color: #6c757d;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 30px 0;
+    }
+    
+    .action-card {
+        background: linear-gradient(135deg, var(--spankks-primary), #2d7a4f);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: transform 0.2s ease;
+        text-align: center;
+    }
+    
+    .action-card:hover {
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+    .action-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .recent-activity {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Business Dashboard</h1>
+                <div>
+                    <span class="badge bg-success me-2">System Online</span>
+                    <span class="text-muted" id="current-time"></span>
+                </div>
+            </div>
+            
+            <!-- Key Metrics -->
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-clients">-</div>
+                    <div class="stat-label">Total Clients</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="active-jobs">-</div>
+                    <div class="stat-label">Active Jobs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-quotes">-</div>
+                    <div class="stat-label">Pending Quotes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-revenue">$-</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="/admin-inbox" class="action-card">
+                    <i class="fas fa-inbox action-icon"></i>
+                    <div class="fw-bold">Inbox</div>
+                    <small>Manage notifications</small>
+                </a>
+                <a href="/admin-crm" class="action-card">
+                    <i class="fas fa-users action-icon"></i>
+                    <div class="fw-bold">Customer CRM</div>
+                    <small>Client management</small>
+                </a>
+                <a href="/admin-calendar" class="action-card">
+                    <i class="fas fa-calendar action-icon"></i>
+                    <div class="fw-bold">Calendar</div>
+                    <small>Schedule jobs</small>
+                </a>
+                <a href="/admin-analytics" class="action-card">
+                    <i class="fas fa-chart-line action-icon"></i>
+                    <div class="fw-bold">Analytics</div>
+                    <small>Business insights</small>
+                </a>
+                <a href="/admin-jobs" class="action-card">
+                    <i class="fas fa-briefcase action-icon"></i>
+                    <div class="fw-bold">Job Management</div>
+                    <small>Track progress</small>
+                </a>
+                <a href="/admin-financial" class="action-card">
+                    <i class="fas fa-dollar-sign action-icon"></i>
+                    <div class="fw-bold">Financial</div>
+                    <small>Reports & invoices</small>
+                </a>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="recent-activity">
+                <h5 class="mb-3">
+                    <i class="fas fa-clock me-2"></i>Recent Activity
+                </h5>
+                <div id="recent-activity-list">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update current time
+    function updateTime() {
+        const now = new Date();
+        const hawaiiTime = new Date(now.toLocaleString("en-US", {timeZone: "Pacific/Honolulu"}));
+        document.getElementById('current-time').textContent = 
+            hawaiiTime.toLocaleString('en-US', {
+                timeZone: 'Pacific/Honolulu',
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }) + ' HST';
+    }
+    
+    updateTime();
+    setInterval(updateTime, 30000);
+    
+    // Load dashboard stats
+    fetch('/api/admin/dashboard/stats')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('total-clients').textContent = data.total_clients || 0;
+                document.getElementById('active-jobs').textContent = data.active_jobs || 0;
+                document.getElementById('total-quotes').textContent = data.total_quotes || 0;
+                document.getElementById('total-revenue').textContent = 
+                    '$' + (data.total_revenue || 0).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+            }
+        })
+        .catch(err => console.log('Stats loading error:', err));
+    
+    // Load recent activity
+    fetch('/api/admin/dashboard/activity')
+        .then(response => response.json())
+        .then(data => {
+            const activityList = document.getElementById('recent-activity-list');
+            if (data.success && (data.recent_quotes?.length || data.recent_jobs?.length)) {
+                let html = '';
+                
+                if (data.recent_quotes?.length) {
+                    html += '<h6 class="text-primary mb-2">Recent Quotes</h6>';
+                    data.recent_quotes.forEach(quote => {
+                        html += `
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <div>
+                                    <strong>${quote.quote_id}</strong> - ${quote.client_name || 'Client'}
+                                    <br><small class="text-muted">$${quote.total || 0}</small>
+                                </div>
+                                <span class="badge bg-${quote.status === 'accepted' ? 'success' : 'warning'}">${quote.status}</span>
+                            </div>
+                        `;
+                    });
+                }
+                
+                if (data.recent_jobs?.length) {
+                    html += '<h6 class="text-primary mb-2 mt-3">Recent Jobs</h6>';
+                    data.recent_jobs.forEach(job => {
+                        html += `
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <div>
+                                    <strong>${job.job_id}</strong> - ${job.client_name || 'Client'}
+                                    <br><small class="text-muted">${job.service_type}</small>
+                                </div>
+                                <span class="badge bg-${job.status === 'completed' ? 'success' : 'primary'}">${job.status}</span>
+                            </div>
+                        `;
+                    });
+                }
+                
+                activityList.innerHTML = html;
+            } else {
+                activityList.innerHTML = '<p class="text-muted text-center py-4">No recent activity</p>';
+            }
+        })
+        .catch(err => {
+            document.getElementById('recent-activity-list').innerHTML = 
+                '<p class="text-muted text-center py-4">Unable to load activity</p>';
+        });
+});
+</script>
+{% endblock %}

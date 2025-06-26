@@ -1,0 +1,118 @@
+{% extends "public/base.html" %}
+
+{% block title %}Client Portal - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-key me-2"></i>SPANKKS Construction Client Portal
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <img src="/static/images/spank-logo.png" alt="SPANKKS Construction" class="img-fluid mb-3" style="max-height: 80px;">
+                        <p class="lead">Access your project information, quotes, invoices, and photos</p>
+                    </div>
+
+                    <form id="clientPortalForm" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="clientId" class="form-label">
+                                        <i class="fas fa-user me-2"></i>Client ID
+                                    </label>
+                                    <input type="text" class="form-control" id="clientId" name="client_id" required
+                                           placeholder="Enter your Client ID">
+                                    <div class="invalid-feedback">
+                                        Please enter your Client ID.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="jobId" class="form-label">
+                                        <i class="fas fa-briefcase me-2"></i>Job ID
+                                    </label>
+                                    <input type="text" class="form-control" id="jobId" name="job_id" required
+                                           placeholder="Enter your Job ID">
+                                    <div class="invalid-feedback">
+                                        Please enter your Job ID.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Access Portal
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-info-circle me-2"></i>Demo Credentials</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Client ID:</strong> CUST001</li>
+                                <li><strong>Job ID:</strong> 1</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-phone me-2"></i>Need Help?</h6>
+                            <p class="mb-0">
+                                Contact us: <a href="tel:+18087789132">(808) 778-9132</a><br>
+                                Email: <a href="mailto:spankks@contractor.net">spankks@contractor.net</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="/" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('clientPortalForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const clientId = document.getElementById('clientId').value.trim();
+    const jobId = document.getElementById('jobId').value.trim();
+    
+    if (clientId && jobId) {
+        // Redirect to the client portal with credentials
+        window.location.href = `/portal/${clientId}/${jobId}`;
+    } else {
+        // Show validation
+        this.classList.add('was-validated');
+    }
+});
+
+// Auto-fill demo credentials button
+function fillDemo() {
+    document.getElementById('clientId').value = 'CUST001';
+    document.getElementById('jobId').value = '1';
+}
+
+// Add quick demo button
+document.addEventListener('DOMContentLoaded', function() {
+    const demoSection = document.querySelector('.col-md-6:first-child');
+    const demoButton = document.createElement('button');
+    demoButton.className = 'btn btn-outline-primary btn-sm mt-2';
+    demoButton.innerHTML = '<i class="fas fa-magic me-1"></i>Try Demo';
+    demoButton.onclick = fillDemo;
+    demoSection.appendChild(demoButton);
+});
+</script>
+{% endblock %}

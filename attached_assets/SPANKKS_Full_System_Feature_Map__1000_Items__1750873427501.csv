@@ -1,0 +1,1001 @@
+Component,Purpose,Backend/Tech,Main Route
+Email System 1,Mail.com SMTP Integration - set 1,SMTP,/send-invoice-1
+Quote Builder 1,PDF + Email - set 1,WeasyPrint,/generate-quote-1
+Invoice System 1,PDF + Scheduler - set 1,Custom,/generate-invoice-1
+Client CRM 1,"Contact, project tracking - set 1",SQL,/clients-1
+Staff CRM 1,"Roles, hours - set 1",SQL,/staff-1
+Scheduler 1,Calendar with FullCalendar.js - set 1,JSON API,/calendar-1
+Notifications 1,Toast + Mail/SMS - set 1,MailerLite/Twilio,/notifications-1
+Checklist 1,Job-specific tasks - set 1,SQL,/jobs/:id/checklist-1
+Inventory 1,Material tracking - set 1,SQL,/inventory-1
+Financial Reports 1,"P&L, tax, forecasting - set 1",SQL,/reports-1
+Client Portal 1,"Quotes, Invoices - set 1",Session/JWT,/portal/:clientId-1
+Staff Portal 1,Job toolkit - set 1,PIN Access,/portal/:staffId-1
+Data Tools 1,Upload/export CSV - set 1,Pandas,/data/upload-1
+Services 1,Manage service templates - set 1,SQL,/services-1
+Analytics 1,Growth & revenue - set 1,Plotly,/analytics-1
+User Control 1,"Permissions, roles - set 1",Flask-Login,/admin/users-1
+Photo Uploads 1,Before/after images - set 1,Cloud storage,/job/:id/photos-1
+Email System 2,Mail.com SMTP Integration - set 2,SMTP,/send-invoice-2
+Quote Builder 2,PDF + Email - set 2,WeasyPrint,/generate-quote-2
+Invoice System 2,PDF + Scheduler - set 2,Custom,/generate-invoice-2
+Client CRM 2,"Contact, project tracking - set 2",SQL,/clients-2
+Staff CRM 2,"Roles, hours - set 2",SQL,/staff-2
+Scheduler 2,Calendar with FullCalendar.js - set 2,JSON API,/calendar-2
+Notifications 2,Toast + Mail/SMS - set 2,MailerLite/Twilio,/notifications-2
+Checklist 2,Job-specific tasks - set 2,SQL,/jobs/:id/checklist-2
+Inventory 2,Material tracking - set 2,SQL,/inventory-2
+Financial Reports 2,"P&L, tax, forecasting - set 2",SQL,/reports-2
+Client Portal 2,"Quotes, Invoices - set 2",Session/JWT,/portal/:clientId-2
+Staff Portal 2,Job toolkit - set 2,PIN Access,/portal/:staffId-2
+Data Tools 2,Upload/export CSV - set 2,Pandas,/data/upload-2
+Services 2,Manage service templates - set 2,SQL,/services-2
+Analytics 2,Growth & revenue - set 2,Plotly,/analytics-2
+User Control 2,"Permissions, roles - set 2",Flask-Login,/admin/users-2
+Photo Uploads 2,Before/after images - set 2,Cloud storage,/job/:id/photos-2
+Email System 3,Mail.com SMTP Integration - set 3,SMTP,/send-invoice-3
+Quote Builder 3,PDF + Email - set 3,WeasyPrint,/generate-quote-3
+Invoice System 3,PDF + Scheduler - set 3,Custom,/generate-invoice-3
+Client CRM 3,"Contact, project tracking - set 3",SQL,/clients-3
+Staff CRM 3,"Roles, hours - set 3",SQL,/staff-3
+Scheduler 3,Calendar with FullCalendar.js - set 3,JSON API,/calendar-3
+Notifications 3,Toast + Mail/SMS - set 3,MailerLite/Twilio,/notifications-3
+Checklist 3,Job-specific tasks - set 3,SQL,/jobs/:id/checklist-3
+Inventory 3,Material tracking - set 3,SQL,/inventory-3
+Financial Reports 3,"P&L, tax, forecasting - set 3",SQL,/reports-3
+Client Portal 3,"Quotes, Invoices - set 3",Session/JWT,/portal/:clientId-3
+Staff Portal 3,Job toolkit - set 3,PIN Access,/portal/:staffId-3
+Data Tools 3,Upload/export CSV - set 3,Pandas,/data/upload-3
+Services 3,Manage service templates - set 3,SQL,/services-3
+Analytics 3,Growth & revenue - set 3,Plotly,/analytics-3
+User Control 3,"Permissions, roles - set 3",Flask-Login,/admin/users-3
+Photo Uploads 3,Before/after images - set 3,Cloud storage,/job/:id/photos-3
+Email System 4,Mail.com SMTP Integration - set 4,SMTP,/send-invoice-4
+Quote Builder 4,PDF + Email - set 4,WeasyPrint,/generate-quote-4
+Invoice System 4,PDF + Scheduler - set 4,Custom,/generate-invoice-4
+Client CRM 4,"Contact, project tracking - set 4",SQL,/clients-4
+Staff CRM 4,"Roles, hours - set 4",SQL,/staff-4
+Scheduler 4,Calendar with FullCalendar.js - set 4,JSON API,/calendar-4
+Notifications 4,Toast + Mail/SMS - set 4,MailerLite/Twilio,/notifications-4
+Checklist 4,Job-specific tasks - set 4,SQL,/jobs/:id/checklist-4
+Inventory 4,Material tracking - set 4,SQL,/inventory-4
+Financial Reports 4,"P&L, tax, forecasting - set 4",SQL,/reports-4
+Client Portal 4,"Quotes, Invoices - set 4",Session/JWT,/portal/:clientId-4
+Staff Portal 4,Job toolkit - set 4,PIN Access,/portal/:staffId-4
+Data Tools 4,Upload/export CSV - set 4,Pandas,/data/upload-4
+Services 4,Manage service templates - set 4,SQL,/services-4
+Analytics 4,Growth & revenue - set 4,Plotly,/analytics-4
+User Control 4,"Permissions, roles - set 4",Flask-Login,/admin/users-4
+Photo Uploads 4,Before/after images - set 4,Cloud storage,/job/:id/photos-4
+Email System 5,Mail.com SMTP Integration - set 5,SMTP,/send-invoice-5
+Quote Builder 5,PDF + Email - set 5,WeasyPrint,/generate-quote-5
+Invoice System 5,PDF + Scheduler - set 5,Custom,/generate-invoice-5
+Client CRM 5,"Contact, project tracking - set 5",SQL,/clients-5
+Staff CRM 5,"Roles, hours - set 5",SQL,/staff-5
+Scheduler 5,Calendar with FullCalendar.js - set 5,JSON API,/calendar-5
+Notifications 5,Toast + Mail/SMS - set 5,MailerLite/Twilio,/notifications-5
+Checklist 5,Job-specific tasks - set 5,SQL,/jobs/:id/checklist-5
+Inventory 5,Material tracking - set 5,SQL,/inventory-5
+Financial Reports 5,"P&L, tax, forecasting - set 5",SQL,/reports-5
+Client Portal 5,"Quotes, Invoices - set 5",Session/JWT,/portal/:clientId-5
+Staff Portal 5,Job toolkit - set 5,PIN Access,/portal/:staffId-5
+Data Tools 5,Upload/export CSV - set 5,Pandas,/data/upload-5
+Services 5,Manage service templates - set 5,SQL,/services-5
+Analytics 5,Growth & revenue - set 5,Plotly,/analytics-5
+User Control 5,"Permissions, roles - set 5",Flask-Login,/admin/users-5
+Photo Uploads 5,Before/after images - set 5,Cloud storage,/job/:id/photos-5
+Email System 6,Mail.com SMTP Integration - set 6,SMTP,/send-invoice-6
+Quote Builder 6,PDF + Email - set 6,WeasyPrint,/generate-quote-6
+Invoice System 6,PDF + Scheduler - set 6,Custom,/generate-invoice-6
+Client CRM 6,"Contact, project tracking - set 6",SQL,/clients-6
+Staff CRM 6,"Roles, hours - set 6",SQL,/staff-6
+Scheduler 6,Calendar with FullCalendar.js - set 6,JSON API,/calendar-6
+Notifications 6,Toast + Mail/SMS - set 6,MailerLite/Twilio,/notifications-6
+Checklist 6,Job-specific tasks - set 6,SQL,/jobs/:id/checklist-6
+Inventory 6,Material tracking - set 6,SQL,/inventory-6
+Financial Reports 6,"P&L, tax, forecasting - set 6",SQL,/reports-6
+Client Portal 6,"Quotes, Invoices - set 6",Session/JWT,/portal/:clientId-6
+Staff Portal 6,Job toolkit - set 6,PIN Access,/portal/:staffId-6
+Data Tools 6,Upload/export CSV - set 6,Pandas,/data/upload-6
+Services 6,Manage service templates - set 6,SQL,/services-6
+Analytics 6,Growth & revenue - set 6,Plotly,/analytics-6
+User Control 6,"Permissions, roles - set 6",Flask-Login,/admin/users-6
+Photo Uploads 6,Before/after images - set 6,Cloud storage,/job/:id/photos-6
+Email System 7,Mail.com SMTP Integration - set 7,SMTP,/send-invoice-7
+Quote Builder 7,PDF + Email - set 7,WeasyPrint,/generate-quote-7
+Invoice System 7,PDF + Scheduler - set 7,Custom,/generate-invoice-7
+Client CRM 7,"Contact, project tracking - set 7",SQL,/clients-7
+Staff CRM 7,"Roles, hours - set 7",SQL,/staff-7
+Scheduler 7,Calendar with FullCalendar.js - set 7,JSON API,/calendar-7
+Notifications 7,Toast + Mail/SMS - set 7,MailerLite/Twilio,/notifications-7
+Checklist 7,Job-specific tasks - set 7,SQL,/jobs/:id/checklist-7
+Inventory 7,Material tracking - set 7,SQL,/inventory-7
+Financial Reports 7,"P&L, tax, forecasting - set 7",SQL,/reports-7
+Client Portal 7,"Quotes, Invoices - set 7",Session/JWT,/portal/:clientId-7
+Staff Portal 7,Job toolkit - set 7,PIN Access,/portal/:staffId-7
+Data Tools 7,Upload/export CSV - set 7,Pandas,/data/upload-7
+Services 7,Manage service templates - set 7,SQL,/services-7
+Analytics 7,Growth & revenue - set 7,Plotly,/analytics-7
+User Control 7,"Permissions, roles - set 7",Flask-Login,/admin/users-7
+Photo Uploads 7,Before/after images - set 7,Cloud storage,/job/:id/photos-7
+Email System 8,Mail.com SMTP Integration - set 8,SMTP,/send-invoice-8
+Quote Builder 8,PDF + Email - set 8,WeasyPrint,/generate-quote-8
+Invoice System 8,PDF + Scheduler - set 8,Custom,/generate-invoice-8
+Client CRM 8,"Contact, project tracking - set 8",SQL,/clients-8
+Staff CRM 8,"Roles, hours - set 8",SQL,/staff-8
+Scheduler 8,Calendar with FullCalendar.js - set 8,JSON API,/calendar-8
+Notifications 8,Toast + Mail/SMS - set 8,MailerLite/Twilio,/notifications-8
+Checklist 8,Job-specific tasks - set 8,SQL,/jobs/:id/checklist-8
+Inventory 8,Material tracking - set 8,SQL,/inventory-8
+Financial Reports 8,"P&L, tax, forecasting - set 8",SQL,/reports-8
+Client Portal 8,"Quotes, Invoices - set 8",Session/JWT,/portal/:clientId-8
+Staff Portal 8,Job toolkit - set 8,PIN Access,/portal/:staffId-8
+Data Tools 8,Upload/export CSV - set 8,Pandas,/data/upload-8
+Services 8,Manage service templates - set 8,SQL,/services-8
+Analytics 8,Growth & revenue - set 8,Plotly,/analytics-8
+User Control 8,"Permissions, roles - set 8",Flask-Login,/admin/users-8
+Photo Uploads 8,Before/after images - set 8,Cloud storage,/job/:id/photos-8
+Email System 9,Mail.com SMTP Integration - set 9,SMTP,/send-invoice-9
+Quote Builder 9,PDF + Email - set 9,WeasyPrint,/generate-quote-9
+Invoice System 9,PDF + Scheduler - set 9,Custom,/generate-invoice-9
+Client CRM 9,"Contact, project tracking - set 9",SQL,/clients-9
+Staff CRM 9,"Roles, hours - set 9",SQL,/staff-9
+Scheduler 9,Calendar with FullCalendar.js - set 9,JSON API,/calendar-9
+Notifications 9,Toast + Mail/SMS - set 9,MailerLite/Twilio,/notifications-9
+Checklist 9,Job-specific tasks - set 9,SQL,/jobs/:id/checklist-9
+Inventory 9,Material tracking - set 9,SQL,/inventory-9
+Financial Reports 9,"P&L, tax, forecasting - set 9",SQL,/reports-9
+Client Portal 9,"Quotes, Invoices - set 9",Session/JWT,/portal/:clientId-9
+Staff Portal 9,Job toolkit - set 9,PIN Access,/portal/:staffId-9
+Data Tools 9,Upload/export CSV - set 9,Pandas,/data/upload-9
+Services 9,Manage service templates - set 9,SQL,/services-9
+Analytics 9,Growth & revenue - set 9,Plotly,/analytics-9
+User Control 9,"Permissions, roles - set 9",Flask-Login,/admin/users-9
+Photo Uploads 9,Before/after images - set 9,Cloud storage,/job/:id/photos-9
+Email System 10,Mail.com SMTP Integration - set 10,SMTP,/send-invoice-10
+Quote Builder 10,PDF + Email - set 10,WeasyPrint,/generate-quote-10
+Invoice System 10,PDF + Scheduler - set 10,Custom,/generate-invoice-10
+Client CRM 10,"Contact, project tracking - set 10",SQL,/clients-10
+Staff CRM 10,"Roles, hours - set 10",SQL,/staff-10
+Scheduler 10,Calendar with FullCalendar.js - set 10,JSON API,/calendar-10
+Notifications 10,Toast + Mail/SMS - set 10,MailerLite/Twilio,/notifications-10
+Checklist 10,Job-specific tasks - set 10,SQL,/jobs/:id/checklist-10
+Inventory 10,Material tracking - set 10,SQL,/inventory-10
+Financial Reports 10,"P&L, tax, forecasting - set 10",SQL,/reports-10
+Client Portal 10,"Quotes, Invoices - set 10",Session/JWT,/portal/:clientId-10
+Staff Portal 10,Job toolkit - set 10,PIN Access,/portal/:staffId-10
+Data Tools 10,Upload/export CSV - set 10,Pandas,/data/upload-10
+Services 10,Manage service templates - set 10,SQL,/services-10
+Analytics 10,Growth & revenue - set 10,Plotly,/analytics-10
+User Control 10,"Permissions, roles - set 10",Flask-Login,/admin/users-10
+Photo Uploads 10,Before/after images - set 10,Cloud storage,/job/:id/photos-10
+Email System 11,Mail.com SMTP Integration - set 11,SMTP,/send-invoice-11
+Quote Builder 11,PDF + Email - set 11,WeasyPrint,/generate-quote-11
+Invoice System 11,PDF + Scheduler - set 11,Custom,/generate-invoice-11
+Client CRM 11,"Contact, project tracking - set 11",SQL,/clients-11
+Staff CRM 11,"Roles, hours - set 11",SQL,/staff-11
+Scheduler 11,Calendar with FullCalendar.js - set 11,JSON API,/calendar-11
+Notifications 11,Toast + Mail/SMS - set 11,MailerLite/Twilio,/notifications-11
+Checklist 11,Job-specific tasks - set 11,SQL,/jobs/:id/checklist-11
+Inventory 11,Material tracking - set 11,SQL,/inventory-11
+Financial Reports 11,"P&L, tax, forecasting - set 11",SQL,/reports-11
+Client Portal 11,"Quotes, Invoices - set 11",Session/JWT,/portal/:clientId-11
+Staff Portal 11,Job toolkit - set 11,PIN Access,/portal/:staffId-11
+Data Tools 11,Upload/export CSV - set 11,Pandas,/data/upload-11
+Services 11,Manage service templates - set 11,SQL,/services-11
+Analytics 11,Growth & revenue - set 11,Plotly,/analytics-11
+User Control 11,"Permissions, roles - set 11",Flask-Login,/admin/users-11
+Photo Uploads 11,Before/after images - set 11,Cloud storage,/job/:id/photos-11
+Email System 12,Mail.com SMTP Integration - set 12,SMTP,/send-invoice-12
+Quote Builder 12,PDF + Email - set 12,WeasyPrint,/generate-quote-12
+Invoice System 12,PDF + Scheduler - set 12,Custom,/generate-invoice-12
+Client CRM 12,"Contact, project tracking - set 12",SQL,/clients-12
+Staff CRM 12,"Roles, hours - set 12",SQL,/staff-12
+Scheduler 12,Calendar with FullCalendar.js - set 12,JSON API,/calendar-12
+Notifications 12,Toast + Mail/SMS - set 12,MailerLite/Twilio,/notifications-12
+Checklist 12,Job-specific tasks - set 12,SQL,/jobs/:id/checklist-12
+Inventory 12,Material tracking - set 12,SQL,/inventory-12
+Financial Reports 12,"P&L, tax, forecasting - set 12",SQL,/reports-12
+Client Portal 12,"Quotes, Invoices - set 12",Session/JWT,/portal/:clientId-12
+Staff Portal 12,Job toolkit - set 12,PIN Access,/portal/:staffId-12
+Data Tools 12,Upload/export CSV - set 12,Pandas,/data/upload-12
+Services 12,Manage service templates - set 12,SQL,/services-12
+Analytics 12,Growth & revenue - set 12,Plotly,/analytics-12
+User Control 12,"Permissions, roles - set 12",Flask-Login,/admin/users-12
+Photo Uploads 12,Before/after images - set 12,Cloud storage,/job/:id/photos-12
+Email System 13,Mail.com SMTP Integration - set 13,SMTP,/send-invoice-13
+Quote Builder 13,PDF + Email - set 13,WeasyPrint,/generate-quote-13
+Invoice System 13,PDF + Scheduler - set 13,Custom,/generate-invoice-13
+Client CRM 13,"Contact, project tracking - set 13",SQL,/clients-13
+Staff CRM 13,"Roles, hours - set 13",SQL,/staff-13
+Scheduler 13,Calendar with FullCalendar.js - set 13,JSON API,/calendar-13
+Notifications 13,Toast + Mail/SMS - set 13,MailerLite/Twilio,/notifications-13
+Checklist 13,Job-specific tasks - set 13,SQL,/jobs/:id/checklist-13
+Inventory 13,Material tracking - set 13,SQL,/inventory-13
+Financial Reports 13,"P&L, tax, forecasting - set 13",SQL,/reports-13
+Client Portal 13,"Quotes, Invoices - set 13",Session/JWT,/portal/:clientId-13
+Staff Portal 13,Job toolkit - set 13,PIN Access,/portal/:staffId-13
+Data Tools 13,Upload/export CSV - set 13,Pandas,/data/upload-13
+Services 13,Manage service templates - set 13,SQL,/services-13
+Analytics 13,Growth & revenue - set 13,Plotly,/analytics-13
+User Control 13,"Permissions, roles - set 13",Flask-Login,/admin/users-13
+Photo Uploads 13,Before/after images - set 13,Cloud storage,/job/:id/photos-13
+Email System 14,Mail.com SMTP Integration - set 14,SMTP,/send-invoice-14
+Quote Builder 14,PDF + Email - set 14,WeasyPrint,/generate-quote-14
+Invoice System 14,PDF + Scheduler - set 14,Custom,/generate-invoice-14
+Client CRM 14,"Contact, project tracking - set 14",SQL,/clients-14
+Staff CRM 14,"Roles, hours - set 14",SQL,/staff-14
+Scheduler 14,Calendar with FullCalendar.js - set 14,JSON API,/calendar-14
+Notifications 14,Toast + Mail/SMS - set 14,MailerLite/Twilio,/notifications-14
+Checklist 14,Job-specific tasks - set 14,SQL,/jobs/:id/checklist-14
+Inventory 14,Material tracking - set 14,SQL,/inventory-14
+Financial Reports 14,"P&L, tax, forecasting - set 14",SQL,/reports-14
+Client Portal 14,"Quotes, Invoices - set 14",Session/JWT,/portal/:clientId-14
+Staff Portal 14,Job toolkit - set 14,PIN Access,/portal/:staffId-14
+Data Tools 14,Upload/export CSV - set 14,Pandas,/data/upload-14
+Services 14,Manage service templates - set 14,SQL,/services-14
+Analytics 14,Growth & revenue - set 14,Plotly,/analytics-14
+User Control 14,"Permissions, roles - set 14",Flask-Login,/admin/users-14
+Photo Uploads 14,Before/after images - set 14,Cloud storage,/job/:id/photos-14
+Email System 15,Mail.com SMTP Integration - set 15,SMTP,/send-invoice-15
+Quote Builder 15,PDF + Email - set 15,WeasyPrint,/generate-quote-15
+Invoice System 15,PDF + Scheduler - set 15,Custom,/generate-invoice-15
+Client CRM 15,"Contact, project tracking - set 15",SQL,/clients-15
+Staff CRM 15,"Roles, hours - set 15",SQL,/staff-15
+Scheduler 15,Calendar with FullCalendar.js - set 15,JSON API,/calendar-15
+Notifications 15,Toast + Mail/SMS - set 15,MailerLite/Twilio,/notifications-15
+Checklist 15,Job-specific tasks - set 15,SQL,/jobs/:id/checklist-15
+Inventory 15,Material tracking - set 15,SQL,/inventory-15
+Financial Reports 15,"P&L, tax, forecasting - set 15",SQL,/reports-15
+Client Portal 15,"Quotes, Invoices - set 15",Session/JWT,/portal/:clientId-15
+Staff Portal 15,Job toolkit - set 15,PIN Access,/portal/:staffId-15
+Data Tools 15,Upload/export CSV - set 15,Pandas,/data/upload-15
+Services 15,Manage service templates - set 15,SQL,/services-15
+Analytics 15,Growth & revenue - set 15,Plotly,/analytics-15
+User Control 15,"Permissions, roles - set 15",Flask-Login,/admin/users-15
+Photo Uploads 15,Before/after images - set 15,Cloud storage,/job/:id/photos-15
+Email System 16,Mail.com SMTP Integration - set 16,SMTP,/send-invoice-16
+Quote Builder 16,PDF + Email - set 16,WeasyPrint,/generate-quote-16
+Invoice System 16,PDF + Scheduler - set 16,Custom,/generate-invoice-16
+Client CRM 16,"Contact, project tracking - set 16",SQL,/clients-16
+Staff CRM 16,"Roles, hours - set 16",SQL,/staff-16
+Scheduler 16,Calendar with FullCalendar.js - set 16,JSON API,/calendar-16
+Notifications 16,Toast + Mail/SMS - set 16,MailerLite/Twilio,/notifications-16
+Checklist 16,Job-specific tasks - set 16,SQL,/jobs/:id/checklist-16
+Inventory 16,Material tracking - set 16,SQL,/inventory-16
+Financial Reports 16,"P&L, tax, forecasting - set 16",SQL,/reports-16
+Client Portal 16,"Quotes, Invoices - set 16",Session/JWT,/portal/:clientId-16
+Staff Portal 16,Job toolkit - set 16,PIN Access,/portal/:staffId-16
+Data Tools 16,Upload/export CSV - set 16,Pandas,/data/upload-16
+Services 16,Manage service templates - set 16,SQL,/services-16
+Analytics 16,Growth & revenue - set 16,Plotly,/analytics-16
+User Control 16,"Permissions, roles - set 16",Flask-Login,/admin/users-16
+Photo Uploads 16,Before/after images - set 16,Cloud storage,/job/:id/photos-16
+Email System 17,Mail.com SMTP Integration - set 17,SMTP,/send-invoice-17
+Quote Builder 17,PDF + Email - set 17,WeasyPrint,/generate-quote-17
+Invoice System 17,PDF + Scheduler - set 17,Custom,/generate-invoice-17
+Client CRM 17,"Contact, project tracking - set 17",SQL,/clients-17
+Staff CRM 17,"Roles, hours - set 17",SQL,/staff-17
+Scheduler 17,Calendar with FullCalendar.js - set 17,JSON API,/calendar-17
+Notifications 17,Toast + Mail/SMS - set 17,MailerLite/Twilio,/notifications-17
+Checklist 17,Job-specific tasks - set 17,SQL,/jobs/:id/checklist-17
+Inventory 17,Material tracking - set 17,SQL,/inventory-17
+Financial Reports 17,"P&L, tax, forecasting - set 17",SQL,/reports-17
+Client Portal 17,"Quotes, Invoices - set 17",Session/JWT,/portal/:clientId-17
+Staff Portal 17,Job toolkit - set 17,PIN Access,/portal/:staffId-17
+Data Tools 17,Upload/export CSV - set 17,Pandas,/data/upload-17
+Services 17,Manage service templates - set 17,SQL,/services-17
+Analytics 17,Growth & revenue - set 17,Plotly,/analytics-17
+User Control 17,"Permissions, roles - set 17",Flask-Login,/admin/users-17
+Photo Uploads 17,Before/after images - set 17,Cloud storage,/job/:id/photos-17
+Email System 18,Mail.com SMTP Integration - set 18,SMTP,/send-invoice-18
+Quote Builder 18,PDF + Email - set 18,WeasyPrint,/generate-quote-18
+Invoice System 18,PDF + Scheduler - set 18,Custom,/generate-invoice-18
+Client CRM 18,"Contact, project tracking - set 18",SQL,/clients-18
+Staff CRM 18,"Roles, hours - set 18",SQL,/staff-18
+Scheduler 18,Calendar with FullCalendar.js - set 18,JSON API,/calendar-18
+Notifications 18,Toast + Mail/SMS - set 18,MailerLite/Twilio,/notifications-18
+Checklist 18,Job-specific tasks - set 18,SQL,/jobs/:id/checklist-18
+Inventory 18,Material tracking - set 18,SQL,/inventory-18
+Financial Reports 18,"P&L, tax, forecasting - set 18",SQL,/reports-18
+Client Portal 18,"Quotes, Invoices - set 18",Session/JWT,/portal/:clientId-18
+Staff Portal 18,Job toolkit - set 18,PIN Access,/portal/:staffId-18
+Data Tools 18,Upload/export CSV - set 18,Pandas,/data/upload-18
+Services 18,Manage service templates - set 18,SQL,/services-18
+Analytics 18,Growth & revenue - set 18,Plotly,/analytics-18
+User Control 18,"Permissions, roles - set 18",Flask-Login,/admin/users-18
+Photo Uploads 18,Before/after images - set 18,Cloud storage,/job/:id/photos-18
+Email System 19,Mail.com SMTP Integration - set 19,SMTP,/send-invoice-19
+Quote Builder 19,PDF + Email - set 19,WeasyPrint,/generate-quote-19
+Invoice System 19,PDF + Scheduler - set 19,Custom,/generate-invoice-19
+Client CRM 19,"Contact, project tracking - set 19",SQL,/clients-19
+Staff CRM 19,"Roles, hours - set 19",SQL,/staff-19
+Scheduler 19,Calendar with FullCalendar.js - set 19,JSON API,/calendar-19
+Notifications 19,Toast + Mail/SMS - set 19,MailerLite/Twilio,/notifications-19
+Checklist 19,Job-specific tasks - set 19,SQL,/jobs/:id/checklist-19
+Inventory 19,Material tracking - set 19,SQL,/inventory-19
+Financial Reports 19,"P&L, tax, forecasting - set 19",SQL,/reports-19
+Client Portal 19,"Quotes, Invoices - set 19",Session/JWT,/portal/:clientId-19
+Staff Portal 19,Job toolkit - set 19,PIN Access,/portal/:staffId-19
+Data Tools 19,Upload/export CSV - set 19,Pandas,/data/upload-19
+Services 19,Manage service templates - set 19,SQL,/services-19
+Analytics 19,Growth & revenue - set 19,Plotly,/analytics-19
+User Control 19,"Permissions, roles - set 19",Flask-Login,/admin/users-19
+Photo Uploads 19,Before/after images - set 19,Cloud storage,/job/:id/photos-19
+Email System 20,Mail.com SMTP Integration - set 20,SMTP,/send-invoice-20
+Quote Builder 20,PDF + Email - set 20,WeasyPrint,/generate-quote-20
+Invoice System 20,PDF + Scheduler - set 20,Custom,/generate-invoice-20
+Client CRM 20,"Contact, project tracking - set 20",SQL,/clients-20
+Staff CRM 20,"Roles, hours - set 20",SQL,/staff-20
+Scheduler 20,Calendar with FullCalendar.js - set 20,JSON API,/calendar-20
+Notifications 20,Toast + Mail/SMS - set 20,MailerLite/Twilio,/notifications-20
+Checklist 20,Job-specific tasks - set 20,SQL,/jobs/:id/checklist-20
+Inventory 20,Material tracking - set 20,SQL,/inventory-20
+Financial Reports 20,"P&L, tax, forecasting - set 20",SQL,/reports-20
+Client Portal 20,"Quotes, Invoices - set 20",Session/JWT,/portal/:clientId-20
+Staff Portal 20,Job toolkit - set 20,PIN Access,/portal/:staffId-20
+Data Tools 20,Upload/export CSV - set 20,Pandas,/data/upload-20
+Services 20,Manage service templates - set 20,SQL,/services-20
+Analytics 20,Growth & revenue - set 20,Plotly,/analytics-20
+User Control 20,"Permissions, roles - set 20",Flask-Login,/admin/users-20
+Photo Uploads 20,Before/after images - set 20,Cloud storage,/job/:id/photos-20
+Email System 21,Mail.com SMTP Integration - set 21,SMTP,/send-invoice-21
+Quote Builder 21,PDF + Email - set 21,WeasyPrint,/generate-quote-21
+Invoice System 21,PDF + Scheduler - set 21,Custom,/generate-invoice-21
+Client CRM 21,"Contact, project tracking - set 21",SQL,/clients-21
+Staff CRM 21,"Roles, hours - set 21",SQL,/staff-21
+Scheduler 21,Calendar with FullCalendar.js - set 21,JSON API,/calendar-21
+Notifications 21,Toast + Mail/SMS - set 21,MailerLite/Twilio,/notifications-21
+Checklist 21,Job-specific tasks - set 21,SQL,/jobs/:id/checklist-21
+Inventory 21,Material tracking - set 21,SQL,/inventory-21
+Financial Reports 21,"P&L, tax, forecasting - set 21",SQL,/reports-21
+Client Portal 21,"Quotes, Invoices - set 21",Session/JWT,/portal/:clientId-21
+Staff Portal 21,Job toolkit - set 21,PIN Access,/portal/:staffId-21
+Data Tools 21,Upload/export CSV - set 21,Pandas,/data/upload-21
+Services 21,Manage service templates - set 21,SQL,/services-21
+Analytics 21,Growth & revenue - set 21,Plotly,/analytics-21
+User Control 21,"Permissions, roles - set 21",Flask-Login,/admin/users-21
+Photo Uploads 21,Before/after images - set 21,Cloud storage,/job/:id/photos-21
+Email System 22,Mail.com SMTP Integration - set 22,SMTP,/send-invoice-22
+Quote Builder 22,PDF + Email - set 22,WeasyPrint,/generate-quote-22
+Invoice System 22,PDF + Scheduler - set 22,Custom,/generate-invoice-22
+Client CRM 22,"Contact, project tracking - set 22",SQL,/clients-22
+Staff CRM 22,"Roles, hours - set 22",SQL,/staff-22
+Scheduler 22,Calendar with FullCalendar.js - set 22,JSON API,/calendar-22
+Notifications 22,Toast + Mail/SMS - set 22,MailerLite/Twilio,/notifications-22
+Checklist 22,Job-specific tasks - set 22,SQL,/jobs/:id/checklist-22
+Inventory 22,Material tracking - set 22,SQL,/inventory-22
+Financial Reports 22,"P&L, tax, forecasting - set 22",SQL,/reports-22
+Client Portal 22,"Quotes, Invoices - set 22",Session/JWT,/portal/:clientId-22
+Staff Portal 22,Job toolkit - set 22,PIN Access,/portal/:staffId-22
+Data Tools 22,Upload/export CSV - set 22,Pandas,/data/upload-22
+Services 22,Manage service templates - set 22,SQL,/services-22
+Analytics 22,Growth & revenue - set 22,Plotly,/analytics-22
+User Control 22,"Permissions, roles - set 22",Flask-Login,/admin/users-22
+Photo Uploads 22,Before/after images - set 22,Cloud storage,/job/:id/photos-22
+Email System 23,Mail.com SMTP Integration - set 23,SMTP,/send-invoice-23
+Quote Builder 23,PDF + Email - set 23,WeasyPrint,/generate-quote-23
+Invoice System 23,PDF + Scheduler - set 23,Custom,/generate-invoice-23
+Client CRM 23,"Contact, project tracking - set 23",SQL,/clients-23
+Staff CRM 23,"Roles, hours - set 23",SQL,/staff-23
+Scheduler 23,Calendar with FullCalendar.js - set 23,JSON API,/calendar-23
+Notifications 23,Toast + Mail/SMS - set 23,MailerLite/Twilio,/notifications-23
+Checklist 23,Job-specific tasks - set 23,SQL,/jobs/:id/checklist-23
+Inventory 23,Material tracking - set 23,SQL,/inventory-23
+Financial Reports 23,"P&L, tax, forecasting - set 23",SQL,/reports-23
+Client Portal 23,"Quotes, Invoices - set 23",Session/JWT,/portal/:clientId-23
+Staff Portal 23,Job toolkit - set 23,PIN Access,/portal/:staffId-23
+Data Tools 23,Upload/export CSV - set 23,Pandas,/data/upload-23
+Services 23,Manage service templates - set 23,SQL,/services-23
+Analytics 23,Growth & revenue - set 23,Plotly,/analytics-23
+User Control 23,"Permissions, roles - set 23",Flask-Login,/admin/users-23
+Photo Uploads 23,Before/after images - set 23,Cloud storage,/job/:id/photos-23
+Email System 24,Mail.com SMTP Integration - set 24,SMTP,/send-invoice-24
+Quote Builder 24,PDF + Email - set 24,WeasyPrint,/generate-quote-24
+Invoice System 24,PDF + Scheduler - set 24,Custom,/generate-invoice-24
+Client CRM 24,"Contact, project tracking - set 24",SQL,/clients-24
+Staff CRM 24,"Roles, hours - set 24",SQL,/staff-24
+Scheduler 24,Calendar with FullCalendar.js - set 24,JSON API,/calendar-24
+Notifications 24,Toast + Mail/SMS - set 24,MailerLite/Twilio,/notifications-24
+Checklist 24,Job-specific tasks - set 24,SQL,/jobs/:id/checklist-24
+Inventory 24,Material tracking - set 24,SQL,/inventory-24
+Financial Reports 24,"P&L, tax, forecasting - set 24",SQL,/reports-24
+Client Portal 24,"Quotes, Invoices - set 24",Session/JWT,/portal/:clientId-24
+Staff Portal 24,Job toolkit - set 24,PIN Access,/portal/:staffId-24
+Data Tools 24,Upload/export CSV - set 24,Pandas,/data/upload-24
+Services 24,Manage service templates - set 24,SQL,/services-24
+Analytics 24,Growth & revenue - set 24,Plotly,/analytics-24
+User Control 24,"Permissions, roles - set 24",Flask-Login,/admin/users-24
+Photo Uploads 24,Before/after images - set 24,Cloud storage,/job/:id/photos-24
+Email System 25,Mail.com SMTP Integration - set 25,SMTP,/send-invoice-25
+Quote Builder 25,PDF + Email - set 25,WeasyPrint,/generate-quote-25
+Invoice System 25,PDF + Scheduler - set 25,Custom,/generate-invoice-25
+Client CRM 25,"Contact, project tracking - set 25",SQL,/clients-25
+Staff CRM 25,"Roles, hours - set 25",SQL,/staff-25
+Scheduler 25,Calendar with FullCalendar.js - set 25,JSON API,/calendar-25
+Notifications 25,Toast + Mail/SMS - set 25,MailerLite/Twilio,/notifications-25
+Checklist 25,Job-specific tasks - set 25,SQL,/jobs/:id/checklist-25
+Inventory 25,Material tracking - set 25,SQL,/inventory-25
+Financial Reports 25,"P&L, tax, forecasting - set 25",SQL,/reports-25
+Client Portal 25,"Quotes, Invoices - set 25",Session/JWT,/portal/:clientId-25
+Staff Portal 25,Job toolkit - set 25,PIN Access,/portal/:staffId-25
+Data Tools 25,Upload/export CSV - set 25,Pandas,/data/upload-25
+Services 25,Manage service templates - set 25,SQL,/services-25
+Analytics 25,Growth & revenue - set 25,Plotly,/analytics-25
+User Control 25,"Permissions, roles - set 25",Flask-Login,/admin/users-25
+Photo Uploads 25,Before/after images - set 25,Cloud storage,/job/:id/photos-25
+Email System 26,Mail.com SMTP Integration - set 26,SMTP,/send-invoice-26
+Quote Builder 26,PDF + Email - set 26,WeasyPrint,/generate-quote-26
+Invoice System 26,PDF + Scheduler - set 26,Custom,/generate-invoice-26
+Client CRM 26,"Contact, project tracking - set 26",SQL,/clients-26
+Staff CRM 26,"Roles, hours - set 26",SQL,/staff-26
+Scheduler 26,Calendar with FullCalendar.js - set 26,JSON API,/calendar-26
+Notifications 26,Toast + Mail/SMS - set 26,MailerLite/Twilio,/notifications-26
+Checklist 26,Job-specific tasks - set 26,SQL,/jobs/:id/checklist-26
+Inventory 26,Material tracking - set 26,SQL,/inventory-26
+Financial Reports 26,"P&L, tax, forecasting - set 26",SQL,/reports-26
+Client Portal 26,"Quotes, Invoices - set 26",Session/JWT,/portal/:clientId-26
+Staff Portal 26,Job toolkit - set 26,PIN Access,/portal/:staffId-26
+Data Tools 26,Upload/export CSV - set 26,Pandas,/data/upload-26
+Services 26,Manage service templates - set 26,SQL,/services-26
+Analytics 26,Growth & revenue - set 26,Plotly,/analytics-26
+User Control 26,"Permissions, roles - set 26",Flask-Login,/admin/users-26
+Photo Uploads 26,Before/after images - set 26,Cloud storage,/job/:id/photos-26
+Email System 27,Mail.com SMTP Integration - set 27,SMTP,/send-invoice-27
+Quote Builder 27,PDF + Email - set 27,WeasyPrint,/generate-quote-27
+Invoice System 27,PDF + Scheduler - set 27,Custom,/generate-invoice-27
+Client CRM 27,"Contact, project tracking - set 27",SQL,/clients-27
+Staff CRM 27,"Roles, hours - set 27",SQL,/staff-27
+Scheduler 27,Calendar with FullCalendar.js - set 27,JSON API,/calendar-27
+Notifications 27,Toast + Mail/SMS - set 27,MailerLite/Twilio,/notifications-27
+Checklist 27,Job-specific tasks - set 27,SQL,/jobs/:id/checklist-27
+Inventory 27,Material tracking - set 27,SQL,/inventory-27
+Financial Reports 27,"P&L, tax, forecasting - set 27",SQL,/reports-27
+Client Portal 27,"Quotes, Invoices - set 27",Session/JWT,/portal/:clientId-27
+Staff Portal 27,Job toolkit - set 27,PIN Access,/portal/:staffId-27
+Data Tools 27,Upload/export CSV - set 27,Pandas,/data/upload-27
+Services 27,Manage service templates - set 27,SQL,/services-27
+Analytics 27,Growth & revenue - set 27,Plotly,/analytics-27
+User Control 27,"Permissions, roles - set 27",Flask-Login,/admin/users-27
+Photo Uploads 27,Before/after images - set 27,Cloud storage,/job/:id/photos-27
+Email System 28,Mail.com SMTP Integration - set 28,SMTP,/send-invoice-28
+Quote Builder 28,PDF + Email - set 28,WeasyPrint,/generate-quote-28
+Invoice System 28,PDF + Scheduler - set 28,Custom,/generate-invoice-28
+Client CRM 28,"Contact, project tracking - set 28",SQL,/clients-28
+Staff CRM 28,"Roles, hours - set 28",SQL,/staff-28
+Scheduler 28,Calendar with FullCalendar.js - set 28,JSON API,/calendar-28
+Notifications 28,Toast + Mail/SMS - set 28,MailerLite/Twilio,/notifications-28
+Checklist 28,Job-specific tasks - set 28,SQL,/jobs/:id/checklist-28
+Inventory 28,Material tracking - set 28,SQL,/inventory-28
+Financial Reports 28,"P&L, tax, forecasting - set 28",SQL,/reports-28
+Client Portal 28,"Quotes, Invoices - set 28",Session/JWT,/portal/:clientId-28
+Staff Portal 28,Job toolkit - set 28,PIN Access,/portal/:staffId-28
+Data Tools 28,Upload/export CSV - set 28,Pandas,/data/upload-28
+Services 28,Manage service templates - set 28,SQL,/services-28
+Analytics 28,Growth & revenue - set 28,Plotly,/analytics-28
+User Control 28,"Permissions, roles - set 28",Flask-Login,/admin/users-28
+Photo Uploads 28,Before/after images - set 28,Cloud storage,/job/:id/photos-28
+Email System 29,Mail.com SMTP Integration - set 29,SMTP,/send-invoice-29
+Quote Builder 29,PDF + Email - set 29,WeasyPrint,/generate-quote-29
+Invoice System 29,PDF + Scheduler - set 29,Custom,/generate-invoice-29
+Client CRM 29,"Contact, project tracking - set 29",SQL,/clients-29
+Staff CRM 29,"Roles, hours - set 29",SQL,/staff-29
+Scheduler 29,Calendar with FullCalendar.js - set 29,JSON API,/calendar-29
+Notifications 29,Toast + Mail/SMS - set 29,MailerLite/Twilio,/notifications-29
+Checklist 29,Job-specific tasks - set 29,SQL,/jobs/:id/checklist-29
+Inventory 29,Material tracking - set 29,SQL,/inventory-29
+Financial Reports 29,"P&L, tax, forecasting - set 29",SQL,/reports-29
+Client Portal 29,"Quotes, Invoices - set 29",Session/JWT,/portal/:clientId-29
+Staff Portal 29,Job toolkit - set 29,PIN Access,/portal/:staffId-29
+Data Tools 29,Upload/export CSV - set 29,Pandas,/data/upload-29
+Services 29,Manage service templates - set 29,SQL,/services-29
+Analytics 29,Growth & revenue - set 29,Plotly,/analytics-29
+User Control 29,"Permissions, roles - set 29",Flask-Login,/admin/users-29
+Photo Uploads 29,Before/after images - set 29,Cloud storage,/job/:id/photos-29
+Email System 30,Mail.com SMTP Integration - set 30,SMTP,/send-invoice-30
+Quote Builder 30,PDF + Email - set 30,WeasyPrint,/generate-quote-30
+Invoice System 30,PDF + Scheduler - set 30,Custom,/generate-invoice-30
+Client CRM 30,"Contact, project tracking - set 30",SQL,/clients-30
+Staff CRM 30,"Roles, hours - set 30",SQL,/staff-30
+Scheduler 30,Calendar with FullCalendar.js - set 30,JSON API,/calendar-30
+Notifications 30,Toast + Mail/SMS - set 30,MailerLite/Twilio,/notifications-30
+Checklist 30,Job-specific tasks - set 30,SQL,/jobs/:id/checklist-30
+Inventory 30,Material tracking - set 30,SQL,/inventory-30
+Financial Reports 30,"P&L, tax, forecasting - set 30",SQL,/reports-30
+Client Portal 30,"Quotes, Invoices - set 30",Session/JWT,/portal/:clientId-30
+Staff Portal 30,Job toolkit - set 30,PIN Access,/portal/:staffId-30
+Data Tools 30,Upload/export CSV - set 30,Pandas,/data/upload-30
+Services 30,Manage service templates - set 30,SQL,/services-30
+Analytics 30,Growth & revenue - set 30,Plotly,/analytics-30
+User Control 30,"Permissions, roles - set 30",Flask-Login,/admin/users-30
+Photo Uploads 30,Before/after images - set 30,Cloud storage,/job/:id/photos-30
+Email System 31,Mail.com SMTP Integration - set 31,SMTP,/send-invoice-31
+Quote Builder 31,PDF + Email - set 31,WeasyPrint,/generate-quote-31
+Invoice System 31,PDF + Scheduler - set 31,Custom,/generate-invoice-31
+Client CRM 31,"Contact, project tracking - set 31",SQL,/clients-31
+Staff CRM 31,"Roles, hours - set 31",SQL,/staff-31
+Scheduler 31,Calendar with FullCalendar.js - set 31,JSON API,/calendar-31
+Notifications 31,Toast + Mail/SMS - set 31,MailerLite/Twilio,/notifications-31
+Checklist 31,Job-specific tasks - set 31,SQL,/jobs/:id/checklist-31
+Inventory 31,Material tracking - set 31,SQL,/inventory-31
+Financial Reports 31,"P&L, tax, forecasting - set 31",SQL,/reports-31
+Client Portal 31,"Quotes, Invoices - set 31",Session/JWT,/portal/:clientId-31
+Staff Portal 31,Job toolkit - set 31,PIN Access,/portal/:staffId-31
+Data Tools 31,Upload/export CSV - set 31,Pandas,/data/upload-31
+Services 31,Manage service templates - set 31,SQL,/services-31
+Analytics 31,Growth & revenue - set 31,Plotly,/analytics-31
+User Control 31,"Permissions, roles - set 31",Flask-Login,/admin/users-31
+Photo Uploads 31,Before/after images - set 31,Cloud storage,/job/:id/photos-31
+Email System 32,Mail.com SMTP Integration - set 32,SMTP,/send-invoice-32
+Quote Builder 32,PDF + Email - set 32,WeasyPrint,/generate-quote-32
+Invoice System 32,PDF + Scheduler - set 32,Custom,/generate-invoice-32
+Client CRM 32,"Contact, project tracking - set 32",SQL,/clients-32
+Staff CRM 32,"Roles, hours - set 32",SQL,/staff-32
+Scheduler 32,Calendar with FullCalendar.js - set 32,JSON API,/calendar-32
+Notifications 32,Toast + Mail/SMS - set 32,MailerLite/Twilio,/notifications-32
+Checklist 32,Job-specific tasks - set 32,SQL,/jobs/:id/checklist-32
+Inventory 32,Material tracking - set 32,SQL,/inventory-32
+Financial Reports 32,"P&L, tax, forecasting - set 32",SQL,/reports-32
+Client Portal 32,"Quotes, Invoices - set 32",Session/JWT,/portal/:clientId-32
+Staff Portal 32,Job toolkit - set 32,PIN Access,/portal/:staffId-32
+Data Tools 32,Upload/export CSV - set 32,Pandas,/data/upload-32
+Services 32,Manage service templates - set 32,SQL,/services-32
+Analytics 32,Growth & revenue - set 32,Plotly,/analytics-32
+User Control 32,"Permissions, roles - set 32",Flask-Login,/admin/users-32
+Photo Uploads 32,Before/after images - set 32,Cloud storage,/job/:id/photos-32
+Email System 33,Mail.com SMTP Integration - set 33,SMTP,/send-invoice-33
+Quote Builder 33,PDF + Email - set 33,WeasyPrint,/generate-quote-33
+Invoice System 33,PDF + Scheduler - set 33,Custom,/generate-invoice-33
+Client CRM 33,"Contact, project tracking - set 33",SQL,/clients-33
+Staff CRM 33,"Roles, hours - set 33",SQL,/staff-33
+Scheduler 33,Calendar with FullCalendar.js - set 33,JSON API,/calendar-33
+Notifications 33,Toast + Mail/SMS - set 33,MailerLite/Twilio,/notifications-33
+Checklist 33,Job-specific tasks - set 33,SQL,/jobs/:id/checklist-33
+Inventory 33,Material tracking - set 33,SQL,/inventory-33
+Financial Reports 33,"P&L, tax, forecasting - set 33",SQL,/reports-33
+Client Portal 33,"Quotes, Invoices - set 33",Session/JWT,/portal/:clientId-33
+Staff Portal 33,Job toolkit - set 33,PIN Access,/portal/:staffId-33
+Data Tools 33,Upload/export CSV - set 33,Pandas,/data/upload-33
+Services 33,Manage service templates - set 33,SQL,/services-33
+Analytics 33,Growth & revenue - set 33,Plotly,/analytics-33
+User Control 33,"Permissions, roles - set 33",Flask-Login,/admin/users-33
+Photo Uploads 33,Before/after images - set 33,Cloud storage,/job/:id/photos-33
+Email System 34,Mail.com SMTP Integration - set 34,SMTP,/send-invoice-34
+Quote Builder 34,PDF + Email - set 34,WeasyPrint,/generate-quote-34
+Invoice System 34,PDF + Scheduler - set 34,Custom,/generate-invoice-34
+Client CRM 34,"Contact, project tracking - set 34",SQL,/clients-34
+Staff CRM 34,"Roles, hours - set 34",SQL,/staff-34
+Scheduler 34,Calendar with FullCalendar.js - set 34,JSON API,/calendar-34
+Notifications 34,Toast + Mail/SMS - set 34,MailerLite/Twilio,/notifications-34
+Checklist 34,Job-specific tasks - set 34,SQL,/jobs/:id/checklist-34
+Inventory 34,Material tracking - set 34,SQL,/inventory-34
+Financial Reports 34,"P&L, tax, forecasting - set 34",SQL,/reports-34
+Client Portal 34,"Quotes, Invoices - set 34",Session/JWT,/portal/:clientId-34
+Staff Portal 34,Job toolkit - set 34,PIN Access,/portal/:staffId-34
+Data Tools 34,Upload/export CSV - set 34,Pandas,/data/upload-34
+Services 34,Manage service templates - set 34,SQL,/services-34
+Analytics 34,Growth & revenue - set 34,Plotly,/analytics-34
+User Control 34,"Permissions, roles - set 34",Flask-Login,/admin/users-34
+Photo Uploads 34,Before/after images - set 34,Cloud storage,/job/:id/photos-34
+Email System 35,Mail.com SMTP Integration - set 35,SMTP,/send-invoice-35
+Quote Builder 35,PDF + Email - set 35,WeasyPrint,/generate-quote-35
+Invoice System 35,PDF + Scheduler - set 35,Custom,/generate-invoice-35
+Client CRM 35,"Contact, project tracking - set 35",SQL,/clients-35
+Staff CRM 35,"Roles, hours - set 35",SQL,/staff-35
+Scheduler 35,Calendar with FullCalendar.js - set 35,JSON API,/calendar-35
+Notifications 35,Toast + Mail/SMS - set 35,MailerLite/Twilio,/notifications-35
+Checklist 35,Job-specific tasks - set 35,SQL,/jobs/:id/checklist-35
+Inventory 35,Material tracking - set 35,SQL,/inventory-35
+Financial Reports 35,"P&L, tax, forecasting - set 35",SQL,/reports-35
+Client Portal 35,"Quotes, Invoices - set 35",Session/JWT,/portal/:clientId-35
+Staff Portal 35,Job toolkit - set 35,PIN Access,/portal/:staffId-35
+Data Tools 35,Upload/export CSV - set 35,Pandas,/data/upload-35
+Services 35,Manage service templates - set 35,SQL,/services-35
+Analytics 35,Growth & revenue - set 35,Plotly,/analytics-35
+User Control 35,"Permissions, roles - set 35",Flask-Login,/admin/users-35
+Photo Uploads 35,Before/after images - set 35,Cloud storage,/job/:id/photos-35
+Email System 36,Mail.com SMTP Integration - set 36,SMTP,/send-invoice-36
+Quote Builder 36,PDF + Email - set 36,WeasyPrint,/generate-quote-36
+Invoice System 36,PDF + Scheduler - set 36,Custom,/generate-invoice-36
+Client CRM 36,"Contact, project tracking - set 36",SQL,/clients-36
+Staff CRM 36,"Roles, hours - set 36",SQL,/staff-36
+Scheduler 36,Calendar with FullCalendar.js - set 36,JSON API,/calendar-36
+Notifications 36,Toast + Mail/SMS - set 36,MailerLite/Twilio,/notifications-36
+Checklist 36,Job-specific tasks - set 36,SQL,/jobs/:id/checklist-36
+Inventory 36,Material tracking - set 36,SQL,/inventory-36
+Financial Reports 36,"P&L, tax, forecasting - set 36",SQL,/reports-36
+Client Portal 36,"Quotes, Invoices - set 36",Session/JWT,/portal/:clientId-36
+Staff Portal 36,Job toolkit - set 36,PIN Access,/portal/:staffId-36
+Data Tools 36,Upload/export CSV - set 36,Pandas,/data/upload-36
+Services 36,Manage service templates - set 36,SQL,/services-36
+Analytics 36,Growth & revenue - set 36,Plotly,/analytics-36
+User Control 36,"Permissions, roles - set 36",Flask-Login,/admin/users-36
+Photo Uploads 36,Before/after images - set 36,Cloud storage,/job/:id/photos-36
+Email System 37,Mail.com SMTP Integration - set 37,SMTP,/send-invoice-37
+Quote Builder 37,PDF + Email - set 37,WeasyPrint,/generate-quote-37
+Invoice System 37,PDF + Scheduler - set 37,Custom,/generate-invoice-37
+Client CRM 37,"Contact, project tracking - set 37",SQL,/clients-37
+Staff CRM 37,"Roles, hours - set 37",SQL,/staff-37
+Scheduler 37,Calendar with FullCalendar.js - set 37,JSON API,/calendar-37
+Notifications 37,Toast + Mail/SMS - set 37,MailerLite/Twilio,/notifications-37
+Checklist 37,Job-specific tasks - set 37,SQL,/jobs/:id/checklist-37
+Inventory 37,Material tracking - set 37,SQL,/inventory-37
+Financial Reports 37,"P&L, tax, forecasting - set 37",SQL,/reports-37
+Client Portal 37,"Quotes, Invoices - set 37",Session/JWT,/portal/:clientId-37
+Staff Portal 37,Job toolkit - set 37,PIN Access,/portal/:staffId-37
+Data Tools 37,Upload/export CSV - set 37,Pandas,/data/upload-37
+Services 37,Manage service templates - set 37,SQL,/services-37
+Analytics 37,Growth & revenue - set 37,Plotly,/analytics-37
+User Control 37,"Permissions, roles - set 37",Flask-Login,/admin/users-37
+Photo Uploads 37,Before/after images - set 37,Cloud storage,/job/:id/photos-37
+Email System 38,Mail.com SMTP Integration - set 38,SMTP,/send-invoice-38
+Quote Builder 38,PDF + Email - set 38,WeasyPrint,/generate-quote-38
+Invoice System 38,PDF + Scheduler - set 38,Custom,/generate-invoice-38
+Client CRM 38,"Contact, project tracking - set 38",SQL,/clients-38
+Staff CRM 38,"Roles, hours - set 38",SQL,/staff-38
+Scheduler 38,Calendar with FullCalendar.js - set 38,JSON API,/calendar-38
+Notifications 38,Toast + Mail/SMS - set 38,MailerLite/Twilio,/notifications-38
+Checklist 38,Job-specific tasks - set 38,SQL,/jobs/:id/checklist-38
+Inventory 38,Material tracking - set 38,SQL,/inventory-38
+Financial Reports 38,"P&L, tax, forecasting - set 38",SQL,/reports-38
+Client Portal 38,"Quotes, Invoices - set 38",Session/JWT,/portal/:clientId-38
+Staff Portal 38,Job toolkit - set 38,PIN Access,/portal/:staffId-38
+Data Tools 38,Upload/export CSV - set 38,Pandas,/data/upload-38
+Services 38,Manage service templates - set 38,SQL,/services-38
+Analytics 38,Growth & revenue - set 38,Plotly,/analytics-38
+User Control 38,"Permissions, roles - set 38",Flask-Login,/admin/users-38
+Photo Uploads 38,Before/after images - set 38,Cloud storage,/job/:id/photos-38
+Email System 39,Mail.com SMTP Integration - set 39,SMTP,/send-invoice-39
+Quote Builder 39,PDF + Email - set 39,WeasyPrint,/generate-quote-39
+Invoice System 39,PDF + Scheduler - set 39,Custom,/generate-invoice-39
+Client CRM 39,"Contact, project tracking - set 39",SQL,/clients-39
+Staff CRM 39,"Roles, hours - set 39",SQL,/staff-39
+Scheduler 39,Calendar with FullCalendar.js - set 39,JSON API,/calendar-39
+Notifications 39,Toast + Mail/SMS - set 39,MailerLite/Twilio,/notifications-39
+Checklist 39,Job-specific tasks - set 39,SQL,/jobs/:id/checklist-39
+Inventory 39,Material tracking - set 39,SQL,/inventory-39
+Financial Reports 39,"P&L, tax, forecasting - set 39",SQL,/reports-39
+Client Portal 39,"Quotes, Invoices - set 39",Session/JWT,/portal/:clientId-39
+Staff Portal 39,Job toolkit - set 39,PIN Access,/portal/:staffId-39
+Data Tools 39,Upload/export CSV - set 39,Pandas,/data/upload-39
+Services 39,Manage service templates - set 39,SQL,/services-39
+Analytics 39,Growth & revenue - set 39,Plotly,/analytics-39
+User Control 39,"Permissions, roles - set 39",Flask-Login,/admin/users-39
+Photo Uploads 39,Before/after images - set 39,Cloud storage,/job/:id/photos-39
+Email System 40,Mail.com SMTP Integration - set 40,SMTP,/send-invoice-40
+Quote Builder 40,PDF + Email - set 40,WeasyPrint,/generate-quote-40
+Invoice System 40,PDF + Scheduler - set 40,Custom,/generate-invoice-40
+Client CRM 40,"Contact, project tracking - set 40",SQL,/clients-40
+Staff CRM 40,"Roles, hours - set 40",SQL,/staff-40
+Scheduler 40,Calendar with FullCalendar.js - set 40,JSON API,/calendar-40
+Notifications 40,Toast + Mail/SMS - set 40,MailerLite/Twilio,/notifications-40
+Checklist 40,Job-specific tasks - set 40,SQL,/jobs/:id/checklist-40
+Inventory 40,Material tracking - set 40,SQL,/inventory-40
+Financial Reports 40,"P&L, tax, forecasting - set 40",SQL,/reports-40
+Client Portal 40,"Quotes, Invoices - set 40",Session/JWT,/portal/:clientId-40
+Staff Portal 40,Job toolkit - set 40,PIN Access,/portal/:staffId-40
+Data Tools 40,Upload/export CSV - set 40,Pandas,/data/upload-40
+Services 40,Manage service templates - set 40,SQL,/services-40
+Analytics 40,Growth & revenue - set 40,Plotly,/analytics-40
+User Control 40,"Permissions, roles - set 40",Flask-Login,/admin/users-40
+Photo Uploads 40,Before/after images - set 40,Cloud storage,/job/:id/photos-40
+Email System 41,Mail.com SMTP Integration - set 41,SMTP,/send-invoice-41
+Quote Builder 41,PDF + Email - set 41,WeasyPrint,/generate-quote-41
+Invoice System 41,PDF + Scheduler - set 41,Custom,/generate-invoice-41
+Client CRM 41,"Contact, project tracking - set 41",SQL,/clients-41
+Staff CRM 41,"Roles, hours - set 41",SQL,/staff-41
+Scheduler 41,Calendar with FullCalendar.js - set 41,JSON API,/calendar-41
+Notifications 41,Toast + Mail/SMS - set 41,MailerLite/Twilio,/notifications-41
+Checklist 41,Job-specific tasks - set 41,SQL,/jobs/:id/checklist-41
+Inventory 41,Material tracking - set 41,SQL,/inventory-41
+Financial Reports 41,"P&L, tax, forecasting - set 41",SQL,/reports-41
+Client Portal 41,"Quotes, Invoices - set 41",Session/JWT,/portal/:clientId-41
+Staff Portal 41,Job toolkit - set 41,PIN Access,/portal/:staffId-41
+Data Tools 41,Upload/export CSV - set 41,Pandas,/data/upload-41
+Services 41,Manage service templates - set 41,SQL,/services-41
+Analytics 41,Growth & revenue - set 41,Plotly,/analytics-41
+User Control 41,"Permissions, roles - set 41",Flask-Login,/admin/users-41
+Photo Uploads 41,Before/after images - set 41,Cloud storage,/job/:id/photos-41
+Email System 42,Mail.com SMTP Integration - set 42,SMTP,/send-invoice-42
+Quote Builder 42,PDF + Email - set 42,WeasyPrint,/generate-quote-42
+Invoice System 42,PDF + Scheduler - set 42,Custom,/generate-invoice-42
+Client CRM 42,"Contact, project tracking - set 42",SQL,/clients-42
+Staff CRM 42,"Roles, hours - set 42",SQL,/staff-42
+Scheduler 42,Calendar with FullCalendar.js - set 42,JSON API,/calendar-42
+Notifications 42,Toast + Mail/SMS - set 42,MailerLite/Twilio,/notifications-42
+Checklist 42,Job-specific tasks - set 42,SQL,/jobs/:id/checklist-42
+Inventory 42,Material tracking - set 42,SQL,/inventory-42
+Financial Reports 42,"P&L, tax, forecasting - set 42",SQL,/reports-42
+Client Portal 42,"Quotes, Invoices - set 42",Session/JWT,/portal/:clientId-42
+Staff Portal 42,Job toolkit - set 42,PIN Access,/portal/:staffId-42
+Data Tools 42,Upload/export CSV - set 42,Pandas,/data/upload-42
+Services 42,Manage service templates - set 42,SQL,/services-42
+Analytics 42,Growth & revenue - set 42,Plotly,/analytics-42
+User Control 42,"Permissions, roles - set 42",Flask-Login,/admin/users-42
+Photo Uploads 42,Before/after images - set 42,Cloud storage,/job/:id/photos-42
+Email System 43,Mail.com SMTP Integration - set 43,SMTP,/send-invoice-43
+Quote Builder 43,PDF + Email - set 43,WeasyPrint,/generate-quote-43
+Invoice System 43,PDF + Scheduler - set 43,Custom,/generate-invoice-43
+Client CRM 43,"Contact, project tracking - set 43",SQL,/clients-43
+Staff CRM 43,"Roles, hours - set 43",SQL,/staff-43
+Scheduler 43,Calendar with FullCalendar.js - set 43,JSON API,/calendar-43
+Notifications 43,Toast + Mail/SMS - set 43,MailerLite/Twilio,/notifications-43
+Checklist 43,Job-specific tasks - set 43,SQL,/jobs/:id/checklist-43
+Inventory 43,Material tracking - set 43,SQL,/inventory-43
+Financial Reports 43,"P&L, tax, forecasting - set 43",SQL,/reports-43
+Client Portal 43,"Quotes, Invoices - set 43",Session/JWT,/portal/:clientId-43
+Staff Portal 43,Job toolkit - set 43,PIN Access,/portal/:staffId-43
+Data Tools 43,Upload/export CSV - set 43,Pandas,/data/upload-43
+Services 43,Manage service templates - set 43,SQL,/services-43
+Analytics 43,Growth & revenue - set 43,Plotly,/analytics-43
+User Control 43,"Permissions, roles - set 43",Flask-Login,/admin/users-43
+Photo Uploads 43,Before/after images - set 43,Cloud storage,/job/:id/photos-43
+Email System 44,Mail.com SMTP Integration - set 44,SMTP,/send-invoice-44
+Quote Builder 44,PDF + Email - set 44,WeasyPrint,/generate-quote-44
+Invoice System 44,PDF + Scheduler - set 44,Custom,/generate-invoice-44
+Client CRM 44,"Contact, project tracking - set 44",SQL,/clients-44
+Staff CRM 44,"Roles, hours - set 44",SQL,/staff-44
+Scheduler 44,Calendar with FullCalendar.js - set 44,JSON API,/calendar-44
+Notifications 44,Toast + Mail/SMS - set 44,MailerLite/Twilio,/notifications-44
+Checklist 44,Job-specific tasks - set 44,SQL,/jobs/:id/checklist-44
+Inventory 44,Material tracking - set 44,SQL,/inventory-44
+Financial Reports 44,"P&L, tax, forecasting - set 44",SQL,/reports-44
+Client Portal 44,"Quotes, Invoices - set 44",Session/JWT,/portal/:clientId-44
+Staff Portal 44,Job toolkit - set 44,PIN Access,/portal/:staffId-44
+Data Tools 44,Upload/export CSV - set 44,Pandas,/data/upload-44
+Services 44,Manage service templates - set 44,SQL,/services-44
+Analytics 44,Growth & revenue - set 44,Plotly,/analytics-44
+User Control 44,"Permissions, roles - set 44",Flask-Login,/admin/users-44
+Photo Uploads 44,Before/after images - set 44,Cloud storage,/job/:id/photos-44
+Email System 45,Mail.com SMTP Integration - set 45,SMTP,/send-invoice-45
+Quote Builder 45,PDF + Email - set 45,WeasyPrint,/generate-quote-45
+Invoice System 45,PDF + Scheduler - set 45,Custom,/generate-invoice-45
+Client CRM 45,"Contact, project tracking - set 45",SQL,/clients-45
+Staff CRM 45,"Roles, hours - set 45",SQL,/staff-45
+Scheduler 45,Calendar with FullCalendar.js - set 45,JSON API,/calendar-45
+Notifications 45,Toast + Mail/SMS - set 45,MailerLite/Twilio,/notifications-45
+Checklist 45,Job-specific tasks - set 45,SQL,/jobs/:id/checklist-45
+Inventory 45,Material tracking - set 45,SQL,/inventory-45
+Financial Reports 45,"P&L, tax, forecasting - set 45",SQL,/reports-45
+Client Portal 45,"Quotes, Invoices - set 45",Session/JWT,/portal/:clientId-45
+Staff Portal 45,Job toolkit - set 45,PIN Access,/portal/:staffId-45
+Data Tools 45,Upload/export CSV - set 45,Pandas,/data/upload-45
+Services 45,Manage service templates - set 45,SQL,/services-45
+Analytics 45,Growth & revenue - set 45,Plotly,/analytics-45
+User Control 45,"Permissions, roles - set 45",Flask-Login,/admin/users-45
+Photo Uploads 45,Before/after images - set 45,Cloud storage,/job/:id/photos-45
+Email System 46,Mail.com SMTP Integration - set 46,SMTP,/send-invoice-46
+Quote Builder 46,PDF + Email - set 46,WeasyPrint,/generate-quote-46
+Invoice System 46,PDF + Scheduler - set 46,Custom,/generate-invoice-46
+Client CRM 46,"Contact, project tracking - set 46",SQL,/clients-46
+Staff CRM 46,"Roles, hours - set 46",SQL,/staff-46
+Scheduler 46,Calendar with FullCalendar.js - set 46,JSON API,/calendar-46
+Notifications 46,Toast + Mail/SMS - set 46,MailerLite/Twilio,/notifications-46
+Checklist 46,Job-specific tasks - set 46,SQL,/jobs/:id/checklist-46
+Inventory 46,Material tracking - set 46,SQL,/inventory-46
+Financial Reports 46,"P&L, tax, forecasting - set 46",SQL,/reports-46
+Client Portal 46,"Quotes, Invoices - set 46",Session/JWT,/portal/:clientId-46
+Staff Portal 46,Job toolkit - set 46,PIN Access,/portal/:staffId-46
+Data Tools 46,Upload/export CSV - set 46,Pandas,/data/upload-46
+Services 46,Manage service templates - set 46,SQL,/services-46
+Analytics 46,Growth & revenue - set 46,Plotly,/analytics-46
+User Control 46,"Permissions, roles - set 46",Flask-Login,/admin/users-46
+Photo Uploads 46,Before/after images - set 46,Cloud storage,/job/:id/photos-46
+Email System 47,Mail.com SMTP Integration - set 47,SMTP,/send-invoice-47
+Quote Builder 47,PDF + Email - set 47,WeasyPrint,/generate-quote-47
+Invoice System 47,PDF + Scheduler - set 47,Custom,/generate-invoice-47
+Client CRM 47,"Contact, project tracking - set 47",SQL,/clients-47
+Staff CRM 47,"Roles, hours - set 47",SQL,/staff-47
+Scheduler 47,Calendar with FullCalendar.js - set 47,JSON API,/calendar-47
+Notifications 47,Toast + Mail/SMS - set 47,MailerLite/Twilio,/notifications-47
+Checklist 47,Job-specific tasks - set 47,SQL,/jobs/:id/checklist-47
+Inventory 47,Material tracking - set 47,SQL,/inventory-47
+Financial Reports 47,"P&L, tax, forecasting - set 47",SQL,/reports-47
+Client Portal 47,"Quotes, Invoices - set 47",Session/JWT,/portal/:clientId-47
+Staff Portal 47,Job toolkit - set 47,PIN Access,/portal/:staffId-47
+Data Tools 47,Upload/export CSV - set 47,Pandas,/data/upload-47
+Services 47,Manage service templates - set 47,SQL,/services-47
+Analytics 47,Growth & revenue - set 47,Plotly,/analytics-47
+User Control 47,"Permissions, roles - set 47",Flask-Login,/admin/users-47
+Photo Uploads 47,Before/after images - set 47,Cloud storage,/job/:id/photos-47
+Email System 48,Mail.com SMTP Integration - set 48,SMTP,/send-invoice-48
+Quote Builder 48,PDF + Email - set 48,WeasyPrint,/generate-quote-48
+Invoice System 48,PDF + Scheduler - set 48,Custom,/generate-invoice-48
+Client CRM 48,"Contact, project tracking - set 48",SQL,/clients-48
+Staff CRM 48,"Roles, hours - set 48",SQL,/staff-48
+Scheduler 48,Calendar with FullCalendar.js - set 48,JSON API,/calendar-48
+Notifications 48,Toast + Mail/SMS - set 48,MailerLite/Twilio,/notifications-48
+Checklist 48,Job-specific tasks - set 48,SQL,/jobs/:id/checklist-48
+Inventory 48,Material tracking - set 48,SQL,/inventory-48
+Financial Reports 48,"P&L, tax, forecasting - set 48",SQL,/reports-48
+Client Portal 48,"Quotes, Invoices - set 48",Session/JWT,/portal/:clientId-48
+Staff Portal 48,Job toolkit - set 48,PIN Access,/portal/:staffId-48
+Data Tools 48,Upload/export CSV - set 48,Pandas,/data/upload-48
+Services 48,Manage service templates - set 48,SQL,/services-48
+Analytics 48,Growth & revenue - set 48,Plotly,/analytics-48
+User Control 48,"Permissions, roles - set 48",Flask-Login,/admin/users-48
+Photo Uploads 48,Before/after images - set 48,Cloud storage,/job/:id/photos-48
+Email System 49,Mail.com SMTP Integration - set 49,SMTP,/send-invoice-49
+Quote Builder 49,PDF + Email - set 49,WeasyPrint,/generate-quote-49
+Invoice System 49,PDF + Scheduler - set 49,Custom,/generate-invoice-49
+Client CRM 49,"Contact, project tracking - set 49",SQL,/clients-49
+Staff CRM 49,"Roles, hours - set 49",SQL,/staff-49
+Scheduler 49,Calendar with FullCalendar.js - set 49,JSON API,/calendar-49
+Notifications 49,Toast + Mail/SMS - set 49,MailerLite/Twilio,/notifications-49
+Checklist 49,Job-specific tasks - set 49,SQL,/jobs/:id/checklist-49
+Inventory 49,Material tracking - set 49,SQL,/inventory-49
+Financial Reports 49,"P&L, tax, forecasting - set 49",SQL,/reports-49
+Client Portal 49,"Quotes, Invoices - set 49",Session/JWT,/portal/:clientId-49
+Staff Portal 49,Job toolkit - set 49,PIN Access,/portal/:staffId-49
+Data Tools 49,Upload/export CSV - set 49,Pandas,/data/upload-49
+Services 49,Manage service templates - set 49,SQL,/services-49
+Analytics 49,Growth & revenue - set 49,Plotly,/analytics-49
+User Control 49,"Permissions, roles - set 49",Flask-Login,/admin/users-49
+Photo Uploads 49,Before/after images - set 49,Cloud storage,/job/:id/photos-49
+Email System 50,Mail.com SMTP Integration - set 50,SMTP,/send-invoice-50
+Quote Builder 50,PDF + Email - set 50,WeasyPrint,/generate-quote-50
+Invoice System 50,PDF + Scheduler - set 50,Custom,/generate-invoice-50
+Client CRM 50,"Contact, project tracking - set 50",SQL,/clients-50
+Staff CRM 50,"Roles, hours - set 50",SQL,/staff-50
+Scheduler 50,Calendar with FullCalendar.js - set 50,JSON API,/calendar-50
+Notifications 50,Toast + Mail/SMS - set 50,MailerLite/Twilio,/notifications-50
+Checklist 50,Job-specific tasks - set 50,SQL,/jobs/:id/checklist-50
+Inventory 50,Material tracking - set 50,SQL,/inventory-50
+Financial Reports 50,"P&L, tax, forecasting - set 50",SQL,/reports-50
+Client Portal 50,"Quotes, Invoices - set 50",Session/JWT,/portal/:clientId-50
+Staff Portal 50,Job toolkit - set 50,PIN Access,/portal/:staffId-50
+Data Tools 50,Upload/export CSV - set 50,Pandas,/data/upload-50
+Services 50,Manage service templates - set 50,SQL,/services-50
+Analytics 50,Growth & revenue - set 50,Plotly,/analytics-50
+User Control 50,"Permissions, roles - set 50",Flask-Login,/admin/users-50
+Photo Uploads 50,Before/after images - set 50,Cloud storage,/job/:id/photos-50
+Email System 51,Mail.com SMTP Integration - set 51,SMTP,/send-invoice-51
+Quote Builder 51,PDF + Email - set 51,WeasyPrint,/generate-quote-51
+Invoice System 51,PDF + Scheduler - set 51,Custom,/generate-invoice-51
+Client CRM 51,"Contact, project tracking - set 51",SQL,/clients-51
+Staff CRM 51,"Roles, hours - set 51",SQL,/staff-51
+Scheduler 51,Calendar with FullCalendar.js - set 51,JSON API,/calendar-51
+Notifications 51,Toast + Mail/SMS - set 51,MailerLite/Twilio,/notifications-51
+Checklist 51,Job-specific tasks - set 51,SQL,/jobs/:id/checklist-51
+Inventory 51,Material tracking - set 51,SQL,/inventory-51
+Financial Reports 51,"P&L, tax, forecasting - set 51",SQL,/reports-51
+Client Portal 51,"Quotes, Invoices - set 51",Session/JWT,/portal/:clientId-51
+Staff Portal 51,Job toolkit - set 51,PIN Access,/portal/:staffId-51
+Data Tools 51,Upload/export CSV - set 51,Pandas,/data/upload-51
+Services 51,Manage service templates - set 51,SQL,/services-51
+Analytics 51,Growth & revenue - set 51,Plotly,/analytics-51
+User Control 51,"Permissions, roles - set 51",Flask-Login,/admin/users-51
+Photo Uploads 51,Before/after images - set 51,Cloud storage,/job/:id/photos-51
+Email System 52,Mail.com SMTP Integration - set 52,SMTP,/send-invoice-52
+Quote Builder 52,PDF + Email - set 52,WeasyPrint,/generate-quote-52
+Invoice System 52,PDF + Scheduler - set 52,Custom,/generate-invoice-52
+Client CRM 52,"Contact, project tracking - set 52",SQL,/clients-52
+Staff CRM 52,"Roles, hours - set 52",SQL,/staff-52
+Scheduler 52,Calendar with FullCalendar.js - set 52,JSON API,/calendar-52
+Notifications 52,Toast + Mail/SMS - set 52,MailerLite/Twilio,/notifications-52
+Checklist 52,Job-specific tasks - set 52,SQL,/jobs/:id/checklist-52
+Inventory 52,Material tracking - set 52,SQL,/inventory-52
+Financial Reports 52,"P&L, tax, forecasting - set 52",SQL,/reports-52
+Client Portal 52,"Quotes, Invoices - set 52",Session/JWT,/portal/:clientId-52
+Staff Portal 52,Job toolkit - set 52,PIN Access,/portal/:staffId-52
+Data Tools 52,Upload/export CSV - set 52,Pandas,/data/upload-52
+Services 52,Manage service templates - set 52,SQL,/services-52
+Analytics 52,Growth & revenue - set 52,Plotly,/analytics-52
+User Control 52,"Permissions, roles - set 52",Flask-Login,/admin/users-52
+Photo Uploads 52,Before/after images - set 52,Cloud storage,/job/:id/photos-52
+Email System 53,Mail.com SMTP Integration - set 53,SMTP,/send-invoice-53
+Quote Builder 53,PDF + Email - set 53,WeasyPrint,/generate-quote-53
+Invoice System 53,PDF + Scheduler - set 53,Custom,/generate-invoice-53
+Client CRM 53,"Contact, project tracking - set 53",SQL,/clients-53
+Staff CRM 53,"Roles, hours - set 53",SQL,/staff-53
+Scheduler 53,Calendar with FullCalendar.js - set 53,JSON API,/calendar-53
+Notifications 53,Toast + Mail/SMS - set 53,MailerLite/Twilio,/notifications-53
+Checklist 53,Job-specific tasks - set 53,SQL,/jobs/:id/checklist-53
+Inventory 53,Material tracking - set 53,SQL,/inventory-53
+Financial Reports 53,"P&L, tax, forecasting - set 53",SQL,/reports-53
+Client Portal 53,"Quotes, Invoices - set 53",Session/JWT,/portal/:clientId-53
+Staff Portal 53,Job toolkit - set 53,PIN Access,/portal/:staffId-53
+Data Tools 53,Upload/export CSV - set 53,Pandas,/data/upload-53
+Services 53,Manage service templates - set 53,SQL,/services-53
+Analytics 53,Growth & revenue - set 53,Plotly,/analytics-53
+User Control 53,"Permissions, roles - set 53",Flask-Login,/admin/users-53
+Photo Uploads 53,Before/after images - set 53,Cloud storage,/job/:id/photos-53
+Email System 54,Mail.com SMTP Integration - set 54,SMTP,/send-invoice-54
+Quote Builder 54,PDF + Email - set 54,WeasyPrint,/generate-quote-54
+Invoice System 54,PDF + Scheduler - set 54,Custom,/generate-invoice-54
+Client CRM 54,"Contact, project tracking - set 54",SQL,/clients-54
+Staff CRM 54,"Roles, hours - set 54",SQL,/staff-54
+Scheduler 54,Calendar with FullCalendar.js - set 54,JSON API,/calendar-54
+Notifications 54,Toast + Mail/SMS - set 54,MailerLite/Twilio,/notifications-54
+Checklist 54,Job-specific tasks - set 54,SQL,/jobs/:id/checklist-54
+Inventory 54,Material tracking - set 54,SQL,/inventory-54
+Financial Reports 54,"P&L, tax, forecasting - set 54",SQL,/reports-54
+Client Portal 54,"Quotes, Invoices - set 54",Session/JWT,/portal/:clientId-54
+Staff Portal 54,Job toolkit - set 54,PIN Access,/portal/:staffId-54
+Data Tools 54,Upload/export CSV - set 54,Pandas,/data/upload-54
+Services 54,Manage service templates - set 54,SQL,/services-54
+Analytics 54,Growth & revenue - set 54,Plotly,/analytics-54
+User Control 54,"Permissions, roles - set 54",Flask-Login,/admin/users-54
+Photo Uploads 54,Before/after images - set 54,Cloud storage,/job/:id/photos-54
+Email System 55,Mail.com SMTP Integration - set 55,SMTP,/send-invoice-55
+Quote Builder 55,PDF + Email - set 55,WeasyPrint,/generate-quote-55
+Invoice System 55,PDF + Scheduler - set 55,Custom,/generate-invoice-55
+Client CRM 55,"Contact, project tracking - set 55",SQL,/clients-55
+Staff CRM 55,"Roles, hours - set 55",SQL,/staff-55
+Scheduler 55,Calendar with FullCalendar.js - set 55,JSON API,/calendar-55
+Notifications 55,Toast + Mail/SMS - set 55,MailerLite/Twilio,/notifications-55
+Checklist 55,Job-specific tasks - set 55,SQL,/jobs/:id/checklist-55
+Inventory 55,Material tracking - set 55,SQL,/inventory-55
+Financial Reports 55,"P&L, tax, forecasting - set 55",SQL,/reports-55
+Client Portal 55,"Quotes, Invoices - set 55",Session/JWT,/portal/:clientId-55
+Staff Portal 55,Job toolkit - set 55,PIN Access,/portal/:staffId-55
+Data Tools 55,Upload/export CSV - set 55,Pandas,/data/upload-55
+Services 55,Manage service templates - set 55,SQL,/services-55
+Analytics 55,Growth & revenue - set 55,Plotly,/analytics-55
+User Control 55,"Permissions, roles - set 55",Flask-Login,/admin/users-55
+Photo Uploads 55,Before/after images - set 55,Cloud storage,/job/:id/photos-55
+Email System 56,Mail.com SMTP Integration - set 56,SMTP,/send-invoice-56
+Quote Builder 56,PDF + Email - set 56,WeasyPrint,/generate-quote-56
+Invoice System 56,PDF + Scheduler - set 56,Custom,/generate-invoice-56
+Client CRM 56,"Contact, project tracking - set 56",SQL,/clients-56
+Staff CRM 56,"Roles, hours - set 56",SQL,/staff-56
+Scheduler 56,Calendar with FullCalendar.js - set 56,JSON API,/calendar-56
+Notifications 56,Toast + Mail/SMS - set 56,MailerLite/Twilio,/notifications-56
+Checklist 56,Job-specific tasks - set 56,SQL,/jobs/:id/checklist-56
+Inventory 56,Material tracking - set 56,SQL,/inventory-56
+Financial Reports 56,"P&L, tax, forecasting - set 56",SQL,/reports-56
+Client Portal 56,"Quotes, Invoices - set 56",Session/JWT,/portal/:clientId-56
+Staff Portal 56,Job toolkit - set 56,PIN Access,/portal/:staffId-56
+Data Tools 56,Upload/export CSV - set 56,Pandas,/data/upload-56
+Services 56,Manage service templates - set 56,SQL,/services-56
+Analytics 56,Growth & revenue - set 56,Plotly,/analytics-56
+User Control 56,"Permissions, roles - set 56",Flask-Login,/admin/users-56
+Photo Uploads 56,Before/after images - set 56,Cloud storage,/job/:id/photos-56
+Email System 57,Mail.com SMTP Integration - set 57,SMTP,/send-invoice-57
+Quote Builder 57,PDF + Email - set 57,WeasyPrint,/generate-quote-57
+Invoice System 57,PDF + Scheduler - set 57,Custom,/generate-invoice-57
+Client CRM 57,"Contact, project tracking - set 57",SQL,/clients-57
+Staff CRM 57,"Roles, hours - set 57",SQL,/staff-57
+Scheduler 57,Calendar with FullCalendar.js - set 57,JSON API,/calendar-57
+Notifications 57,Toast + Mail/SMS - set 57,MailerLite/Twilio,/notifications-57
+Checklist 57,Job-specific tasks - set 57,SQL,/jobs/:id/checklist-57
+Inventory 57,Material tracking - set 57,SQL,/inventory-57
+Financial Reports 57,"P&L, tax, forecasting - set 57",SQL,/reports-57
+Client Portal 57,"Quotes, Invoices - set 57",Session/JWT,/portal/:clientId-57
+Staff Portal 57,Job toolkit - set 57,PIN Access,/portal/:staffId-57
+Data Tools 57,Upload/export CSV - set 57,Pandas,/data/upload-57
+Services 57,Manage service templates - set 57,SQL,/services-57
+Analytics 57,Growth & revenue - set 57,Plotly,/analytics-57
+User Control 57,"Permissions, roles - set 57",Flask-Login,/admin/users-57
+Photo Uploads 57,Before/after images - set 57,Cloud storage,/job/:id/photos-57
+Email System 58,Mail.com SMTP Integration - set 58,SMTP,/send-invoice-58
+Quote Builder 58,PDF + Email - set 58,WeasyPrint,/generate-quote-58
+Invoice System 58,PDF + Scheduler - set 58,Custom,/generate-invoice-58
+Client CRM 58,"Contact, project tracking - set 58",SQL,/clients-58
+Staff CRM 58,"Roles, hours - set 58",SQL,/staff-58
+Scheduler 58,Calendar with FullCalendar.js - set 58,JSON API,/calendar-58
+Notifications 58,Toast + Mail/SMS - set 58,MailerLite/Twilio,/notifications-58
+Checklist 58,Job-specific tasks - set 58,SQL,/jobs/:id/checklist-58
+Inventory 58,Material tracking - set 58,SQL,/inventory-58
+Financial Reports 58,"P&L, tax, forecasting - set 58",SQL,/reports-58
+Client Portal 58,"Quotes, Invoices - set 58",Session/JWT,/portal/:clientId-58
+Staff Portal 58,Job toolkit - set 58,PIN Access,/portal/:staffId-58
+Data Tools 58,Upload/export CSV - set 58,Pandas,/data/upload-58
+Services 58,Manage service templates - set 58,SQL,/services-58
+Analytics 58,Growth & revenue - set 58,Plotly,/analytics-58
+User Control 58,"Permissions, roles - set 58",Flask-Login,/admin/users-58
+Photo Uploads 58,Before/after images - set 58,Cloud storage,/job/:id/photos-58
+Email System 59,Mail.com SMTP Integration - set 59,SMTP,/send-invoice-59
+Quote Builder 59,PDF + Email - set 59,WeasyPrint,/generate-quote-59
+Invoice System 59,PDF + Scheduler - set 59,Custom,/generate-invoice-59
+Client CRM 59,"Contact, project tracking - set 59",SQL,/clients-59
+Staff CRM 59,"Roles, hours - set 59",SQL,/staff-59
+Scheduler 59,Calendar with FullCalendar.js - set 59,JSON API,/calendar-59
+Notifications 59,Toast + Mail/SMS - set 59,MailerLite/Twilio,/notifications-59
+Checklist 59,Job-specific tasks - set 59,SQL,/jobs/:id/checklist-59
+Inventory 59,Material tracking - set 59,SQL,/inventory-59
+Financial Reports 59,"P&L, tax, forecasting - set 59",SQL,/reports-59
+Client Portal 59,"Quotes, Invoices - set 59",Session/JWT,/portal/:clientId-59
+Staff Portal 59,Job toolkit - set 59,PIN Access,/portal/:staffId-59
+Data Tools 59,Upload/export CSV - set 59,Pandas,/data/upload-59
+Services 59,Manage service templates - set 59,SQL,/services-59

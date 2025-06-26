@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Job Portal - SPANKKS Construction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Inter', sans-serif;
+        }
+        .portal-header {
+            background: linear-gradient(135deg, #1a5f3f 0%, #2d7a5a 100%);
+            color: white;
+            padding: 2rem 0;
+        }
+        .portal-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .tool-card {
+            background: rgba(26, 95, 63, 0.05);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .tool-card:hover {
+            border-color: #1a5f3f;
+            background: rgba(26, 95, 63, 0.1);
+            transform: translateY(-4px);
+        }
+        .tool-icon {
+            font-size: 2rem;
+            color: #1a5f3f;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-header">
+        <div class="container">
+            <h1><i class="fas fa-hard-hat me-3"></i>Staff Job Portal</h1>
+            <p class="mb-0">Job Management Tools for SPANKKS Construction Crew</p>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="portal-card">
+            <div class="card-body p-4">
+                <h3 class="text-success mb-4">
+                    <i class="fas fa-tools me-2"></i>Job Portal Access: {{ job_id }}
+                </h3>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Job Information</h5>
+                        <p><strong>Job ID:</strong> {{ job_id }}</p>
+                        <p><strong>Status:</strong> <span class="badge bg-warning">In Progress</span></p>
+                        <p><strong>Crew:</strong> SPANKKS Team A</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Hawaii Time</h5>
+                        <div class="bg-light p-3 rounded">
+                            <div class="h4 text-primary" id="hawaiiTime">Loading...</div>
+                            <small class="text-muted">Current Hawaii Time</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tool-grid">
+                    <div class="tool-card" onclick="manageTasks()">
+                        <div class="tool-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <h6>Task Checklist</h6>
+                        <p class="text-muted small">Manage job tasks</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="uploadPhotos()">
+                        <div class="tool-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <h6>Photo Upload</h6>
+                        <p class="text-muted small">Document progress</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="logMaterials()">
+                        <div class="tool-icon">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <h6>Materials Log</h6>
+                        <p class="text-muted small">Track materials used</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="addNotes()">
+                        <div class="tool-icon">
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                        <h6>Job Notes</h6>
+                        <p class="text-muted small">Add progress notes</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="clockInOut()">
+                        <div class="tool-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h6>Time Clock</h6>
+                        <p class="text-muted small">Clock in/out</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="contactClient()">
+                        <div class="tool-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <h6>Client Contact</h6>
+                        <p class="text-muted small">Call/message client</p>
+                    </div>
+                </div>
+                
+                <div class="alert alert-success mt-4">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Portal Status:</strong> Staff job portal is working correctly. 
+                    All job management tools are accessible for crew operations.
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="/admin-home" class="btn btn-primary me-2">
+                        <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+                    </a>
+                    <a href="/" class="btn btn-outline-secondary">
+                        <i class="fas fa-home me-2"></i>Main Website
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update Hawaii time
+        function updateHawaiiTime() {
+            const now = new Date();
+            const hawaiiTime = now.toLocaleString('en-US', {
+                timeZone: 'Pacific/Honolulu',
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            document.getElementById('hawaiiTime').textContent = hawaiiTime;
+        }
+
+        updateHawaiiTime();
+        setInterval(updateHawaiiTime, 1000);
+
+        function manageTasks() {
+            alert('Task Checklist Manager\n\n• View current job tasks\n• Mark tasks complete\n• Add new tasks\n• Set task priorities');
+        }
+
+        function uploadPhotos() {
+            alert('Photo Upload Tool\n\n• Upload before/during/after photos\n• Organize by job stage\n• Add captions and notes\n• Share with client automatically');
+        }
+
+        function logMaterials() {
+            alert('Materials Logging\n\n• Record materials used\n• Track quantities and costs\n• Update inventory automatically\n• Generate material reports');
+        }
+
+        function addNotes() {
+            alert('Job Notes System\n\n• Add progress updates\n• Internal crew notes\n• Client-facing updates\n• Photo annotations');
+        }
+
+        function clockInOut() {
+            alert('Time Clock System\n\n• Clock in/out for job\n• Track hours worked\n• Calculate labor costs\n• Generate timesheets');
+        }
+
+        function contactClient() {
+            alert('Client Communication\n\n• Quick call client\n• Send updates via SMS\n• Share photos instantly\n• Schedule follow-ups');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+/* Custom SPANKKS Construction Styles */
+
+/* Modern Contact Form Styles */
+.contact-form-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-form-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="%23007bff" opacity="0.1"/><circle cx="80" cy="80" r="1" fill="%23007bff" opacity="0.1"/><circle cx="40" cy="60" r="1" fill="%23007bff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+    pointer-events: none;
+}
+
+.contact-form-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 40px rgba(0, 123, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    border-radius: 20px 20px 0 0;
+}
+
+.form-header .form-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3);
+}
+
+.form-header .form-icon i {
+    color: white !important;
+}
+
+.form-title {
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-subtitle {
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+.form-control-modern {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.8);
+    height: auto;
+}
+
+.form-control-modern:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+    background: white;
+    transform: translateY(-2px);
+}
+
+.form-floating > label {
+    color: #6c757d;
+    font-weight: 500;
+    padding-left: 1.25rem;
+}
+
+.form-floating > .form-control-modern:focus ~ label,
+.form-floating > .form-control-modern:not(:placeholder-shown) ~ label {
+    color: #007bff;
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+.btn-modern {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3);
+}
+
+.btn-modern:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 123, 255, 0.4);
+    background: linear-gradient(135deg, #0056b3, #004085);
+}
+
+.btn-modern:active {
+    transform: translateY(-1px);
+}
+
+.btn-modern .btn-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-modern:active .btn-ripple {
+    width: 300px;
+    height: 300px;
+}
+
+.form-note {
+    font-style: italic;
+}
+
+.modern-form {
+    position: relative;
+}

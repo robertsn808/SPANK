@@ -1,0 +1,401 @@
+{% extends "admin/core/base.html" %}
+
+{% block title %}Invoice Management - SPANKKS Construction{% endblock %}
+
+{% block content %}
+<div class="invoices-management-dashboard">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Invoice Management</h1>
+            <p class="text-muted mb-0">Manage invoices, payments, and billing</p>
+        </div>
+        <div class="btn-group">
+            <a href="/admin-home" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+            <button class="btn btn-primary" onclick="createNewInvoice()">
+                <i class="fas fa-plus me-2"></i>New Invoice
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">$12,450</h4>
+                            <p class="mb-0">Total Paid</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">$3,200</h4>
+                            <p class="mb-0">Pending Payment</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">$850</h4>
+                            <p class="mb-0">Overdue</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">23</h4>
+                            <p class="mb-0">Total Invoices</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-file-invoice-dollar fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter and Search -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="statusFilter" class="form-label">Status</label>
+                    <select class="form-select" id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="paid">Paid</option>
+                        <option value="overdue">Overdue</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="clientFilter" class="form-label">Client</label>
+                    <select class="form-select" id="clientFilter">
+                        <option value="">All Clients</option>
+                        <option value="CLI001">Jessica Houtz</option>
+                        <option value="CLI002">David Smith</option>
+                        <option value="CLI003">Maria Rodriguez</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="dateRange" class="form-label">Date Range</label>
+                    <select class="form-select" id="dateRange">
+                        <option value="">All Time</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="quarter">This Quarter</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="searchInvoice" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="searchInvoice" placeholder="Invoice ID or client name">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoices Table -->
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Invoice Records</h5>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-primary" onclick="exportInvoices()">
+                        <i class="fas fa-download me-1"></i>Export
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="bulkActions()">
+                        <i class="fas fa-tasks me-1"></i>Bulk Actions
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll"></th>
+                            <th>Invoice #</th>
+                            <th>Client</th>
+                            <th>Service</th>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" class="invoice-checkbox" value="I0001"></td>
+                            <td>
+                                <strong>I0001</strong>
+                                <div class="text-muted small">Dec 22, 2024</div>
+                            </td>
+                            <td>
+                                <div>Jessica Houtz</div>
+                                <div class="text-muted small">(808) 555-0123</div>
+                            </td>
+                            <td>Flooring Installation</td>
+                            <td>
+                                <strong>$785.34</strong>
+                                <div class="text-muted small">+ $35.34 tax</div>
+                            </td>
+                            <td>Jan 21, 2025</td>
+                            <td>
+                                <span class="badge bg-success">Paid</span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="viewInvoice('I0001')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="downloadInvoice('I0001')">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="emailInvoice('I0001')">
+                                        <i class="fas fa-envelope"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="invoice-checkbox" value="I0002"></td>
+                            <td>
+                                <strong>I0002</strong>
+                                <div class="text-muted small">Dec 20, 2024</div>
+                            </td>
+                            <td>
+                                <div>David Smith</div>
+                                <div class="text-muted small">(808) 555-0456</div>
+                            </td>
+                            <td>Drywall Repair</td>
+                            <td>
+                                <strong>$420.00</strong>
+                                <div class="text-muted small">+ $19.80 tax</div>
+                            </td>
+                            <td>Jan 19, 2025</td>
+                            <td>
+                                <span class="badge bg-warning">Pending</span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="viewInvoice('I0002')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-outline-success" onclick="downloadInvoice('I0002')">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-outline-warning" onclick="sendReminder('I0002')">
+                                        <i class="fas fa-bell"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="invoice-checkbox" value="I0003"></td>
+                            <td>
+                                <strong>I0003</strong>
+                                <div class="text-muted small">Dec 15, 2024</div>
+                            </td>
+                            <td>
+                                <div>Maria Rodriguez</div>
+                                <div class="text-muted small">(808) 555-0789</div>
+                            </td>
+                            <td>General Handyman</td>
+                            <td>
+                                <strong>$180.00</strong>
+                                <div class="text-muted small">+ $8.48 tax</div>
+                            </td>
+                            <td>Jan 14, 2025</td>
+                            <td>
+                                <span class="badge bg-danger">Overdue</span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" onclick="viewInvoice('I0003')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="markOverdue('I0003')">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </button>
+                                    <button class="btn btn-outline-warning" onclick="sendReminder('I0003')">
+                                        <i class="fas fa-bell"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Payment Recording Modal would go here -->
+</div>
+
+<script>
+function createNewInvoice() {
+    window.location.href = '/admin/quotes';
+}
+
+function viewInvoice(invoiceId) {
+    // Open invoice in modal or new page
+    window.open(`/admin/invoices/${invoiceId}/view`, '_blank');
+}
+
+function downloadInvoice(invoiceId) {
+    window.open('/api/download-invoice/' + invoiceId, '_blank');
+}
+
+function emailInvoice(invoiceId) {
+    if (confirm('Send invoice via email to client?')) {
+        fetch(`/api/invoices/${invoiceId}/email`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Invoice sent successfully!');
+            } else {
+                alert('Error sending invoice: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error sending invoice');
+        });
+    }
+}
+
+function sendReminder(invoiceId) {
+    if (confirm('Send payment reminder to client?')) {
+        fetch(`/api/invoices/${invoiceId}/reminder`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Reminder sent successfully!');
+            } else {
+                alert('Error sending reminder: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error sending reminder');
+        });
+    }
+}
+
+function markOverdue(invoiceId) {
+    if (confirm('Mark this invoice as overdue?')) {
+        fetch(`/api/invoices/${invoiceId}/mark-overdue`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error marking invoice as overdue: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating invoice status');
+        });
+    }
+}
+
+function exportInvoices() {
+    const format = prompt('Export format (csv/pdf):', 'csv');
+    if (format && ['csv', 'pdf'].includes(format.toLowerCase())) {
+        window.open(`/api/invoices/export?format=${format}`, '_blank');
+    }
+}
+
+function bulkActions() {
+    const selectedInvoices = Array.from(document.querySelectorAll('.invoice-checkbox:checked'))
+        .map(cb => cb.value);
+    
+    if (selectedInvoices.length === 0) {
+        alert('Please select invoices first');
+        return;
+    }
+    
+    const action = prompt('Bulk action (email/remind/export):', 'email');
+    if (action && ['email', 'remind', 'export'].includes(action.toLowerCase())) {
+        fetch('/api/invoices/bulk-action', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: action,
+                invoices: selectedInvoices
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Bulk ${action} completed successfully!`);
+                location.reload();
+            } else {
+                alert('Error performing bulk action: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error performing bulk action');
+        });
+    }
+}
+
+// Select all functionality
+document.getElementById('selectAll').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.invoice-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+});
+</script>
+{% endblock %}

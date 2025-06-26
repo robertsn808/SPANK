@@ -1,0 +1,29 @@
+[
+  {
+    "photo_id": "PHO001",
+    "client_id": "CLI001",
+    "job_id": "JOB001",
+    "description": "Before - Kitchen Flooring",
+    "photo_type": "before",
+    "url": "/static/images/placeholder-before.jpg",
+    "uploaded_at": "2025-06-15T08:00:00Z"
+  },
+  {
+    "photo_id": "PHO002", 
+    "client_id": "CLI001",
+    "job_id": "JOB001",
+    "description": "Progress - Subfloor Preparation",
+    "photo_type": "progress",
+    "url": "/static/images/placeholder-progress.jpg", 
+    "uploaded_at": "2025-06-16T12:30:00Z"
+  },
+  {
+    "photo_id": "PHO003",
+    "client_id": "CLI001", 
+    "job_id": "JOB001",
+    "description": "After - Completed Kitchen Flooring",
+    "photo_type": "after",
+    "url": "/static/images/placeholder-after.jpg",
+    "uploaded_at": "2025-06-18T16:45:00Z"
+  }
+]

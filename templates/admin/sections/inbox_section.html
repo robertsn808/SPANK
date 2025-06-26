@@ -1,0 +1,613 @@
+<!-- Modern Admin Inbox Section -->
+<div class="container-fluid px-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0 text-dark fw-bold">
+                <i class="fas fa-inbox text-primary me-2"></i>Customer Inbox
+            </h2>
+            <p class="text-muted mb-0">Manage contact messages and consultation requests</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="refreshInbox()">
+                <i class="fas fa-sync-alt me-1"></i>Refresh
+            </button>
+            <a href="/admin-home" class="btn btn-success">
+                <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body text-white text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="fas fa-envelope-open fa-2x"></i>
+                    </div>
+                    <h3 class="mb-1" id="totalCount">0</h3>
+                    <p class="mb-0 opacity-75">Total Messages</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="card-body text-white text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="fas fa-exclamation-circle fa-2x"></i>
+                    </div>
+                    <h3 class="mb-1" id="unreadCount">0</h3>
+                    <p class="mb-0 opacity-75">Unread Messages</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="card-body text-white text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="fas fa-calendar-check fa-2x"></i>
+                    </div>
+                    <h3 class="mb-1" id="consultationCount">0</h3>
+                    <p class="mb-0 opacity-75">Consultation Requests</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="card-body text-white text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                    <h3 class="mb-1" id="todayCount">0</h3>
+                    <p class="mb-0 opacity-75">Today's Messages</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter and Actions -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body py-3">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="messageFilter" id="filterAll" autocomplete="off" checked>
+                        <label class="btn btn-outline-primary" for="filterAll" onclick="setFilter('all')">
+                            <i class="fas fa-list me-1"></i>All Messages
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="messageFilter" id="filterUnread" autocomplete="off">
+                        <label class="btn btn-outline-warning" for="filterUnread" onclick="setFilter('unread')">
+                            <i class="fas fa-exclamation me-1"></i>Unread Only
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="messageFilter" id="filterConsultation" autocomplete="off">
+                        <label class="btn btn-outline-info" for="filterConsultation" onclick="setFilter('consultation')">
+                            <i class="fas fa-calendar me-1"></i>Consultations
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="messageFilter" id="filterContact" autocomplete="off">
+                        <label class="btn btn-outline-secondary" for="filterContact" onclick="setFilter('contact')">
+                            <i class="fas fa-envelope me-1"></i>Contact Forms
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-outline-success me-2" onclick="markAllAsRead()">
+                        <i class="fas fa-check-double me-1"></i>Mark All Read
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div id="messagesContainer">
+        <!-- Loading state -->
+        <div class="text-center py-5" id="loadingState">
+            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+            <h5 class="text-muted">Loading messages...</h5>
+        </div>
+
+        <!-- Empty state -->
+        <div class="text-center py-5" id="emptyState" style="display: none;">
+            <div class="mb-4">
+                <i class="fas fa-inbox fa-4x text-muted opacity-50"></i>
+            </div>
+            <h4 class="text-muted mb-2">No messages found</h4>
+            <p class="text-muted">Customer contact forms and consultation requests will appear here.</p>
+        </div>
+
+        <!-- Messages grid -->
+        <div class="row" id="messagesGrid" style="display: none;">
+            <!-- Messages will be populated here -->
+        </div>
+    </div>
+</div>
+
+<!-- Message Detail Modal -->
+<div class="modal fade" id="messageDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalTitle">
+                    <i class="fas fa-envelope me-2"></i>Message Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content populated dynamically -->
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-primary" onclick="createQuoteFromMessage()">
+                    <i class="fas fa-file-invoice-dollar me-1"></i>Create Quote
+                </button>
+                <button type="button" class="btn btn-outline-success" onclick="scheduleAppointment()">
+                    <i class="fas fa-calendar-plus me-1"></i>Schedule Meeting
+                </button>
+                <button type="button" class="btn btn-warning" onclick="markMessageAsRead()">
+                    <i class="fas fa-check me-1"></i>Mark as Read
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.message-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid #e0e0e0;
+}
+
+.message-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+    border-color: #007bff;
+}
+
+.message-card.unread {
+    border-left: 4px solid #ffc107;
+    background: linear-gradient(45deg, #fff9e6, #ffffff);
+}
+
+.message-card.read {
+    border-left: 4px solid #28a745;
+}
+
+.contact-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+.contact-info i {
+    width: 16px;
+    text-align: center;
+}
+
+.badge-new {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.btn-group .btn-check:checked + .btn {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: white;
+}
+</style>
+
+<script>
+let allMessages = [];
+let currentFilter = 'all';
+let selectedMessageId = null;
+
+// Initialize inbox on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadMessages();
+    
+    // Auto-refresh every 60 seconds
+    setInterval(loadMessages, 60000);
+});
+
+// Load messages from API
+function loadMessages() {
+    fetch('/api/contact-messages')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.messages) {
+                allMessages = data.messages;
+                updateStatistics();
+                displayMessages();
+            } else {
+                console.error('Failed to load messages:', data.error);
+                showEmptyState();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading messages:', error);
+            showEmptyState();
+        });
+}
+
+// Update statistics cards
+function updateStatistics() {
+    const total = allMessages.length;
+    const unread = allMessages.filter(m => m.status !== 'read').length;
+    const consultation = allMessages.filter(m => m.type === 'consultation').length;
+    
+    // Today's messages
+    const today = new Date().toISOString().split('T')[0];
+    const todayMessages = allMessages.filter(m => {
+        if (!m.created_at) return false;
+        return m.created_at.startsWith(today);
+    }).length;
+    
+    document.getElementById('totalCount').textContent = total;
+    document.getElementById('unreadCount').textContent = unread;
+    document.getElementById('consultationCount').textContent = consultation;
+    document.getElementById('todayCount').textContent = todayMessages;
+}
+
+// Display messages based on current filter
+function displayMessages() {
+    const loadingState = document.getElementById('loadingState');
+    const emptyState = document.getElementById('emptyState');
+    const messagesGrid = document.getElementById('messagesGrid');
+    
+    loadingState.style.display = 'none';
+    
+    let filteredMessages = allMessages;
+    
+    // Apply filter
+    switch(currentFilter) {
+        case 'unread':
+            filteredMessages = allMessages.filter(m => m.status !== 'read');
+            break;
+        case 'consultation':
+            filteredMessages = allMessages.filter(m => m.type === 'consultation');
+            break;
+        case 'contact':
+            filteredMessages = allMessages.filter(m => m.type !== 'consultation');
+            break;
+    }
+    
+    if (filteredMessages.length === 0) {
+        emptyState.style.display = 'block';
+        messagesGrid.style.display = 'none';
+        return;
+    }
+    
+    emptyState.style.display = 'none';
+    messagesGrid.style.display = 'flex';
+    
+    // Sort by newest first
+    filteredMessages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    
+    // Generate message cards
+    const messagesHtml = filteredMessages.map(message => createMessageCard(message)).join('');
+    messagesGrid.innerHTML = messagesHtml;
+}
+
+// Create individual message card
+function createMessageCard(message) {
+    const isUnread = message.status !== 'read';
+    const messageType = message.type === 'consultation' ? 'Consultation Request' : 'Contact Form';
+    const timeAgo = getTimeAgo(message.created_at);
+    const serviceIcon = getServiceIcon(message.service || message.type);
+    
+    return `
+        <div class="col-xl-4 col-lg-6 mb-4">
+            <div class="card message-card h-100 ${isUnread ? 'unread' : 'read'}" onclick="showMessageDetails('${message.id}')">
+                <div class="card-header bg-white border-bottom-0 pb-0">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex align-items-center">
+                            <i class="${serviceIcon} text-primary me-2"></i>
+                            <span class="badge ${isUnread ? 'bg-warning badge-new' : 'bg-success'} text-dark">
+                                ${isUnread ? 'NEW' : 'READ'}
+                            </span>
+                        </div>
+                        <small class="text-muted">${timeAgo}</small>
+                    </div>
+                </div>
+                
+                <div class="card-body pt-2">
+                    <h6 class="card-title text-primary mb-2">${escapeHtml(message.name)}</h6>
+                    <p class="text-muted small mb-2">${messageType}</p>
+                    
+                    <div class="contact-info">
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="fas fa-envelope text-info me-2"></i>
+                            <small class="text-dark">${escapeHtml(message.email)}</small>
+                        </div>
+                        ${message.phone ? `
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="fas fa-phone text-success me-2"></i>
+                            <small class="text-dark">${formatPhone(message.phone)}</small>
+                        </div>
+                        ` : ''}
+                        ${message.service ? `
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-tools text-warning me-2"></i>
+                            <small class="text-dark">${escapeHtml(message.service)}</small>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <p class="card-text mt-3" style="font-size: 0.9rem; line-height: 1.4;">
+                        ${truncateText(escapeHtml(message.message), 100)}
+                    </p>
+                </div>
+                
+                <div class="card-footer bg-transparent border-top">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>
+                            ${formatDate(message.created_at)}
+                        </small>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation(); createQuoteFromMessage('${message.id}')" title="Create Quote">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="event.stopPropagation(); scheduleAppointment('${message.id}')" title="Schedule Meeting">
+                                <i class="fas fa-calendar-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Show message details in modal
+function showMessageDetails(messageId) {
+    const message = allMessages.find(m => m.id === messageId);
+    if (!message) return;
+    
+    selectedMessageId = messageId;
+    
+    const modal = document.getElementById('messageDetailModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    
+    modalTitle.innerHTML = `<i class="fas fa-envelope me-2"></i>Message from ${escapeHtml(message.name)}`;
+    
+    modalBody.innerHTML = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-primary mb-3">Contact Information</h6>
+                <div class="mb-3">
+                    <label class="fw-bold">Name:</label>
+                    <p class="mb-1">${escapeHtml(message.name)}</p>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Email:</label>
+                    <p class="mb-1"><a href="mailto:${message.email}" class="text-decoration-none">${escapeHtml(message.email)}</a></p>
+                </div>
+                ${message.phone ? `
+                <div class="mb-3">
+                    <label class="fw-bold">Phone:</label>
+                    <p class="mb-1"><a href="tel:${message.phone}" class="text-decoration-none">${formatPhone(message.phone)}</a></p>
+                </div>
+                ` : ''}
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-primary mb-3">Message Details</h6>
+                <div class="mb-3">
+                    <label class="fw-bold">Type:</label>
+                    <p class="mb-1">${message.type === 'consultation' ? 'Consultation Request' : 'Contact Form'}</p>
+                </div>
+                ${message.service ? `
+                <div class="mb-3">
+                    <label class="fw-bold">Service:</label>
+                    <p class="mb-1">${escapeHtml(message.service)}</p>
+                </div>
+                ` : ''}
+                <div class="mb-3">
+                    <label class="fw-bold">Received:</label>
+                    <p class="mb-1">${formatDateTime(message.created_at)}</p>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Status:</label>
+                    <p class="mb-1">
+                        <span class="badge ${message.status !== 'read' ? 'bg-warning' : 'bg-success'}">
+                            ${message.status !== 'read' ? 'Unread' : 'Read'}
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <h6 class="text-primary mb-3">Message Content</h6>
+                <div class="bg-light border rounded p-3" style="min-height: 100px;">
+                    ${escapeHtml(message.message).replace(/\n/g, '<br>')}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const modalInstance = new bootstrap.Modal(modal);
+    modalInstance.show();
+}
+
+// Set filter and update display
+function setFilter(filter) {
+    currentFilter = filter;
+    displayMessages();
+}
+
+// Mark selected message as read
+function markMessageAsRead() {
+    if (!selectedMessageId) return;
+    
+    const messageIndex = allMessages.findIndex(m => m.id === selectedMessageId);
+    if (messageIndex !== -1) {
+        allMessages[messageIndex].status = 'read';
+        updateStatistics();
+        displayMessages();
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('messageDetailModal'));
+        modal.hide();
+        
+        // Show success toast
+        showToast('Message marked as read', 'success');
+    }
+}
+
+// Mark all messages as read
+function markAllAsRead() {
+    allMessages.forEach(message => {
+        message.status = 'read';
+    });
+    
+    updateStatistics();
+    displayMessages();
+    showToast('All messages marked as read', 'success');
+}
+
+// Refresh inbox
+function refreshInbox() {
+    document.getElementById('loadingState').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('messagesGrid').style.display = 'none';
+    
+    loadMessages();
+    showToast('Inbox refreshed', 'info');
+}
+
+// Create quote from message
+function createQuoteFromMessage(messageId = null) {
+    const id = messageId || selectedMessageId;
+    if (!id) return;
+    
+    const message = allMessages.find(m => m.id === id);
+    if (!message) return;
+    
+    // Redirect to quote builder with pre-filled data
+    const params = new URLSearchParams({
+        client_name: message.name,
+        client_email: message.email,
+        client_phone: message.phone || '',
+        service_type: message.service || 'General Handyman'
+    });
+    
+    window.location.href = `/admin/sections/quote-builder?${params.toString()}`;
+}
+
+// Schedule appointment from message
+function scheduleAppointment(messageId = null) {
+    const id = messageId || selectedMessageId;
+    if (!id) return;
+    
+    const message = allMessages.find(m => m.id === id);
+    if (!message) return;
+    
+    // Redirect to scheduler with pre-filled data
+    const params = new URLSearchParams({
+        client_name: message.name,
+        client_email: message.email,
+        client_phone: message.phone || '',
+        service_type: message.service || 'Consultation'
+    });
+    
+    window.location.href = `/admin/sections/scheduler?${params.toString()}`;
+}
+
+// Utility functions
+function showEmptyState() {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('messagesGrid').style.display = 'none';
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function truncateText(text, maxLength) {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+}
+
+function formatPhone(phone) {
+    if (!phone) return '';
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 10) {
+        return `(${cleaned.slice(0,3)}) ${cleaned.slice(3,6)}-${cleaned.slice(6)}`;
+    }
+    return phone;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+    });
+}
+
+function formatDateTime(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+    });
+}
+
+function getTimeAgo(dateString) {
+    if (!dateString) return '';
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} min ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hrs ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+    
+    return formatDate(dateString);
+}
+
+function getServiceIcon(service) {
+    if (!service) return 'fas fa-envelope';
+    
+    const serviceLower = service.toLowerCase();
+    if (serviceLower.includes('consultation')) return 'fas fa-comments';
+    if (serviceLower.includes('drywall')) return 'fas fa-hammer';
+    if (serviceLower.includes('flooring')) return 'fas fa-th-large';
+    if (serviceLower.includes('fence')) return 'fas fa-border-style';
+    if (serviceLower.includes('electrical')) return 'fas fa-bolt';
+    if (serviceLower.includes('plumbing')) return 'fas fa-wrench';
+    if (serviceLower.includes('painting')) return 'fas fa-paint-brush';
+    
+    return 'fas fa-tools';
+}
+
+function showToast(message, type = 'info') {
+    // Simple toast notification (if you have a toast system)
+    console.log(`${type.toUpperCase()}: ${message}`);
+}
+</script>
